@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laraship Documentation</title>
+    <link href="http://fonts.googleapis.com/css?family=Raleway:700,300" rel="stylesheet"
+          type="text/css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/prettify.css">
+</head>
+<body>
+<header>
+    <div class="container">
+        <h2 class="lone-header">Laraship Documentation</h2>
+    </div>
+</header>
+<section>
+    <div class="container">
+        <ul class="docs-nav">
+            <li><strong>Getting Started</strong></li>
+            <li><a href="#welcome" class="cc-active">Welcome</a></li>
+            <li class="separator"></li>
+            <li><strong>Installation Steps</strong></li>
+			<li><a href="#structure" class="cc-active">Laraship Structure</a></li>
+
+            <li><a href="#requirements" class="cc-active">Requirements</a></li>
+            <li><a href="#composer" class="cc-active">Composer</a></li>
+            <li><a href="#database" class="cc-active">Database</a></li>
+            <li class="separator"></li>
+            <li><strong>Stripe Configuration</strong></li>
+            <li><a href="#stripe" class="cc-active">Stripe</a></li>
+            <li><a href="#stripe_lara" class="cc-active">Laraship Stripe</a></li>
+            <li><a href="#stripe_hooks" class="cc-active">Stripe Hooks</a></li>
+            <li class="separator"></li>
+            <li><strong>Customization</strong></li>
+            <li><a href="#users" class="cc-active">Users</a></li>
+            <li><a href="#roles" class="cc-active">Roles</a></li>
+            <li><a href="#packages" class="cc-active">Packages</a></li>
+            <li><a href="#features" class="cc-active">Features</a></li>
+            <li><a href="#content" class="cc-active">Content</a></li>
+            <li><a href="#settings" class="cc-active">Settings</a></li>
+        </ul>
+        <div class="docs-content">
+            <h2> Getting Started</h2>
+
+            <h3 id="welcome"> Welcome To Laraship Membership Admin</h3>
+            <p> Do you want to to start a Laravel Membership Project ?</p>
+            <p> Do you have a Laravel Project and want to add Stripe Membership to it?</p>
+            <p> Are you looking for User management System with Roles with Site control Options </p>
+
+            <p> Well Laraship is what You're looking for , Laraship has been built to Provide Developers a comprehensive platform to start thier membership projects with all
+			required functionalities needed for any membership , Recurring Payments - Upgrading / Downgrading Membership - Invoices - Cancelling .. etc. in addition to the following</p>
+            <ul>
+                <li>User Management </li>
+                <li>Subscription Management</li>
+                <li>Role Management</li>
+                <li>Features Management</li>
+                <li>Package Management</li>
+                <li>Setting Management</li>
+                <li>Content Management</li>
+                <li>Pricing Table</li>
+                <li>Contact Form</li>
+                <li>Bootstrap Compoenents and layouts</li>
+            </ul>
+
+            <hr/>
+            <h2> Installation Steps</h2>
+            <h3 id="structure"> Laraship Structure</h3>
+            <ul>
+                <li>Root Folder<br/>
+                    <img src="img/structure.png"/>
+                </li>
+                <li>App Folder which contains models, controllers, middleware, and Requests<br/>
+                    <img src="img/app_tree.png"/>
+                </li>
+                <li>Resources Folder which contains views and Layouts<br/>
+                    <img src="img/resources_tree.png"/>
+                </li>
+                <li>Public Folder which contains assets, plugins and uploads<br/>
+                    <img src="img/public_tree.png"/>
+                </li>
+            </ul>
+            <h3 id="requirements"> Requirements</h3>
+			<p>Laraship is built on Laravel with Stripe so the following Requirements are needed</p>
+            <ul>
+				<li>Composer</li>
+				<li>PHP >= 5.5.9</li>
+				<li>OpenSSL PHP Extension</li>
+				<li>PDO PHP Extension</li>
+				<li>Mbstring PHP Extension</li>
+				<li>Tokenizer PHP Extension</li>
+				<li>Stripe Account</li>
+            </ul>
+
+
+
+
+            <h3 id="composer"> Composer</h3>
+            <ul>
+ 
+  
+                <li>Laravel utilizes <a href="https://getcomposer.org/">Composer</a> to manage its dependencies. So,
+                    before using Laravel, make sure you have Composer installed on your machine.
+                </li>
+                <li>In Laraship root folder run the command
+                    <pre class="prettyprint">project_root> Composer install</pre>
+                    <pre class="prettyprint">chmod -R 0777 storage/*</pre>
+					
+					
+                </li>
+            </ul>
+            <h3 id="database"> Database and Configuration</h3>
+            <ul>
+                <li>You can find .env example file in the Laraship package root</li>
+                <li>You must have a database with connection and authentication details</li>
+                <li>In .env file or in Laravel configuration file directly set
+                    <pre class="prettyprint">DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laraship
+DB_USERNAME=username
+DB_PASSWORD=password</pre>
+                </li>
+                <li>In Laraship root folder run the following commands
+                    <pre class="prettyprint">project_root> php artisan key:generate
+                    <pre class="prettyprint">project_root> php artisan migrate
+Migration table created successfully.
+Migrated: 2014_10_12_000000_create_users_table
+Migrated: 2014_10_12_100000_create_password_resets_table
+Migrated: 2016_01_23_114022_create_settings_table
+Migrated: 2016_01_26_000000_create_roles_table
+Migrated: 2016_03_22_193155_create_features_table
+Migrated: 2016_03_23_063117_create_packages_table
+Migrated: 2016_03_23_110300_create_package_feature_table
+Migrated: 2016_03_25_190814_create_pages_table
+Migrated: 2016_03_28_055448_create_subscription_table_users_change
+
+project_root> php artisan db:seed
+
+Seeded: UsersTableSeeder
+Seeded: RolesTableSeeder
+Seeded: SettingsTableSeeder
+Seeded: FeaturesTableSeeder
+Seeded: PackagesTableSeeder
+Seeded: PagesTableSeeder
+Seeded: FeaturePackageTableSeeder</pre>
+                </li>
+                <li>
+                    After seed completed Laraship basic settings, roles, sample packages with features and Users added
+                    to database.
+                </li>
+                <li>
+
+                    Default logins:<br/>
+                    Admin User: <b>admin@laraship.com/laraship</b><br/>
+                    Member User: <b>member@laraship.com/laraship</b>
+                </li>
+                <li>
+                    You can find Contact us form to Email Address in .env CONTACT_EMAIL='support@laraship.com' or in
+                    config/app.php
+                </li>
+            </ul>
+            <hr/>
+            <h2 id="strip">Stripe Configuration</h2>
+            <p>
+                You have to create a stripe account so you can connect Laraship with stripe
+            </p>
+            <img src="img/strip_dashboard.png"/>
+            <h3 id="stripe" > Strip</h3>
+            <ul>
+                <li>Define your default product:<br/><img src="./img/strip_product.png"/></li>
+                <li>Define your plans:<br/><img src="./img/strip_plans.png"/></li>
+                <li>From Account Settings get API Keys:<br/><img src="./img/strip_keys.png"/></li>
+            </ul>
+            <h3 id="stripe_lara"> Laraship Stripe</h3>
+            <ul>
+                <li>
+                    Set your Stripe auth keys in .env or config/services<br/>
+                    STRIPE_SECRET=sk_test_6UHwWGP1KyIJ7vUokMg8y<br/>
+                    STRIPE_KEY=pk_test_KCD7bejzFuDBe9NrhBB7
+                </li>
+                <li>
+                    you can find all subscription functions in app/Http/Controllers/SubscriptionController.php
+                </li>
+                <li>
+                    From member profile or pricing page start member subscription<br/>
+                    <img src="img/member_profile.png"/>
+                    <img src="img/pricing.png"/>
+                    <img src="img/member_card.png"/>
+                </li>
+            </ul>
+            <hr/>
+            <h3 id="stripe_hooks">Stripe Hooks</h3>
+            <ul>
+				<li>
+					<p>Webhooks are configured in the <a href="https://dashboard.stripe.com/account/webhooks" target="_blank">webhooks settings</a> section of the Dashboard. Clicking <strong>Add endpoint</strong> reveals a form to add a new URL for receiving webhooks.</p>
+
+					<p>Stripe supports two webhook types: Account and Connect. You'll likely want to create an account webhook, unless you've created a <a href="/docs/connect">Connect application</a>. </p>
+
+					<p>You can enter any URL you'd like to have receive the events, but this should be a dedicated page on your server, coded per the instructions below. The mode determines whether test events or live events are sent to this URL; if you want to send both live and test events to the same URL, you need to create two separate settings. You may add as many URLs as you like.</p>
+
+					<p>You can also choose to be notified of all event types, or only specific ones.</p>			
+				</li>
+            </ul>
+            <hr/>
+            <h2> Customizing Laraship</h2>
+
+            <p> Laraship is Built on Laravel so you need to a Laravel Programming experience to customize the platform</p>
+
+            <img src="./img/dashboard.png"/>
+            <h3 id="users"> Users</h3>
+            <ul>
+                <li>Users List:<br/><img src="./img/users.png"/></li>
+                <li>Users Add/Edit:<br/><img src="./img/users_add_edit.png"/></li>
+            </ul>
+            <h3 id="roles"> Roles</h3>
+            <ul>
+                <li>Roles List:<br/><img src="./img/roles.png"/></li>
+                <li>Roles Add/Edit:<br/><img src="./img/roles_create_edit.png"/></li>
+                <li>
+                    To get roles in action use helper function hasAccess
+                    <pre class="prettyprint">if(hasAccess($route))
+{
+    continue_in_action
+}
+else
+{
+    block_the_request
+}
+                    </pre>
+                </li>
+            </ul>
+            <h3 id="packages"> Packages</h3>
+            <ul>
+                <li>Packages List:<br/><img src="./img/packages.png"/></li>
+                <li>Packages Add/Edit:<br/><img src="./img/packages_create_edit.png"/></li>
+                <li>
+                    You can use Helper function hasPackage
+                <pre class="prettyprint">if(hasPackage($id))
+{
+    continue_in_action
+}
+else
+{
+    block_the_request
+}
+                    </pre>
+                </li>
+            </ul>
+            <h3 id="features"> Features</h3>
+            <ul>
+                <li>Features List:<br/><img src="./img/features.png"/></li>
+                <li>Features Add/Edit:<br/><img src="./img/features_create_edit.png"/></li>
+                <li>Pricing table represents the packages with features:<br/>
+                    <img src="img/pricing.png"/>
+                </li>
+            </ul>
+            <h3 id="content"> Content</h3>
+            <ul>
+                <li>Content List:<br/><img src="./img/content.png"/></li>
+                <li>Content Add/Edit:<br/><img src="./img/content_create_edit.png"/></li>
+            </ul>
+            <h3 id="settings"> Settings</h3>
+            <ul>
+                <li>Settings List:<br/><img src="./img/settings.png"/></li>
+                <li>Settings Add/Edit:<br/><img src="./img/settings_create_edit.png"/></li>
+            </ul>
+</section>
+<section class="vibrant centered">
+    <div class="">
+
+        <h4> for more information or inquiries please contact us at larashippro@gmail.com</h4>
+    </div>
+</section>
+<footer>
+    <div class="">
+        <p> &copy; Laraship Pro. All Rights Reserved.</p>
+    </div>
+</footer>
+</div>
+<script src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/prettify.js"></script>
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?lang=css&skin=sunburst"></script>
+<script src="js/layout.js"></script>
+</body>
+</html>
