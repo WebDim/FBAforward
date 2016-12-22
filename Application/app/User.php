@@ -44,4 +44,8 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Package::class);
     }
+    public function user_info()
+    {
+        return $this->hasMany(User_info::class);
+    }
 }

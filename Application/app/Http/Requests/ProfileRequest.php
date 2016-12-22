@@ -36,8 +36,8 @@ class ProfileRequest extends Request
                 return [
                     'name' => 'required|max:255',
                     'password' => 'confirmed|min:6',
-                    'address' => 'required',
-                    'job_title' => 'required',
+                    //'address' => 'required',
+                    //'job_title' => 'required',
                     'avatar' => 'mimes:jpg,jpeg,png|max:500'
                 ];
             }

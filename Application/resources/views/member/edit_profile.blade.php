@@ -79,7 +79,7 @@
             </div><!-- .row -->
             <div class="row">
                 <div class="col-md-6">
-                    <div class="form-group">
+                   {{-- <div class="form-group">
                         {!! Form::label('mobile', 'Mobile', ['class' => 'control-label col-md-3']) !!}
                         <div class="col-md-9">
                             <div class="input-group">
@@ -99,7 +99,72 @@
                         <div class="col-md-9">
                             {!! Form::text('address', old('address', $user->address), ['class' => 'form-control validate[required]', 'placeholder'=>'Address']) !!}
                         </div>
+                    </div>--}}
+                    @foreach($user_info as $user_info)
+                    <div class="form-group">
+                        {!! Form::label('company_name', 'Company Name *', ['class' => 'control-label col-md-3']) !!}
+                        <div class="col-md-9">
+                            <div class="input-group">
+                                <span class="input-group-addon"></span>
+                                {!! Form::text('company_name', old('company_name', $user_info->company_name), ['class' => 'form-control', 'placeholder'=>'Company Name']) !!}
+                            </div>
+                        </div>
                     </div>
+                    <div class="form-group">
+                        {!! Form::label('contact_fname', 'Contact First Name *', ['class' => 'control-label col-md-3']) !!}
+                        <div class="col-md-9">
+                            <div class="input-group">
+                               <span class="input-group-addon"></span>
+                               {!! Form::text('contact_fname', old('contact_fname', $user_info->contact_fname), ['class' => 'form-control', 'placeholder'=>'Contact First Name']) !!}
+                            </div>
+                        </div>
+                    </div>
+                        <div class="form-group">
+                            {!! Form::label('contact_lname', 'Contact Last Name *', ['class' => 'control-label col-md-3']) !!}
+                            <div class="col-md-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"></span>
+                                    {!! Form::text('contact_lname', old('contact_lname', $user_info->contact_lname), ['class' => 'form-control', 'placeholder'=>'Contact Last Name']) !!}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('company_address', 'Street Address *', ['class' => 'control-label col-md-3']) !!}
+                            <div class="col-md-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"></span>
+                                    {!! Form::text('company_address', old('company_address', $user_info->company_address), ['class' => 'form-control', 'placeholder'=>'Street Address']) !!}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('company_address2', 'Address Line 2', ['class' => 'control-label col-md-3']) !!}
+                            <div class="col-md-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"></span>
+                                    {!! Form::text('company_address2', old('company_address2', $user_info->company_address2), ['class' => 'form-control', 'placeholder'=>'Address Line 2']) !!}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('company_phone', 'Phone *', ['class' => 'control-label col-md-3']) !!}
+                            <div class="col-md-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"></span>
+                                    {!! Form::text('company_phone', old('company_phone', $user_info->company_phone), ['class' => 'form-control', 'placeholder'=>'Phone']) !!}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('business_type', 'Primary Business Type *', ['class' => 'control-label col-md-3']) !!}
+                            <div class="col-md-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"></span>
+                                    {!! Form::text('business_type', old('business_type', $user_info->primary_bussiness_type), ['class' => 'form-control', 'placeholder'=>'Primary Business Type']) !!}
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                     <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
                             {!! Form::submit('Update Profile', ['class'=>'btn btn-primary']) !!}

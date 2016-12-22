@@ -109,21 +109,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/profile/edit', ['as' => 'member.profile.edit', 'uses' => 'MemberController@editProfile']);
         Route::put('/profile/edit', ['as' => 'member.profile.update', 'uses' => 'MemberController@updateProfile']);
     });
-    /**
-     * Customer routes
-     */
-    Route::group(['prefix' => 'customer'], function () {
 
-        Route::controllers([
-            'subscription' => 'SubscriptionController'
-        ]);
-
-        Route::get('/home', ['as' => 'member.home', 'uses' => 'MemberController@index']);
-        Route::get('/pricing', ['as' => 'member.pricing', 'uses' => 'MemberController@pricing']);
-        Route::get('/profile', ['as' => 'member.profile', 'uses' => 'MemberController@profile']);
-        Route::get('/profile/edit', ['as' => 'member.profile.edit', 'uses' => 'MemberController@editProfile']);
-        Route::put('/profile/edit', ['as' => 'member.profile.update', 'uses' => 'MemberController@updateProfile']);
-    });
 
     Route::get('sitemap', function(){
 

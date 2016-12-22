@@ -29,13 +29,14 @@
                 <div class="table-responsive no-padding">
                     <table class="table">
                         <tbody>
+                        {{--
                         <tr>
                             @if($user->package_id != 0)
                                 <td>
                                     <span>Your Package:</small>
                                 </td>
                                 <td>
-                                    <b class="text-info">{{ $user->package->name }}</b>
+                                    <b class="text-info">{{ $user->package->name -- }}</b>
                                 </td>
                             @else
                                 <td style="vertical-align:middle;">
@@ -45,6 +46,7 @@
                                                     class="fa fa-briefcase"></i> Select a Package</a></b></td>
                             @endif
                         </tr>
+                        --}}
                         <tr>
                             <td style="width: 30%;">
                                 <span>Name:</span>
@@ -57,7 +59,45 @@
                             </td>
                             <td><b class="text-info">{{ $user->email }}</b></td>
                         </tr>
+                        @foreach($user_info as $user_info)
                         <tr>
+                            <td>
+                                <span>Company Name:</span>
+                            </td>
+                            <td><b class="text-info">{{ $user_info->company_name }}</b></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Contact First Name:</span>
+                            </td>
+                            <td><b class="text-info">{{ $user_info->contact_fname }}</b></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Conatct Last Name:</span>
+                            </td>
+                            <td><b class="text-info">{{ $user_info->contact_lname }}</b></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Address:</span>
+                            </td>
+                            <td><b class="text-info">{{ $user_info->company_address }}</b></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Phone:</span>
+                            </td>
+                            <td><b class="text-info">{{ $user_info->company_phone }}</b></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Primary Bussiness Type:</span>
+                            </td>
+                            <td><b class="text-info">{{ $user_info->primary_bussiness_type }}</b></td>
+                        </tr>
+                        @endforeach
+                        {{--<tr>
                             <td>
                                 <span>Job Title:</span>
                             </td>
@@ -78,7 +118,7 @@
                                 <span>Address:</span>
                             </td>
                             <td><b class="text-info">{{ $user->address }}</b></td>
-                        </tr>
+                        </tr> --}}
                         </tbody>
                     </table>
                 </div>
