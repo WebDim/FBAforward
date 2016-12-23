@@ -41,9 +41,10 @@ class UsersController extends Controller
     public function create()
     {
         $roles = Role::lists('name', 'id');
+        $country = \Config::get('constant.country_name');
         //$packages = Package::active()->lists('name', 'id');
         //$job_titles = getSetting('JOB_TITLES');
-        return view('admin.users.create_edit')->with(compact('roles'));
+        return view('admin.users.create_edit')->with(compact('roles','country'));
     }
 
     /**
@@ -122,7 +123,15 @@ class UsersController extends Controller
      */
     public function show(User $user)
     {
-        return view('admin.users.show')->with(compact('user'));
+        $user_info = DB::table('user_infos')->where('user_id', $user->id)->get();
+        echo "<pre>";
+        if(isset($user_info))
+        {
+            echo "if";
+        }
+        else
+        exit;
+        return view('admin.users.show')->with(compact('user','user_info'));
     }
 
     /**
@@ -133,11 +142,12 @@ class UsersController extends Controller
     {
         $roles = Role::lists('name', 'id');
         $user_info = DB::table('user_infos')->where('user_id', $user->id)->get();
+        $country = \Config::get('constant.country_name');
         /*$packages = Package::active()->lists('name', 'id');
 
         $job_titles = getSetting('JOB_TITLES');*/
 
-        return view('admin.users.create_edit')->with(compact('user', 'roles','user_info' ));
+        return view('admin.users.create_edit')->with(compact('user', 'roles','user_info','country'));
     }
 
     /**
@@ -225,10 +235,10 @@ class UsersController extends Controller
      * @return string
      * @throws \Exception
      */
-    public
-    function destroy(Request $request, User $user)
+    public function destroy(Request $request, User $user)
     {
         if ($request->ajax()) {
+            User_info::where("user_id", "=", $user->id)->delete();
             $user->delete();
             return response()->json(['success' => 'User has been deleted successfully']);
         } else {

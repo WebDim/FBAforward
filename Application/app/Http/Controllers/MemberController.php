@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Customer_amazon_detail;
 use App\Http\Requests\ProfileRequest;
+use App\Http\Requests\AmazoncredentialRequest;
 use App\Package;
 use App\Feature;
 use Illuminate\Support\Facades\Session;
@@ -60,22 +62,18 @@ class MemberController extends Controller
     public function editProfile()
     {
         $user = \Auth::user();
-        $job_titles = getSetting('JOB_TITLES');
+        //$job_titles = getSetting('JOB_TITLES');
         $user_info = DB::table('user_infos')->where('user_id', $user->id)->get();
-        return view('member.edit_profile')->with(compact('user', 'job_titles','user_info'));
+        return view('member.edit_profile')->with(compact('user', 'user_info'));
     }
 
     public function updateProfile(ProfileRequest $request)
     {
         $user = \Auth::user();
-
-
-
         $user->name = $request->input('name');
         /* $user->mobile = $request->input('mobile');
          $user->address = $request->input('address');
          $user->job_title = $request->input('job_title');*/
-
         if ($request->input('password')) {
             $user->password = bcrypt($request->input('password'));
         }
@@ -101,5 +99,25 @@ class MemberController extends Controller
         );
         User_info::where("user_id", "=", $user->id)->update($user_info);
         return redirect('member/profile')->with('success', 'Your Profile Updated Successfully');
+    }
+    public function amazoncredential()
+    {
+        $user = \Auth::user();
+        $marketplace = DB::table('amazon_marketplaces')->get();
+        return view('member.amazon_credential')->with(compact('user','marketplace'));
+    }
+   public function addamazoncredential(AmazoncredentialRequest $request)
+    {
+        $user = \Auth::user();
+        $credentail=array(
+            'user_id' =>$user->id,
+            'mws_seller_id'=>$request->input('mws_seller_id'),
+            'mws_market_place_id'=>$request->input('mws_market_place_id'),
+            'mws_authtoken'=>$request->input('mws_authtoken'),
+        );
+
+        $credentail = new Customer_amazon_detail($credentail);
+        $credentail->save();
+        return redirect('member/amazon_credential')->with('success', 'Your Amazon Credential Added Successfully');
     }
 }

@@ -33,7 +33,25 @@ class UserRequest extends Request {
                         'password' => 'required|confirmed|min:6',
                         'role' => 'required',
                         //'address' => 'required',
-                        'avatar' => 'mimes:jpg,jpeg,png|max:500'
+                        'avatar' => 'mimes:jpg,jpeg,png|max:500',
+                        'company_name' =>'required',
+                        'company_phone' => 'required',
+                        'company_address' => 'required',
+                        'company_city' => 'required',
+                        'company_state' => 'required',
+                        'company_country' => 'required',
+                        'tax_id_number' => 'required',
+                        'business_type' => 'required',
+                        'annual_amazon_revenue' => 'required',
+                        'annual_fba_order' => 'required',
+                        'reference_from' => 'required',
+                        'contact_fname' => 'required',
+                        'contact_lname' => 'required',
+                        'contact_email' => 'required|email',
+                        'contact_phone' => 'required',
+                        'account_payable' => 'required',
+                        'account_email' => 'required|email',
+                        'account_phone' => 'required'
                     ];
                 }
             case 'PUT':

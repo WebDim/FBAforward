@@ -52,17 +52,41 @@
                                     <td><span class="text-muted">Role:</span></td>
                                     <td><b class="text-info">{{ $user->role->name }}</b></td>
                                 </tr>
-                                <tr>
+                               {{-- <tr>
                                     <td><span class="text-muted">Job Title:</span></td>
-                                    <td><b class="text-info">{{ isset($user->job_title) && !empty($user->job_title) ? $user->job_title : '-' }}</b></td>
+                                    <td><b class="text-info">{{ !empty($user->job_title) && !empty($user->job_title) ? $user->job_title : '-' }}</b></td>
                                 </tr>
                                 <tr>
                                     <td><span class="text-muted">Mobile:</span></td>
-                                    <td><b class="text-info">{{ isset($user->mobile) && !empty($user->mobile) ? $user->mobile : '-' }}</b></td>
+                                    <td><b class="text-info">{{ !empty($user->mobile) && !empty($user->mobile) ? $user->mobile : '-' }}</b></td>
                                 </tr>
                                 <tr>
                                     <td><span class="text-muted">Address:</span></td>
                                     <td><b class="text-info">{{ $user->address }}</b></td>
+                                </tr> --}}
+                                <tr>
+                                    <td><span class="text-muted">Company Name:</span></td>
+                                    <td><b class="text-info">@if(!empty($user_info)) {{ $user_info[0]->company_name }} @endif</b></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="text-muted">Contact First Name:</span></td>
+                                    <td><b class="text-info">@if(!empty($user_info)) {{ $user_info[0]->contact_fname }} @endif</b></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="text-muted">Contact Last Name:</span></td>
+                                    <td><b class="text-info">@if(!empty($user_info)) {{ $user_info[0]->contact_lname }} @endif</b></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="text-muted">Address:</span></td>
+                                    <td><b class="text-info">@if(!empty($user_info)) {{ $user_info[0]->company_address }}<br> {{ $user_info[0]->company_address2 }} @endif</b></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="text-muted">Phone:</span></td>
+                                    <td><b class="text-info">@if(!empty($user_info)) {{ $user_info[0]->company_phone }} @endif</b></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="text-muted">Primary Business Type:</span></td>
+                                    <td><b class="text-info">@if(!empty($user_info)) {{ $user_info[0]->primary_bussiness_type }} @endif</b></td>
                                 </tr>
                                 </tbody>
                             </table>

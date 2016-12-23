@@ -100,13 +100,13 @@
                             {!! Form::text('address', old('address', $user->address), ['class' => 'form-control validate[required]', 'placeholder'=>'Address']) !!}
                         </div>
                     </div>--}}
-                    @foreach($user_info as $user_info)
+                  
                     <div class="form-group">
                         {!! Form::label('company_name', 'Company Name *', ['class' => 'control-label col-md-3']) !!}
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
-                                {!! Form::text('company_name', old('company_name', $user_info->company_name), ['class' => 'form-control', 'placeholder'=>'Company Name']) !!}
+                                {!! Form::text('company_name', old('company_name', !empty($user_info) ? $user_info[0]->company_name : null), ['class' => 'form-control', 'placeholder'=>'Company Name']) !!}
                             </div>
                         </div>
                     </div>
@@ -115,7 +115,7 @@
                         <div class="col-md-9">
                             <div class="input-group">
                                <span class="input-group-addon"></span>
-                               {!! Form::text('contact_fname', old('contact_fname', $user_info->contact_fname), ['class' => 'form-control', 'placeholder'=>'Contact First Name']) !!}
+                               {!! Form::text('contact_fname', old('contact_fname', !empty($user_info) ? $user_info[0]->contact_fname: null), ['class' => 'form-control', 'placeholder'=>'Contact First Name']) !!}
                             </div>
                         </div>
                     </div>
@@ -124,7 +124,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('contact_lname', old('contact_lname', $user_info->contact_lname), ['class' => 'form-control', 'placeholder'=>'Contact Last Name']) !!}
+                                    {!! Form::text('contact_lname', old('contact_lname',!empty($user_info) ? $user_info[0]->contact_lname: null), ['class' => 'form-control', 'placeholder'=>'Contact Last Name']) !!}
                                 </div>
                             </div>
                         </div>
@@ -133,7 +133,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('company_address', old('company_address', $user_info->company_address), ['class' => 'form-control', 'placeholder'=>'Street Address']) !!}
+                                    {!! Form::text('company_address', old('company_address',!empty($user_info) ? $user_info[0]->company_address: null), ['class' => 'form-control', 'placeholder'=>'Street Address']) !!}
                                 </div>
                             </div>
                         </div>
@@ -142,7 +142,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('company_address2', old('company_address2', $user_info->company_address2), ['class' => 'form-control', 'placeholder'=>'Address Line 2']) !!}
+                                    {!! Form::text('company_address2', old('company_address2', !empty($user_info) ? $user_info[0]->company_address2: null), ['class' => 'form-control', 'placeholder'=>'Address Line 2']) !!}
                                 </div>
                             </div>
                         </div>
@@ -151,7 +151,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('company_phone', old('company_phone', $user_info->company_phone), ['class' => 'form-control', 'placeholder'=>'Phone']) !!}
+                                    {!! Form::text('company_phone', old('company_phone', !empty($user_info) ? $user_info[0]->company_phone: null), ['class' => 'form-control', 'placeholder'=>'Phone']) !!}
                                 </div>
                             </div>
                         </div>
@@ -160,11 +160,11 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('business_type', old('business_type', $user_info->primary_bussiness_type), ['class' => 'form-control', 'placeholder'=>'Primary Business Type']) !!}
+                                    {!! Form::text('business_type', old('business_type', !empty($user_info) ? $user_info[0]->primary_bussiness_type: null), ['class' => 'form-control', 'placeholder'=>'Primary Business Type']) !!}
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                
                     <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
                             {!! Form::submit('Update Profile', ['class'=>'btn btn-primary']) !!}

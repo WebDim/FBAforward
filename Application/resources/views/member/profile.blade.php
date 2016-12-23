@@ -59,50 +59,50 @@
                             </td>
                             <td><b class="text-info">{{ $user->email }}</b></td>
                         </tr>
-                        @foreach($user_info as $user_info)
+                       
                         <tr>
                             <td>
                                 <span>Company Name:</span>
                             </td>
-                            <td><b class="text-info">{{ $user_info->company_name }}</b></td>
+                            <td><b class="text-info"> @if(!empty($user_info)) {{$user_info[0]->company_name }} @endif</b></td>
                         </tr>
                         <tr>
                             <td>
                                 <span>Contact First Name:</span>
                             </td>
-                            <td><b class="text-info">{{ $user_info->contact_fname }}</b></td>
+                            <td><b class="text-info">@if(!empty($user_info)) {{ $user_info[0]->contact_fname }} @endif</b></td>
                         </tr>
                         <tr>
                             <td>
                                 <span>Conatct Last Name:</span>
                             </td>
-                            <td><b class="text-info">{{ $user_info->contact_lname }}</b></td>
+                            <td><b class="text-info">@if(!empty($user_info)) {{ $user_info[0]->contact_lname }} @endif</b></td>
                         </tr>
                         <tr>
                             <td>
                                 <span>Address:</span>
                             </td>
-                            <td><b class="text-info">{{ $user_info->company_address }}</b></td>
+                            <td><b class="text-info">@if(!empty($user_info)) {{ $user_info[0]->company_address }}<br>{{ $user_info[0]->company_address2 }} @endif</b></td>
                         </tr>
                         <tr>
                             <td>
                                 <span>Phone:</span>
                             </td>
-                            <td><b class="text-info">{{ $user_info->company_phone }}</b></td>
+                            <td><b class="text-info">@if(!empty($user_info)) {{ $user_info[0]->company_phone }} @endif</b></td>
                         </tr>
                         <tr>
                             <td>
                                 <span>Primary Bussiness Type:</span>
                             </td>
-                            <td><b class="text-info">{{ $user_info->primary_bussiness_type }}</b></td>
+                            <td><b class="text-info">@if(!empty($user_info)) {{ $user_info[0]->primary_bussiness_type }} @endif</b></td>
                         </tr>
-                        @endforeach
+
                         {{--<tr>
                             <td>
                                 <span>Job Title:</span>
                             </td>
                             <td>
-                                <b class="text-info">{{ isset($user->job_title) && !empty($user->job_title) ? $user->job_title : '-' }}</b>
+                                <b class="text-info">{{ !empty($user->job_title) && !empty($user->job_title) ? $user->job_title : '-' }}</b>
                             </td>
                         </tr>
                         <tr>
@@ -110,7 +110,7 @@
                                 <span>Mobile:</span>
                             </td>
                             <td>
-                                <b class="text-info">{{ isset($user->mobile) && !empty($user->mobile) ? $user->mobile : '-' }}</b>
+                                <b class="text-info">{{ !empty($user->mobile) && !empty($user->mobile) ? $user->mobile : '-' }}</b>
                             </td>
                         </tr>
                         <tr>
@@ -122,7 +122,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="col-md-12">
+               {{-- <div class="col-md-12">
 
                     @if($user->package_id != 0)
                         <div class="col-md-3 margin-bottom"><a href="{{ url('member/pricing') }}"
@@ -147,7 +147,7 @@
                                 Subscription</a>
                         </div>
                     @endif
-                </div>
+                </div>--}}
             </div>
         </div>
     </div>

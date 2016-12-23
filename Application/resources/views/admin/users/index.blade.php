@@ -42,7 +42,7 @@
                     <th>Avatar</th>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Package</th>
+                  {{--  <th>Package</th>--}}
                     <th>Role</th>
                     <th>Created At</th>
                     <th>Actions</th>
@@ -86,7 +86,7 @@
                 {data: 'avatar', name: 'avatar', orderable: false, searchable: false},
                 {data: 'name', name: 'name'},
                 {data: 'email', name: 'email'},
-                {data: 'package_id', name: 'package_id'},
+        {{--{data: 'package_id', name: 'package_id'},--}}
                 {data: 'role_id', name: 'role_id'},
                 {data: 'created_at', name: 'created_at'},
                 {data: 'actions', name: 'actions', orderable: false, searchable: false}

@@ -48,4 +48,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(User_info::class);
     }
+    public function customer_amazon_detail()
+    {
+        return $this->hasMany(Customer_amazon_detail::class);
+    }
 }

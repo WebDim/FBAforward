@@ -211,7 +211,13 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Country" class="form-control" name="company_country">
+                             <select name="company_country" class="form-control">
+                                <option value="">Country</option>
+                                @foreach ($country as $key=>$country)
+                                    <option value="{{ $key }}">  {{ $country }}</option>
+                                @endforeach
+                            </select>
+
                         </div>
                         @if ($errors->has('company_country'))
                             <span class="help-block">
