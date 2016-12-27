@@ -149,6 +149,7 @@ return [
         Laravel\Cashier\CashierServiceProvider::class,
 		Orangehill\Iseed\IseedServiceProvider::class,
 		Roumen\Sitemap\SitemapServiceProvider::class,
+        Aws\Laravel\AwsServiceProvider::class,
 		
     ],
     /*
@@ -197,5 +198,6 @@ return [
         'Html' => Collective\Html\HtmlFacade::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'Carbon' => Carbon\Carbon::class,
+        'AWS' => Aws\Laravel\AwsFacade::class,
     ],
 ];

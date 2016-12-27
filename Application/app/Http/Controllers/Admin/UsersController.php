@@ -124,13 +124,6 @@ class UsersController extends Controller
     public function show(User $user)
     {
         $user_info = DB::table('user_infos')->where('user_id', $user->id)->get();
-        echo "<pre>";
-        if(isset($user_info))
-        {
-            echo "if";
-        }
-        else
-        exit;
         return view('admin.users.show')->with(compact('user','user_info'));
     }
 

@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Customer_amazon_detail;
 use App\Http\Requests\ProfileRequest;
-use App\Http\Requests\AmazoncredentialRequest;
 use App\Package;
 use App\Feature;
 use Illuminate\Support\Facades\Session;
@@ -100,24 +98,5 @@ class MemberController extends Controller
         User_info::where("user_id", "=", $user->id)->update($user_info);
         return redirect('member/profile')->with('success', 'Your Profile Updated Successfully');
     }
-    public function amazoncredential()
-    {
-        $user = \Auth::user();
-        $marketplace = DB::table('amazon_marketplaces')->get();
-        return view('member.amazon_credential')->with(compact('user','marketplace'));
-    }
-   public function addamazoncredential(AmazoncredentialRequest $request)
-    {
-        $user = \Auth::user();
-        $credentail=array(
-            'user_id' =>$user->id,
-            'mws_seller_id'=>$request->input('mws_seller_id'),
-            'mws_market_place_id'=>$request->input('mws_market_place_id'),
-            'mws_authtoken'=>$request->input('mws_authtoken'),
-        );
 
-        $credentail = new Customer_amazon_detail($credentail);
-        $credentail->save();
-        return redirect('member/amazon_credential')->with('success', 'Your Amazon Credential Added Successfully');
-    }
 }

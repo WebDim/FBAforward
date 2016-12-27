@@ -49,6 +49,10 @@
                             </li>
                             <li><a class="external" href="{{ url('member/profile') }}"><i class="fa fa-btn fa-user"></i>&nbsp;Profile</a>
                             </li>
+                            @if('Customer' === \Auth::user()->role->name)
+                            <li><a class="external" href="{{ url('/amazon_credential') }}"><i class="fa fa-cog"></i>&nbsp;Amazon Credential</a>
+                            </li>
+                            @endif
                             @if('Admin' === \Auth::user()->role->name)
                                 <li><a class="external" href="{{ url('admin/dashboard') }}"><i
                                                 class="fa fa-btn fa-user-secret"></i>&nbsp;

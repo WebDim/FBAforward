@@ -14,7 +14,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            {!! Form::open(['url' =>  'member/amazon_credential', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
+            {!! Form::open(['url' =>  'amazon_credential', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -22,7 +22,7 @@
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
-                                {!! Form::text('mws_seller_id', old('mws_seller_id'), ['class' => 'form-control validate[required]', 'placeholder'=>'MWS Seller Id']) !!}
+                                {!! Form::text('mws_seller_id', old('mws_seller_id', !empty($customer_amazon_detail) ? $customer_amazon_detail[0]->mws_seller_id: null), ['class' => 'form-control validate[required]', 'placeholder'=>'MWS Seller Id']) !!}
                             </div>
                         </div>
                     </div>
@@ -31,14 +31,16 @@
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
-                                <select name="mws_market_place_id" class="form-control select2 validate[required]">
+                              <select name="mws_market_place_id" class="form-control select2 validate[required]">
                                     <option value="">Marketplace</option>
                                     @foreach ($marketplace as $marketplace)
-                                        <option value="{{ $marketplace->id }}">  {{ $marketplace->market_place_name }}</option>
+                                        @if(!empty($customer_amazon_detail))
+                                        <option value="{{ $marketplace->id }}" @if($marketplace->id==$customer_amazon_detail[0]->mws_market_place_id) {{ "selected"  }} @endif>  {{ $marketplace->market_place_name }}</option>
+                                        @else
+                                            <option value="{{ $marketplace->id }}">  {{ $marketplace->market_place_name }}</option>
+                                        @endif
                                     @endforeach
                                 </select>
-
-
                             </div>
                         </div>
                     </div>
@@ -47,19 +49,17 @@
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
-                                {!! Form::text('mws_authtoken', old('mws_authtoken'), ['class' => 'form-control validate[required]', 'placeholder'=>'MWS Authtoken']) !!}
+                                {!! Form::text('mws_authtoken', old('mws_authtoken', !empty($customer_amazon_detail) ? $customer_amazon_detail[0]->mws_authtoken: null), ['class' => 'form-control validate[required]', 'placeholder'=>'MWS Authtoken']) !!}
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
-                            {!! Form::submit((!empty($user)?'Update': 'Add'). ' Amazon Credential', ['class'=>'btn btn-primary']) !!}
+                            {!! Form::submit((!empty($customer_amazon_detail)?'Update': 'Add'). ' Amazon Credential', ['class'=>'btn btn-primary']) !!}
                         </div>
                     </div>
                 </div><!-- .col-md-6 -->
             </div><!-- .row -->
-
             {!! Form::close() !!}
         </div>
     </div>
@@ -67,7 +67,6 @@
 
 @section('js')
     {!! Html::script('assets/plugins/validationengine/languages/jquery.validationEngine-en.js') !!}
-
     {!! Html::script('assets/plugins/validationengine/jquery.validationEngine.js') !!}
     <script type="text/javascript">
         $(document).ready(function () {

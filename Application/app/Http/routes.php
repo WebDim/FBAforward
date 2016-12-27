@@ -79,9 +79,10 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/profile', ['as' => 'member.profile', 'uses' => 'MemberController@profile']);
         Route::get('/profile/edit', ['as' => 'member.profile.edit', 'uses' => 'MemberController@editProfile']);
         Route::put('/profile/edit', ['as' => 'member.profile.update', 'uses' => 'MemberController@updateProfile']);
-        Route::get('/amazon_credential', ['as' => 'member.amazon_credential', 'uses' => 'MemberController@amazoncredential']);
-        Route::put('/amazon_credential', ['as' => 'member.amazon_credential', 'uses' => 'MemberController@addamazoncredential']);
+
     });
+    Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);
+    Route::put('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@addamazoncredential']);
     Route::get('sitemap', function(){
         // create new sitemap object
         $sitemap = App::make("sitemap");
