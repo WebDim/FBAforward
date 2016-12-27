@@ -43,6 +43,8 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/blog', 'FrontendController@blog');
     Route::get('/blog/{slug}', 'FrontendController@post');
     Route::post('stripe/webhook', '\Laravel\Cashier\WebhookController@handleWebhook');
+    Route::post('/send', 'EmailController@send');
+    Route::post('/notify', 'EmailController@notify');
 });
 Route::group(['middleware' => 'web'], function () {
     /**

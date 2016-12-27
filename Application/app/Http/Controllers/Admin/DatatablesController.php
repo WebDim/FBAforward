@@ -34,13 +34,13 @@ class DatatablesController extends Controller
                     return '-';
                 }
             })
-            ->editColumn('package_id', function ($user) {
+            /*->editColumn('package_id', function ($user) {
                 if (!is_null($user->package)) {
                     return $user->package->name;
                 } else {
                     return '-';
                 }
-            })
+            })*/
             ->addColumn('avatar', function ($user) {
                 return '<a href="' . url('admin/users/' . $user->id) . '"><img src="' . asset($user->avatar) . '" style="height:50px;" class="img-circle" alt="User Avatar"></a>';
             })

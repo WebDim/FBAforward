@@ -47,7 +47,7 @@
                                             class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         </div><!-- ./col -->
-                        <div class="col-lg-3 col-xs-6">
+                      {{--  <div class="col-lg-3 col-xs-6">
                             <!-- small box -->
                             <div class="small-box bg-green">
                                 <div class="inner">
@@ -116,7 +116,7 @@
                                 <a href="{{ url('admin/pages') }}" class="small-box-footer">More info <i
                                             class="fa fa-arrow-circle-right"></i></a>
                             </div>
-                        </div><!-- ./col -->
+                        </div><!-- ./col --> --}}
                     </div><!-- /.row -->
                 </div><!-- /.box-body -->
                 <div class="box-footer">

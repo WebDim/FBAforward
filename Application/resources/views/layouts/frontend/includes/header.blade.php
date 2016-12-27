@@ -12,13 +12,13 @@
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav navbar-right text-uppercase">
                 <li><a href="{{ url('/#home') }}">Home</a></li>
-                <li><a href="{{ url('/#feature') }}">Features</a></li>
+               <!-- <li><a href="{{ url('/#feature') }}">Features</a></li>
                 <li><a class="{{ Auth::guest() ? '':'external' }}"
-                       href="{{ Auth::guest() ? url('/#pricing') : url('member/pricing') }}"><b>Pricing</b></a></li>
+                       href="{{ Auth::guest() ? url('/#pricing') : url('member/pricing') }}"><b>Pricing</b></a></li> -->
                 <li><a href="{{ url('/#contact') }}">Contact Us</a></li>
-                @foreach(getMenuItems('HEADER') as $item)
+              {{--  @foreach(getMenuItems('HEADER') as $item)
                     <li><a class="external" href="{{ url($item->url) }}"><b>{{ $item->title }}</b></a></li>
-                @endforeach
+                @endforeach --}}
 				@if (Auth::guest())
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">

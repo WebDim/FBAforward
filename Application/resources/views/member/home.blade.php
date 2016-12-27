@@ -10,7 +10,7 @@
             <h2 class="page-head-line">Dashboard</h2>
         </div>
     </div>
-    <div class="row">
+    {{--<div class="row">
         <div class="col-md-12">
             <div class="alert alert-success">
                 Laraship Pro is the first user membership software built on Laravel that provides complete
@@ -243,5 +243,5 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 @endsection

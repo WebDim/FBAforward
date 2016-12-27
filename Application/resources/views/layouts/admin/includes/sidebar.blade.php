@@ -48,7 +48,7 @@
                     </li>
                 </ul>
             </li>
-            <li class="treeview {{ Request::is('admin/package*') || Request::is('admin/feature*') ? 'active': '' }}">
+           <!-- <li class="treeview {{ Request::is('admin/package*') || Request::is('admin/feature*') ? 'active': '' }}">
                 <a href="#">
                     <i class="fa fa-briefcase"></i> <span>Packages</span> <i class="fa fa-angle-left pull-right"></i>
                 </a>
@@ -119,7 +119,7 @@
                         </a>
                     </li>
                 </ul>
-            </li>
+            </li> -->
         </ul>
     </section>
     <!-- /.sidebar -->

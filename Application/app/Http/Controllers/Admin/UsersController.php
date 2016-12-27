@@ -62,7 +62,7 @@ class UsersController extends Controller
 
             $request->file('avatar')->move($destinationPath, $avatar);
 
-            \Image::make(asset('uploads/avatars/' . $avatar))->fit(300, null, null, 'top-left')->save('uploads/avatars/' . $avatar);
+            //\Image::make(asset('uploads/avatars/' . $avatar))->fit(300, null, null, 'top-left')->save('uploads/avatars/' . $avatar);
         }
         $account['avatar'] = $avatar;
         $account['name'] = $request->input('name');
@@ -158,7 +158,7 @@ class UsersController extends Controller
             }
             $avatar = hash('sha256', mt_rand()) . '.' . $request->file('avatar')->getClientOriginalExtension();
             $request->file('avatar')->move($destinationPath, $avatar);
-            \Image::make(asset('uploads/avatars/' . $avatar))->fit(300, null, null, 'top-left')->save('uploads/avatars/' . $avatar);
+            //\Image::make(asset('uploads/avatars/' . $avatar))->fit(300, null, null, 'top-left')->save('uploads/avatars/' . $avatar);
             $user->avatar = $avatar;
         }
         $user->name = $request->input('name');

@@ -52,6 +52,9 @@ class MemberController extends Controller
     public function profile()
     {
         $user = \Auth::user();
+        if (\Auth::user()->role->name == 'Admin') {
+            return redirect('admin/users/'.$user->id);
+        }
         $user_info = DB::table('user_infos')->where('user_id', $user->id)->get();
 
         return view('member.profile')->with(compact('user','user_info'));
