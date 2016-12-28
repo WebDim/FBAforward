@@ -33,6 +33,7 @@ Route::model('packages', Package::class);
 Route::model('features', Feature::class);
 Route::model('pages', Page::class);
 Route::model('menus', Menu::class);
+
 Route::group(['middleware' => ['web']], function () {
     Route::get('/page/{slug}', 'FrontendController@staticPages');
     Route::get('/', 'FrontendController@index');
@@ -44,7 +45,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/blog/{slug}', 'FrontendController@post');
     Route::post('stripe/webhook', '\Laravel\Cashier\WebhookController@handleWebhook');
     Route::post('/send', 'EmailController@send');
+    Route::get('/notify', 'EmailController@getnotify');
     Route::post('/notify', 'EmailController@notify');
+
 });
 Route::group(['middleware' => 'web'], function () {
     /**

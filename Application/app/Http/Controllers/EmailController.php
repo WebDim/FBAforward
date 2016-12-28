@@ -32,6 +32,10 @@ class EmailController extends Controller
 
         return response()->json(['message' => 'Request completed']);
     }
+    public function getnotify()
+    {
+        return view('example');
+    }
     public function notify(Request $request){
 
         //List ID from .env
@@ -40,11 +44,11 @@ class EmailController extends Controller
         //Mailchimp instantiation with Key
         $mailchimp = new \Mailchimp(env('MAILCHIMP_KEY'));
 
-        //Create a Campaign $mailchimp->campaigns->create($type, $options, $content)
+        //Create a Campaign  $mailchimp->campaigns->create($type, $options, $content)
         $campaign = $mailchimp->campaigns->create('regular', [
             'list_id' => $listId,
             'subject' => 'New Article from Scotch',
-            'from_email' => 'parmarriddhi21@yahoo.com',
+            'from_email' => 'webdimensionsindia@gmail.com',
             'from_name' => 'test',
             'to_name' => 'test'
 

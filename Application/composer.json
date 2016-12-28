@@ -15,7 +15,9 @@
     "laravel/cashier": "~6.0",
 	"roumen/sitemap": "^2.6",  
     "intervention/image": "2.3.*",
-    "aws/aws-sdk-php": "~3.0"
+    "aws/aws-sdk-php": "~3.0",
+    "mandrill/mandrill": "dev-master",
+    "mailchimp/mailchimp": "^2.0"
   },
   "require-dev": {
     "fzaninotto/faker": "~1.4",

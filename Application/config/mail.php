@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'driver' => env('MAIL_DRIVER'),
+    'driver' => env('MAIL_DRIVER', 'log'),
 
     /*
     |--------------------------------------------------------------------------
@@ -108,5 +108,6 @@ return [
     */
 
     'sendmail' => '/usr/sbin/sendmail -bs',
+    'pretend'=> false,
 
 ];

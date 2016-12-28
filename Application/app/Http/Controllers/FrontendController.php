@@ -9,6 +9,7 @@ use App\Page;
 use App\Package;
 use App\Feature;
 
+
 class FrontendController extends Controller
 {
     public function index()
@@ -40,10 +41,9 @@ class FrontendController extends Controller
         $email = $request->input('email');
         $subject = $request->input('subject');
         $form_message = $request->input('message');
-
         $to_email = \Config::get('app.contact_email');
 
-        \Mail::send('emails.contact',
+        /*\Mail::send('emails.contact',
             [
                 'name' => $name,
                 'email' => $email,
@@ -55,7 +55,27 @@ class FrontendController extends Controller
             }
         );
 
-        return redirect('/login')->with(['success' => 'Thanks for contacting us!']);
+        return redirect('/login')->with(['success' => 'Thanks for contacting us!']);*/
+        $objMail = \Mail::send('emails.contact', ['name' => $name, 'email' => $email, 'subject' => $subject, 'form_message' => $form_message], function ($form_message)
+        {
+
+            $form_message->from('webdimensionsindia@gmail.com', 'testing');
+
+            $form_message->to('megha.n.jogi@gmail.com', getSetting('SITE_TITLE') . ' Support')->subject('Contact Form Message');
+
+        });
+            if(count(\Mail::failures()) >0)
+            {
+
+                return redirect('/login')->with(['error' => 'Mail could not send']);
+            }
+            else
+            {
+                return redirect('/login')->with(['success' => 'Thanks for contacting us!']);
+            }
+
+
+
     }
 
     public function blog()
