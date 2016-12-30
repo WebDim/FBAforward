@@ -17,7 +17,8 @@
     "intervention/image": "2.3.*",
     "aws/aws-sdk-php": "~3.0",
     "mandrill/mandrill": "dev-master",
-    "mailchimp/mailchimp": "^2.0"
+    "mailchimp/mailchimp": "^2.0",
+    "consolibyte/quickbooks": "^3.2"
   },
   "require-dev": {
     "fzaninotto/faker": "~1.4",

@@ -45,6 +45,7 @@ class EmailController extends Controller
         $mailchimp = new \Mailchimp(env('MAILCHIMP_KEY'));
 
         //Create a Campaign  $mailchimp->campaigns->create($type, $options, $content)
+
         $campaign = $mailchimp->campaigns->create('regular', [
             'list_id' => $listId,
             'subject' => 'New Article from Scotch',

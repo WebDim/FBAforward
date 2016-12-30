@@ -13,13 +13,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
-            <div>
-                <h3>Address</h3>
-                {!!  getSetting('ADDRESS') !!}
-            </div>
-            <div id="googleMap" style="width:100%;height:380px;"></div>
-        </div>
+
         <div class="col-md-6">
             <div class="Compose-Message">
                 <div class="panel panel-success">

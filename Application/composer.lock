@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3682e12f237f234f313c3a9c3b534274",
-    "content-hash": "cbd9bd5009b11cd92cb2ea0278f7060e",
+    "hash": "93350f4960e04c4605a9736fe2b0f7f2",
+    "content-hash": "13cea58b41cbc721dab1d58f4f573b78",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -140,6 +140,57 @@
                 "preload"
             ],
             "time": "2016-09-16 12:50:15"
+        },
+        {
+            "name": "consolibyte/quickbooks",
+            "version": "v3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/consolibyte/quickbooks-php.git",
+                "reference": "06041bdae92480aa202ea3d4350f12778db19281"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/consolibyte/quickbooks-php/zipball/06041bdae92480aa202ea3d4350f12778db19281",
+                "reference": "06041bdae92480aa202ea3d4350f12778db19281",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "QuickBooks.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "EPL-1.0"
+            ],
+            "authors": [
+                {
+                    "name": "Keith Palmer",
+                    "email": "support@consolibyte.com",
+                    "homepage": "http://www.consolibyte.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "QuickBooks DevKit with support for Intuit Anywhere, Intuit Partner Platform, Web Connector, QuickBooks Merchant Services, and more.",
+            "homepage": "http://www.consolibyte.com/",
+            "keywords": [
+                "intuit",
+                "intuit anywhere",
+                "intuit data services",
+                "intuit merchant services",
+                "intuit partner platform",
+                "qbxml",
+                "quickbooks",
+                "quickbooks merchant services",
+                "quickbooks web connector",
+                "web connector"
+            ],
+            "time": "2016-12-14 18:33:20"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",

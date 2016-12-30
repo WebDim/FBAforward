@@ -47,6 +47,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('/send', 'EmailController@send');
     Route::get('/notify', 'EmailController@getnotify');
     Route::post('/notify', 'EmailController@notify');
+    Route::get('qbo/oauth','QuickBookController@qboOauth');
+    Route::get('qbo/success','QuickBookController@qboSuccess');
+    Route::get('qbo/disconnect','QuickBookController@qboDisconnect');
 
 });
 Route::group(['middleware' => 'web'], function () {
