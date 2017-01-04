@@ -42,7 +42,12 @@ class FrontendController extends Controller
         $subject = $request->input('subject');
         $form_message = $request->input('message');
         $to_email = \Config::get('app.contact_email');
-
+        $data = array("name"=>$name,
+                        "email"=>$email,
+                        "subject"=>$subject,
+                        "form_message"=>$form_message,
+                        "to_email"=>$to_email
+            );
         /*\Mail::send('emails.contact',
             [
                 'name' => $name,
@@ -51,31 +56,32 @@ class FrontendController extends Controller
                 'form_message' => $form_message
             ],
             function ($message) use ($to_email) {
-                $message->to($to_email, getSetting('SITE_TITLE') . ' Support')->subject('Contact Form Message');
+                $message->from('webdimensionsindia@gmail.com', 'Laravel');
+                $message->to('parmarriddhi21@yahoo.com', getSetting('SITE_TITLE') . ' Support')->subject('Contact Form Message');
             }
         );
+        if( count(\Mail::failures()) > 0 ) {
 
+            echo "There was one or more failures. They were: <br />";
+
+            print_r(\Mail::failures());
+
+        }
         return redirect('/login')->with(['success' => 'Thanks for contacting us!']);*/
-        $objMail = \Mail::send('emails.contact', ['name' => $name, 'email' => $email, 'subject' => $subject, 'form_message' => $form_message], function ($form_message)
+
+         \Mail::send('emails.contact',$data, function ($message) use ($data)
         {
-
-            $form_message->from('webdimensionsindia@gmail.com', 'testing');
-
-            $form_message->to('megha.n.jogi@gmail.com', getSetting('SITE_TITLE') . ' Support')->subject('Contact Form Message');
-
+              $message->to('nayan.jogi@gmail.com', $data['name'])
+                  ->from('webdimensionsindia@gmail.com')
+                  ->subject('Contact Form Message');
         });
-            if(count(\Mail::failures()) >0)
-            {
 
+            if(count(\Mail::failures()) > 0)
+            {
                 return redirect('/login')->with(['error' => 'Mail could not send']);
             }
-            else
-            {
-                return redirect('/login')->with(['success' => 'Thanks for contacting us!']);
-            }
 
-
-
+            return redirect('/login')->with(['success' => 'Thanks for contacting us!']);
     }
 
     public function blog()

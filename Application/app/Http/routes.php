@@ -44,7 +44,6 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/blog', 'FrontendController@blog');
     Route::get('/blog/{slug}', 'FrontendController@post');
     Route::post('stripe/webhook', '\Laravel\Cashier\WebhookController@handleWebhook');
-    Route::post('/send', 'EmailController@send');
     Route::get('/notify', 'EmailController@getnotify');
     Route::post('/notify', 'EmailController@notify');
     Route::get('qbo/oauth','QuickBookController@qboOauth');
@@ -91,6 +90,7 @@ Route::group(['middleware' => 'web'], function () {
     });
     Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);
     Route::put('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@addamazoncredential']);
+    Route::get('/amazon_inventory', ['as' => 'amazon_inventory', 'uses' => 'AmazoninventoryController@index']);
     Route::get('sitemap', function(){
         // create new sitemap object
         $sitemap = App::make("sitemap");

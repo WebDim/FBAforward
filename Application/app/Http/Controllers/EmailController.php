@@ -15,24 +15,9 @@ class EmailController extends Controller
     }
     public function index()
     {
+
     }
-    public function  send(Request $request)
-    {
-        $title = $request->input('title');
-        $content = $request->input('content');
-
-        Mail::send('emails.send', ['title' => $title, 'content' => $content], function ($message)
-        {
-
-            $message->from('megha.n.jogi@gmail.com', 'testing');
-
-            $message->to('parmarriddhi21@yahoo.com');
-
-        });
-
-        return response()->json(['message' => 'Request completed']);
-    }
-    public function getnotify()
+     public function getnotify()
     {
         return view('example');
     }
@@ -61,6 +46,7 @@ class EmailController extends Controller
         //Send campaign
         $mailchimp->campaigns->send($campaign['id']);
 
-        return response()->json(['status' => 'Success']);
+        //return response()->json(['status' => 'Success']);
+        return redirect('/notify')->with('success', 'Your Mail Send Successfully');
     }
 }
