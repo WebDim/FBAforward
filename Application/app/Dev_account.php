@@ -5,9 +5,8 @@ namespace App;
 use App\BaseModel;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
-class Amazon_marketplace extends Eloquent
+class Dev_account extends Eloquent
 {
-
 
     /**
      * The attributes that aren't mass assignable.
@@ -21,17 +20,9 @@ class Amazon_marketplace extends Eloquent
      *
      * @var array
      */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
 
-    public function customer_amazon_detail()
+     public function amazon_marketplace()
     {
-        return $this->hasOne(Customer_amazon_detail::class);
+        return $this->belongsTo(Amazon_marketplace::class);
     }
-    public function dev_account()
-    {
-        return $this->hasOne(Dev_account::class);
-    }
-
 }

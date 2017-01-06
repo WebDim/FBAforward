@@ -49,6 +49,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('qbo/oauth','QuickBookController@qboOauth');
     Route::get('qbo/success','QuickBookController@qboSuccess');
     Route::get('qbo/disconnect','QuickBookController@qboDisconnect');
+    Route::get('/amazon_inventory', ['as' => 'amazon_inventory', 'uses' => 'AmazoninventoryController@index']);
 
 });
 Route::group(['middleware' => 'web'], function () {
@@ -86,11 +87,12 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/profile', ['as' => 'member.profile', 'uses' => 'MemberController@profile']);
         Route::get('/profile/edit', ['as' => 'member.profile.edit', 'uses' => 'MemberController@editProfile']);
         Route::put('/profile/edit', ['as' => 'member.profile.update', 'uses' => 'MemberController@updateProfile']);
-
+        Route::get('/amazoninventorylist', ['as' => 'member.amazoninventorylist', 'uses' => 'MemberController@amazoninventorylist']);
     });
     Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);
     Route::put('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@addamazoncredential']);
-    Route::get('/amazon_inventory', ['as' => 'amazon_inventory', 'uses' => 'AmazoninventoryController@index']);
+
+
     Route::get('sitemap', function(){
         // create new sitemap object
         $sitemap = App::make("sitemap");

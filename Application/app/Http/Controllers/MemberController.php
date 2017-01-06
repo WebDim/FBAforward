@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileRequest;
 use App\Package;
 use App\Feature;
+use App\Amazon_inventory;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use App\User_info;
@@ -100,6 +101,12 @@ class MemberController extends Controller
         );
         User_info::where("user_id", "=", $user->id)->update($user_info);
         return redirect('member/profile')->with('success', 'Your Profile Updated Successfully');
+    }
+    public function amazoninventorylist()
+    {
+        $user = \Auth::user();
+        $inventory_list = Amazon_inventory::where('user_id', $user->id)->get();
+        return view('member.amazon_inventory_list')->with(compact('user', 'inventory_list'));
     }
 
 }

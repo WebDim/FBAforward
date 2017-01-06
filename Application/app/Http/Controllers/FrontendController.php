@@ -48,32 +48,10 @@ class FrontendController extends Controller
                         "form_message"=>$form_message,
                         "to_email"=>$to_email
             );
-        /*\Mail::send('emails.contact',
-            [
-                'name' => $name,
-                'email' => $email,
-                'subject' => $subject,
-                'form_message' => $form_message
-            ],
-            function ($message) use ($to_email) {
-                $message->from('webdimensionsindia@gmail.com', 'Laravel');
-                $message->to('parmarriddhi21@yahoo.com', getSetting('SITE_TITLE') . ' Support')->subject('Contact Form Message');
-            }
-        );
-        if( count(\Mail::failures()) > 0 ) {
-
-            echo "There was one or more failures. They were: <br />";
-
-            print_r(\Mail::failures());
-
-        }
-        return redirect('/login')->with(['success' => 'Thanks for contacting us!']);*/
-
-         \Mail::send('emails.contact',$data, function ($message) use ($data)
+        \Mail::send('emails.contact',$data, function ($message) use ($data)
         {
-              $message->to('nayan.jogi@gmail.com', $data['name'])
-                  ->from('webdimensionsindia@gmail.com')
-                  ->subject('Contact Form Message');
+              $message->to(\Config::get('app.contact_email'), $data['name'])
+                      ->subject('Contact Form Message');
         });
 
             if(count(\Mail::failures()) > 0)
