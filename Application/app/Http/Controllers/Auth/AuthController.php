@@ -8,6 +8,8 @@ use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use App\Role;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller {
     /*
@@ -80,6 +82,21 @@ use AuthenticatesAndRegistersUsers,
      * @param  array  $data
      * @return User
      */
+    public function getRegister()
+    {
+        return $this->showRegistrationForm();
+    }
+    public function showRegistrationForm()
+    {
+        $roles = DB::table('roles')->whereNotIn('id', [1, 2])->get();
+        $country = \Config::get('constant.country_name');
+        if (property_exists($this, 'registerView')) {
+
+            return view($this->registerView)->with(compact('roles','country'));
+        }
+
+        return view('auth.register')->with(compact('roles','country'));
+    }
     protected function create(array $data) {
 
         $user = User::create([
