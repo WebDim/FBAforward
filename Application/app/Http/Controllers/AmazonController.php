@@ -21,7 +21,7 @@ class AmazonController extends Controller
     {
         $user = \Auth::user();
         $marketplace = DB::table('amazon_marketplaces')->get();
-        $customer_amazon_detail = DB::table('Customer_amazon_details')->where('user_id','=',$user->id)->get();
+        $customer_amazon_detail = DB::table('customer_amazon_details')->where('user_id','=',$user->id)->get();
             if(empty($customer_amazon_detail))
             {
                 $customer_amazon_detail = Customer_amazon_detail::create([
@@ -30,7 +30,7 @@ class AmazonController extends Controller
                     'mws_market_place_id'=>'1',
                     'mws_authtoken'=>'',
                 ]);
-                $customer_amazon_detail = DB::table('Customer_amazon_details')->where('user_id','=',$user->id)->get();
+                $customer_amazon_detail = DB::table('customer_amazon_details')->where('user_id','=',$user->id)->get();
             }
         return view('amazon.amazon_credential')->with(compact('user','marketplace','customer_amazon_detail'));
     }
