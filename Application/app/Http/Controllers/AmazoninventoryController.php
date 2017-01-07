@@ -87,7 +87,7 @@ class AmazoninventoryController extends Controller
     protected function getReportsClient()
     {
         list($access_key, $secret_key, $config) = $this->getKeys();
-        return new  FBAInventoryServiceMWS_Client(
+        return new  \FBAInventoryServiceMWS_Client(
             $access_key,
             $secret_key,
             $config,
