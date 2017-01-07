@@ -57,9 +57,7 @@ class UsersController extends Controller
         $avatar = 'avatar.png';
         if ($request->hasFile('avatar')) {
             $destinationPath = public_path() . '/uploads/avatars';
-
             $avatar = hash('sha256', mt_rand()) . '.' . $request->file('avatar')->getClientOriginalExtension();
-
             $request->file('avatar')->move($destinationPath, $avatar);
 
             //\Image::make(asset('uploads/avatars/' . $avatar))->fit(300, null, null, 'top-left')->save('uploads/avatars/' . $avatar);
@@ -213,9 +211,24 @@ class UsersController extends Controller
             'company_phone' => $request->input('company_phone'),
             'company_address' => $request->input('company_address'),
             'company_address2' => $request->input('company_address2'),
+            'company_city' => $request->input('company_city'),
+            'company_state' => $request->input('company_state'),
+            'company_zipcode' => $request->input('company_zipcode'),
+            'company_country' => $request->input('company_country'),
+            'tax_id_number' => $request->input('tax_id_number'),
             'primary_bussiness_type' => $request->input('business_type'),
+            'estimate_annual_amazon_revenue' => $request->input('annual_amazon_revenue'),
+            'estimate_annual_fba_order' => $request->input('annual_fba_order'),
+            'reference_from' => $request->input('reference_from'),
             'contact_fname' => $request->input('contact_fname'),
             'contact_lname' => $request->input('contact_lname'),
+            'contact_email' => $request->input('contact_email'),
+            'contact_phone' => $request->input('contact_phone'),
+            'secondary_contact_phone' => $request->input('secondary_contact_phone'),
+            'secondary_contact_email' => $request->input('secondary_contact_email'),
+            'account_payable' => $request->input('account_payable'),
+            'account_email' => $request->input('account_email'),
+            'account_phone' => $request->input('account_phone')
         );
         User_info::where("user_id", "=", $user->id)->update($user_info);
         /*$package_message = $valid_package ? '' : ' Please Note you can\'t add package without Stripe Subscription';*/

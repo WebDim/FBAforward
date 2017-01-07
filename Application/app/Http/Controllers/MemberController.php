@@ -16,7 +16,7 @@ class MemberController extends Controller
      */
     public function __construct()
     {
-		if(!\Auth::guest())
+		/*if(!\Auth::guest())
 		{
 			if (\Auth::user()->package_id != getSetting('DEFAULT_PACKAGE_ID') && \Auth::user()->package_id != 0 && !\Auth::user()->subscribed('MEMBERSHIP')) {
 				Session::put('warning', 'Your Subscription not valid!');
@@ -24,7 +24,8 @@ class MemberController extends Controller
 			{
 				Session::forget('warning');
 			}
-		}
+		}*/
+
         $this->middleware('auth');
     }
 
@@ -41,14 +42,14 @@ class MemberController extends Controller
         return view('member.home');
     }
 
-    public function pricing()
+   /* public function pricing()
     {
         $packages = Package::active()->get();
 
         $features = Feature::active()->get();
 
         return view('member.pricing')->with(compact('packages', 'features'));
-    }
+    }*/
 
     public function profile()
     {
@@ -86,7 +87,7 @@ class MemberController extends Controller
             }
             $avatar = hash('sha256', mt_rand()) . '.' . $request->file('avatar')->getClientOriginalExtension();
             $request->file('avatar')->move($destinationPath, $avatar);
-            \Image::make(asset('uploads/avatars/' . $avatar))->fit(300, null, null, 'top-left')->save('uploads/avatars/' . $avatar);
+            //\Image::make(asset('uploads/avatars/' . $avatar))->fit(300, null, null, 'top-left')->save('uploads/avatars/' . $avatar);
             $user->avatar = $avatar;
         }
         $user->save();
