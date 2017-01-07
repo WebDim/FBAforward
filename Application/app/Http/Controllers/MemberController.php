@@ -110,4 +110,5 @@ class MemberController extends Controller
         return view('member.amazon_inventory_list')->with(compact('user', 'inventory_list'));
     }
 
+
 }
