@@ -43,34 +43,35 @@ class AmazoninventoryController extends Controller
         $request->setSellerId($account->mws_seller_id);
         $request->setQueryStartDateTime($this->from_date_time);
         $request->setMWSAuthToken($account->mws_authtoken);
-        $arr_response=$this->invokeListInventorySupply($service, $request);
-        foreach ($arr_response as $new_response)
-        {
-            foreach ($new_response->InventorySupplyList as $inventory_supply)
-            {
-                foreach ($inventory_supply as $item)
-                {
-                    $data= array("user_id"=>$account->user_id,
-                                "condition"=>$item->Condition,
-                                "total_Supply_quantity"=>$item->TotalSupplyQuantity,
-                                "FNSKU"=>$item->FNSKU,
-                                "instock_supply_quantity"=>$item->InStockSupplyQuantity,
-                                "ASIN"=>$item->ASIN,
-                                "sellerSKU"=>$item->SellerSKU
-                    );
-                    $get_inventory = Amazon_inventory::where('user_id',$account->user_id)->where('FNSKU',$item->FNSKU)->where('ASIN',$item->ASIN)->where('sellerSKU',$item->SellerSKU)->get();
-                    if(count($get_inventory) > 0)
-                    {
-                       Amazon_inventory::where('id', '=', $get_inventory[0]->id)->update($data);
-                       echo "Data updated";
-                    }
-                    else {
-                        $inventory = new Amazon_inventory($data);
-                        $inventory->save();
-                        echo "Data inserted";
+        if($request->SellerId != '') {
+            $arr_response = $this->invokeListInventorySupply($service, $request);
+            foreach ($arr_response as $new_response) {
+                foreach ($new_response->InventorySupplyList as $inventory_supply) {
+                    foreach ($inventory_supply as $item) {
+                        $data = array("user_id" => $account->user_id,
+                            "condition" => $item->Condition,
+                            "total_Supply_quantity" => $item->TotalSupplyQuantity,
+                            "FNSKU" => $item->FNSKU,
+                            "instock_supply_quantity" => $item->InStockSupplyQuantity,
+                            "ASIN" => $item->ASIN,
+                            "sellerSKU" => $item->SellerSKU
+                        );
+                        $get_inventory = Amazon_inventory::where('user_id', $account->user_id)->where('FNSKU', $item->FNSKU)->where('ASIN', $item->ASIN)->where('sellerSKU', $item->SellerSKU)->get();
+                        if (count($get_inventory) > 0) {
+                            Amazon_inventory::where('id', '=', $get_inventory[0]->id)->update($data);
+                            echo "Data updated";
+                        } else {
+                            $inventory = new Amazon_inventory($data);
+                            $inventory->save();
+                            echo "Data inserted";
+                        }
                     }
                 }
             }
+        }
+        else
+        {
+            echo "Wrong Sellerid Passed";
         }
      }
     private function getKeys($uri = '')
@@ -112,16 +113,19 @@ class AmazoninventoryController extends Controller
     {
         try {
 
-            $response = $service->ListInventorySupply($request);
-            //echo ("Service Response\n");
-            //echo ("=============================================================================\n");
-            $dom = new \DOMDocument();
-            $dom->loadXML($response->toXML());
-            $dom->preserveWhiteSpace = false;
-            $dom->formatOutput = true;
-            $dom->saveXML();
-            //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
-            return $arr_response = new \SimpleXMLElement($dom->saveXML());
+               $response = $service->ListInventorySupply($request);
+               //echo ("Service Response\n");
+               //echo ("=============================================================================\n");
+               $dom = new \DOMDocument();
+               $dom->loadXML($response->toXML());
+               $dom->preserveWhiteSpace = false;
+               $dom->formatOutput = true;
+               $dom->saveXML();
+               //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
+               $arr_response = new \SimpleXMLElement($dom->saveXML());
+
+               return $arr_response = new \SimpleXMLElement($dom->saveXML());
+
 
         } catch (\FBAInventoryServiceMWS_Exception $ex) {
             echo("Caught Exception: " . $ex->getMessage() . "\n");
