@@ -52,6 +52,8 @@
                             @if('Customer' === \Auth::user()->role->name)
                             <li><a class="external" href="{{ url('/amazon_credential') }}"><i class="fa fa-cog"></i>&nbsp;Amazon Credential</a>
                             </li>
+                            <li><a class="external" href="{{ url('member/amazoninventorylist') }}"><i class="fa fa-list"></i>&nbsp;Amazon Inentory List</a>
+                            </li>
                             @endif
                             @if('Admin' === \Auth::user()->role->name)
                                 <li><a class="external" href="{{ url('admin/dashboard') }}"><i
