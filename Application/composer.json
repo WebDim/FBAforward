@@ -18,7 +18,8 @@
     "aws/aws-sdk-php": "~3.0",
     "mandrill/mandrill": "dev-master",
     "mailchimp/mailchimp": "^2.0",
-    "consolibyte/quickbooks": "^3.2"
+    "consolibyte/quickbooks": "^3.2",
+    "paypal/rest-api-sdk-php": "*"
   },
   "require-dev": {
     "fzaninotto/faker": "~1.4",

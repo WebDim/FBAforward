@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreditcardRequest;
 use App\Http\Requests\ProfileRequest;
+use App\Http\Requests\Request;
 use App\Package;
 use App\Feature;
 use App\Amazon_inventory;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use App\User_info;
+use PayPal\Api\CreditCard;
+use App\User_credit_cardinfo;
 class MemberController extends Controller
 {
     /**
@@ -16,6 +20,7 @@ class MemberController extends Controller
      */
     public function __construct()
     {
+
 		/*if(!\Auth::guest())
 		{
 			if (\Auth::user()->package_id != getSetting('DEFAULT_PACKAGE_ID') && \Auth::user()->package_id != 0 && !\Auth::user()->subscribed('MEMBERSHIP')) {
@@ -144,6 +149,55 @@ class MemberController extends Controller
         }
         $inventory_list = Amazon_inventory::where('user_id', $user->id)->get();
         return view('member.amazon_inventory_list')->with(compact('user', 'inventory_list'));
+    }
+    public function creditcarddetail()
+    {
+        $card_type= array('visa'=>'visa',
+                        'mastercard'=>'mastercard',
+                        'amex'=>'amex',
+                        'discover'=>'discover',
+                        'maestro'=>'maestro'
+                        );
+        return view('member.creditcard_detail')->with(compact('card_type'));
+    }
+    public function addcreditcarddetail(CreditcardRequest $request)
+    {
+       $user = \Auth::user();
+       $apiContext = new \PayPal\Rest\ApiContext(
+            new \PayPal\Auth\OAuthTokenCredential(
+                'ATZYtBR5Q78IyeyfBqznRDn-u5cOmbQ4I-F7SliUlBZnLuvJC2CG78casVBs39nzcowPQxh7UQIh9wxk',
+                'EB-7iN9A54Z5f70wUQ6Guau1Wj_Kx94EuhFQveM1qlDRcAG6LmYe-MmDsH53phtBRxVhXyc4U_aOX2bz'
+            )
+        );
+
+        $date = explode(' ',$request->input('expire_card'));
+        $card = new CreditCard();
+        $card->setType($request->input('credit_card_type'))
+            ->setNumber($request->input('credit_card_number'))
+            ->setExpireMonth($date[0])
+            ->setExpireYear($date[1])
+            ->setCvv2($request->input('cvv'))
+            ->setFirstName($request->input('first_name'))
+            ->setLastName($request->input('last_name'));
+
+        try {
+            $card->create($apiContext);
+        }
+        catch (\PayPal\Exception\PayPalConnectionException $ex) {
+            echo $ex->getCode();
+            echo $ex->getData();
+            die($ex);
+        }
+        catch (Exception $ex) {
+            die($ex);
+        }
+        $card_detail=array('user_id'=>$user->id,
+                            'credit_card_type'=>$card->type,
+                            'credit_card_number'=>$card->number,
+                            'credit_card_id' =>$card->id
+        );
+         User_credit_cardinfo::create($card_detail);
+        return redirect('creditcard_detail')->with('success', 'Your credit card infomation successfully store on paypal vault');
     }
 
 

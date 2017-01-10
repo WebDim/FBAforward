@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "93350f4960e04c4605a9736fe2b0f7f2",
-    "content-hash": "13cea58b41cbc721dab1d58f4f573b78",
+    "hash": "6f46dcc78bacb8e9ea06a22df64679f5",
+    "content-hash": "d6eadc29cc8963e6bd9709ee995714b7",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1599,6 +1599,55 @@
                 "random"
             ],
             "time": "2016-03-18 20:34:03"
+        },
+        {
+            "name": "paypal/rest-api-sdk-php",
+            "version": "1.11.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paypal/PayPal-PHP-SDK.git",
+                "reference": "7e664f12be32b975575371e8ad3bc17b6b318851"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paypal/PayPal-PHP-SDK/zipball/7e664f12be32b975575371e8ad3bc17b6b318851",
+                "reference": "7e664f12be32b975575371e8ad3bc17b6b318851",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=5.3.0",
+                "psr/log": "^1.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PayPal": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "PayPal",
+                    "homepage": "https://github.com/paypal/rest-api-sdk-php/contributors"
+                }
+            ],
+            "description": "PayPal's PHP SDK for REST APIs",
+            "homepage": "http://paypal.github.io/PayPal-PHP-SDK/",
+            "keywords": [
+                "payments",
+                "paypal",
+                "rest",
+                "sdk"
+            ],
+            "time": "2016-12-14 21:59:21"
         },
         {
             "name": "phenx/php-font-lib",

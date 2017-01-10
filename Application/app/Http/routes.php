@@ -89,12 +89,13 @@ Route::group(['middleware' => 'web'], function () {
         Route::put('/profile/edit', ['as' => 'member.profile.update', 'uses' => 'MemberController@updateProfile']);
         Route::get('/amazoninventorylist', ['as' => 'member.amazoninventorylist', 'uses' => 'MemberController@amazoninventorylist']);
 
+
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);
         Route::put('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@addamazoncredential']);
-
-
+        Route::get('/creditcard_detail', ['as' => 'creditcard_detail', 'uses' => 'MemberController@creditcarddetail']);
+        Route::put('/creditcard_detail', ['as' => 'creditcard_detail', 'uses' => 'MemberController@addcreditcarddetail']);
     Route::get('sitemap', function(){
         // create new sitemap object
         $sitemap = App::make("sitemap");
