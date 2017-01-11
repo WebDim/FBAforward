@@ -63,7 +63,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-star"></i></span>
-                                    {!! Form::text('address2', old('address2', isset($address) ? $address->address_2: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Address2']) !!}
+                                    {!! Form::text('address2', old('address2', isset($address) ? $address->address_2: null), ['class' => 'form-control', 'placeholder'=>'Address2']) !!}
                                 </div>
                             </div>
                         </div>

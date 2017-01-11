@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Addresses;
 use App\Feature;
 use App\Http\Controllers\Controller;
 use App\Menu;
@@ -226,6 +227,38 @@ class DatatablesController extends Controller
                 if (\Auth::user()->role->name == 'Admin') {
                     $editBtn = '<a style="margin-right: 0.1em;" href="' . url('admin/listingservices/' . $method->listing_service_id . '/edit') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
                     $deleteBtn = '&nbsp;<a href="' . url('admin/listingservices/' . $method->listing_service_id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
+                }
+                $buttons = '' . $editBtn . $deleteBtn;
+                return $buttons;
+            })->make(true);
+    }
+    public function getAddresses()
+    {
+        $methods = Addresses::all();
+        return Datatables::of($methods)
+            ->editColumn('type', '{{ $type }}')
+            ->editColumn('address_1', function ($method) {
+                return $method->address_1;
+            })
+            ->editColumn('address_2', function ($method) {
+                return $method->address_2;
+            })
+            ->editColumn('city', function ($method) {
+                return $method->city;
+            })
+            ->editColumn('state', function ($method) {
+                return $method->state;
+            })
+            ->editColumn('postal_code', function ($method) {
+                return $method->postal_code;
+            })
+            ->editColumn('country', function ($method) {
+                return $method->country;
+            })
+            ->addColumn('actions', function ($method) {
+                if (\Auth::user()->role->name == 'Admin') {
+                    $editBtn = '<a style="margin-right: 0.1em;" href="' . url('admin/addresses/' . $method->address_id . '/edit') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
+                    $deleteBtn = '&nbsp;<a href="' . url('admin/addresses/' . $method->address_id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
                 }
                 $buttons = '' . $editBtn . $deleteBtn;
                 return $buttons;

@@ -12,6 +12,11 @@
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav navbar-right text-uppercase">
                 <li><a href="{{ url('/#home') }}">Home</a></li>
+                @if (!Auth::guest())
+            @if('Customer' === \Auth::user()->role->name)
+                    <li><a href="{{ url('/creditcard_detail') }}">Paypal Vault</a></li>
+                @endif
+                @endif
                <!-- <li><a href="{{ url('/#feature') }}">Features</a></li>
                 <li><a class="{{ Auth::guest() ? '':'external' }}"
                        href="{{ Auth::guest() ? url('/#pricing') : url('member/pricing') }}"><b>Pricing</b></a></li> -->

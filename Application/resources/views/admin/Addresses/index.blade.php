@@ -82,7 +82,7 @@
             var table = $("#data_table").DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{!! url("admin/datatables/suppliers") !!}',
+                ajax: '{!! url("admin/datatables/addresses") !!}',
                 columns: [
                     {data: 'type', name: 'type'},
                     {data: 'address_1', name: 'address_1'},
