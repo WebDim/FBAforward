@@ -105,8 +105,13 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/profile/edit', ['as' => 'member.profile.edit', 'uses' => 'MemberController@editProfile']);
         Route::put('/profile/edit', ['as' => 'member.profile.update', 'uses' => 'MemberController@updateProfile']);
         Route::get('/amazoninventorylist', ['as' => 'member.amazoninventorylist', 'uses' => 'MemberController@amazoninventorylist']);
+    });
 
-
+    /**
+     * Orders routes
+     */
+    Route::group(['prefix' => 'order'], function () {
+        Route::get('/shipment', 'OrderController@shipment');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);

@@ -197,7 +197,7 @@ class MemberController extends Controller
                             'credit_card_id' =>$card->id
         );
          User_credit_cardinfo::create($card_detail);
-        return redirect('creditcard_detail')->with('success', 'Your credit card infomation successfully store on paypal vault');
+        return redirect('creditcard_detail')->with('success', 'Your credit card information successfully store on paypal vault');
     }
 
 
