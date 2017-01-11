@@ -49,10 +49,13 @@
                             </li>
                             <li><a class="external" href="{{ url('member/profile') }}"><i class="fa fa-btn fa-user"></i>&nbsp;Profile</a>
                             </li>
+                            <li>
+                                <a class="external" href="{{ url('order/shipment') }}"><i class="fa fa-btn fa-user"></i>&nbsp;Create New Order</a>
+                            </li>
                             @if('Customer' === \Auth::user()->role->name)
                             <li><a class="external" href="{{ url('/amazon_credential') }}"><i class="fa fa-cog"></i>&nbsp;Amazon Credential</a>
                             </li>
-                            <li><a class="external" href="{{ url('member/amazoninventorylist') }}"><i class="fa fa-list"></i>&nbsp;Amazon Inentory List</a>
+                            <li><a class="external" href="{{ url('member/amazoninventorylist') }}"><i class="fa fa-list"></i>&nbsp;Amazon Inventory List</a>
                             </li>
                             @endif
                             @if('Admin' === \Auth::user()->role->name)
