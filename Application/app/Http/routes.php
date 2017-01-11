@@ -26,6 +26,12 @@ use App\Feature;
 use App\Package;
 use App\Page;
 use App\Menu;
+use App\Shipping_method;
+use App\Supplier;
+use App\Prep_service;
+use App\Listing_service;
+use App\Addresses;
+
 Route::model('users', User::class);
 Route::model('settings', Setting::class);
 Route::model('roles', Role::class);
@@ -33,6 +39,11 @@ Route::model('packages', Package::class);
 Route::model('features', Feature::class);
 Route::model('pages', Page::class);
 Route::model('menus', Menu::class);
+Route::model('shippingmethod',Shipping_method::class);
+Route::model('suppliers',Supplier::class);
+Route::model('prepservices',Prep_service::class);
+Route::model('listingservices',Listing_service::class);
+Route::model('addresses',Addresses::class);
 
 Route::group(['middleware' => ['web']], function () {
     Route::get('/page/{slug}', 'FrontendController@staticPages');
@@ -74,6 +85,12 @@ Route::group(['middleware' => 'web'], function () {
         Route::resource('packages', 'Admin\PackagesController');
         Route::resource('pages', 'Admin\PagesController');
         Route::resource('menus', 'Admin\MenusController');
+        Route::resource('shippingmethod', 'Admin\ShippingMethodController');
+        Route::resource('suppliers', 'Admin\SupplierController');
+        Route::resource('prepservices', 'Admin\PrepServiceController');
+        Route::resource('listingservices', 'Admin\ListingServiceController');
+        Route::resource('addresses', 'Admin\AddressesController');
+
     });
     /**
      * Member routes

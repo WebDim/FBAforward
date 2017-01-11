@@ -36,6 +36,7 @@
             </div>
         </div>
         <div class="box-body">
+
             {!! Form::open(['url' =>  isset($package) ? 'admin/packages/'.$package->id  :  'admin/packages', 'method' => isset($package) ? 'put' : 'post', 'class' => 'form-horizontal', 'id'=>'validate']) !!}
             {!! Form::hidden('package_id', isset($package) ? $package->id: null) !!}
             <div class="row">

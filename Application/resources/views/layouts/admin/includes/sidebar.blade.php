@@ -48,6 +48,91 @@
                     </li>
                 </ul>
             </li>
+            <li class="treeview {{  Request::is('admin/SippingMethod*') ? 'active': '' }}">
+                <a href="#">
+                    <i class="fa fa-briefcase"></i> <span>Shipping Methods</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li class="{{ Request::is('admin/ShippingMethod')? 'active': '' }}">
+                        <a href="{{ url('admin/shippingmethod') }}">
+                            <i class="fa fa-list"></i> <span>Manage Shipping Method</span>
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('admin/ShippingMethod/create')? 'active': '' }}">
+                        <a href="{{ url('admin/shippingmethod/create') }}">
+                            <i class="fa fa-plus"></i> <span>Add Shipping Method</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="treeview {{  Request::is('admin/suppliers*') ? 'active': '' }}">
+                <a href="#">
+                    <i class="fa fa-briefcase"></i> <span>Suppliers</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li class="{{ Request::is('admin/suppliers')? 'active': '' }}">
+                        <a href="{{ url('admin/suppliers') }}">
+                            <i class="fa fa-list"></i> <span>Manage Suppliers</span>
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('admin/suppliers/create')? 'active': '' }}">
+                        <a href="{{ url('admin/suppliers/create') }}">
+                            <i class="fa fa-plus"></i> <span>Add Suppliers</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="treeview {{  Request::is('admin/prepservices*') ? 'active': '' }}">
+                <a href="#">
+                    <i class="fa fa-briefcase"></i> <span>Prep Services</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li class="{{ Request::is('admin/prepservices')? 'active': '' }}">
+                        <a href="{{ url('admin/prepservices') }}">
+                            <i class="fa fa-list"></i> <span>Manage Prep Services</span>
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('admin/prepservices/create')? 'active': '' }}">
+                        <a href="{{ url('admin/prepservices/create') }}">
+                            <i class="fa fa-plus"></i> <span>Add Prep Services</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="treeview {{  Request::is('admin/listingservices*') ? 'active': '' }}">
+                <a href="#">
+                    <i class="fa fa-briefcase"></i> <span>Listing Services</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li class="{{ Request::is('admin/listingservices')? 'active': '' }}">
+                        <a href="{{ url('admin/listingservices') }}">
+                            <i class="fa fa-list"></i> <span>Manage Listing Services</span>
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('admin/listingservices/create')? 'active': '' }}">
+                        <a href="{{ url('admin/listingservices/create') }}">
+                            <i class="fa fa-plus"></i> <span>Add Listing services</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="treeview {{  Request::is('admin/addresses*') ? 'active': '' }}">
+                <a href="#">
+                    <i class="fa fa-briefcase"></i> <span>Addresses</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li class="{{ Request::is('admin/addresses')? 'active': '' }}">
+                        <a href="{{ url('admin/addresses') }}">
+                            <i class="fa fa-list"></i> <span>Manage Addresses</span>
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('admin/addresses/create')? 'active': '' }}">
+                        <a href="{{ url('admin/addresses/create') }}">
+                            <i class="fa fa-plus"></i> <span>Add Addresses</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
            <!-- <li class="treeview {{ Request::is('admin/package*') || Request::is('admin/feature*') ? 'active': '' }}">
                 <a href="#">
                     <i class="fa fa-briefcase"></i> <span>Packages</span> <i class="fa fa-angle-left pull-right"></i>

@@ -7,10 +7,14 @@ use App\Http\Controllers\Controller;
 use App\Menu;
 use App\Package;
 use App\Page;
+use App\Supplier;
 use Yajra\Datatables\Datatables;
 use App\User;
 use App\Setting;
 use App\Role;
+use App\Shipping_method;
+use App\Prep_service;
+use App\Listing_service;
 
 class DatatablesController extends Controller
 {
@@ -150,6 +154,80 @@ class DatatablesController extends Controller
                 $viewBtn = '<a style="margin-right: 0.2em;" href="' . url($page->slug) . '"  title="View" target="blank"><i class="fa fa-2 fa-eye"></i></a>';
 
                 $buttons = '' . $editBtn . $viewBtn . $deleteBtn;
+                return $buttons;
+            })->make(true);
+    }
+    public function getShippingmethod()
+    {
+        $methods = Shipping_method::all();
+       return Datatables::of($methods)
+            ->editColumn('shipping_name', '{{ $shipping_name }}')
+            ->editColumn('price', function ($method) {
+                        return $method->price;
+            })
+            ->addColumn('actions', function ($method) {
+                if (\Auth::user()->role->name == 'Admin') {
+                    $editBtn = '<a style="margin-right: 0.1em;" href="' . url('admin/shippingmethod/' . $method->shipping_method_id . '/edit') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
+                    $deleteBtn = '&nbsp;<a href="' . url('admin/shippingmethod/' . $method->shipping_method_id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
+                }
+                $buttons = '' . $editBtn . $deleteBtn;
+                return $buttons;
+            })->make(true);
+    }
+    public function getSuppliers()
+    {
+        $methods = Supplier::all();
+        return Datatables::of($methods)
+            ->editColumn('company_name', '{{ $company_name }}')
+            ->editColumn('contact_name', function ($method) {
+                return $method->contact_name;
+            })
+            ->editColumn('email', function ($method) {
+                return $method->email;
+            })
+            ->editColumn('phone_number', function ($method) {
+                return $method->phone_number;
+            })
+            ->addColumn('actions', function ($method) {
+                if (\Auth::user()->role->name == 'Admin') {
+                    $editBtn = '<a style="margin-right: 0.1em;" href="' . url('admin/suppliers/' . $method->supplier_id . '/edit') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
+                    $deleteBtn = '&nbsp;<a href="' . url('admin/suppliers/' . $method->supplier_id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
+                }
+                $buttons = '' . $editBtn . $deleteBtn;
+                return $buttons;
+            })->make(true);
+    }
+    public function getPrepservices()
+    {
+        $methods = Prep_service::all();
+        return Datatables::of($methods)
+            ->editColumn('service_name', '{{ $service_name }}')
+            ->editColumn('price', function ($method) {
+                return $method->price;
+            })
+            ->addColumn('actions', function ($method) {
+                if (\Auth::user()->role->name == 'Admin') {
+                    $editBtn = '<a style="margin-right: 0.1em;" href="' . url('admin/prepservices/' . $method->prep_service_id . '/edit') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
+                    $deleteBtn = '&nbsp;<a href="' . url('admin/prepservices/' . $method->prep_service_id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
+                }
+                $buttons = '' . $editBtn . $deleteBtn;
+                return $buttons;
+            })->make(true);
+    }
+    public function getListingservices()
+    {
+        $methods = Listing_service::all();
+        return Datatables::of($methods)
+            ->editColumn('service_name', '{{ $service_name }}')
+            ->editColumn('price', function ($method) {
+                return $method->price;
+            })
+            ->addColumn('actions', function ($method) {
+                if (\Auth::user()->role->name == 'Admin') {
+                    $editBtn = '<a style="margin-right: 0.1em;" href="' . url('admin/listingservices/' . $method->listing_service_id . '/edit') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
+                    $deleteBtn = '&nbsp;<a href="' . url('admin/listingservices/' . $method->listing_service_id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
+                }
+                $buttons = '' . $editBtn . $deleteBtn;
                 return $buttons;
             })->make(true);
     }
