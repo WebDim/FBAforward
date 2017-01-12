@@ -25,5 +25,8 @@ class Amazon_inventory extends Eloquent
     {
         return $this->belongsTo(Users::class);
     }
-
+    public function shipment_detail()
+    {
+        return $this->hasMany(Shipment_detail::class);
+    }
 }

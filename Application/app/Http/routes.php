@@ -112,6 +112,7 @@ Route::group(['middleware' => 'web'], function () {
      */
     Route::group(['prefix' => 'order'], function () {
         Route::get('/shipment', 'OrderController@shipment');
+        Route::put('/shipment', 'OrderController@addshipment');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);

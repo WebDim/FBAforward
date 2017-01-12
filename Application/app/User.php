@@ -56,4 +56,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Amazon_inventory::class);
     }
+    public function shipment_detail()
+    {
+        return $this->hasMany(Shipment_detail::class);
+    }
 }
