@@ -514,7 +514,7 @@ class FBAInventoryServiceMWS_Client implements FBAInventoryServiceMWS_Interface
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $allHeadersStr);
-        curl_setopt($ch, CURLOPT_HEADER, true); 
+        curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         if ($config['ProxyHost'] != null && $config['ProxyPort'] != -1)
         {
@@ -659,7 +659,7 @@ class FBAInventoryServiceMWS_Client implements FBAInventoryServiceMWS_Interface
      * @param $ch curl handle
      */
     protected function setSSLCurlOptions($ch) {
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
     }
 

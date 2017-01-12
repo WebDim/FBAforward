@@ -46,8 +46,10 @@ class AmazoninventoryController extends Controller
         $request->setMWSAuthToken($account->mws_authtoken);
         if($request->SellerId != '') {
             $arr_response = $this->invokeListInventorySupply($service, $request);
+
             foreach ($arr_response as $new_response) {
                 foreach ($new_response->InventorySupplyList as $inventory_supply) {
+                    $productasin = array();
                     foreach ($inventory_supply as $item) {
                         $data = array("user_id" => $account->user_id,
                             "condition" => $item->Condition,
@@ -57,6 +59,9 @@ class AmazoninventoryController extends Controller
                             "ASIN" => $item->ASIN,
                             "sellerSKU" => $item->SellerSKU
                         );
+
+                        $productasin[] = $item->ASIN;
+
                         $get_inventory = Amazon_inventory::where('user_id', $account->user_id)->where('FNSKU', $item->FNSKU)->where('ASIN', $item->ASIN)->where('sellerSKU', $item->SellerSKU)->get();
                         if (count($get_inventory) > 0) {
                             Amazon_inventory::where('id', '=', $get_inventory[0]->id)->update($data);
@@ -69,12 +74,93 @@ class AmazoninventoryController extends Controller
                     }
                 }
             }
+            $this->getProductInfo($productasin);
         }
         else
         {
             echo "Wrong Sellerid Passed";
         }
      }
+     private function getProductInfo($productasin=array())
+     {
+         $productasin = implode(", ", $productasin);
+         // Your AWS Access Key ID, as taken from the AWS Your Account page
+
+         $aws_access_key_id =  env('AWSACCESSKEY');
+         // Your AWS Secret Key corresponding to the above ID, as taken from the AWS Your Account page
+         $aws_secret_key =  env('ADVERTISINGSECRETKEY');
+
+         // The region you are interested in
+         $endpoint = env('AMAZONENDPOINT');
+         $associatetag =  env('ASSOCIATETAG');
+
+         $uri = "/onca/xml";
+         $params = array(
+             "Service" => "AWSECommerceService",
+             "Operation" => "ItemLookup",
+             "AWSAccessKeyId" => $aws_access_key_id,
+             "AssociateTag" => $associatetag,
+             "ItemId" => $productasin,
+             "IdType" => "ASIN",
+             "ResponseGroup" => "Images,ItemAttributes"
+         );
+
+         // Set current timestamp if not set
+         if (!isset($params["Timestamp"])) {
+             $params["Timestamp"] = gmdate('Y-m-d\TH:i:s\Z');
+         }
+
+         // Sort the parameters by key
+         ksort($params);
+
+         $pairs = array();
+
+         foreach ($params as $key => $value) {
+             array_push($pairs, rawurlencode($key) . "=" . rawurlencode($value));
+         }
+
+         // Generate the canonical query
+         $canonical_query_string = join("&", $pairs);
+
+         // Generate the string to be signed
+         $string_to_sign = "GET\n" . $endpoint . "\n" . $uri . "\n" . $canonical_query_string;
+
+         // Generate the signature required by the Product Advertising API
+         $signature = base64_encode(hash_hmac("sha256", $string_to_sign, $aws_secret_key, true));
+
+         // Generate the signed URL
+         $request_url = 'http://' . $endpoint . $uri . '?' . $canonical_query_string . '&Signature=' . rawurlencode($signature);
+
+         if (($response_xml_data = file_get_contents($request_url)) === false) {
+             echo "Error fetching XML\n";
+         } else {
+             libxml_use_internal_errors(true);
+             $data = simplexml_load_string($response_xml_data);
+             $json = json_encode($data);
+             $productdataArray = json_decode($json, TRUE);
+
+             if (!$data) {
+                 echo "Error loading XML\n";
+                 foreach (libxml_get_errors() as $error) {
+                     echo "\t", $error->message;
+                 }
+             } else {
+                 $productArray = $productdataArray['Items']['Item'];
+                 foreach ($productArray as $productDetails) {
+                     $inventory = Amazon_inventory::where('ASIN', $productDetails['ASIN'])->first();
+                     $inventory->product_name = $productDetails['ItemAttributes']['Title'];
+                     $inventory->image_path = '';
+                     if (isset($productDetails['ImageSets']['ImageSet'])) {
+                         $productImages = $productDetails['ImageSets']['ImageSet'];
+                         $inventory->image_path = $productImages[0]["LargeImage"]["URL"];
+                     }
+                     $inventory->save();
+                 }
+             }
+         }
+         return true;
+     }
+
     private function getKeys($uri = '')
     {
         add_to_path('Libraries');

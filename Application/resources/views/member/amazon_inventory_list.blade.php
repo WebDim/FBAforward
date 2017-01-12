@@ -21,6 +21,8 @@
                     <table class="table" id="list">
                         <thead>
                         <tr>
+                            <td><span>&nbsp;</span></td>
+                            <td><span>Product Name</span></td>
                             <td><span>Condition</span></td>
                             <td><span>Total Supply Quantity</span></td>
                             <td><span>FNSKU</span></td>
@@ -32,6 +34,8 @@
                         <tbody>
                         @foreach($inventory_list as $list)
                         <tr>
+                            <td><img src={{ $list->image_path }} style="width:500px;height:100px" ></td>
+                            <td><b class="text-info">{{ $list->product_name }}</b></td>
                             <td><b class="text-info">{{ $list->condition }}</b></td>
                             <td><b class="text-info">{{ $list->total_supply_quantity  }}</b></td>
                             <td><b class="text-info">{{ $list->FNSKU }}</b></td>
