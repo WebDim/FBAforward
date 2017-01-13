@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Amazon_inventory;
+use App\Product_labels;
 use App\Supplier_detail;
 use Request;
 use App\Http\Requests;
@@ -13,6 +14,7 @@ use App\Shipment_detail;
 use phpDocumentor\Reflection\Types\Integer;
 use App\Supplier;
 use App\Supplier_inspection;
+use App\Product_labels_detail;
 class OrderController extends Controller
 {
     /**
@@ -120,7 +122,7 @@ class OrderController extends Controller
         $user = \Auth::user();
         $count = $request->input('count');
         for ($cnt = 1; $cnt < $count; $cnt++) {
-            $product_count=$request->input('product_cnt'.$cnt);
+            $product_count=$request->input('product_count'.$cnt);
             for($product_cnt=1; $product_cnt< $product_count; $product_cnt++) {
                 $supplier = array('supplier_detail_id' => $request->input('supplier_detail_id'.$cnt."_".$product_cnt),
                     'user_id' => $user->id,
@@ -131,5 +133,31 @@ class OrderController extends Controller
                 $supplier_inspection->save();
             }
         }
+        return redirect('order/labels')->with('Success', 'Labels Information Added Successfully');
+    }
+    public function labels()
+    {
+        $user = \Auth::user();
+        $product_label= Product_labels::all();
+        $product = Shipment_detail::selectRaw("shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
+            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
+            ->where('shipment_details.user_id', $user->id)
+            ->get();
+        return view('order.product_labels')->with(compact('product', 'product_label'));
+    }
+    public function addlabels(ShipmentRequest $request)
+    {
+        $user = \Auth::user();
+        $count = $request->input('count');
+        for ($cnt = 1; $cnt < $count; $cnt++) {
+            $product_label = array('product_id' => $request->input('product_id'.$cnt),
+                'product_label_id' => $request->input('labels'.$cnt),
+                'fbsku' => $request->input('sku'.$cnt),
+                'qty' => $request->input('total'.$cnt)
+            );
+            $product_labels_detail = new Product_labels_detail($product_label);
+            $product_labels_detail->save();
+        }
+        //return redirect('order/preinspection')->with('Success', 'Supplier Information Added Successfully');
     }
 }
