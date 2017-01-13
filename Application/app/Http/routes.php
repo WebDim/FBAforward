@@ -113,6 +113,11 @@ Route::group(['middleware' => 'web'], function () {
     Route::group(['prefix' => 'order'], function () {
         Route::get('/shipment', 'OrderController@shipment');
         Route::put('/shipment', 'OrderController@addshipment');
+        Route::get('/supplierdetail','OrderController@supplierdetail');
+        Route::put('/supplierdetail','OrderController@addsupplierdetail');
+        Route::post('/addsupplier','OrderController@addsupplier');
+        Route::get('/preinspection','OrderController@preinspection');
+        Route::put('/preinspection','OrderController@addpreinspection');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);
