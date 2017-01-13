@@ -228,9 +228,7 @@
             $('#total'+no).val(total);
         }
         {{--$(document).ready(function () {
-
             $('.datepicker').datepicker( {
-
             });
         });--}}
     </script>

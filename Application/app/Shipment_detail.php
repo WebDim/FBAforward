@@ -8,7 +8,7 @@ class Shipment_detail extends Model
 {
     //
     protected $primaryKey = 'shipment_detail_id';
-    protected $fillable = ['user_id','product_id','shipping_method_id','split_shipment','goods_ready_date', 'fnsku','qty_per_box', 'qty_per_box ', 'no_boxs', 'total'];
+    protected $fillable = ['product_id','fnsku','qty_per_box', 'qty_per_box ', 'no_boxs', 'total'];
 
     public function user()
     {
