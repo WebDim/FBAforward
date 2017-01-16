@@ -120,6 +120,10 @@ Route::group(['middleware' => 'web'], function () {
         Route::put('/preinspection','OrderController@addpreinspection');
         Route::get('/productlabels','OrderController@labels');
         Route::put('/productlabels','OrderController@addlabels');
+        Route::get('/prepservice','OrderController@prepservice');
+        Route::put('/prepservice','OrderController@addprepservice');
+        Route::get('/listservice','OrderController@listservice');
+        Route::put('/listservice','OrderController@addlistservice');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);

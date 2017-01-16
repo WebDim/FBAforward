@@ -1,35 +1,30 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Amazon_inventory;
+use App\Listing_service;
+use App\Listing_service_detail;
+use App\Prep_detail;
+use App\Prep_service;
 use App\Product_labels;
 use App\Supplier_detail;
 use Request;
-use App\Http\Requests;
-use Illuminate\Support\Facades\DB;
 use App\Shipping_method;
 use App\Http\Requests\ShipmentRequest;
 use App\Shipment_detail;
-use phpDocumentor\Reflection\Types\Integer;
 use App\Supplier;
 use App\Supplier_inspection;
 use App\Product_labels_detail;
+use App\Shipments;
 class OrderController extends Controller
 {
-    /**
-     * HomeController constructor.
-     */
     public function __construct()
     {
         $this->middleware('auth');
     }
-
     public function index()
     {
 
     }
-
     public function shipment()
     {
         $user = \Auth::user();
@@ -37,41 +32,45 @@ class OrderController extends Controller
         $product = Amazon_inventory::where('user_id', $user->id)->get();
         return view('order.shipment')->with(compact('shipping_method', 'product'));
     }
-
     public function addshipment(ShipmentRequest $request)
     {
         $user = \Auth::user();
-        $count = $request->input('count');
-        for ($cnt = 1; $cnt <= $count; $cnt++) {
-            $product_id = explode(' ', $request->input('product_desc' . $cnt));
-            $shipment = array('user_id' => $user->id,
-                'product_id' => $product_id[1],
-                'shipping_method_id' => $request->input('shipping_method' . $cnt),
-                'split_shipment' => $request->input('split_shipment'),
-                'goods_ready_date' => date('Y-m-d H:i:s', strtotime($request->input('date'))),
-                'fnsku' => $request->input('upc_fnsku' . $cnt),
-                'qty_per_box' => $request->input('qty_per_case' . $cnt),
-                'no_boxs' => $request->input('no_of_case' . $cnt),
-                'total' => $request->input('total' . $cnt)
-            );
-
-            $shipment_detail = new Shipment_detail($shipment);
-            $shipment_detail->save();
+        for ($cnt = 1; $cnt <= 2; $cnt++) {
+            $shipment=array('shipping_method_id' => $request->input('shipping_method' . $cnt),
+                            'user_id' => $user->id,
+                            'split_shipment' => $request->input('split_shipment'),
+                            'goods_ready_date' => date('Y-m-d H:i:s', strtotime($request->input('date'))),
+                            'is_activated' => '0'
+                            );
+            $shipment=new Shipments($shipment);
+            $shipment->save();
+            $last_id=$shipment->shipment_id;
+            $sub_count=$request->input('count'.$cnt);
+            for($sub_cnt=1;$sub_cnt<=$sub_count;$sub_cnt++) {
+                $product_id = explode(' ', $request->input('product_desc'.$cnt."_".$sub_cnt));
+                $shipment_details = array('shipment_id'=>$last_id,
+                    'product_id' => $product_id[1],
+                    'fnsku' => $request->input('upc_fnsku'.$cnt."_".$sub_cnt),
+                    'qty_per_box' => $request->input('qty_per_case'.$cnt."_".$sub_cnt),
+                    'no_boxs' => $request->input('no_of_case'.$cnt."_".$sub_cnt),
+                    'total' => $request->input('total'.$cnt."_".$sub_cnt)
+                );
+                $shipment_detail = new Shipment_detail($shipment_details);
+                $shipment_detail->save();
+            }
         }
-
-        return redirect('order/supplier')->with('Success', 'Shipment Information Added Successfully');
+        return redirect('order/supplierdetail')->with('Success', 'Shipment Information Added Successfully');
     }
-
     public function supplierdetail()
     {
         $user = \Auth::user();
-        $product = Shipment_detail::selectRaw("shipment_details.shipment_detail_id, shipment_details.user_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name")
+        $product = Shipment_detail::selectRaw("shipments.shipment_id, shipments.user_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
+            ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id')
             ->get();
         $supplier = Supplier::all();
         return view('order.supplier')->with(compact('product', 'supplier'));
     }
-
     public function addsupplierdetail(ShipmentRequest $request)
     {
         $user = \Auth::user();
@@ -87,7 +86,6 @@ class OrderController extends Controller
         }
         return redirect('order/preinspection')->with('Success', 'Supplier Information Added Successfully');
     }
-
     public function addsupplier()
     {
         if (Request::ajax()) {
@@ -101,7 +99,6 @@ class OrderController extends Controller
         }
 
     }
-
     public function preinspection()
     {
         $user = \Auth::user();
@@ -116,7 +113,6 @@ class OrderController extends Controller
             ->get();
         return view('order.pre_inspection')->with(compact('product', 'supplier'));
     }
-
     public function addpreinspection(ShipmentRequest $request)
     {
         $user = \Auth::user();
@@ -133,7 +129,7 @@ class OrderController extends Controller
                 $supplier_inspection->save();
             }
         }
-        return redirect('order/labels')->with('Success', 'Labels Information Added Successfully');
+        return redirect('order/productlabels')->with('Success', 'Labels Information Added Successfully');
     }
     public function labels()
     {
@@ -141,7 +137,8 @@ class OrderController extends Controller
         $product_label= Product_labels::all();
         $product = Shipment_detail::selectRaw("shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
-            ->where('shipment_details.user_id', $user->id)
+            ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id')
+            ->where('shipments.user_id', $user->id)
             ->get();
         return view('order.product_labels')->with(compact('product', 'product_label'));
     }
@@ -158,6 +155,66 @@ class OrderController extends Controller
             $product_labels_detail = new Product_labels_detail($product_label);
             $product_labels_detail->save();
         }
-        //return redirect('order/preinspection')->with('Success', 'Supplier Information Added Successfully');
+        return redirect('order/prepservice')->with('Success', 'Product Label Information Added Successfully');
+    }
+    public function prepservice()
+    {
+        $user = \Auth::user();
+        $prep_service= Prep_service::all();
+        $product = Shipment_detail::selectRaw("shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
+            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
+            ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id')
+            ->where('shipments.user_id', $user->id)
+            ->get();
+        return view('order.prep_service')->with(compact('prep_service', 'product'));
+    }
+    public function addprepservice(ShipmentRequest $request)
+    {
+        $user = \Auth::user();
+        $count = $request->input('count');
+        for ($cnt = 1; $cnt < $count; $cnt++) {
+            $service =$request->input('service'.$cnt);
+            foreach ($service as $services) {
+                $prep_service = array('user_id' => $user->id,
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'total_qty' => $request->input('qty' . $cnt),
+                    'prep_service_ids' => $services,
+                    'prep_service_total' => $request->input('total' . $cnt),
+                    'grand_total' => $request->input('grand_total')
+                );
+                $prep_service_detail = new Prep_detail($prep_service);
+                $prep_service_detail->save();
+            }
+        }
+        return redirect('order/listservice')->with('Success', 'Prep Service Information Added Successfully');
+    }
+    public function listservice()
+    {
+        $user = \Auth::user();
+        $list_service= Listing_service::all();
+        $product = Shipment_detail::selectRaw("shipment_details.product_id, shipment_details.total, amazon_inventories.product_name")
+            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
+            ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id')
+            ->where('shipments.user_id', $user->id)
+            ->get();
+      return view('order.list_service')->with(compact('list_service', 'product'));
+    }
+    public function addlistservice(ShipmentRequest $request)
+    {
+        $count = $request->input('count');
+        for ($cnt = 1; $cnt < $count; $cnt++) {
+            $service =$request->input('service'.$cnt);
+            foreach ($service as $services) {
+                $list_service = array(
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'listing_service_ids' => $services,
+                    'listing_service_total' => $request->input('total' . $cnt),
+                    'grand_total' => $request->input('grand_total')
+                );
+                $list_service_detail = new Listing_service_detail($list_service);
+                $list_service_detail->save();
+            }
+        }
+        //return redirect('order/listservice')->with('Success', 'Product Label Information Added Successfully');
     }
 }
