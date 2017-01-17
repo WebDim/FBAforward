@@ -22,9 +22,12 @@
                     </thead>
                     <tbody>
     {{--*/ $cnt = 1 /*--}}
-    @foreach($product as $products)
-        <tr>
-            <td><input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
+
+        @foreach($product as $products)
+
+       <tr>
+            <td><input type="text" name="supplier_detail_id{{ $cnt }}" value="{{ $products->supplier_detail_id }}">
+                <input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
                 <b class="text-info">{{ $products->product_name }}</b></td>
             <td><input type="hidden" name="total{{ $cnt }}" value="{{ $products->total }}"><b class="text-info">{{ $products->total }}</b></td>
             <td><b class="text-info">
@@ -32,13 +35,15 @@
                         <option value="">Suppliers</option>
                         <option value="0">Add New</option>
                         @foreach ($supplier as $suppliers)
-                            <option value="{{ $suppliers->supplier_id }}">  {{ $suppliers->company_name }}</option>
+                            <option value="{{ $suppliers->supplier_id }}" @if($products->supplier_id==$suppliers->supplier_id) {{ "selected" }} @endif>  {{ $suppliers->company_name }}</option>
                         @endforeach
                     </select>
                 </b></td>
         </tr>
-        {{--*/ $cnt++ /*--}}
+          {{--*/ $cnt++ /*--}}
+
     @endforeach
+
     </tbody>
 </table>
 </div>
@@ -86,8 +91,8 @@
 </div>
 <div class="col-md-12">
 <div class="form-group">
-
-    <div class="col-md-9 col-md-offset-9">
+     <div class="col-md-9 col-md-offset-9">
+         <a href="{{ URL::route('shipment') }}" class="btn btn-primary">Previous</a>
         {!! Form::submit('  Next  ', ['class'=>'btn btn-primary']) !!}
     </div>
 </div>

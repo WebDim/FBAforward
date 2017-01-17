@@ -21,42 +21,100 @@ class OrderController extends Controller
     {
         $this->middleware('auth');
     }
+
     public function index()
     {
 
     }
+
     public function shipment()
     {
         $user = \Auth::user();
         $shipping_method = Shipping_method::all();
         $product = Amazon_inventory::where('user_id', $user->id)->get();
-        return view('order.shipment')->with(compact('shipping_method', 'product'));
+        $shipment='';
+        return view('order.shipment')->with(compact('shipping_method', 'product','shipment'));
+    }
+
+    public function updateshipment()
+    {
+        $user = \Auth::user();
+        $shipping_method = Shipping_method::all();
+        $product = Amazon_inventory::where('user_id', $user->id)->get();
+        $shipment= Shipments::where('user_id',$user->id)->where('is_activated','0')->get();
+        $shipment_detail = Shipment_detail::selectRaw("shipment_details.* ")
+            ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id')
+            ->where('shipments.user_id',$user->id)
+            ->get();
+
+        return view('order.shipment')->with(compact('shipping_method', 'product','shipment','shipment_detail'));
     }
     public function addshipment(ShipmentRequest $request)
     {
-        $user = \Auth::user();
-        for ($cnt = 1; $cnt <= 2; $cnt++) {
-            $shipment=array('shipping_method_id' => $request->input('shipping_method' . $cnt),
-                            'user_id' => $user->id,
-                            'split_shipment' => $request->input('split_shipment'),
-                            'goods_ready_date' => date('Y-m-d H:i:s', strtotime($request->input('date'))),
-                            'is_activated' => '0'
-                            );
-            $shipment=new Shipments($shipment);
-            $shipment->save();
-            $last_id=$shipment->shipment_id;
-            $sub_count=$request->input('count'.$cnt);
-            for($sub_cnt=1;$sub_cnt<=$sub_count;$sub_cnt++) {
-                $product_id = explode(' ', $request->input('product_desc'.$cnt."_".$sub_cnt));
-                $shipment_details = array('shipment_id'=>$last_id,
-                    'product_id' => $product_id[1],
-                    'fnsku' => $request->input('upc_fnsku'.$cnt."_".$sub_cnt),
-                    'qty_per_box' => $request->input('qty_per_case'.$cnt."_".$sub_cnt),
-                    'no_boxs' => $request->input('no_of_case'.$cnt."_".$sub_cnt),
-                    'total' => $request->input('total'.$cnt."_".$sub_cnt)
+         $user = \Auth::user();
+        for ($cnt = 1; $cnt <= $request->input('ship_count'); $cnt++) {
+            if(!empty($request->input('shipment_id'.$cnt)))
+            {
+                $shipment = array('shipping_method_id' => $request->input('shipping_method' . $cnt),
+                    'user_id' => $user->id,
+                    'split_shipment' => $request->input('split_shipment'),
+                    'goods_ready_date' => date('Y-m-d H:i:s', strtotime($request->input('date'))),
+                    'is_activated' => '0'
                 );
-                $shipment_detail = new Shipment_detail($shipment_details);
-                $shipment_detail->save();
+                Shipments::where('shipment_id',$request->input('shipment_id'.$cnt))->update($shipment);
+                $sub_count=$request->input('count'.$cnt);
+                for($sub_cnt=1;$sub_cnt<=$sub_count;$sub_cnt++) {
+                    if (!empty($request->input("shipment_detail" . $cnt . "_" . $sub_cnt))) {
+                        $product_id = explode(' ', $request->input('product_desc' . $cnt . "_" . $sub_cnt));
+                        $shipment_details = array(
+                            'product_id' => isset($product_id[1]) ? $product_id[1] : '',
+                            'fnsku' => $request->input('upc_fnsku' . $cnt . "_" . $sub_cnt),
+                            'qty_per_box' => $request->input('qty_per_case' . $cnt . "_" . $sub_cnt),
+                            'no_boxs' => $request->input('no_of_case' . $cnt . "_" . $sub_cnt),
+                            'total' => $request->input('total' . $cnt . "_" . $sub_cnt)
+                        );
+
+                        Shipment_detail::where('shipment_detail_id', $request->input("shipment_detail" . $cnt . "_" . $sub_cnt))->update($shipment_details);
+                    }
+                    else
+                    {
+                        $product_id = explode(' ', $request->input('product_desc'.$cnt."_".$sub_cnt));
+                        $shipment_details = array('shipment_id'=>$request->input('shipment_id'.$cnt),
+                            'product_id' =>isset($product_id[1])?$product_id[1]:'',
+                            'fnsku' => $request->input('upc_fnsku'.$cnt."_".$sub_cnt),
+                            'qty_per_box' => $request->input('qty_per_case'.$cnt."_".$sub_cnt),
+                            'no_boxs' => $request->input('no_of_case'.$cnt."_".$sub_cnt),
+                            'total' => $request->input('total'.$cnt."_".$sub_cnt)
+                        );
+                        $shipment_detail = new Shipment_detail($shipment_details);
+                        $shipment_detail->save();
+                    }
+                }
+
+            }
+            else {
+                $shipment = array('shipping_method_id' => $request->input('shipping_method' . $cnt),
+                    'user_id' => $user->id,
+                    'split_shipment' => $request->input('split_shipment'),
+                    'goods_ready_date' => date('Y-m-d H:i:s', strtotime($request->input('date'))),
+                    'is_activated' => '0'
+                );
+                $shipment = new Shipments($shipment);
+                $shipment->save();
+                $last_id = $shipment->shipment_id;
+                $sub_count=$request->input('count'.$cnt);
+                for($sub_cnt=1;$sub_cnt<=$sub_count;$sub_cnt++) {
+                    $product_id = explode(' ', $request->input('product_desc'.$cnt."_".$sub_cnt));
+                    $shipment_details = array('shipment_id'=>$last_id,
+                        'product_id' =>isset($product_id[1])?$product_id[1]:'',
+                        'fnsku' => $request->input('upc_fnsku'.$cnt."_".$sub_cnt),
+                        'qty_per_box' => $request->input('qty_per_case'.$cnt."_".$sub_cnt),
+                        'no_boxs' => $request->input('no_of_case'.$cnt."_".$sub_cnt),
+                        'total' => $request->input('total'.$cnt."_".$sub_cnt)
+                    );
+                    $shipment_detail = new Shipment_detail($shipment_details);
+                    $shipment_detail->save();
+                }
             }
         }
         return redirect('order/supplierdetail')->with('Success', 'Shipment Information Added Successfully');
@@ -64,9 +122,11 @@ class OrderController extends Controller
     public function supplierdetail()
     {
         $user = \Auth::user();
-        $product = Shipment_detail::selectRaw("shipments.shipment_id, shipments.user_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name")
+        $product = Shipment_detail::selectRaw("shipments.shipment_id, shipments.user_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id')
+            ->join('supplier_details','shipment_details.product_id','=','supplier_details.product_id')
+            ->where('shipments.user_id',$user->id)
             ->get();
         $supplier = Supplier::all();
         return view('order.supplier')->with(compact('product', 'supplier'));
@@ -76,13 +136,23 @@ class OrderController extends Controller
         $user = \Auth::user();
         $count = $request->input('count');
         for ($cnt = 1; $cnt < $count; $cnt++) {
-            $supplier = array('supplier_id' => $request->input('supplier' . $cnt),
-                'user_id' => $user->id,
-                'product_id' => $request->input('product_id' . $cnt),
-                'total_unit' => $request->input('total' . $cnt)
-            );
-            $supplier_detail = new Supplier_detail($supplier);
-            $supplier_detail->save();
+            if(empty($request->input('supplier_detail_id'.$cnt))) {
+                $supplier = array('supplier_id' => $request->input('supplier' . $cnt),
+                    'user_id' => $user->id,
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'total_unit' => $request->input('total' . $cnt)
+                );
+                $supplier_detail = new Supplier_detail($supplier);
+                $supplier_detail->save();
+            }
+            else{
+                $supplier = array('supplier_id' => $request->input('supplier' . $cnt),
+                    'user_id' => $user->id,
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'total_unit' => $request->input('total' . $cnt)
+                );
+                Supplier_detail::where('supplier_detail_id',$request->input('supplier_detail_id'.$cnt))->update($supplier);
+            }
         }
         return redirect('order/preinspection')->with('Success', 'Supplier Information Added Successfully');
     }
