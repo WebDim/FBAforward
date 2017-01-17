@@ -65,6 +65,23 @@
                     </li>
                 </ul>
             </li>
+            <li class="treeview {{  Request::is('admin/OutboundMethod*') ? 'active': '' }}">
+                <a href="#">
+                    <i class="fa fa-briefcase"></i> <span>Outbound Methods</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li class="{{ Request::is('admin/OutboundMethod')? 'active': '' }}">
+                        <a href="{{ url('admin/outboundmethod') }}">
+                            <i class="fa fa-list"></i> <span>Manage Outbound Method</span>
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('admin/OutboundMethod/create')? 'active': '' }}">
+                        <a href="{{ url('admin/outboundmethod/create') }}">
+                            <i class="fa fa-plus"></i> <span>Add Outbound Method</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
             <li class="treeview {{  Request::is('admin/suppliers*') ? 'active': '' }}">
                 <a href="#">
                     <i class="fa fa-briefcase"></i> <span>Suppliers</span> <i class="fa fa-angle-left pull-right"></i>

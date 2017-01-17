@@ -14,6 +14,7 @@ use App\User;
 use App\Setting;
 use App\Role;
 use App\Shipping_method;
+use App\Outbound_method;
 use App\Prep_service;
 use App\Listing_service;
 
@@ -160,7 +161,7 @@ class DatatablesController extends Controller
     }
     public function getShippingmethod()
     {
-        $methods = Shipping_method::all();
+       $methods = Shipping_method::all();
        return Datatables::of($methods)
             ->editColumn('shipping_name', '{{ $shipping_name }}')
             ->editColumn('price', function ($method) {
@@ -210,6 +211,21 @@ class DatatablesController extends Controller
                 if (\Auth::user()->role->name == 'Admin') {
                     $editBtn = '<a style="margin-right: 0.1em;" href="' . url('admin/prepservices/' . $method->prep_service_id . '/edit') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
                     $deleteBtn = '&nbsp;<a href="' . url('admin/prepservices/' . $method->prep_service_id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
+                }
+                $buttons = '' . $editBtn . $deleteBtn;
+                return $buttons;
+            })->make(true);
+    }
+    public function getOutboundmethod(Outbound_method $outbound_method){
+        $methods = $outbound_method::all();
+        return Datatables::of($methods)
+            ->editColumn('outbound_name', function($method){
+                return $method->outbound_name;
+            })
+            ->addColumn('actions', function ($method) {
+                if (\Auth::user()->role->name == 'Admin') {
+                    $editBtn = '<a style="margin-right: 0.1em;" href="' . url('admin/outboundmethod/' . $method->outbound_method_id . '/edit') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
+                    $deleteBtn = '&nbsp;<a href="' . url('admin/outboundmethod/' . $method->outbound_method_id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
                 }
                 $buttons = '' . $editBtn . $deleteBtn;
                 return $buttons;
