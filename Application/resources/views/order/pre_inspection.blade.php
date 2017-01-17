@@ -31,6 +31,7 @@
                             <td hidden>
                                 @foreach($product as $products)
                                     @if($products->supplier_id==$suppliers->supplier_id)
+                                        <input type="hidden" name="supplier_inspection_id{{$cnt."_".$product_cnt}}" value="{{$products->supplier_inspection_id }}">
                                         <input type="hidden" name="supplier_detail_id{{$cnt."_".$product_cnt}}" value="{{$products->supplier_detail_id}}"><br>
                                         {{--*/ $product_cnt++ /*--}}
                                     @endif
@@ -51,16 +52,16 @@
                                     @endforeach
                                 </b></td>
                             <td><b class="text-info">
-                                    <select name="inspection{{ $cnt }}" class="form-control select2 validate[required]" onchange="add_Inspection({{ $cnt }}, this.value)">
-                                        <option value="0">No</option>
-                                        <option value="1">Yes</option>
+                                    <select name="inspection{{ $cnt }}" id="inspection{{ $cnt }}" class="form-control select2 validate[required]" onchange="add_Inspection({{ $cnt }}, this.value)">
+                                        <option value="0" @if($suppliers->is_inspection=='0') {{ "selected" }} @endif>No</option>
+                                        <option value="1" @if($suppliers->is_inspection=='1') {{ "selected" }} @endif>Yes</option>
                                     </select>
-                                <br>
-                            <div class="form-group" hidden id="desc_div{{ $cnt }}">
+                                    <br>
+                            <div class="form-group" @if($suppliers->is_inspection=='0' || $suppliers->is_inspection=='')  {{ "hidden" }} @endif  id="desc_div{{ $cnt }}">
                                 {!! Form::label('inspection_desc{{ $cnt }}', 'Inspection Instruction*', ['class' => 'control-label']) !!}
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
-                                        <textarea name="inspection_desc{{ $cnt }}" id="inspection_desc{{ $cnt }}" cols="20" rows="3"></textarea>
+                                        <textarea name="inspection_desc{{ $cnt }}" id="inspection_desc{{ $cnt }}" cols="20" rows="3">{{ $suppliers->inspection_decription }}</textarea>
                                     </div>
                             </div>
                                 </b>
@@ -76,6 +77,7 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <div class="col-md-9 col-md-offset-9">
+                        <a href="{{ URL::route('supplierdetail') }}" class="btn btn-primary">Previous</a>
                         {!! Form::submit('  Next  ', ['class'=>'btn btn-primary']) !!}
                     </div>
                 </div>
@@ -104,11 +106,13 @@
             if(value=='0')
             {
                 $('#desc_div'+no).hide();
+                $('#inspection_desc'+no).val('');
             }
             else
             {
                 $('#desc_div'+no).show();
             }
         }
+
     </script>
 @endsection

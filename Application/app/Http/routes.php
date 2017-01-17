@@ -117,16 +117,16 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/shipment', 'OrderController@shipment');
         Route::put('/shipment', 'OrderController@addshipment');
         Route::get('/updateshipment',['uses'=>'OrderController@updateshipment','as' =>'shipment']);
-        Route::get('/supplierdetail','OrderController@supplierdetail');
+        Route::get('/supplierdetail',['uses'=>'OrderController@supplierdetail','as'=>'supplierdetail']);
         Route::put('/supplierdetail','OrderController@addsupplierdetail');
         Route::post('/addsupplier','OrderController@addsupplier');
-        Route::get('/preinspection','OrderController@preinspection');
+        Route::get('/preinspection',['uses'=>'OrderController@preinspection','as'=>'preinspection']);
         Route::put('/preinspection','OrderController@addpreinspection');
-        Route::get('/productlabels','OrderController@labels');
+        Route::get('/productlabels',['uses'=>'OrderController@labels','as'=>'productlabels']);
         Route::put('/productlabels','OrderController@addlabels');
-        Route::get('/prepservice','OrderController@prepservice');
+        Route::get('/prepservice',['uses'=>'OrderController@prepservice','as'=>'prepservice']);
         Route::put('/prepservice','OrderController@addprepservice');
-        Route::get('/listservice','OrderController@listservice');
+        Route::get('/listservice',['uses'=>'OrderController@listservice','as'=>'listservice']);
         Route::put('/listservice','OrderController@addlistservice');
     });
 

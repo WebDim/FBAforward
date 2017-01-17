@@ -25,7 +25,9 @@
                     {{--*/ $cnt = 1 /*--}}
                     @foreach($product as $products)
                         <tr>
-                            <td><input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
+                            <td><input type="text" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id  }}">
+                                <input type="text" name="product_label_detail_id{{ $cnt }}" value="{{ $products->product_label_detail_id  }}">
+                                <input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
                                 <b class="text-info">{{ $products->product_name }}</b></td>
                             <td><input type="hidden" name="sku{{ $cnt }}" value="{{ $products->sellerSKU }}">
                                 <b class="text-info">{{ $products->sellerSKU }}</b></td>
@@ -34,7 +36,7 @@
                                     <select name="labels{{ $cnt }}" class="form-control select2 validate[required]">
                                         <option value="">Labels</option>
                                         @foreach ($product_label as $product_labels)
-                                            <option value="{{ $product_labels->product_label_id }}">  {{ $product_labels->label_name }}</option>
+                                            <option value="{{ $product_labels->product_label_id }}" @if($products->product_label_id==$product_labels->product_label_id) {{ "selected" }}@endif>  {{ $product_labels->label_name }}</option>
                                         @endforeach
                                     </select>
                                 </b></td>
@@ -48,6 +50,7 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <div class="col-md-9 col-md-offset-9">
+                        <a href="{{ URL::route('preinspection') }}" class="btn btn-primary">Previous</a>
                         {!! Form::submit('  Next  ', ['class'=>'btn btn-primary']) !!}
                     </div>
                 </div>

@@ -32,8 +32,7 @@ class OrderController extends Controller
         $user = \Auth::user();
         $shipping_method = Shipping_method::all();
         $product = Amazon_inventory::where('user_id', $user->id)->get();
-        $shipment='';
-        return view('order.shipment')->with(compact('shipping_method', 'product','shipment'));
+        return view('order.shipment')->with(compact('shipping_method', 'product'));
     }
 
     public function updateshipment()
@@ -122,13 +121,20 @@ class OrderController extends Controller
     public function supplierdetail()
     {
         $user = \Auth::user();
-        $product = Shipment_detail::selectRaw("shipments.shipment_id, shipments.user_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name")
+        /*$product = Shipment_detail::selectRaw("shipments.shipment_id, shipments.user_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id')
             ->join('supplier_details','shipment_details.product_id','=','supplier_details.product_id')
             ->where('shipments.user_id',$user->id)
+            ->get();*/
+        $product = Shipment_detail::selectRaw(" shipment_details.shipment_detail_id,supplier_details.supplier_id,  supplier_details.supplier_detail_id,  shipment_details.product_id, shipment_details.total,  amazon_inventories.product_name  ")
+            ->join('supplier_details','shipment_details.shipment_detail_id','=','supplier_details.shipment_detail_id','left')
+            ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
+            ->where('shipments.user_id',$user->id)
             ->get();
         $supplier = Supplier::all();
+
         return view('order.supplier')->with(compact('product', 'supplier'));
     }
     public function addsupplierdetail(ShipmentRequest $request)
@@ -137,7 +143,8 @@ class OrderController extends Controller
         $count = $request->input('count');
         for ($cnt = 1; $cnt < $count; $cnt++) {
             if(empty($request->input('supplier_detail_id'.$cnt))) {
-                $supplier = array('supplier_id' => $request->input('supplier' . $cnt),
+                $supplier = array('shipment_detail_id'=>$request->input('shipment_detail_id' . $cnt),
+                    'supplier_id' => $request->input('supplier' . $cnt),
                     'user_id' => $user->id,
                     'product_id' => $request->input('product_id' . $cnt),
                     'total_unit' => $request->input('total' . $cnt)
@@ -154,6 +161,7 @@ class OrderController extends Controller
                 Supplier_detail::where('supplier_detail_id',$request->input('supplier_detail_id'.$cnt))->update($supplier);
             }
         }
+
         return redirect('order/preinspection')->with('Success', 'Supplier Information Added Successfully');
     }
     public function addsupplier()
@@ -172,15 +180,18 @@ class OrderController extends Controller
     public function preinspection()
     {
         $user = \Auth::user();
-        $supplier = Supplier::selectRaw("suppliers.supplier_id, suppliers.company_name")
+        $supplier = Supplier::selectRaw("supplier_inspections.is_inspection, supplier_inspections.inspection_decription,suppliers.supplier_id, suppliers.company_name")
             ->join('supplier_details', 'supplier_details.supplier_id', '=', 'suppliers.supplier_id')
+            ->join('supplier_inspections','supplier_details.supplier_detail_id','=','supplier_inspections.supplier_detail_id','left')
             ->where('supplier_details.user_id', $user->id)
             ->distinct('supplier_details.user_id')
             ->get();
-        $product = Supplier_detail::selectRaw("supplier_details.supplier_id, supplier_details.supplier_detail_id, supplier_details.product_id, supplier_details.total_unit, amazon_inventories.product_name")
+        $product = Supplier_detail::selectRaw("supplier_inspections.supplier_inspection_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, supplier_details.product_id, supplier_details.total_unit, amazon_inventories.product_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'supplier_details.product_id')
+            ->join('supplier_inspections','supplier_inspections.supplier_detail_id','=','supplier_details.supplier_detail_id','left')
             ->where('supplier_details.user_id', $user->id)
             ->get();
+
         return view('order.pre_inspection')->with(compact('product', 'supplier'));
     }
     public function addpreinspection(ShipmentRequest $request)
@@ -190,13 +201,24 @@ class OrderController extends Controller
         for ($cnt = 1; $cnt < $count; $cnt++) {
             $product_count=$request->input('product_count'.$cnt);
             for($product_cnt=1; $product_cnt< $product_count; $product_cnt++) {
-                $supplier = array('supplier_detail_id' => $request->input('supplier_detail_id'.$cnt."_".$product_cnt),
-                    'user_id' => $user->id,
-                    'is_inspection' => $request->input('inspection'.$cnt),
-                    'inspection_decription' => $request->input('inspection_desc'.$cnt)
-                );
-                $supplier_inspection = new Supplier_inspection($supplier);
-                $supplier_inspection->save();
+                if(empty($request->input('supplier_inspection_id'.$cnt."_".$product_cnt))) {
+                    $supplier = array('supplier_detail_id' => $request->input('supplier_detail_id' . $cnt . "_" . $product_cnt),
+                        'user_id' => $user->id,
+                        'is_inspection' => $request->input('inspection' . $cnt),
+                        'inspection_decription' => $request->input('inspection_desc' . $cnt)
+                    );
+                    $supplier_inspection = new Supplier_inspection($supplier);
+                    $supplier_inspection->save();
+                }
+                else
+                {
+                    $supplier = array('supplier_detail_id' => $request->input('supplier_detail_id' . $cnt . "_" . $product_cnt),
+                        'user_id' => $user->id,
+                        'is_inspection' => $request->input('inspection' . $cnt),
+                        'inspection_decription' => $request->input('inspection_desc' . $cnt)
+                    );
+                    Supplier_inspection::where('supplier_inspection_id',$request->input('supplier_inspection_id'.$cnt."_".$product_cnt))->update($supplier);
+                }
             }
         }
         return redirect('order/productlabels')->with('Success', 'Labels Information Added Successfully');
@@ -205,9 +227,10 @@ class OrderController extends Controller
     {
         $user = \Auth::user();
         $product_label= Product_labels::all();
-        $product = Shipment_detail::selectRaw("shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
-            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
-            ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id')
+        $product = Shipment_detail::selectRaw("product_labels_details.product_label_detail_id, product_labels_details.product_label_id, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
+            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
+            ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id','left')
+            ->join('product_labels_details','shipment_details.shipment_detail_id','=','product_labels_details.shipment_detail_id','left')
             ->where('shipments.user_id', $user->id)
             ->get();
         return view('order.product_labels')->with(compact('product', 'product_label'));
@@ -217,13 +240,29 @@ class OrderController extends Controller
         $user = \Auth::user();
         $count = $request->input('count');
         for ($cnt = 1; $cnt < $count; $cnt++) {
-            $product_label = array('product_id' => $request->input('product_id'.$cnt),
-                'product_label_id' => $request->input('labels'.$cnt),
-                'fbsku' => $request->input('sku'.$cnt),
-                'qty' => $request->input('total'.$cnt)
-            );
-            $product_labels_detail = new Product_labels_detail($product_label);
-            $product_labels_detail->save();
+            if(empty($request->input('shipment_detail_id'.$cnt))) {
+                $product_label = array(
+                    'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'product_label_id' => $request->input('labels' . $cnt),
+                    'fbsku' => $request->input('sku' . $cnt),
+                    'qty' => $request->input('total' . $cnt)
+                );
+                $product_labels_detail = new Product_labels_detail($product_label);
+                $product_labels_detail->save();
+            }
+            else
+            {
+                $product_label = array(
+                    'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'product_label_id' => $request->input('labels' . $cnt),
+                    'fbsku' => $request->input('sku' . $cnt),
+                    'qty' => $request->input('total' . $cnt)
+                );
+                Product_labels_detail::where('product_label_detail_id',$request->input('shipment_detail_id'.$cnt))->update($product_label);
+            }
+
         }
         return redirect('order/prepservice')->with('Success', 'Product Label Information Added Successfully');
     }
