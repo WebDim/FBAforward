@@ -259,7 +259,7 @@
                             <select name="product_desc2_1" id="product_desc2_1" class="form-control select2 validate[required]" onchange="getFnsku(2,1,this.value)">
                                 <option value="">Product Description</option>
                                 @foreach($product as $products)
-                                    <option value=" {{ $products->id." ".$products->FNSKU }}"> {{ $products->product }}</option>
+                                    <option value=" {{ $products->id." ".$products->FNSKU }}"> {{ $products->product_name }}</option>
                                 @endforeach
                             </select>
                         </div>
