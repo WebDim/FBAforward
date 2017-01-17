@@ -27,6 +27,7 @@ use App\Package;
 use App\Page;
 use App\Menu;
 use App\Shipping_method;
+use App\Outbound_method;
 use App\Supplier;
 use App\Prep_service;
 use App\Listing_service;
@@ -40,6 +41,7 @@ Route::model('features', Feature::class);
 Route::model('pages', Page::class);
 Route::model('menus', Menu::class);
 Route::model('shippingmethod',Shipping_method::class);
+Route::model('outboundmethod',Outbound_method::class);
 Route::model('suppliers',Supplier::class);
 Route::model('prepservices',Prep_service::class);
 Route::model('listingservices',Listing_service::class);
@@ -89,6 +91,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::resource('suppliers', 'Admin\SupplierController');
         Route::resource('prepservices', 'Admin\PrepServiceController');
         Route::resource('listingservices', 'Admin\ListingServiceController');
+        Route::resource('outboundmethod', 'Admin\OutboundMethodController');
         Route::resource('addresses', 'Admin\AddressesController');
 
     });
