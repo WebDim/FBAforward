@@ -30,9 +30,11 @@ class AmazoninventoryController extends Controller
         {
             $this->amazonAccountValidation($seller_detail);
         }
+
     }
     public function amazonAccountValidation($account)
     {
+
         $UserCredentials['mws_authtoken'] = $account->mws_authtoken;
         $UserCredentials['mws_seller_id'] = $account->mws_seller_id;
         //                Check User AWS Details
@@ -45,11 +47,11 @@ class AmazoninventoryController extends Controller
         $request->setQueryStartDateTime($this->from_date_time);
         $request->setMWSAuthToken($account->mws_authtoken);
         if($request->SellerId != '') {
+            $productasin = array();
             $arr_response = $this->invokeListInventorySupply($service, $request);
 
             foreach ($arr_response as $new_response) {
                 foreach ($new_response->InventorySupplyList as $inventory_supply) {
-                    $productasin = array();
                     foreach ($inventory_supply as $item) {
                         $data = array("user_id" => $account->user_id,
                             "condition" => $item->Condition,
@@ -74,16 +76,17 @@ class AmazoninventoryController extends Controller
                     }
                 }
             }
-            $this->getProductInfo($productasin);
+            $this->getProductInfo($productasin,$account);
         }
         else
         {
             echo "Wrong Sellerid Passed";
         }
      }
-     private function getProductInfo($productasin=array())
+     private function getProductInfo($productasin=array(),$account)
      {
          $productasin = implode(", ", $productasin);
+         $user_id = $account->user_id;
          // Your AWS Access Key ID, as taken from the AWS Your Account page
 
          $aws_access_key_id =  env('AWSACCESSKEY');
@@ -147,7 +150,7 @@ class AmazoninventoryController extends Controller
              } else {
                  $productArray = $productdataArray['Items']['Item'];
                  foreach ($productArray as $productDetails) {
-                     $inventory = Amazon_inventory::where('ASIN', $productDetails['ASIN'])->first();
+                     $inventory = Amazon_inventory::where('ASIN', $productDetails['ASIN'])->where('user_id',$user_id)->first();
                      $inventory->product_name = $productDetails['ItemAttributes']['Title'];
                      $inventory->image_path = '';
                      if (isset($productDetails['ImageSets']['ImageSet'])) {
