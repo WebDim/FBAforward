@@ -25,18 +25,23 @@
                     {{--*/ $cnt = 1 /*--}}
                     {{--*/ $grand_total = 0 /*--}}
                     @foreach($product as $products)
+                        {{--*/ $total=0 /*--}}
                         <tr>
-                            <td><input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
+                            <td><input type="text" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id }}">
+                                <input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
                                 <b class="text-info">{{ $products->product_name }}</b></td>
                             <td><input type="hidden" name="qty{{ $cnt }}" value="{{ $products->total }}">
                                 <b class="text-info">{{ $products->total }}</b></td>
                             <td><b class="text-info">
                                     @foreach ($prep_service as $prep_services)
-                                    <input type="checkbox" name="service{{$cnt}}[]" id="service{{$cnt}}[]" value="{{ $prep_services->prep_service_id }}">{{ $prep_services->service_name }}<br>
+                                    <input type="text" name="prep_detail_id{{$cnt}}[]" id="prep_detail_id{{$cnt}}[]" value="{{$products->prep_detail_id}}">
+                                    <input type="checkbox" name="service{{$cnt}}[]" id="service{{$cnt}}[]" value="{{ $prep_services->prep_service_id }}">{{ $prep_services->service_name }}
+                                        {{--*/ $total = $total+$prep_services->price /*--}}
+                                        <br>
                                     @endforeach
                             </b></td>
-                            <td><input type="hidden" name="total{{ $cnt }}" value="{{ $products->total }}"><b class="text-info">{{ $products->total }}</b></td>
-                            {{--*/ $grand_total =$grand_total+$products->total /*--}}
+                            <td><input type="hidden" name="total{{ $cnt }}" value="{{ $total }}"><b class="text-info">{{ $total }}</b></td>
+                            {{--*/ $grand_total =$grand_total+$total /*--}}
                         </tr>
                         {{--*/ $cnt++ /*--}}
                     @endforeach

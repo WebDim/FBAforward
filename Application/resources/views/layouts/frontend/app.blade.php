@@ -17,6 +17,8 @@
 
     {!! Html::style('assets/dist/css/animate.min.css') !!}
 
+    {!! Html::style('assets/bootstrap/css/datepicker.css') !!}
+
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,700,800' rel='stylesheet'
           type='text/css'>
 
@@ -51,6 +53,8 @@
 {!! Html::script('assets/dist/js/jquery.singlePageNav.min.js') !!}
 
 {!! Html::script('assets/dist/js/wow.min.js') !!}
+
+{!! Html::script('assets/bootstrap/js/datePicker.js') !!}
 
 <script type="text/javascript">
     $(document).ready(function () {

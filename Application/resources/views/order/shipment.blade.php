@@ -311,11 +311,7 @@
 @section('js')
     {!! Html::script('assets/plugins/validationengine/languages/jquery.validationEngine-en.js') !!}
     {!! Html::script('assets/plugins/validationengine/jquery.validationEngine.js') !!}
-    {{-- {!! Html::style('http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css') !!}
-     {!! Html::script("http://code.jquery.com/jquery-1.9.1.js") !!}
-     {!! Html::script("http://code.jquery.com/ui/1.11.0/jquery-ui.js") !!}
-     {!! Html::script("http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js") !!}
-     {!! Html::script("http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js") !!} --}}
+
     <script type="text/javascript">
         $(document).ready(function () {
             // Validation Engine init
@@ -350,10 +346,10 @@
             total=$('#qty_per_case'+no+"_"+sub_no).val()*$('#no_of_case'+no+"_"+sub_no).val();
             $('#total'+no+"_"+sub_no).val(total);
         }
-        {{--$(document).ready(function () {
+        $(document).ready(function () {
             $('.datepicker').datepicker( {
             });
-        });--}}
+        });
         function get_Split_shipment(value)
         {
             if(value=="1")

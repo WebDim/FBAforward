@@ -4,15 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreditcardRequest;
 use App\Http\Requests\ProfileRequest;
-use App\Http\Requests\Request;
-use App\Package;
-use App\Feature;
 use App\Amazon_inventory;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use App\User_info;
 use PayPal\Api\CreditCard;
 use App\User_credit_cardinfo;
+use App\Http\Middleware\Amazoncredential;
 class MemberController extends Controller
 {
     /**
@@ -20,18 +17,7 @@ class MemberController extends Controller
      */
     public function __construct()
     {
-
-		/*if(!\Auth::guest())
-		{
-			if (\Auth::user()->package_id != getSetting('DEFAULT_PACKAGE_ID') && \Auth::user()->package_id != 0 && !\Auth::user()->subscribed('MEMBERSHIP')) {
-				Session::put('warning', 'Your Subscription not valid!');
-			}else
-			{
-				Session::forget('warning');
-			}
-		}*/
-
-        $this->middleware('auth');
+        $this->middleware(['auth',Amazoncredential::class]);
     }
 
     /**
@@ -44,31 +30,8 @@ class MemberController extends Controller
         if (\Auth::user()->role->name == 'Admin') {
             return redirect('admin/dashboard');
         }
-        $user = \Auth::user();
-        if(\Auth::user()->role->name == 'Customer')
-        {
-            $customer_amazon_detail = DB::table('customer_amazon_details')->where('user_id','=',$user->id)->get();
-            if(empty($customer_amazon_detail))
-            {
-                return redirect('amazon_credential')->with('error', 'Your Amazon Credential must be set for further process');
-            }
-            elseif ($customer_amazon_detail[0]->mws_seller_id=='')
-            {
-                return redirect('amazon_credential')->with('error', 'Your Amazon Credential must be set for further process');
-            }
-        }
         return view('member.home');
     }
-
-   /* public function pricing()
-    {
-        $packages = Package::active()->get();
-
-        $features = Feature::active()->get();
-
-        return view('member.pricing')->with(compact('packages', 'features'));
-    }*/
-
     public function profile()
     {
         $user = \Auth::user();
@@ -76,25 +39,12 @@ class MemberController extends Controller
             return redirect('admin/users/'.$user->id);
         }
         $user_info = DB::table('user_infos')->where('user_id', $user->id)->get();
-        if(\Auth::user()->role->name == 'Customer')
-        {
-            $customer_amazon_detail = DB::table('customer_amazon_details')->where('user_id','=',$user->id)->get();
-            if(empty($customer_amazon_detail))
-            {
-                return redirect('amazon_credential')->with('error', 'Your Amazon Credential must be fill up');
-            }
-            elseif ($customer_amazon_detail[0]->mws_seller_id=='')
-            {
-                return redirect('amazon_credential')->with('error', 'Your Amazon Credential must be fill up');
-            }
-        }
         return view('member.profile')->with(compact('user','user_info'));
     }
 
     public function editProfile()
     {
         $user = \Auth::user();
-        //$job_titles = getSetting('JOB_TITLES');
         $user_info = DB::table('user_infos')->where('user_id', $user->id)->get();
         return view('member.edit_profile')->with(compact('user', 'user_info'));
     }
