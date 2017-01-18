@@ -114,9 +114,8 @@ Route::group(['middleware' => 'web'], function () {
      * Orders routes
      */
     Route::group(['prefix' => 'order'], function () {
-        Route::get('/shipment', 'OrderController@shipment');
+        Route::get('/shipment', ['uses'=>'OrderController@shipment','as' =>'shipment']);
         Route::put('/shipment', 'OrderController@addshipment');
-        Route::get('/updateshipment',['uses'=>'OrderController@updateshipment','as' =>'shipment']);
         Route::get('/supplierdetail',['uses'=>'OrderController@supplierdetail','as'=>'supplierdetail']);
         Route::put('/supplierdetail','OrderController@addsupplierdetail');
         Route::post('/addsupplier','OrderController@addsupplier');
