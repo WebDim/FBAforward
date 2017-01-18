@@ -182,14 +182,14 @@
                                 <select name="shipping_method2" class="form-control select2 validate[required]">
                                     <option value="">Shipping Method</option>
                                     @foreach ($shipping_method as $ship_method)
-                                        <option value="{{ $ship_method->shipping_method_id }}" @if(count($shipment)>0) @if($shipment[1]->shipping_method_id==$ship_method->shipping_method_id){{"selected"}} @endif @endif >  {{ $ship_method->shipping_name }}</option>
+                                        <option value="{{ $ship_method->shipping_method_id }}" @if(count($shipment)>1) @if($shipment[1]->shipping_method_id==$ship_method->shipping_method_id){{"selected"}} @endif @endif >  {{ $ship_method->shipping_name }}</option>
                                     @endforeach
                                 </select>
-                                {!! Form::hidden('shipment_id2', old('shipment_id2', count($shipment)>0 ? $shipment[1]->shipment_id  : null), ['class' => 'form-control']) !!}
+                                {!! Form::hidden('shipment_id2', old('shipment_id2', count($shipment)>1 ? $shipment[1]->shipment_id  : null), ['class' => 'form-control']) !!}
                             </div>
                         </div>
                     </div>
-                    @if(count($shipment)>0)
+                    @if(count($shipment)>1)
                         {{--*/ $cnt=1 /*--}}
                         @foreach($shipment_detail as $shipment_details)
                             @if($shipment[1]->shipment_id==$shipment_details->shipment_id)
