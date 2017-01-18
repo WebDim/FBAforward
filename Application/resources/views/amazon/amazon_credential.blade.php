@@ -21,7 +21,7 @@
                         {!! Form::label('mws_seller_id', 'Seller ID *') !!}
                           <div class="input-group">
                                 <span class="input-group-addon"></span>
-                                {!! Form::text('mws_seller_id', old('mws_seller_id', !empty($customer_amazon_detail) ? $customer_amazon_detail[0]->mws_seller_id: null), ['class' => 'form-control validate[required]', 'placeholder'=>'MWS Seller Id']) !!}
+                                {!! Form::text('mws_seller_id', old('mws_seller_id', !empty($customer_amazon_detail) ? decrypt($customer_amazon_detail[0]->mws_seller_id): null), ['class' => 'form-control validate[required]', 'placeholder'=>'MWS Seller Id']) !!}
                             </div>
 
                     </div>
@@ -30,7 +30,7 @@
 
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
-                                {!! Form::text('mws_authtoken', old('mws_authtoken', !empty($customer_amazon_detail) ? $customer_amazon_detail[0]->mws_authtoken: null), ['class' => 'form-control validate[required]', 'placeholder'=>'MWS Authtoken']) !!}
+                                {!! Form::text('mws_authtoken', old('mws_authtoken', !empty($customer_amazon_detail) ? decrypt($customer_amazon_detail[0]->mws_authtoken): null), ['class' => 'form-control validate[required]', 'placeholder'=>'MWS Authtoken']) !!}
                             </div>
 
                     </div>

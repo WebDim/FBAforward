@@ -46,9 +46,9 @@ class AmazonController extends Controller
         if ($validamazonMWS == 1) {
             $credentail=array(
                 'user_id' =>$user->id,
-                'mws_seller_id'=>$request->input('mws_seller_id'),
+                'mws_seller_id'=>encrypt($request->input('mws_seller_id')),
                 'mws_market_place_id'=>$request->input('mws_market_place_id'),
-                'mws_authtoken'=>$request->input('mws_authtoken'),
+                'mws_authtoken'=>encrypt($request->input('mws_authtoken')),
             );
             Customer_amazon_detail::where("user_id", "=", $user->id)->update($credentail);
             return redirect('amazon_credential')->with('success', 'Your Amazon Credential Updated Successfully');
