@@ -1,5 +1,4 @@
 @extends('layouts.frontend.app')
-
 @section('title', 'Shipment call')
 
 @section('content')
@@ -20,8 +19,8 @@
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
                                 <select name="split_shipment" id="split_sphiment" class="form-control select2 validate[required]" onchange="get_Split_shipment(this.value)">
-                                    <option value="0" {{ !empty($shipment) ?   "selected" : '' }} > No</option>
-                                    <option value="1" {{ !empty($shipment) ?   "selected"  : '' }} >Yes</option>
+                                    <option value="0" @if(count($shipment)>0) @if($shipment[0]->split_shipment=="0"){{"selected"}} @endif @endif > No</option>
+                                    <option value="1" @if(count($shipment)>0) @if($shipment[0]->split_shipment=="1"){{"selected"}} @endif @endif >Yes</option>
                                 </select>
                             </div>
                         </div>
@@ -33,7 +32,7 @@
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
-                                {!! Form::text('date', old('date', !empty($shipment) ? date('d/m/Y',strtotime( $shipment[0]->goods_ready_date))   : null), ['class' => 'datepicker form-control validate[required]', 'placeholder'=>'Goods Ready Date']) !!}
+                                {!! Form::text('date', old('date', count($shipment)>0 ? date('d/m/Y',strtotime( $shipment[0]->goods_ready_date))   : null), ['class' => 'datepicker form-control validate[required]', 'placeholder'=>'Goods Ready Date']) !!}
                             </div>
                         </div>
                     </div>
@@ -54,14 +53,14 @@
                                 <select name="shipping_method1" class="form-control select2 validate[required]">
                                     <option value="">Shipping Method</option>
                                     @foreach ($shipping_method as $ship_method)
-                                        <option value="{{ $ship_method->shipping_method_id }}">  {{ $ship_method->shipping_name }}</option>
+                                        <option value="{{ $ship_method->shipping_method_id }}"  @if(count($shipment)>0) @if($shipment[0]->shipping_method_id==$ship_method->shipping_method_id){{"selected"}} @endif @endif >  {{ $ship_method->shipping_name }}</option>
                                     @endforeach
                                 </select>
-                                {!! Form::text('shipment_id1', old('shipment_id1', !empty($shipment) ? $shipment[0]->shipment_id  : null), ['class' => 'form-control validate[required]']) !!}
+                                {!! Form::hidden('shipment_id1', old('shipment_id1', count($shipment)>0 ? $shipment[0]->shipment_id  : null), ['class' => 'form-control']) !!}
                             </div>
                         </div>
                     </div>
-                    @if(!empty($shipment))
+                    @if(count($shipment)>0)
                         {{--*/ $cnt=1 /*--}}
                         @foreach($shipment_detail as $shipment_details)
                             @if($shipment[0]->shipment_id==$shipment_details->shipment_id)
@@ -183,14 +182,14 @@
                                 <select name="shipping_method2" class="form-control select2 validate[required]">
                                     <option value="">Shipping Method</option>
                                     @foreach ($shipping_method as $ship_method)
-                                        <option value="{{ $ship_method->shipping_method_id }}" >  {{ $ship_method->shipping_name }}</option>
+                                        <option value="{{ $ship_method->shipping_method_id }}" @if(count($shipment)>0) @if($shipment[1]->shipping_method_id==$ship_method->shipping_method_id){{"selected"}} @endif @endif >  {{ $ship_method->shipping_name }}</option>
                                     @endforeach
                                 </select>
-                                {!! Form::hidden('shipment_id2', old('shipment_id2', !empty($shipment) ? $shipment[1]->shipment_id  : null), ['class' => 'form-control validate[required]']) !!}
+                                {!! Form::hidden('shipment_id2', old('shipment_id2', count($shipment)>0 ? $shipment[1]->shipment_id  : null), ['class' => 'form-control']) !!}
                             </div>
                         </div>
                     </div>
-                    @if(!empty($shipment))
+                    @if(count($shipment)>0)
                         {{--*/ $cnt=1 /*--}}
                         @foreach($shipment_detail as $shipment_details)
                             @if($shipment[1]->shipment_id==$shipment_details->shipment_id)
@@ -205,11 +204,11 @@
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="hidden" name="shipment_detail2_{{$cnt}}" id="shipment_detail2_{{$cnt}}" class="form-control" value="{{$shipment_details->shipment_detail_id}}" required>
+                                            <input type="hidden" name="shipment_detail2_{{$cnt}}" id="shipment_detail2_{{$cnt}}" class="form-control" value="{{$shipment_details->shipment_detail_id}}">
                                             <select name="product_desc2_{{$cnt}}" id="product_desc2_{{$cnt}}" class="form-control select2 validate[required]" onchange="getFnsku(2,{{$cnt}},this.value)">
                                                 <option value="">Product Description</option>
                                                 @foreach($product as $products)
-                                                    <option value=" {{ $products->id." ".$products->FNSKU }}"> {{ $products->product_name }}</option>
+                                                    <option value=" {{ $products->id." ".$products->FNSKU }}" @if($shipment_details->product_id==$products->id) {{ "selected" }} @endif> {{ $products->product_name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>

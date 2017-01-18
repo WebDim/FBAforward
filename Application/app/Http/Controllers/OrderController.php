@@ -31,21 +31,13 @@ class OrderController extends Controller
         $user = \Auth::user();
         $shipping_method = Shipping_method::all();
         $product = Amazon_inventory::where('user_id', $user->id)->get();
-        return view('order.shipment')->with(compact('shipping_method', 'product'));
-    }
-
-    public function updateshipment()
-    {
-        $user = \Auth::user();
-        $shipping_method = Shipping_method::all();
-        $product = Amazon_inventory::where('user_id', $user->id)->get();
         $shipment= Shipments::where('user_id',$user->id)->where('is_activated','0')->get();
         $shipment_detail = Shipment_detail::selectRaw("shipment_details.* ")
-            ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id')
+            ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
             ->where('shipments.user_id',$user->id)
+            ->where('shipments.is_activated','0')
             ->get();
-
-        return view('order.shipment')->with(compact('shipping_method', 'product','shipment','shipment_detail'));
+        return view('order.shipment')->with(compact('shipping_method','product','shipment','shipment_detail'));
     }
     public function addshipment(ShipmentRequest $request)
     {
@@ -120,12 +112,6 @@ class OrderController extends Controller
     public function supplierdetail()
     {
         $user = \Auth::user();
-        /*$product = Shipment_detail::selectRaw("shipments.shipment_id, shipments.user_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name")
-            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
-            ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id')
-            ->join('supplier_details','shipment_details.product_id','=','supplier_details.product_id')
-            ->where('shipments.user_id',$user->id)
-            ->get();*/
         $product = Shipment_detail::selectRaw(" shipment_details.shipment_detail_id,supplier_details.supplier_id,  supplier_details.supplier_detail_id,  shipment_details.product_id, shipment_details.total,  amazon_inventories.product_name  ")
             ->join('supplier_details','shipment_details.shipment_detail_id','=','supplier_details.shipment_detail_id','left')
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
@@ -183,7 +169,7 @@ class OrderController extends Controller
             ->join('supplier_details', 'supplier_details.supplier_id', '=', 'suppliers.supplier_id')
             ->join('supplier_inspections','supplier_details.supplier_detail_id','=','supplier_inspections.supplier_detail_id','left')
             ->where('supplier_details.user_id', $user->id)
-            ->groupBy('supplier_details.user_id')
+           // ->groupBy('supplier_details.user_id')
             ->get();
         $product = Supplier_detail::selectRaw("supplier_inspections.supplier_inspection_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, supplier_details.product_id, supplier_details.total_unit, amazon_inventories.product_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'supplier_details.product_id')
