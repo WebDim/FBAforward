@@ -33,12 +33,13 @@
                             <td><input type="hidden" name="qty{{ $cnt }}" value="{{ $products->total }}">
                                 <b class="text-info">{{ $products->total }}</b></td>
                             <td><b class="text-info">
+
                                     @foreach ($prep_service as $prep_services)
-                                    <input type="text" name="prep_detail_id{{$cnt}}[]" id="prep_detail_id{{$cnt}}[]" value="{{$products->prep_detail_id}}">
-                                    <input type="checkbox" name="service{{$cnt}}[]" id="service{{$cnt}}[]" value="{{ $prep_services->prep_service_id }}">{{ $prep_services->service_name }}
-                                        {{--*/ $total = $total+$prep_services->price /*--}}
+                                        <input type="checkbox" name="service{{$cnt}}[]" id="service{{$cnt}}[]" value="{{ $prep_services->prep_service_id }}" >{{ $prep_services->service_name }}
+                                           {{--*/ $total = $total+$prep_services->price /*--}}
                                         <br>
                                     @endforeach
+
                             </b></td>
                             <td><input type="hidden" name="total{{ $cnt }}" value="{{ $total }}"><b class="text-info">{{ $total }}</b></td>
                             {{--*/ $grand_total =$grand_total+$total /*--}}

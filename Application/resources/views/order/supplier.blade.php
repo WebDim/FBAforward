@@ -74,7 +74,7 @@
     <div class="col-md-4">
         <div class="input-group">
             <span class="input-group-addon"></span>
-            {!! Form::text('email', old('email'), ['class' => 'form-control validate[required]', 'placeholder'=>'Email Address']) !!}
+            {!! Form::email('email', old('email'), ['class' => 'form-control validate[required]', 'placeholder'=>'Email Address']) !!}
         </div>
     </div>
     {!! Form::label('phone', 'Phone #*', ['class' => 'control-label col-md-2']) !!}
@@ -105,6 +105,7 @@
 @section('js')
 {!! Html::script('assets/plugins/validationengine/languages/jquery.validationEngine-en.js') !!}
 {!! Html::script('assets/plugins/validationengine/jquery.validationEngine.js') !!}
+{!! Html::script('https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.js') !!}
 <script type="text/javascript">
 $(document).ready(function () {
 // Validation Engine init
@@ -135,29 +136,64 @@ company_name=$('#company_name').val();
 contact_name=$('#contact_name').val();
 email=$('#email').val();
 phone=$('#phone').val();
-$.ajax({
-headers:
-    {
-        'X-CSRF-Token': $('input[name="_token"]').val()
-    },
-method: 'POST', // Type of response and matches what we said in the route
-url: '/order/addsupplier', // This is the url we gave in the route
-data: {'company_name' : company_name,
-        'contact_name' : contact_name,
-        'email' : email,
-        'phone' : phone
+    $("#validate").validate({
+        rules: {
+            "company_name": {
+                required: true,
 
-}, // a JSON object to send back
-success: function(response){ // What to do if we succeed
-    console.log(response);
-    alert("Supplier added Successfully");
-    location.reload();
-},
-error: function(jqXHR, textStatus, errorThrown) { // What to do if we fail
-    console.log(JSON.stringify(jqXHR));
-    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
-}
-});
+            },
+            "email": {
+                required: true,
+                email: true,
+            },
+            "contact_name": {
+                required:true,
+            },
+            "phone": {
+                required:true,
+            },
+        },
+        messages:{
+            "company_name": {
+                    required:"Company name is required",
+                },
+            "email": {
+                required:"Email address is required",
+                email:"Enter valid email address",
+            },
+            "contact_name": {
+                required:"Contact name is required",
+            },
+            "phone": {
+                required:"Phone # is required",
+            },
+        }
+    });
+    if($('#validate').valid()) {
+        $.ajax({
+            headers: {
+                'X-CSRF-Token': $('input[name="_token"]').val()
+            },
+            method: 'POST', // Type of response and matches what we said in the route
+            url: '/order/addsupplier', // This is the url we gave in the route
+            data: {
+                'company_name': company_name,
+                'contact_name': contact_name,
+                'email': email,
+                'phone': phone
+
+            }, // a JSON object to send back
+            success: function (response) { // What to do if we succeed
+                console.log(response);
+                alert("Supplier added Successfully");
+                location.reload();
+            },
+            error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                console.log(JSON.stringify(jqXHR));
+                console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+            }
+        });
+    }
 
 }
 </script>
