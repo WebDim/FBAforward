@@ -26,12 +26,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-         //$schedule->command('inspire')
-           //       ->hourly();
         $schedule->call(function(){
            $inventory = new \App\Http\Controllers\AmazoninventoryController;
            $inventory->index();
         })->everyMinute();
-
     }
 }
