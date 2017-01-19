@@ -3,6 +3,7 @@
 @section('title', 'Listing Services Information')
 
 @section('content')
+    @include('layouts.frontend.tabs', ['data' => 'list_service'])
     <div class="row">
         <div class="col-md-12">
             <h2 class="page-head-line">Listing Services Information</h2>

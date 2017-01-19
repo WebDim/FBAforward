@@ -3,6 +3,7 @@
 @section('title', 'Pre Inspection')
 
 @section('content')
+    @include('layouts.frontend.tabs', ['data' => 'pre_inspection'])
     <div class="row">
         <div class="col-md-12">
             <h2 class="page-head-line">Pre Inspection</h2>

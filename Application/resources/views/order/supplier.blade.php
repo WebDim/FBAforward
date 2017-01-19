@@ -3,6 +3,7 @@
 @section('title', 'Supplier Information')
 
 @section('content')
+    @include('layouts.frontend.tabs', ['data' => 'supplier'])
     <div class="row">
         <div class="col-md-12">
             <h2 class="page-head-line">Supplier Information</h2>

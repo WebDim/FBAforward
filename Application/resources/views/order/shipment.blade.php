@@ -1,7 +1,7 @@
 @extends('layouts.frontend.app')
 @section('title', 'Shipment call')
-
 @section('content')
+    @include('layouts.frontend.tabs', ['data' => 'shipment'])
     <div class="row">
         <div class="col-md-12">
             <h2 class="page-head-line">Shipment Information</h2>
