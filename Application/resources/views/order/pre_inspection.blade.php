@@ -3,10 +3,9 @@
 @section('title', 'Pre Inspection')
 
 @section('content')
+    @include('layouts.frontend.tabs', ['data' => 'pre_inspection'])
     <div class="row">
-        <div class="col-md-12">
-            <h2 class="page-head-line">Pre Inspection</h2>
-        </div>
+        <div class="col-md-12">&nbsp;</div>
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -15,10 +14,10 @@
                 <table class="table" id="list">
                     <thead>
                     <tr>
-                        <td><span>Suppliers</span></td>
-                        <td><span>Product</span></td>
-                        <td><span>Quantity</span></td>
-                        <td><span>Inspection</span></td>
+                        <th><span>Suppliers</span></th>
+                        <th><span>Product</span></th>
+                        <th><span>Quantity</span></th>
+                        <th><span>Inspection</span></th>
                     </tr>
                     </thead>
                     <tbody>

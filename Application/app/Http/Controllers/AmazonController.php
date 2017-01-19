@@ -51,7 +51,7 @@ class AmazonController extends Controller
                 'mws_authtoken'=>encrypt($request->input('mws_authtoken')),
             );
             Customer_amazon_detail::where("user_id", "=", $user->id)->update($credentail);
-            return redirect('amazon_credential')->with('success', 'Your Amazon Credential Updated Successfully');
+            return redirect('member/amazoninventorylist')->with('success', 'Your Amazon Credential Updated Successfully, We are fetching your new products, Please passionate check it after 5 minutes.');
         } else {
             return redirect('amazon_credential')->with('error', 'Your Amazon Credential Invalid');
         }

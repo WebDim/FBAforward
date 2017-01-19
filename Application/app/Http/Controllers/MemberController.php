@@ -85,18 +85,7 @@ class MemberController extends Controller
     public function amazoninventorylist()
     {
         $user = \Auth::user();
-        if(\Auth::user()->role->name == 'Customer')
-        {
-            $customer_amazon_detail = DB::table('customer_amazon_details')->where('user_id','=',$user->id)->get();
-            if(empty($customer_amazon_detail))
-            {
-                return redirect('amazon_credential')->with('error', 'Your Amazon Credential must be fill up');
-            }
-            elseif ($customer_amazon_detail[0]->mws_seller_id=='')
-            {
-                return redirect('amazon_credential')->with('error', 'Your Amazon Credential must be fill up');
-            }
-        }
+
         $inventory_list = Amazon_inventory::where('user_id', $user->id)->get();
         return view('member.amazon_inventory_list')->with(compact('user', 'inventory_list'));
     }

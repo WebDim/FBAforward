@@ -7,10 +7,13 @@
  */
 namespace App\Http\Controllers;
 
+use App\Customer_amazon_detail;
 use App\Amazon_marketplace;
 use App\Amazon_inventory;
+
 use Illuminate\Support\Facades\DB;
 use App\Libraries;
+
 use Carbon\Carbon;
 class AmazoninventoryController extends Controller
 {
@@ -22,7 +25,6 @@ class AmazoninventoryController extends Controller
 
     public function index()
     {
-
        $results = Amazon_marketplace::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken, amazon_marketplaces.market_place_id")
             ->join('customer_amazon_details', 'customer_amazon_details.mws_market_place_id', '=', 'amazon_marketplaces.id')
             ->get();
@@ -30,14 +32,16 @@ class AmazoninventoryController extends Controller
         {
             $this->amazonAccountValidation($seller_detail);
         }
-
     }
+
+
     public function amazonAccountValidation($account)
     {
 
-        $UserCredentials['mws_authtoken'] = decrypt($account->mws_authtoken);
-        $UserCredentials['mws_seller_id'] = decrypt($account->mws_seller_id);
-        //                Check User AWS Details
+        $UserCredentials['mws_authtoken'] = !empty($account->mws_authtoken) ? decrypt($account->mws_authtoken) : '';
+        $UserCredentials['mws_seller_id'] = !empty($account->mws_seller_id) ? decrypt($account->mws_seller_id) : '';
+
+        //  Check User AWS Details
         $this->operation = 'ListInventorySupply';
         $this->from_date_time = "2016-12-01T07:43:29Z";
         $this->to_date_time = null;
