@@ -258,33 +258,49 @@ class OrderController extends Controller
     {
         $user = \Auth::user();
         $prep_service= Prep_service::all();
-        $product = Shipment_detail::selectRaw("shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
+        $product = Shipment_detail::selectRaw("prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.grand_total, prep_details.prep_service_ids, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
             ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id','left')
+            ->join('prep_details','prep_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
             ->where('shipments.user_id', $user->id)
             ->get();
-        $prepservice_detail=Prep_detail::where('user_id',$user->id)->get();
-        return view('order.prep_service')->with(compact('prep_service', 'product',''));
+        return view('order.prep_service')->with(compact('prep_service', 'product'));
     }
     public function addprepservice(ShipmentRequest $request)
     {
         $user = \Auth::user();
         $count = $request->input('count');
         for ($cnt = 1; $cnt < $count; $cnt++) {
+            $service=array();
             $sub_count =$request->input('sub_count'.$cnt);
             for ($sub_cnt = 1; $sub_cnt <= $sub_count; $sub_cnt++) {
-                if(!empty($request->input("service".$cnt."_".$sub_cnt))) {
-                    $prep_service = array('user_id' => $user->id,
-                        'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
-                        'product_id' => $request->input('product_id' . $cnt),
-                        'total_qty' => $request->input('qty' . $cnt),
-                        'prep_service_ids' => $request->input('service' . $cnt . "_" . $sub_cnt),
-                        'prep_service_total' => $request->input('total' . $cnt),
-                        'grand_total' => $request->input('grand_total')
-                    );
-                    $prep_service_detail = new Prep_detail($prep_service);
-                    $prep_service_detail->save();
+                if (!empty($request->input("service" . $cnt . "_" . $sub_cnt))) {
+                    $service[]=$request->input('service' . $cnt . "_" . $sub_cnt);
                 }
+            }
+            if(empty($request->input('prep_detail_id'.$cnt))) {
+                $prep_service = array('user_id' => $user->id,
+                    'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'total_qty' => $request->input('qty' . $cnt),
+                    'prep_service_ids' => implode(',', $service),
+                    'prep_service_total' => $request->input('total' . $cnt),
+                    'grand_total' => $request->input('grand_total')
+                );
+                $prep_service_detail = new Prep_detail($prep_service);
+                $prep_service_detail->save();
+            }
+            else
+            {
+                $prep_service = array('user_id' => $user->id,
+                    'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'total_qty' => $request->input('qty' . $cnt),
+                    'prep_service_ids' => implode(',', $service),
+                    'prep_service_total' => $request->input('total' . $cnt),
+                    'grand_total' => $request->input('grand_total')
+                );
+                Prep_detail::where('prep_detail_id',$request->input('prep_detail_id'.$cnt))->update($prep_service);
             }
         }
         return redirect('order/listservice')->with('Success', 'Prep Service Information Added Successfully');
@@ -293,9 +309,10 @@ class OrderController extends Controller
     {
         $user = \Auth::user();
         $list_service= Listing_service::all();
-        $product = Shipment_detail::selectRaw("shipment_details.product_id, shipment_details.total, amazon_inventories.product_name")
+        $product = Shipment_detail::selectRaw("listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.grand_total, listing_service_details.listing_service_ids,shipment_details.product_id, shipment_details.shipment_detail_id, shipment_details.total, amazon_inventories.product_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
             ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id')
+            ->join('listing_service_details','listing_service_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
             ->where('shipments.user_id', $user->id)
             ->get();
       return view('order.list_service')->with(compact('list_service', 'product'));
@@ -304,16 +321,35 @@ class OrderController extends Controller
     {
         $count = $request->input('count');
         for ($cnt = 1; $cnt < $count; $cnt++) {
-            $service =$request->input('service'.$cnt);
-            foreach ($service as $services) {
+            $service=array();
+            $sub_count =$request->input('sub_count'.$cnt);
+            for ($sub_cnt = 1; $sub_cnt <= $sub_count; $sub_cnt++) {
+                if (!empty($request->input("service" . $cnt . "_" . $sub_cnt))) {
+                    $service[]=$request->input('service' . $cnt . "_" . $sub_cnt);
+                }
+            }
+            if(empty($request->input('listing_service_detail_id'.$cnt))) {
+                $list_service = array(
+                        'product_id' => $request->input('product_id' . $cnt),
+                        'listing_service_ids' => implode(',', $service),
+                        'shipment_detail_id' => $request->input('shipment_detail_id'.$cnt),
+                        'listing_service_total' => $request->input('total' . $cnt),
+                        'grand_total' => $request->input('grand_total')
+                    );
+                    $list_service_detail = new Listing_service_detail($list_service);
+                    $list_service_detail->save();
+
+            }
+            else
+            {
                 $list_service = array(
                     'product_id' => $request->input('product_id' . $cnt),
-                    'listing_service_ids' => $services,
+                    'listing_service_ids' => implode(',', $service),
+                    'shipment_detail_id' => $request->input('shipment_detail_id'.$cnt),
                     'listing_service_total' => $request->input('total' . $cnt),
                     'grand_total' => $request->input('grand_total')
                 );
-                $list_service_detail = new Listing_service_detail($list_service);
-                $list_service_detail->save();
+                Listing_service_detail::where('listing_service_detail_id',$request->input('listing_service_detail_id'.$cnt))->update($list_service);
             }
         }
         //return redirect('order/listservice')->with('Success', 'Product Label Information Added Successfully');

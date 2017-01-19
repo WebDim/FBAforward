@@ -14,9 +14,9 @@
                 <table class="table" id="list">
                     <thead>
                     <tr>
-                        <th><span>Product</span></th>
-                        <th><span>Total Unit</span></th>
-                        <th><span>Suppliers</span></th>
+                        <th class="col-md-6"><span>Product</span></th>
+                        <th class="col-md-3"><span>Total Unit</span></th>
+                        <th class="col-md-3"><span>Suppliers</span></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -25,15 +25,15 @@
         @foreach($product as $products)
 
        <tr>
-            <td><input type="hidden" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id }}">
+            <td class="col-md-6"><input type="hidden" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id }}">
                 <input type="hidden" name="supplier_detail_id{{ $cnt }}" value="{{ $products->supplier_detail_id }}">
                 <input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
                 <b class="text-info">{{ $products->product_name }}</b></td>
-            <td><input type="hidden" name="total{{ $cnt }}" value="{{ $products->total }}"><b class="text-info">{{ $products->total }}</b></td>
-            <td><b class="text-info">
+            <td class="col-md-3"><input type="hidden" name="total{{ $cnt }}" value="{{ $products->total }}"><b class="text-info">{{ $products->total }}</b></td>
+            <td class="col-md-3"><b class="text-info">
                     <select name="supplier{{ $cnt }}" class="form-control select2 validate[required]" onchange="add_Supplier(this.value)">
-                        <option value="">Suppliers</option>
-                        <option value="0">Add New</option>
+                        <option disabled>Select Suppliers</option>
+                        <option value="">Add New</option>
                         @foreach ($supplier as $suppliers)
                             <option value="{{ $suppliers->supplier_id }}" @if($products->supplier_id==$suppliers->supplier_id) {{ "selected" }} @endif>  {{ $suppliers->company_name }}</option>
                         @endforeach
@@ -55,15 +55,15 @@
 <div class="form-group">
     {!! Form::label('company_name', 'Company Name*', ['class' => 'control-label col-md-2']) !!}
     <div class="col-md-4">
-        <div class="input-group">
-            <span class="input-group-addon"></span>
+        <div class="">
+            <span class=""></span>
             {!! Form::text('company_name', old('company_name'), ['class' => 'form-control validate[required]', 'placeholder'=>'Company Name']) !!}
         </div>
     </div>
     {!! Form::label('contact_name', 'Contact Name*', ['class' => 'control-label col-md-2']) !!}
     <div class="col-md-4">
-        <div class="input-group">
-            <span class="input-group-addon"></span>
+        <div class="">
+            <span class=""></span>
             {!! Form::text('contact_name', old('contact_name'), ['class' => 'form-control validate[required]', 'placeholder'=>'Contact Name']) !!}
         </div>
     </div>
@@ -71,15 +71,15 @@
 <div class="form-group">
     {!! Form::label('email', 'Email Address*', ['class' => 'control-label col-md-2']) !!}
     <div class="col-md-4">
-        <div class="input-group">
-            <span class="input-group-addon"></span>
+        <div class="">
+            <span class=""></span>
             {!! Form::email('email', old('email'), ['class' => 'form-control validate[required]', 'placeholder'=>'Email Address']) !!}
         </div>
     </div>
     {!! Form::label('phone', 'Phone #*', ['class' => 'control-label col-md-2']) !!}
     <div class="col-md-4">
-        <div class="input-group">
-            <span class="input-group-addon"></span>
+        <div class="">
+            <span class=""></span>
             {!! Form::text('phone', old('phone'), ['class' => 'form-control validate[required]', 'placeholder'=>'Phone #']) !!}
         </div>
     </div>
@@ -119,7 +119,7 @@ $("form[id^='validate']").validationEngine('attach',
 </script>
 <script>
 function add_Supplier(value) {
-if(value=='0')
+if(value=='')
 {
 $('#main').show();
 }
@@ -151,6 +151,7 @@ phone=$('#phone').val();
             "phone": {
                 required:true,
             },
+
         },
         messages:{
             "company_name": {

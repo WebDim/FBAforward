@@ -9,7 +9,7 @@ class Listing_service_detail extends Model
     //
     protected $primaryKey = 'listing_service_detail_id ';
     protected $table ='listing_service_details';
-    protected $fillable = ['product_id', 'listing_service_ids', 'listing_service_total','grand_total','	is_activated'];
+    protected $fillable = ['product_id', 'shipment_detail_id', 'listing_service_ids', 'listing_service_total','grand_total','	is_activated'];
 
     public function listing_service()
     {

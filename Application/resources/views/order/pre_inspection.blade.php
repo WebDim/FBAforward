@@ -14,10 +14,10 @@
                 <table class="table" id="list">
                     <thead>
                     <tr>
-                        <th><span>Suppliers</span></th>
-                        <th><span>Product</span></th>
-                        <th><span>Quantity</span></th>
-                        <th><span>Inspection</span></th>
+                        <th class="col-md-2"><span>Suppliers</span></th>
+                        <th class="col-md-5"><span>Product</span></th>
+                        <th class="col-md-2"><span>Quantity</span></th>
+                        <th class="col-md-3"><span>Inspection</span></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -25,9 +25,9 @@
                     @foreach($supplier as $suppliers)
                         {{--*/ $product_cnt = 1 /*--}}
                         <tr>
-                            <td><input type="hidden" name="supplier_id{{ $cnt }}" value="{{ $suppliers->supplier_id }}">
+                            <td class="col-md-2"><input type="hidden" name="supplier_id{{ $cnt }}" value="{{ $suppliers->supplier_id }}">
                                 <b class="text-info">{{ $suppliers->company_name }}</b></td>
-                            <td >
+                            <td hidden>
                                 @foreach($product as $products)
                                     @if($products->supplier_id==$suppliers->supplier_id)
                                         <input type="hidden" name="supplier_inspection_id{{$cnt."_".$product_cnt}}" value="{{$products->supplier_inspection_id }}">
@@ -36,21 +36,21 @@
                                     @endif
                                 @endforeach
                             </td>
-                            <td><b class="text-info">
+                            <td class="col-md-4"><b class="text-info">
                                 @foreach($product as $products)
                                     @if($products->supplier_id==$suppliers->supplier_id)
                                         {{ $products->product_name }}<br>
                                     @endif
                                 @endforeach
                                 </b></td>
-                            <td><b class="text-info">
+                            <td class="col-md-2"><b class="text-info">
                                     @foreach($product as $products)
                                         @if($products->supplier_id==$suppliers->supplier_id)
                                             {{ $products->total_unit }}<br>
                                         @endif
                                     @endforeach
                                 </b></td>
-                            <td><b class="text-info">
+                            <td class="col-md-3"><b class="text-info">
                                     <select name="inspection{{ $cnt }}" id="inspection{{ $cnt }}" class="form-control select2 validate[required]" onchange="add_Inspection({{ $cnt }}, this.value)">
                                         <option value="0" @if($suppliers->is_inspection=='0') {{ "selected" }} @endif>No</option>
                                         <option value="1" @if($suppliers->is_inspection=='1') {{ "selected" }} @endif>Yes</option>

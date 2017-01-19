@@ -14,26 +14,26 @@
                 <table class="table" id="list">
                     <thead>
                     <tr>
-                        <th><span>Product</span></th>
-                        <th><span>SKU</span></th>
-                        <th><span>Quantity</span></th>
-                        <th><span>Who Will Label</span></th>
+                        <th class="col-md-5"><span>Product</span></th>
+                        <th class="col-md-2"><span>SKU</span></th>
+                        <th class="col-md-2"><span>Quantity</span></th>
+                        <th class="col-md-3"><span>Who Will Label</span></th>
                     </tr>
                     </thead>
                     <tbody>
                     {{--*/ $cnt = 1 /*--}}
                     @foreach($product as $products)
                         <tr>
-                            <td><input type="hidden" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id  }}">
+                            <td class="col-md-5"><input type="hidden" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id  }}">
                                 <input type="hidden" name="product_label_detail_id{{ $cnt }}" value="{{ $products->product_label_detail_id  }}">
                                 <input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
                                 <b class="text-info">{{ $products->product_name }}</b></td>
-                            <td><input type="hidden" name="sku{{ $cnt }}" value="{{ $products->sellerSKU }}">
+                            <td class="col-md-2"><input type="hidden" name="sku{{ $cnt }}" value="{{ $products->sellerSKU }}">
                                 <b class="text-info">{{ $products->sellerSKU }}</b></td>
-                            <td><input type="hidden" name="total{{ $cnt }}" value="{{ $products->total }}"><b class="text-info">{{ $products->total }}</b></td>
-                            <td><b class="text-info">
+                            <td class="col-md-2"><input type="hidden" name="total{{ $cnt }}" value="{{ $products->total }}"><b class="text-info">{{ $products->total }}</b></td>
+                            <td class="col-md-3"><b class="text-info">
                                     <select name="labels{{ $cnt }}" class="form-control select2 validate[required]">
-                                        <option value="">Labels</option>
+                                        <option value="">Select Labels</option>
                                         @foreach ($product_label as $product_labels)
                                             <option value="{{ $product_labels->product_label_id }}" @if($products->product_label_id==$product_labels->product_label_id) {{ "selected" }}@endif>  {{ $product_labels->label_name }}</option>
                                         @endforeach

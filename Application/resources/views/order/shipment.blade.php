@@ -30,7 +30,7 @@
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
-                                {!! Form::text('date', old('date', count($shipment)>0 ? date('d/m/Y',strtotime( $shipment[0]->goods_ready_date)) : null), ['class' => 'datepicker form-control validate[required]', 'placeholder'=>'Goods Ready Date']) !!}
+                                {!! Form::text('date', old('date', count($shipment)>0 ? date('m/d/Y',strtotime( $shipment[0]->goods_ready_date)) : null), ['class' => 'datepicker form-control validate[required]', 'placeholder'=>'mm/dd/yyyy']) !!}
                             </div>
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
                                 <select name="shipping_method1" class="form-control select2 validate[required]">
-                                    <option value="">Shipping Method</option>
+                                    <option value=""> Select Shipping Method</option>
                                     @foreach ($shipping_method as $ship_method)
                                         <option value="{{ $ship_method->shipping_method_id }}"  @if(count($shipment)>0) @if($shipment[0]->shipping_method_id==$ship_method->shipping_method_id){{"selected"}} @endif @endif >  {{ $ship_method->shipping_name }}</option>
                                     @endforeach
@@ -178,7 +178,7 @@
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
                                 <select name="shipping_method2" class="form-control select2 validate[required]">
-                                    <option value="">Shipping Method</option>
+                                    <option value="">Select Shipping Method</option>
                                     @foreach ($shipping_method as $ship_method)
                                         <option value="{{ $ship_method->shipping_method_id }}" @if(count($shipment)>1) @if($shipment[1]->shipping_method_id==$ship_method->shipping_method_id){{"selected"}} @endif @endif >  {{ $ship_method->shipping_name }}</option>
                                     @endforeach
