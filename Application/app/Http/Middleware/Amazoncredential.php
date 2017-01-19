@@ -19,13 +19,9 @@ class Amazoncredential
         if(\Auth::user()->role->name == 'Customer')
         {
             $customer_amazon_detail = DB::table('customer_amazon_details')->where('user_id','=',$user->id)->get();
-            if(empty($customer_amazon_detail))
+            if(empty($customer_amazon_detail) || $customer_amazon_detail[0]->mws_seller_id=='')
             {
-                return redirect('amazon_credential')->with('error', 'Your Amazon Credential must be set for further process');
-            }
-            elseif ($customer_amazon_detail[0]->mws_seller_id=='')
-            {
-                return redirect('amazon_credential')->with('error', 'Your Amazon Credential must be set for further process');
+                return redirect('amazon_credential');
             }
         }
         return $next($request);
