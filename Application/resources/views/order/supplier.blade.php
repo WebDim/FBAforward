@@ -5,9 +5,7 @@
 @section('content')
     @include('layouts.frontend.tabs', ['data' => 'supplier'])
     <div class="row">
-        <div class="col-md-12">
-            <h2 class="page-head-line">Supplier Information</h2>
-        </div>
+        <div class="col-md-12">&nbsp;</div>
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -16,9 +14,9 @@
                 <table class="table" id="list">
                     <thead>
                     <tr>
-                        <td><span>Product</span></td>
-                        <td><span>Total Unit</span></td>
-                        <td><span>Suppliers</span></td>
+                        <th><span>Product</span></th>
+                        <th><span>Total Unit</span></th>
+                        <th><span>Suppliers</span></th>
                     </tr>
                     </thead>
                     <tbody>

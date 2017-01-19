@@ -3,9 +3,7 @@
 @section('content')
     @include('layouts.frontend.tabs', ['data' => 'shipment'])
     <div class="row">
-        <div class="col-md-12">
-            <h2 class="page-head-line">Shipment Information</h2>
-        </div>
+        <div class="col-md-12">&nbsp;</div>
     </div>
     <div class="row">
         <div class="col-md-12">

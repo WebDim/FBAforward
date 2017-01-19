@@ -5,9 +5,7 @@
 @section('content')
     @include('layouts.frontend.tabs', ['data' => 'label'])
     <div class="row">
-        <div class="col-md-12">
-            <h2 class="page-head-line">Product Labels Information</h2>
-        </div>
+        <div class="col-md-12">&nbsp;</div>
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -16,10 +14,10 @@
                 <table class="table" id="list">
                     <thead>
                     <tr>
-                        <td><span>Product</span></td>
-                        <td><span>SKU</span></td>
-                        <td><span>Quantity</span></td>
-                        <td><span>Who Will Label</span></td>
+                        <th><span>Product</span></th>
+                        <th><span>SKU</span></th>
+                        <th><span>Quantity</span></th>
+                        <th><span>Who Will Label</span></th>
                     </tr>
                     </thead>
                     <tbody>
