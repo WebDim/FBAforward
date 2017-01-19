@@ -32,7 +32,7 @@
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
-                                {!! Form::text('date', old('date', count($shipment)>0 ? date('d/m/Y',strtotime( $shipment[0]->goods_ready_date))   : null), ['class' => 'datepicker form-control validate[required]', 'placeholder'=>'Goods Ready Date']) !!}
+                                {!! Form::text('date', old('date', count($shipment)>0 ? date('d/m/Y',strtotime( $shipment[0]->goods_ready_date)) : null), ['class' => 'datepicker form-control validate[required]', 'placeholder'=>'Goods Ready Date']) !!}
                             </div>
                         </div>
                     </div>
@@ -76,7 +76,7 @@
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="hidden" name="shipment_detail1_{{$cnt}}" id="shipment_detail1_{{$cnt}}" class="form-control" value="{{$shipment_details->shipment_detail_id}}" required>
+                                            <input type="hidden" name="shipment_detail1_{{$cnt}}" id="shipment_detail1_{{$cnt}}" class="form-control" value="{{$shipment_details->shipment_detail_id}}">
                                             <select name="product_desc1_{{$cnt}}" id="product_desc1_{{$cnt}}" class="form-control select2 validate[required]" onchange="getFnsku(1,{{$cnt}},this.value)">
                                                 <option value="">Product Description</option>
                                                 @foreach($product as $products)
@@ -88,25 +88,25 @@
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="text" name="upc_fnsku1_{{$cnt}}" id="upc_fnsku1_{{$cnt}}" placeholder="UPC/FNSKU" class="form-control" value="{{$shipment_details->fnsku}}" required>
+                                            <input type="text" name="upc_fnsku1_{{$cnt}}" id="upc_fnsku1_{{$cnt}}" placeholder="UPC/FNSKU" class="form-control validate[required]" value="{{$shipment_details->fnsku}}" readonly>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="text" name="qty_per_case1_{{$cnt}}" id="qty_per_case1_{{$cnt}}" placeholder="Qty Per Case" class="form-control" value="{{$shipment_details->qty_per_box}}" required>
+                                            <input type="text" name="qty_per_case1_{{$cnt}}" id="qty_per_case1_{{$cnt}}" placeholder="Qty Per Case" class="form-control validate[required]" value="{{$shipment_details->qty_per_box}}">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="text" name="no_of_case1_{{$cnt}}" id="no_of_case1_{{$cnt}}" placeholder="# Of Case" class="form-control" value="{{$shipment_details->no_boxs}}" required>
+                                            <input type="text" name="no_of_case1_{{$cnt}}" id="no_of_case1_{{$cnt}}" placeholder="# Of Case" class="form-control validate[required]" value="{{$shipment_details->no_boxs}}" >
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="text" name="total1_{{$cnt}}" id="total1_{{$cnt}}" placeholder="Total" class="form-control" value="{{$shipment_details->total}}" required onfocus="get_total(1,{{$cnt}})">
+                                            <input type="text" name="total1_{{$cnt}}" id="total1_{{$cnt}}" placeholder="Total" class="form-control validate[required]" value="{{$shipment_details->total}}" onfocus="get_total(1,{{$cnt}})" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -138,7 +138,7 @@
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('upc_fnsku1_1', old('upc_fnsku1_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'UPC/FNSKU', 'id' => 'upc_fnsku1_1']) !!}
+                                    {!! Form::text('upc_fnsku1_1', old('upc_fnsku1_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'UPC/FNSKU', 'id' => 'upc_fnsku1_1', 'readonly'=>true]) !!}
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -156,7 +156,7 @@
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('total1_1', old('total1_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'Total', 'onfocus'=>'get_total(1,1)']) !!}
+                                    {!! Form::text('total1_1', old('total1_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'Total', 'onfocus'=>'get_total(1,1)', 'readonly'=>true]) !!}
                                 </div>
                             </div>
                         </div>
@@ -216,25 +216,25 @@
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="text" name="upc_fnsku2_{{$cnt}}" id="upc_fnsku2_{{$cnt}}" placeholder="UPC/FNSKU" class="form-control" value="{{$shipment_details->fnsku}}" required>
+                                            <input type="text" name="upc_fnsku2_{{$cnt}}" id="upc_fnsku2_{{$cnt}}" placeholder="UPC/FNSKU" class="form-control validate[required]" value="{{$shipment_details->fnsku}}"  readonly>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="text" name="qty_per_case2_{{$cnt}}" id="qty_per_case2_{{$cnt}}" placeholder="Qty Per Case" class="form-control" value="{{$shipment_details->qty_per_box}}" required>
+                                            <input type="text" name="qty_per_case2_{{$cnt}}" id="qty_per_case2_{{$cnt}}" placeholder="Qty Per Case" class="form-control validate[required]" value="{{$shipment_details->qty_per_box}}">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="text" name="no_of_case2_{{$cnt}}" id="no_of_case2_{{$cnt}}" placeholder="# Of Case" class="form-control" value="{{$shipment_details->no_boxs}}" required>
+                                            <input type="text" name="no_of_case2_{{$cnt}}" id="no_of_case2_{{$cnt}}" placeholder="# Of Case" class="form-control validate[required]" value="{{$shipment_details->no_boxs}}">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="text" name="total2_{{$cnt}}" id="total2_{{$cnt}}" placeholder="Total" class="form-control" value="{{$shipment_details->total}}" required onfocus="get_total(2,{{$cnt}})">
+                                            <input type="text" name="total2_{{$cnt}}" id="total2_{{$cnt}}" placeholder="Total" class="form-control validate[required]" value="{{$shipment_details->total}}" onfocus="get_total(2,{{$cnt}})" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -266,7 +266,7 @@
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('upc_fnsku2_1', old('upc_fnsku2_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'UPC/FNSKU', 'id' => 'upc_fnsku2_1']) !!}
+                                    {!! Form::text('upc_fnsku2_1', old('upc_fnsku2_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'UPC/FNSKU', 'id' => 'upc_fnsku2_1', 'readonly'=>true]) !!}
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -284,7 +284,7 @@
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('total2_1', old('total2_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'Total', 'onfocus'=>'get_total(2,1)']) !!}
+                                    {!! Form::text('total2_1', old('total2_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'Total', 'onfocus'=>'get_total(2,1)', 'readonly'=>true]) !!}
                                 </div>
                             </div>
                         </div>
@@ -333,7 +333,7 @@
         {
             sub_cnt=$("#count"+no).val();
             cnt=parseInt(sub_cnt)+1;
-            $('#main'+no).append('<div class="form-group">{!! Form::label("product_desc'+no+'_'+cnt+'", "Product Description *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("upc_fnsku'+no+'_'+cnt+'", "UPC/FNSKU *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("qty_per_case'+no+'_'+cnt+'", "Qty Per Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("no_of_case'+no+'_'+cnt+'", "# Of Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("total'+no+'_'+cnt+'", "Total *", ["class" => "control-label col-md-2"]) !!}</div><div class="form-group"><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><select name="product_desc'+no+'_'+cnt+'" id="product_desc'+no+'_'+cnt+'" class="form-control select2 validate[required]" onchange="getFnsku('+no+','+cnt+',this.value)"><option value="">Product Description</option>@foreach($product as $products)<option value=" {{ $products->id." ".$products->FNSKU }}"> {{ $products->product_name }}</option>@endforeach</select></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="upc_fnsku'+no+'_'+cnt+'" class = "form-control required" placeholder="UPC/FNSKU" id="upc_fnsku'+no+'_'+cnt+'"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="qty_per_case'+no+'_'+cnt+'" class = "form-control required" placeholder="Qty Per Case" id="qty_per_case'+no+'_'+cnt+'"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="no_of_case'+no+'_'+cnt+'" class = "form-control required" placeholder="# Of Case" id="no_of_case'+no+'_'+cnt+'"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="total'+no+'_'+cnt+'" class = "form-control required" placeholder="Total" id="total'+no+'_'+cnt+'" onfocus="get_total('+no+','+cnt+')"></div></div></div>');
+            $('#main'+no).append('<div class="form-group">{!! Form::label("product_desc'+no+'_'+cnt+'", "Product Description *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("upc_fnsku'+no+'_'+cnt+'", "UPC/FNSKU *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("qty_per_case'+no+'_'+cnt+'", "Qty Per Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("no_of_case'+no+'_'+cnt+'", "# Of Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("total'+no+'_'+cnt+'", "Total *", ["class" => "control-label col-md-2"]) !!}</div><div class="form-group"><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><select name="product_desc'+no+'_'+cnt+'" id="product_desc'+no+'_'+cnt+'" class="form-control select2 validate[required]" onchange="getFnsku('+no+','+cnt+',this.value)"><option value="">Product Description</option>@foreach($product as $products)<option value=" {{ $products->id." ".$products->FNSKU }}"> {{ $products->product_name }}</option>@endforeach</select></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="upc_fnsku'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="UPC/FNSKU" id="upc_fnsku'+no+'_'+cnt+'" readonly></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="qty_per_case'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="Qty Per Case" id="qty_per_case'+no+'_'+cnt+'"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="no_of_case'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="# Of Case" id="no_of_case'+no+'_'+cnt+'"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="total'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="Total" id="total'+no+'_'+cnt+'" onfocus="get_total('+no+','+cnt+')" readonly></div></div></div>');
             $('#count'+no).val(cnt);
             if($('#count'+no).val()>=4)
             {
@@ -378,6 +378,17 @@
                 $("#button2").hide();
                 $('#ship_count').val(1);
             }
+            count1=$("#count1").val();
+            count2=$("#count2").val();
+            if(count1>=4)
+            {
+                $("#button1").hide();
+            }
+            if(count2>=4)
+            {
+                $("#button2").hide();
+            }
+
         });
     </script>
 @endsection

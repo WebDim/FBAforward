@@ -9,7 +9,7 @@ class Supplier_inspection extends Model
     //
     protected $primaryKey = 'supplier_inspection_id';
     protected $table ='supplier_inspections';
-    protected $fillable = ['supplier_detail_id','user_id', 'is_inspection', 'inspection_decription'];
+    protected $fillable = ['supplier_detail_id','supplier_id', 'user_id', 'is_inspection', 'inspection_decription'];
 
     public function supplier_detail()
     {

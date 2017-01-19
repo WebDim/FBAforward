@@ -25,23 +25,26 @@
                     {{--*/ $cnt = 1 /*--}}
                     {{--*/ $grand_total = 0 /*--}}
                     @foreach($product as $products)
-                        {{--*/ $total=0 /*--}}
+
                         <tr>
-                            <td><input type="text" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id }}">
+                            <td><input type="hidden" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id }}">
                                 <input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
                                 <b class="text-info">{{ $products->product_name }}</b></td>
                             <td><input type="hidden" name="qty{{ $cnt }}" value="{{ $products->total }}">
                                 <b class="text-info">{{ $products->total }}</b></td>
                             <td><b class="text-info">
+                                    {{--*/ $total=0 /*--}}
 
                                     @foreach ($prep_service as $prep_services)
-                                        <input type="checkbox" name="service{{$cnt}}[]" id="service{{$cnt}}[]" value="{{ $prep_services->prep_service_id }}" >{{ $prep_services->service_name }}
-                                           {{--*/ $total = $total+$prep_services->price /*--}}
+                                        <input type="checkbox" name="service{{$cnt}}_{{$prep_services->prep_service_id}}" id="service{{$cnt}}_{{$prep_services->prep_service_id}}" value="{{  $prep_services->prep_service_id }}" onchange="get_total({{$prep_services->price}},{{$cnt}},{{$prep_services->prep_service_id}})">{{ $prep_services->service_name }}
+                                        {{--*/ $total = $total+$prep_services->price /*--}}
+
                                         <br>
                                     @endforeach
+                                    <input type="hidden" name="sub_count{{$cnt}}" id="sub_count{{$cnt}}" value="{{ count($prep_service) }}">
 
                             </b></td>
-                            <td><input type="hidden" name="total{{ $cnt }}" value="{{ $total }}"><b class="text-info">{{ $total }}</b></td>
+                            <td><b class="text-info"><input type="text" id="total{{$cnt}}" name="total{{ $cnt }}" value="0" readonly></b></td>
                             {{--*/ $grand_total =$grand_total+$total /*--}}
                         </tr>
                         {{--*/ $cnt++ /*--}}
@@ -50,7 +53,7 @@
                         <td></td>
                         <td></td>
                         <td>Total</td>
-                        <td><input type="hidden" name="grand_total" value="{{ $grand_total }}">{{ $grand_total }}</td>
+                        <td><input type="text" id="grand_total" name="grand_total" value="0" readonly></td>
                     </tr>
                     </tbody>
                 </table>
@@ -82,5 +85,21 @@
                     usePrefix: prefix
                 });
         });
+
+        function  get_total(price,no,sub_no) {
+            if($("#service"+no+"_"+sub_no).is(':checked')) {
+                total = parseInt($("#total"+no).val()) + parseInt(price);
+                $("#total"+no).val(total);
+                grand_total=parseInt($("#grand_total").val())+parseInt(price);
+                $("#grand_total").val(grand_total);
+            }
+            else
+            {
+                total = parseInt($("#total" + no).val() ) - parseInt(price);
+                $("#total"+no).val(total);
+                grand_total=parseInt($("#grand_total").val())-parseInt(price);
+                $("#grand_total").val(grand_total);
+            }
+        }
     </script>
 @endsection

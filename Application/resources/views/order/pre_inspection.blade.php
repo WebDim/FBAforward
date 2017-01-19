@@ -28,7 +28,7 @@
                         <tr>
                             <td><input type="hidden" name="supplier_id{{ $cnt }}" value="{{ $suppliers->supplier_id }}">
                                 <b class="text-info">{{ $suppliers->company_name }}</b></td>
-                            <td hidden>
+                            <td >
                                 @foreach($product as $products)
                                     @if($products->supplier_id==$suppliers->supplier_id)
                                         <input type="hidden" name="supplier_inspection_id{{$cnt."_".$product_cnt}}" value="{{$products->supplier_inspection_id }}">
@@ -61,7 +61,7 @@
                                 {!! Form::label('inspection_desc{{ $cnt }}', 'Inspection Instruction*', ['class' => 'control-label']) !!}
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
-                                        <textarea name="inspection_desc{{ $cnt }}" id="inspection_desc{{ $cnt }}" cols="20" rows="3">{{ $suppliers->inspection_decription }}</textarea>
+                                        <textarea name="inspection_desc{{ $cnt }}" id="inspection_desc{{ $cnt }}" cols="20" rows="3" class="validate[required]">{{ $suppliers->inspection_decription }}</textarea>
                                     </div>
                             </div>
                                 </b>

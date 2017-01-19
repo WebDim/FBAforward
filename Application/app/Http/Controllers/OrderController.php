@@ -165,17 +165,18 @@ class OrderController extends Controller
     public function preinspection()
     {
         $user = \Auth::user();
-        $supplier = Supplier::selectRaw("supplier_inspections.is_inspection, supplier_inspections.inspection_decription,suppliers.supplier_id, suppliers.company_name")
+        $supplier = Supplier::selectRaw("supplier_inspections.is_inspection, supplier_inspections.inspection_decription, suppliers.supplier_id, suppliers.company_name")
             ->join('supplier_details', 'supplier_details.supplier_id', '=', 'suppliers.supplier_id')
-            ->join('supplier_inspections','supplier_details.supplier_detail_id','=','supplier_inspections.supplier_detail_id','left')
+            ->join('supplier_inspections','supplier_details.supplier_id','=','supplier_inspections.supplier_id','left')
             ->where('supplier_details.user_id', $user->id)
-            ->distinct('supplier_details.supplier_id')
+            ->distinct('supplier_inspections.supplier_id')
             ->get();
         $product = Supplier_detail::selectRaw("supplier_inspections.supplier_inspection_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, supplier_details.product_id, supplier_details.total_unit, amazon_inventories.product_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'supplier_details.product_id')
             ->join('supplier_inspections','supplier_inspections.supplier_detail_id','=','supplier_details.supplier_detail_id','left')
             ->where('supplier_details.user_id', $user->id)
             ->get();
+
         return view('order.pre_inspection')->with(compact('product', 'supplier'));
     }
     public function addpreinspection(ShipmentRequest $request)
@@ -189,7 +190,8 @@ class OrderController extends Controller
                     $supplier = array('supplier_detail_id' => $request->input('supplier_detail_id' . $cnt . "_" . $product_cnt),
                         'user_id' => $user->id,
                         'is_inspection' => $request->input('inspection' . $cnt),
-                        'inspection_decription' => $request->input('inspection_desc'.$cnt)
+                        'inspection_decription' => $request->input('inspection_desc'.$cnt),
+                        'supplier_id' => $request->input('supplier_id'.$cnt)
                     );
                     $supplier_inspection = new Supplier_inspection($supplier);
                     $supplier_inspection->save();
@@ -199,7 +201,8 @@ class OrderController extends Controller
                     $supplier = array('supplier_detail_id' => $request->input('supplier_detail_id' . $cnt . "_" . $product_cnt),
                         'user_id' => $user->id,
                         'is_inspection' => $request->input('inspection' . $cnt),
-                        'inspection_decription' => $request->input('inspection_desc' . $cnt)
+                        'inspection_decription' => $request->input('inspection_desc' . $cnt),
+                        'supplier_id' => $request->input('supplier_id'.$cnt)
                     );
                     Supplier_inspection::where('supplier_inspection_id',$request->input('supplier_inspection_id'.$cnt."_".$product_cnt))->update($supplier);
                 }
@@ -268,18 +271,20 @@ class OrderController extends Controller
         $user = \Auth::user();
         $count = $request->input('count');
         for ($cnt = 1; $cnt < $count; $cnt++) {
-            $service =$request->input('service'.$cnt);
-            foreach ($service as $services) {
-                $prep_service = array('user_id' => $user->id,
-                    'shipment_detail_id' => $request->input('shipment_detail_id'.$cnt),
-                    'product_id' => $request->input('product_id' . $cnt),
-                    'total_qty' => $request->input('qty' . $cnt),
-                    'prep_service_ids' => $services,
-                    'prep_service_total' => $request->input('total' . $cnt),
-                    'grand_total' => $request->input('grand_total')
-                );
-                $prep_service_detail = new Prep_detail($prep_service);
-                $prep_service_detail->save();
+            $sub_count =$request->input('sub_count'.$cnt);
+            for ($sub_cnt = 1; $sub_cnt <= $sub_count; $sub_cnt++) {
+                if(!empty($request->input("service".$cnt."_".$sub_cnt))) {
+                    $prep_service = array('user_id' => $user->id,
+                        'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
+                        'product_id' => $request->input('product_id' . $cnt),
+                        'total_qty' => $request->input('qty' . $cnt),
+                        'prep_service_ids' => $request->input('service' . $cnt . "_" . $sub_cnt),
+                        'prep_service_total' => $request->input('total' . $cnt),
+                        'grand_total' => $request->input('grand_total')
+                    );
+                    $prep_service_detail = new Prep_detail($prep_service);
+                    $prep_service_detail->save();
+                }
             }
         }
         return redirect('order/listservice')->with('Success', 'Prep Service Information Added Successfully');
