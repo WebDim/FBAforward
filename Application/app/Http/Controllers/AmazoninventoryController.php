@@ -38,8 +38,8 @@ class AmazoninventoryController extends Controller
     public function amazonAccountValidation($account)
     {
 
-        $UserCredentials['mws_authtoken'] = decrypt($account->mws_authtoken);
-        $UserCredentials['mws_seller_id'] = decrypt($account->mws_seller_id);
+        $UserCredentials['mws_authtoken'] = !empty($account->mws_authtoken) ? decrypt($account->mws_authtoken) : '';
+        $UserCredentials['mws_seller_id'] = !empty($account->mws_seller_id) ? decrypt($account->mws_seller_id) : '';
 
         //  Check User AWS Details
         $this->operation = 'ListInventorySupply';
