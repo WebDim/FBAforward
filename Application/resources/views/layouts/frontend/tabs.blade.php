@@ -1,3 +1,8 @@
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="page-head-line">CREATE NEW ORDER</h2>
+    </div>
+</div>
 <ul class="nav nav-tabs" role="tablist">
     <li class="{{ ($data == 'shipment') ?  'active' : '' }} ">
         <a href="javascript:void(0)">Shipment Info </a>
