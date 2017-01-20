@@ -1,13 +1,14 @@
 <?php
 namespace App\Http\Controllers;
+use App\Amazon_destination;
 use App\Amazon_inventory;
 use App\Listing_service;
 use App\Listing_service_detail;
+use App\Outbound_method;
 use App\Prep_detail;
 use App\Prep_service;
 use App\Product_labels;
 use App\Supplier_detail;
-use Request;
 use App\Shipping_method;
 use App\Http\Requests\ShipmentRequest;
 use App\Shipment_detail;
@@ -15,7 +16,10 @@ use App\Supplier;
 use App\Supplier_inspection;
 use App\Product_labels_detail;
 use App\Shipments;
+use App\Order;
 use App\Http\Middleware\Amazoncredential;
+use Illuminate\Http\Request;
+
 class OrderController extends Controller
 {
     public function __construct()
@@ -31,6 +35,14 @@ class OrderController extends Controller
         $user = \Auth::user();
         $shipping_method = Shipping_method::all();
         $product = Amazon_inventory::where('user_id', $user->id)->get();
+        $shipment=array();
+        return view('order.shipment')->with(compact('shipping_method','product','shipment'));
+    }
+    public function updateshipment()
+    {
+        $user = \Auth::user();
+        $shipping_method = Shipping_method::all();
+        $product = Amazon_inventory::where('user_id', $user->id)->get();
         $shipment= Shipments::where('user_id',$user->id)->where('is_activated','0')->get();
         $shipment_detail = Shipment_detail::selectRaw("shipment_details.* ")
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
@@ -42,10 +54,25 @@ class OrderController extends Controller
     public function addshipment(ShipmentRequest $request)
     {
          $user = \Auth::user();
+         if(empty($request->input('order_id')))
+         {
+             $order_detail=array('order_name'=>'order',
+                                'user_id'=>$user->id
+             );
+             $order = new Order($order_detail);
+             $order->save();
+             $order_id = $order->order_id;
+         }
+         else
+         {
+             $order_id=$request->input('order_id');
+         }
+        $request->session()->put('order_id', $order_id);
         for ($cnt = 1; $cnt <= $request->input('ship_count'); $cnt++) {
             if(!empty($request->input('shipment_id'.$cnt)))
             {
-                $shipment = array('shipping_method_id' => $request->input('shipping_method' . $cnt),
+                $shipment = array('order_id'=>$order_id,
+                    'shipping_method_id' => $request->input('shipping_method' . $cnt),
                     'user_id' => $user->id,
                     'split_shipment' => $request->input('split_shipment'),
                     'goods_ready_date' => date('Y-m-d H:i:s', strtotime($request->input('date'))),
@@ -68,22 +95,25 @@ class OrderController extends Controller
                     }
                     else
                     {
-                        $product_id = explode(' ', $request->input('product_desc'.$cnt."_".$sub_cnt));
-                        $shipment_details = array('shipment_id'=>$request->input('shipment_id'.$cnt),
-                            'product_id' =>isset($product_id[1])?$product_id[1]:'',
-                            'fnsku' => $request->input('upc_fnsku'.$cnt."_".$sub_cnt),
-                            'qty_per_box' => $request->input('qty_per_case'.$cnt."_".$sub_cnt),
-                            'no_boxs' => $request->input('no_of_case'.$cnt."_".$sub_cnt),
-                            'total' => $request->input('total'.$cnt."_".$sub_cnt)
-                        );
-                        $shipment_detail = new Shipment_detail($shipment_details);
-                        $shipment_detail->save();
+                        if(!empty($request->input('product_desc'.$cnt."_".$sub_cnt))) {
+                            $product_id = explode(' ', $request->input('product_desc' . $cnt . "_" . $sub_cnt));
+                            $shipment_details = array('shipment_id' => $request->input('shipment_id' . $cnt),
+                                'product_id' => isset($product_id[1]) ? $product_id[1] : '',
+                                'fnsku' => $request->input('upc_fnsku' . $cnt . "_" . $sub_cnt),
+                                'qty_per_box' => $request->input('qty_per_case' . $cnt . "_" . $sub_cnt),
+                                'no_boxs' => $request->input('no_of_case' . $cnt . "_" . $sub_cnt),
+                                'total' => $request->input('total' . $cnt . "_" . $sub_cnt)
+                            );
+                            $shipment_detail = new Shipment_detail($shipment_details);
+                            $shipment_detail->save();
+                        }
                     }
                 }
 
             }
             else {
-                $shipment = array('shipping_method_id' => $request->input('shipping_method' . $cnt),
+                $shipment = array('order_id'=>$order_id,
+                    'shipping_method_id' => $request->input('shipping_method' . $cnt),
                     'user_id' => $user->id,
                     'split_shipment' => $request->input('split_shipment'),
                     'goods_ready_date' => date('Y-m-d H:i:s', strtotime($request->input('date'))),
@@ -94,32 +124,46 @@ class OrderController extends Controller
                 $last_id = $shipment->shipment_id;
                 $sub_count=$request->input('count'.$cnt);
                 for($sub_cnt=1;$sub_cnt<=$sub_count;$sub_cnt++) {
-                    $product_id = explode(' ', $request->input('product_desc'.$cnt."_".$sub_cnt));
-                    $shipment_details = array('shipment_id'=>$last_id,
-                        'product_id' =>isset($product_id[1])?$product_id[1]:'',
-                        'fnsku' => $request->input('upc_fnsku'.$cnt."_".$sub_cnt),
-                        'qty_per_box' => $request->input('qty_per_case'.$cnt."_".$sub_cnt),
-                        'no_boxs' => $request->input('no_of_case'.$cnt."_".$sub_cnt),
-                        'total' => $request->input('total'.$cnt."_".$sub_cnt)
-                    );
-                    $shipment_detail = new Shipment_detail($shipment_details);
-                    $shipment_detail->save();
+                    if(!empty($request->input('product_desc'.$cnt."_".$sub_cnt))) {
+                        $product_id = explode(' ', $request->input('product_desc' . $cnt . "_" . $sub_cnt));
+                        $shipment_details = array('shipment_id' => $last_id,
+                            'product_id' => isset($product_id[1]) ? $product_id[1] : '',
+                            'fnsku' => $request->input('upc_fnsku' . $cnt . "_" . $sub_cnt),
+                            'qty_per_box' => $request->input('qty_per_case' . $cnt . "_" . $sub_cnt),
+                            'no_boxs' => $request->input('no_of_case' . $cnt . "_" . $sub_cnt),
+                            'total' => $request->input('total' . $cnt . "_" . $sub_cnt)
+                        );
+                        $shipment_detail = new Shipment_detail($shipment_details);
+                        $shipment_detail->save();
+                    }
                 }
             }
         }
         return redirect('order/supplierdetail')->with('Success', 'Shipment Information Added Successfully');
     }
-    public function supplierdetail()
+    public function removeproduct()
     {
-        $user = \Auth::user();
-        $product = Shipment_detail::selectRaw(" shipment_details.shipment_detail_id,supplier_details.supplier_id,  supplier_details.supplier_detail_id,  shipment_details.product_id, shipment_details.total,  amazon_inventories.product_name  ")
+        if (Request::ajax()) {
+            $post = Request::all();
+            Listing_service_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
+            Prep_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
+            Product_labels_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
+            Supplier_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
+            Shipment_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
+        }
+
+    }
+    public function supplierdetail(Request $request)
+    {
+        $order_id = $request->session()->get('order_id');
+        $product = Shipment_detail::selectRaw("orders.order_id, shipment_details.shipment_detail_id,supplier_details.supplier_id,  supplier_details.supplier_detail_id,  shipment_details.product_id, shipment_details.total,  amazon_inventories.product_name  ")
             ->join('supplier_details','shipment_details.shipment_detail_id','=','supplier_details.shipment_detail_id','left')
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
-            ->where('shipments.user_id',$user->id)
+            ->join('orders','shipments.order_id','=','orders.order_id')
+            ->where('shipments.order_id',$order_id)
             ->get();
         $supplier = Supplier::all();
-
         return view('order.supplier')->with(compact('product', 'supplier'));
     }
     public function addsupplierdetail(ShipmentRequest $request)
@@ -208,7 +252,7 @@ class OrderController extends Controller
                 }
             }
         }
-        return redirect('order/productlabels')->with('Success', 'Labels Information Added Successfully');
+        return redirect('order/productlabels')->with('Success', 'Pre inspection Information Added Successfully');
     }
     public function labels()
     {
@@ -352,6 +396,59 @@ class OrderController extends Controller
                 Listing_service_detail::where('listing_service_detail_id',$request->input('listing_service_detail_id'.$cnt))->update($list_service);
             }
         }
-        //return redirect('order/listservice')->with('Success', 'Product Label Information Added Successfully');
+        return redirect('order/outbondshipping')->with('Success', 'Listing service Information Added Successfully');
+    }
+    public function outbondshipping()
+    {
+        $user = \Auth::user();
+        $outbound_method= Outbound_method::all();
+        $amazon_destination = Amazon_destination::all();
+        $shipment =Shipments::selectRaw("shipments.*, shipping_methods.shipping_method_id,shipping_methods.shipping_name")
+            ->join('shipping_methods','shipments.shipping_method_id','=','shipping_methods.shipping_method_id','left')
+            ->where('shipments.user_id',$user->id)
+            ->get();
+        $product = Shipment_detail::selectRaw("shipment_details.product_id, shipment_details.shipment_detail_id, shipment_details.total, shipment_details.shipment_id, amazon_inventories.product_name")
+            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
+            ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id')
+            ->where('shipments.user_id', $user->id)
+            ->get();
+        return view('order.outbound_shipping')->with(compact('amazon_destination', 'outbound_method', 'shipment', 'product'));
+    }
+    public function addoutbondshipping(ShipmentRequest $request)
+    {
+        $count = $request->input('count');
+        for ($cnt = 1; $cnt < $count; $cnt++) {
+            $service=array();
+            $sub_count =$request->input('sub_count'.$cnt);
+            for ($sub_cnt = 1; $sub_cnt <= $sub_count; $sub_cnt++) {
+                if (!empty($request->input("service" . $cnt . "_" . $sub_cnt))) {
+                    $service[]=$request->input('service' . $cnt . "_" . $sub_cnt);
+                }
+            }
+            if(empty($request->input('listing_service_detail_id'.$cnt))) {
+                $list_service = array(
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'listing_service_ids' => implode(',', $service),
+                    'shipment_detail_id' => $request->input('shipment_detail_id'.$cnt),
+                    'listing_service_total' => $request->input('total' . $cnt),
+                    'grand_total' => $request->input('grand_total')
+                );
+                $list_service_detail = new Listing_service_detail($list_service);
+                $list_service_detail->save();
+
+            }
+            else
+            {
+                $list_service = array(
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'listing_service_ids' => implode(',', $service),
+                    'shipment_detail_id' => $request->input('shipment_detail_id'.$cnt),
+                    'listing_service_total' => $request->input('total' . $cnt),
+                    'grand_total' => $request->input('grand_total')
+                );
+                Listing_service_detail::where('listing_service_detail_id',$request->input('listing_service_detail_id'.$cnt))->update($list_service);
+            }
+        }
+        return redirect('order/outbondservice')->with('Success', 'Listing service Information Added Successfully');
     }
 }

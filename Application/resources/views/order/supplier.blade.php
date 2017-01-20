@@ -32,8 +32,7 @@
             <td class="col-md-3"><input type="hidden" name="total{{ $cnt }}" value="{{ $products->total }}"><b class="text-info">{{ $products->total }}</b></td>
             <td class="col-md-3"><b class="text-info">
                     <select name="supplier{{ $cnt }}" class="form-control select2 validate[required]" onchange="add_Supplier(this.value)">
-                        <option disabled>Select Suppliers</option>
-                        <option value="">Add New</option>
+                        <option value=""> Add New Suppliers</option>
                         @foreach ($supplier as $suppliers)
                             <option value="{{ $suppliers->supplier_id }}" @if($products->supplier_id==$suppliers->supplier_id) {{ "selected" }} @endif>  {{ $suppliers->company_name }}</option>
                         @endforeach

@@ -31,6 +31,7 @@
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
                                 {!! Form::text('date', old('date', count($shipment)>0 ? date('m/d/Y',strtotime( $shipment[0]->goods_ready_date)) : null), ['class' => 'datepicker form-control validate[required]', 'placeholder'=>'mm/dd/yyyy']) !!}
+                                {!! Form::hidden('order_id', old('order_id', count($shipment)>0 ? $shipment[0]->order_id  : null), ['class' => 'form-control']) !!}
                             </div>
                         </div>
                     </div>
@@ -55,6 +56,7 @@
                                     @endforeach
                                 </select>
                                 {!! Form::hidden('shipment_id1', old('shipment_id1', count($shipment)>0 ? $shipment[0]->shipment_id  : null), ['class' => 'form-control']) !!}
+
                             </div>
                         </div>
                     </div>
@@ -62,15 +64,14 @@
                         {{--*/ $cnt=1 /*--}}
                         @foreach($shipment_detail as $shipment_details)
                             @if($shipment[0]->shipment_id==$shipment_details->shipment_id)
-
-                                <div class="form-group">
+                                <div class="form-group" id="label1_{{$cnt}}">
                                     {!! Form::label('product_desc1_1', 'Product Description *', ['class' => 'control-label col-md-2']) !!}
                                     {!! Form::label('upc_fnsku1_1', 'UPC/FNSKU *', ['class' => 'control-label col-md-2']) !!}
                                     {!! Form::label('qty_per_case1_1', 'Qty Per Case *', ['class' => 'control-label col-md-2']) !!}
                                     {!! Form::label('no_of_case1_1', '# Of Case *', ['class' => 'control-label col-md-2']) !!}
                                     {!! Form::label('total1_1', 'Total *', ['class' => 'control-label col-md-2']) !!}
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" id="input1_{{$cnt}}">
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
@@ -107,21 +108,27 @@
                                             <input type="text" name="total1_{{$cnt}}" id="total1_{{$cnt}}" placeholder="Total" class="form-control validate[required]" value="{{$shipment_details->total}}" onfocus="get_total(1,{{$cnt}})" readonly>
                                         </div>
                                     </div>
+                                    @if($cnt>1)
+                                    <div class="col-md-2">
+                                        <input type="button" class="btn btn-primary" id="remove1_{{$cnt}}" onclick="remove_shipment(1,{{$cnt}},{{$shipment_details->shipment_detail_id}})" value="-">
+                                    </div>
+                                    @endif
                                 </div>
                                 {{--*/$cnt++/*--}}
                             @endif
                         @endforeach
                         {{--*/ $cnt=$cnt-1 /*--}}
                         {!! Form::hidden('count1', old('count1',$cnt), ['class' => 'form-control', 'id' => 'count1']) !!}
+                        {!! Form::hidden('original_count1', old('original_count1',$cnt), ['class' => 'form-control', 'id' => 'original_count1']) !!}
                     @else
-                        <div class="form-group">
+                        <div class="form-group" id="label1_1">
                             {!! Form::label('product_desc1_1', 'Product Description *', ['class' => 'control-label col-md-2']) !!}
                             {!! Form::label('upc_fnsku1_1', 'UPC/FNSKU *', ['class' => 'control-label col-md-2']) !!}
                             {!! Form::label('qty_per_case1_1', 'Qty Per Case *', ['class' => 'control-label col-md-2']) !!}
                             {!! Form::label('no_of_case1_1', '# Of Case *', ['class' => 'control-label col-md-2']) !!}
                             {!! Form::label('total1_1', 'Total *', ['class' => 'control-label col-md-2']) !!}
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="input1_1">
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
@@ -159,6 +166,7 @@
                             </div>
                         </div>
                         {!! Form::hidden('count1', old('count1',1), ['class' => 'form-control', 'id' => 'count1']) !!}
+                        {!! Form::hidden('original_count1', old('original_count1',1), ['class' => 'form-control', 'id' => 'original_count1']) !!}
                     @endif
 
                 </div>
@@ -191,14 +199,14 @@
                         {{--*/ $cnt=1 /*--}}
                         @foreach($shipment_detail as $shipment_details)
                             @if($shipment[1]->shipment_id==$shipment_details->shipment_id)
-                                <div class="form-group">
+                                <div class="form-group" id="label2_{{$cnt}}">
                                     {!! Form::label('product_desc2_1', 'Product Description *', ['class' => 'control-label col-md-2']) !!}
                                     {!! Form::label('upc_fnsku2_1', 'UPC/FNSKU *', ['class' => 'control-label col-md-2']) !!}
                                     {!! Form::label('qty_per_case2_1', 'Qty Per Case *', ['class' => 'control-label col-md-2']) !!}
                                     {!! Form::label('no_of_case2_1', '# Of Case *', ['class' => 'control-label col-md-2']) !!}
                                     {!! Form::label('total2_1', 'Total *', ['class' => 'control-label col-md-2']) !!}
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" id="input2_{{$cnt}}">
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
@@ -235,21 +243,27 @@
                                             <input type="text" name="total2_{{$cnt}}" id="total2_{{$cnt}}" placeholder="Total" class="form-control validate[required]" value="{{$shipment_details->total}}" onfocus="get_total(2,{{$cnt}})" readonly>
                                         </div>
                                     </div>
+                                    @if($cnt>1)
+                                    <div class="col-md-2">
+                                    <input type="button" class="btn btn-primary" id="remove2_{{$cnt}}" onclick="remove_shipment(2,{{$cnt}},{{$shipment_details->shipment_detail_id}})" value="-">
+                                    </div>
+                                    @endif
                                 </div>
                                 {{--*/ $cnt++ /*--}}
                             @endif
                         @endforeach
                         {{--*/ $cnt=$cnt-1 /*--}}
                         {!! Form::hidden('count2', old('count2',$cnt), ['class' => 'form-control', 'id' => 'count2']) !!}
+                        {!! Form::hidden('original_count2', old('original_count2',$cnt), ['class' => 'form-control', 'id' => 'original_count2']) !!}
                     @else
-                        <div class="form-group">
+                        <div class="form-group" id="label2_1">
                             {!! Form::label('product_desc2_1', 'Product Description *', ['class' => 'control-label col-md-2']) !!}
                             {!! Form::label('upc_fnsku2_1', 'UPC/FNSKU *', ['class' => 'control-label col-md-2']) !!}
                             {!! Form::label('qty_per_case2_1', 'Qty Per Case *', ['class' => 'control-label col-md-2']) !!}
                             {!! Form::label('no_of_case2_1', '# Of Case *', ['class' => 'control-label col-md-2']) !!}
                             {!! Form::label('total2_1', 'Total *', ['class' => 'control-label col-md-2']) !!}
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="input2_1">
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
@@ -288,6 +302,7 @@
                         </div>
 
                         {!! Form::hidden('count2', old('count2',1), ['class' => 'form-control', 'id' => 'count2']) !!}
+                        {!! Form::hidden('original_count2', old('original_count2',1), ['class' => 'form-control', 'id' => 'original_count2']) !!}
                     @endif
                 </div>
                 <div class="col-md-12" id="button2" hidden>
@@ -331,11 +346,17 @@
         {
             sub_cnt=$("#count"+no).val();
             cnt=parseInt(sub_cnt)+1;
-            $('#main'+no).append('<div class="form-group">{!! Form::label("product_desc'+no+'_'+cnt+'", "Product Description *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("upc_fnsku'+no+'_'+cnt+'", "UPC/FNSKU *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("qty_per_case'+no+'_'+cnt+'", "Qty Per Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("no_of_case'+no+'_'+cnt+'", "# Of Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("total'+no+'_'+cnt+'", "Total *", ["class" => "control-label col-md-2"]) !!}</div><div class="form-group"><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><select name="product_desc'+no+'_'+cnt+'" id="product_desc'+no+'_'+cnt+'" class="form-control select2 validate[required]" onchange="getFnsku('+no+','+cnt+',this.value)"><option value="">Product Description</option>@foreach($product as $products)<option value=" {{ $products->id." ".$products->FNSKU }}"> {{ $products->product_name }}</option>@endforeach</select></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="upc_fnsku'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="UPC/FNSKU" id="upc_fnsku'+no+'_'+cnt+'" readonly></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="qty_per_case'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="Qty Per Case" id="qty_per_case'+no+'_'+cnt+'"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="no_of_case'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="# Of Case" id="no_of_case'+no+'_'+cnt+'"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="total'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="Total" id="total'+no+'_'+cnt+'" onfocus="get_total('+no+','+cnt+')" readonly></div></div></div>');
+            $('#main'+no).append('<div class="form-group" id="label'+no+'_'+cnt+'">{!! Form::label("product_desc'+no+'_'+cnt+'", "Product Description *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("upc_fnsku'+no+'_'+cnt+'", "UPC/FNSKU *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("qty_per_case'+no+'_'+cnt+'", "Qty Per Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("no_of_case'+no+'_'+cnt+'", "# Of Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("total'+no+'_'+cnt+'", "Total *", ["class" => "control-label col-md-2"]) !!}</div><div class="form-group" id="input'+no+'_'+cnt+'"><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><select name="product_desc'+no+'_'+cnt+'" id="product_desc'+no+'_'+cnt+'" class="form-control select2 validate[required]" onchange="getFnsku('+no+','+cnt+',this.value)"><option value="">Product Description</option>@foreach($product as $products)<option value=" {{ $products->id." ".$products->FNSKU }}"> {{ $products->product_name }}</option>@endforeach</select></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="upc_fnsku'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="UPC/FNSKU" id="upc_fnsku'+no+'_'+cnt+'" readonly></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="qty_per_case'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="Qty Per Case" id="qty_per_case'+no+'_'+cnt+'"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="no_of_case'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="# Of Case" id="no_of_case'+no+'_'+cnt+'"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="total'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="Total" id="total'+no+'_'+cnt+'" onfocus="get_total('+no+','+cnt+')" readonly></div></div><div class="col-md-2"><input type="button" class="btn btn-primary" id="remove'+no+'_'+cnt+'" onclick="remove_shipment('+no+','+cnt+')" value="-"></div></div>');
             $('#count'+no).val(cnt);
-            if($('#count'+no).val()>=4)
+            tmp=parseInt($('#original_count'+no).val())+1;
+            $('#original_count'+no).val(tmp);
+            if($('#original_count'+no).val()>=4)
             {
                 $('#button'+no).hide();
+            }
+            else
+            {
+                $('#button'+no).show();
             }
             cnt++;
         }
@@ -376,8 +397,8 @@
                 $("#button2").hide();
                 $('#ship_count').val(1);
             }
-            count1=$("#count1").val();
-            count2=$("#count2").val();
+            count1=$("#original_count1").val();
+            count2=$("#original_count2").val();
             if(count1>=4)
             {
                 $("#button1").hide();
@@ -388,5 +409,40 @@
             }
 
         });
+        function remove_shipment(no,sub_no,id)
+        {
+            $("#label"+no+"_"+sub_no).remove();
+            $("#input"+no+"_"+sub_no).remove();
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token': $('input[name="_token"]').val()
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/removeproduct', // This is the url we gave in the route
+                data: {
+                    'shipment_detail_id': id,
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    console.log(response);
+                    alert("product deleted Successfully");
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+            tmp=parseInt($('#original_count'+no).val())-1;
+            $('#original_count'+no).val(tmp);
+            if($('#original_count'+no).val()>=4)
+            {
+                $('#button'+no).hide();
+            }
+            else
+            {
+                $('#button'+no).show();
+            }
+        }
     </script>
 @endsection
