@@ -82,19 +82,19 @@
 
         function  get_total(price,no,sub_no) {
             if($("#service"+no+"_"+sub_no).is(':checked')) {
-                total = parseInt($("#total"+no).val()) + parseInt(price);
+                total = parseFloat($("#total"+no).val()) + parseFloat(price);
                 $("#total"+no).val(total);
                 $("#total_span"+no).text(total);
-                grand_total=parseInt($("#grand_total").val())+parseInt(price);
+                grand_total=parseFloat($("#grand_total").val())+parseFloat(price);
                 $("#grand_total").val(grand_total);
                 $("#grand_total_span").text(grand_total);
             }
             else
             {
-                total = parseInt($("#total" + no).val() ) - parseInt(price);
+                total = parseFloat($("#total" + no).val() ) - parseFloat(price);
                 $("#total"+no).val(total);
                 $("#total_span"+no).text(total);
-                grand_total=parseInt($("#grand_total").val())-parseInt(price);
+                grand_total=parseFloat($("#grand_total").val())-parseFloat(price);
                 $("#grand_total").val(grand_total);
                 $("#grand_total_span").text(grand_total);
             }

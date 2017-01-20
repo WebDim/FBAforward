@@ -147,9 +147,10 @@ return [
         Yajra\Datatables\DatatablesServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Laravel\Cashier\CashierServiceProvider::class,
-		Orangehill\Iseed\IseedServiceProvider::class,
+		//Orangehill\Iseed\IseedServiceProvider::class,
 		Roumen\Sitemap\SitemapServiceProvider::class,
         Aws\Laravel\AwsServiceProvider::class,
+        Barryvdh\Debugbar\ServiceProvider::class,
 		
     ],
     /*
