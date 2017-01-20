@@ -150,7 +150,7 @@ return [
 		//Orangehill\Iseed\IseedServiceProvider::class,
 		Roumen\Sitemap\SitemapServiceProvider::class,
         Aws\Laravel\AwsServiceProvider::class,
-        Barryvdh\Debugbar\ServiceProvider::class,
+
 		
     ],
     /*
