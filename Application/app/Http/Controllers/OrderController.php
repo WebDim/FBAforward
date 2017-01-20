@@ -141,10 +141,10 @@ class OrderController extends Controller
         }
         return redirect('order/supplierdetail')->with('Success', 'Shipment Information Added Successfully');
     }
-    public function removeproduct()
+    public function removeproduct(Request $request)
     {
-        if (Request::ajax()) {
-            $post = Request::all();
+        if ($request->ajax()) {
+            $post = $request->all();
             Listing_service_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
             Prep_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
             Product_labels_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
@@ -155,6 +155,7 @@ class OrderController extends Controller
     }
     public function supplierdetail(Request $request)
     {
+        $user = \Auth::user();
         $order_id = $request->session()->get('order_id');
         $product = Shipment_detail::selectRaw("orders.order_id, shipment_details.shipment_detail_id,supplier_details.supplier_id,  supplier_details.supplier_detail_id,  shipment_details.product_id, shipment_details.total,  amazon_inventories.product_name  ")
             ->join('supplier_details','shipment_details.shipment_detail_id','=','supplier_details.shipment_detail_id','left')
@@ -163,7 +164,7 @@ class OrderController extends Controller
             ->join('orders','shipments.order_id','=','orders.order_id')
             ->where('shipments.order_id',$order_id)
             ->get();
-        $supplier = Supplier::all();
+        $supplier = Supplier::where('user_id',$user->id)->get();
         return view('order.supplier')->with(compact('product', 'supplier'));
     }
     public function addsupplierdetail(ShipmentRequest $request)
@@ -193,11 +194,13 @@ class OrderController extends Controller
 
         return redirect('order/preinspection')->with('Success', 'Supplier Information Added Successfully');
     }
-    public function addsupplier()
+    public function addsupplier(Request $request)
     {
-        if (Request::ajax()) {
-            $post = Request::all();
+        if ($request->ajax()) {
+            $user = \Auth::user();
+            $post = $request->all();
             $supplier = new Supplier();
+            $supplier->user_id = $user->id;
             $supplier->company_name = $post['company_name'];
             $supplier->contact_name = $post['contact_name'];
             $supplier->email = $post['email'];
