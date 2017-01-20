@@ -32,6 +32,7 @@
                                     @if($products->supplier_id==$suppliers->supplier_id)
                                         <input type="hidden" name="supplier_inspection_id{{$cnt."_".$product_cnt}}" value="{{$products->supplier_inspection_id }}">
                                         <input type="hidden" name="supplier_detail_id{{$cnt."_".$product_cnt}}" value="{{$products->supplier_detail_id}}"><br>
+                                        <input type="hidden" id="order_id" name="order_id" value="{{$products->order_id}}">
                                         {{--*/ $product_cnt++ /*--}}
                                     @endif
                                 @endforeach

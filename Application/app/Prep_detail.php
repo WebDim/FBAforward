@@ -9,7 +9,7 @@ class Prep_detail extends Model
     //
     protected $primaryKey = 'prep_detail_id';
     protected $table ='prep_details';
-    protected $fillable = ['shipment_detail_id', 'user_id','product_id','total_qty', 'prep_service_ids', 'prep_service_total','grand_total','	is_activated'];
+    protected $fillable = ['shipment_detail_id', 'order_id','user_id','product_id','total_qty', 'prep_service_ids', 'prep_service_total','grand_total','	is_activated'];
 
     public function prep_service()
     {

@@ -38,15 +38,16 @@ class OrderController extends Controller
         $shipment=array();
         return view('order.shipment')->with(compact('shipping_method','product','shipment'));
     }
-    public function updateshipment()
+    public function updateshipment(Request $request)
     {
         $user = \Auth::user();
+        $order_id = $request->session()->get('order_id');
         $shipping_method = Shipping_method::all();
         $product = Amazon_inventory::where('user_id', $user->id)->get();
-        $shipment= Shipments::where('user_id',$user->id)->where('is_activated','0')->get();
+        $shipment= Shipments::where('order_id',$order_id)->get();
         $shipment_detail = Shipment_detail::selectRaw("shipment_details.* ")
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
-            ->where('shipments.user_id',$user->id)
+            ->where('shipments.order_id',$order_id)
             ->where('shipments.is_activated','0')
             ->get();
         return view('order.shipment')->with(compact('shipping_method','product','shipment','shipment_detail'));
@@ -157,11 +158,10 @@ class OrderController extends Controller
     {
         $user = \Auth::user();
         $order_id = $request->session()->get('order_id');
-        $product = Shipment_detail::selectRaw("orders.order_id, shipment_details.shipment_detail_id,supplier_details.supplier_id,  supplier_details.supplier_detail_id,  shipment_details.product_id, shipment_details.total,  amazon_inventories.product_name  ")
+        $product = Shipment_detail::selectRaw("shipments.order_id, shipment_details.shipment_detail_id,supplier_details.supplier_id,  supplier_details.supplier_detail_id,  shipment_details.product_id, shipment_details.total,  amazon_inventories.product_name  ")
             ->join('supplier_details','shipment_details.shipment_detail_id','=','supplier_details.shipment_detail_id','left')
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
-            ->join('orders','shipments.order_id','=','orders.order_id')
             ->where('shipments.order_id',$order_id)
             ->get();
         $supplier = Supplier::where('user_id',$user->id)->get();
@@ -174,6 +174,7 @@ class OrderController extends Controller
         for ($cnt = 1; $cnt < $count; $cnt++) {
             if(empty($request->input('supplier_detail_id'.$cnt))) {
                 $supplier = array('shipment_detail_id'=>$request->input('shipment_detail_id' . $cnt),
+                    'order_id' => $request->input('order_id'),
                     'supplier_id' => $request->input('supplier' . $cnt),
                     'user_id' => $user->id,
                     'product_id' => $request->input('product_id' . $cnt),
@@ -209,21 +210,21 @@ class OrderController extends Controller
         }
 
     }
-    public function preinspection()
+    public function preinspection(Request $request)
     {
-        $user = \Auth::user();
+
+        $order_id = $request->session()->get('order_id');
         $supplier = Supplier::selectRaw("supplier_inspections.is_inspection, supplier_inspections.inspection_decription, suppliers.supplier_id, suppliers.company_name")
-            ->join('supplier_details', 'supplier_details.supplier_id', '=', 'suppliers.supplier_id')
+            ->join('supplier_details', 'supplier_details.supplier_id', '=', 'suppliers.supplier_id','left')
             ->join('supplier_inspections','supplier_details.supplier_id','=','supplier_inspections.supplier_id','left')
-            ->where('supplier_details.user_id', $user->id)
+            ->where('supplier_details.order_id', $order_id)
             ->distinct('supplier_inspections.supplier_id')
             ->get();
-        $product = Supplier_detail::selectRaw("supplier_inspections.supplier_inspection_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, supplier_details.product_id, supplier_details.total_unit, amazon_inventories.product_name")
+        $product = Supplier_detail::selectRaw("supplier_details.order_id, supplier_inspections.supplier_inspection_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, supplier_details.product_id, supplier_details.total_unit, amazon_inventories.product_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'supplier_details.product_id')
             ->join('supplier_inspections','supplier_inspections.supplier_detail_id','=','supplier_details.supplier_detail_id','left')
-            ->where('supplier_details.user_id', $user->id)
+            ->where('supplier_details.order_id', $order_id)
             ->get();
-
         return view('order.pre_inspection')->with(compact('product', 'supplier'));
     }
     public function addpreinspection(ShipmentRequest $request)
@@ -235,6 +236,7 @@ class OrderController extends Controller
             for($product_cnt=1; $product_cnt< $product_count; $product_cnt++) {
                 if(empty($request->input('supplier_inspection_id'.$cnt."_".$product_cnt))) {
                     $supplier = array('supplier_detail_id' => $request->input('supplier_detail_id' . $cnt . "_" . $product_cnt),
+                        'order_id'=>$request->input('order_id'),
                         'user_id' => $user->id,
                         'is_inspection' => $request->input('inspection' . $cnt),
                         'inspection_decription' => $request->input('inspection_desc'.$cnt),
@@ -257,26 +259,25 @@ class OrderController extends Controller
         }
         return redirect('order/productlabels')->with('Success', 'Pre inspection Information Added Successfully');
     }
-    public function labels()
+    public function labels(Request $request)
     {
-        $user = \Auth::user();
+        $order_id = $request->session()->get('order_id');
         $product_label= Product_labels::all();
-        $product = Shipment_detail::selectRaw("product_labels_details.product_label_detail_id, product_labels_details.product_label_id, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
+        $product = Shipment_detail::selectRaw(" shipments.order_id, product_labels_details.product_label_detail_id, product_labels_details.product_label_id, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
             ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id','left')
             ->join('product_labels_details','shipment_details.shipment_detail_id','=','product_labels_details.shipment_detail_id','left')
-            ->where('shipments.user_id', $user->id)
+            ->where('shipments.order_id', $order_id)
             ->get();
         return view('order.product_labels')->with(compact('product', 'product_label'));
     }
     public function addlabels(ShipmentRequest $request)
     {
-        $user = \Auth::user();
         $count = $request->input('count');
         for ($cnt = 1; $cnt < $count; $cnt++) {
             if(empty($request->input('product_label_detail_id'.$cnt))) {
 
-                $product_label = array(
+                $product_label = array('order_id'=>$request->input('order_id'),
                     'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
                     'product_id' => $request->input('product_id' . $cnt),
                     'product_label_id' => $request->input('labels' . $cnt),
@@ -301,15 +302,15 @@ class OrderController extends Controller
         }
         return redirect('order/prepservice')->with('Success', 'Product Label Information Added Successfully');
     }
-    public function prepservice()
+    public function prepservice(Request $request)
     {
-        $user = \Auth::user();
+        $order_id = $request->session()->get('order_id');
         $prep_service= Prep_service::all();
-        $product = Shipment_detail::selectRaw("prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.grand_total, prep_details.prep_service_ids, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
+        $product = Shipment_detail::selectRaw("shipments.order_id, prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.grand_total, prep_details.prep_service_ids, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
             ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id','left')
             ->join('prep_details','prep_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
-            ->where('shipments.user_id', $user->id)
+            ->where('shipments.order_id', $order_id)
             ->get();
         return view('order.prep_service')->with(compact('prep_service', 'product'));
     }
@@ -327,6 +328,7 @@ class OrderController extends Controller
             }
             if(empty($request->input('prep_detail_id'.$cnt))) {
                 $prep_service = array('user_id' => $user->id,
+                    'order_id'=>$request->input('order_id'),
                     'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
                     'product_id' => $request->input('product_id' . $cnt),
                     'total_qty' => $request->input('qty' . $cnt),
@@ -352,15 +354,15 @@ class OrderController extends Controller
         }
         return redirect('order/listservice')->with('Success', 'Prep Service Information Added Successfully');
     }
-    public function listservice()
+    public function listservice(Request $request)
     {
-        $user = \Auth::user();
+        $order_id = $request->session()->get('order_id');
         $list_service= Listing_service::all();
-        $product = Shipment_detail::selectRaw("listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.grand_total, listing_service_details.listing_service_ids,shipment_details.product_id, shipment_details.shipment_detail_id, shipment_details.total, amazon_inventories.product_name")
+        $product = Shipment_detail::selectRaw("shipments.order_id, listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.grand_total, listing_service_details.listing_service_ids,shipment_details.product_id, shipment_details.shipment_detail_id, shipment_details.total, amazon_inventories.product_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
             ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id')
             ->join('listing_service_details','listing_service_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
-            ->where('shipments.user_id', $user->id)
+            ->where('shipments.order_id', $order_id)
             ->get();
       return view('order.list_service')->with(compact('list_service', 'product'));
     }
@@ -376,7 +378,7 @@ class OrderController extends Controller
                 }
             }
             if(empty($request->input('listing_service_detail_id'.$cnt))) {
-                $list_service = array(
+                $list_service = array('order_id'=>$request->input('order_id'),
                         'product_id' => $request->input('product_id' . $cnt),
                         'listing_service_ids' => implode(',', $service),
                         'shipment_detail_id' => $request->input('shipment_detail_id'.$cnt),

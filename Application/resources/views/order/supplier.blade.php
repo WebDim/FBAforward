@@ -23,7 +23,7 @@
     {{--*/ $cnt = 1 /*--}}
 
         @foreach($product as $products)
-
+        <input type="hidden" id="order_id", name="order_id" value="{{$products->order_id}}">
        <tr>
             <td class="col-md-6"><input type="hidden" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id }}">
                 <input type="hidden" name="supplier_detail_id{{ $cnt }}" value="{{ $products->supplier_detail_id }}">

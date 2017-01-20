@@ -37,7 +37,7 @@
                                <input type="checkbox" name="service{{$cnt}}_{{$prep_services->prep_service_id}}" id="service{{$cnt}}_{{$prep_services->prep_service_id}}" value="{{  $prep_services->prep_service_id }}" onchange="get_total({{$prep_services->price}},{{$cnt}},{{$prep_services->prep_service_id}})" @if(in_array($prep_services->prep_service_id,$prep_service_ids)) {{ "checked" }} @endif>{{ $prep_services->service_name }}
                                <br>
                             @endforeach
-                            <input type="hidden" name="sub_count{{$cnt}}" id="sub_count{{$cnt}}" value="{{ count($prep_service) }}">
+                            <input type="hidden" name="sub_count{{$cnt}}" id="sub_count{{$cnt}}" value="{{ $prep_services->prep_service_id }}">
                             </b></td>
                             <td class="col-md-2"><input type="hidden" id="total{{$cnt}}" name="total{{ $cnt }}" value="{{ isset($products->prep_service_total)? $products->prep_service_total : 0 }}" readonly><b class="text-info"><span id="total_span{{$cnt}}">{{ isset($products->prep_service_total)? $products->prep_service_total : 0 }}</span></b></td>
                         </tr>
@@ -47,7 +47,7 @@
                         <td></td>
                         <td></td>
                         <td>Total</td>
-                        <td><input type="hidden" id="grand_total" name="grand_total" value="{{ isset($products->grand_total) ? $products->grand_total : 0}}" readonly><span id="grand_total_span">{{ isset($products->grand_total) ? $products->grand_total : 0}}</span></td>
+                        <td><input type="hidden" id="order_id" name="order_id" value="{{ $products->order_id}}"><input type="hidden" id="grand_total" name="grand_total" value="{{ isset($products->grand_total) ? $products->grand_total : 0}}"><span id="grand_total_span">{{ isset($products->grand_total) ? $products->grand_total : 0}}</span></td>
                     </tr>
                     </tbody>
                 </table>

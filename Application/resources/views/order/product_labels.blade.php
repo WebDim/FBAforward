@@ -24,7 +24,9 @@
                     {{--*/ $cnt = 1 /*--}}
                     @foreach($product as $products)
                         <tr>
-                            <td class="col-md-5"><input type="hidden" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id  }}">
+                            <td class="col-md-5">
+                                <input type="hidden" id="order_id" name="order_id" value="{{ $products->order_id}}">
+                                <input type="hidden" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id  }}">
                                 <input type="hidden" name="product_label_detail_id{{ $cnt }}" value="{{ $products->product_label_detail_id  }}">
                                 <input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
                                 <b class="text-info">{{ $products->product_name }}</b></td>
