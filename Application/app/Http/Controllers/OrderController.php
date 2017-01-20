@@ -118,7 +118,7 @@ class OrderController extends Controller
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
             ->where('shipments.user_id',$user->id)
             ->get();
-        $supplier = Supplier::all();
+        $supplier = Supplier::where('user_id',$user->id)->get();
 
         return view('order.supplier')->with(compact('product', 'supplier'));
     }
@@ -152,8 +152,10 @@ class OrderController extends Controller
     public function addsupplier()
     {
         if (Request::ajax()) {
+            $user = \Auth::user();
             $post = Request::all();
             $supplier = new Supplier();
+            $supplier->user_id = $user->id;
             $supplier->company_name = $post['company_name'];
             $supplier->contact_name = $post['contact_name'];
             $supplier->email = $post['email'];
