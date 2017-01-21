@@ -30,18 +30,42 @@ class OrderController extends Controller
     }
     public function index()
     {
-
+        $user = \Auth::user();
+        $orders = Order::where('user_id', $user->id)->where('is_activated', 0)->orderBy('created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Completed');
+        return view('order.index')->with(compact('orders','orderStatus'));
     }
-    public function shipment()
+    public function removeorder(Request $request)
     {
+        if ($request->ajax()) {
+            $post = $request->all();
+            Listing_service_detail::where('order_id',$post['order_id'])->delete();
+            Prep_detail::where('order_id',$post['order_id'])->delete();
+            Product_labels_detail::where('order_id',$post['order_id'])->delete();
+            Supplier_detail::where('order_id',$post['order_id'])->delete();
+            Shipments::where('order_id',$post['order_id'])->delete();
+            Order::where('order_id',$post['order_id'])->delete();
+            return 1;
+        }
+    }
+    public function shipment(Request $request)
+    {
+        //Remove session
+        $request->session()->forget('order_id');
         $user = \Auth::user();
         $shipping_method = Shipping_method::all();
         $product = Amazon_inventory::where('user_id', $user->id)->get();
         $shipment=array();
-        return view('order.shipment')->with(compact('shipping_method','product','shipment'));
+        return view('order.shipment')->with(compact('shipping_method','product','shipment','orders'));
     }
     public function updateshipment(Request $request)
     {
+        //print_r($_GET);exit;
+        if(!empty($request->order_id)){
+            $request->session()->put('order_id', $request->order_id);
+
+
+        }
         $user = \Auth::user();
         $order_id = $request->session()->get('order_id');
         $shipping_method = Shipping_method::all();
@@ -70,7 +94,9 @@ class OrderController extends Controller
          {
              $order_id=$request->input('order_id');
          }
+
          $request->session()->put('order_id', $order_id);
+
         if($request->input('split_shipment')=='0') {
             if (!empty($request->input('shipment_id2'))) {
                 $sub_count = $request->input('count2');
@@ -443,52 +469,56 @@ class OrderController extends Controller
             ->get();
         return view('order.outbound_shipping')->with(compact('amazon_destination', 'outbound_method', 'shipment', 'product','outbound_detail'));
     }
+
     public function addoutbondshipping(ShipmentRequest $request)
     {
-            $ship_count = $request->input('ship_count');
-            for($ship_cnt=1; $ship_cnt <$ship_count; $ship_cnt++)
-            {
-                $count =$request->input('count'.$ship_cnt);
-                for ($cnt=1; $cnt< $count; $cnt++)
-                {
-                    $product=array();
-                    $qty= array();
-                    $product_count =$request->input("product_count".$ship_cnt."_".$cnt);
-                    for ($product_cnt=1; $product_cnt< $product_count; $product_cnt++)
-                    {
-                        $product[]=$request->input('product_id'.$ship_cnt."_".$cnt."_".$product_cnt);
-                        $qty[]=$request->input('total_unit'.$ship_cnt."_".$cnt."_".$product_cnt);
-                    }
+        $ship_count = $request->input('ship_count');
+        for ($ship_cnt = 1; $ship_cnt < $ship_count; $ship_cnt++) {
+            $count = $request->input('count' . $ship_cnt);
+            for ($cnt = 1; $cnt < $count; $cnt++) {
+                $product = array();
+                $qty = array();
+                $product_count = $request->input("product_count" . $ship_cnt . "_" . $cnt);
+                for ($product_cnt = 1; $product_cnt < $product_count; $product_cnt++) {
+                    $product[] = $request->input('product_id' . $ship_cnt . "_" . $cnt . "_" . $product_cnt);
+                    $qty[] = $request->input('total_unit' . $ship_cnt . "_" . $cnt . "_" . $product_cnt);
+                }
 
-                    if(empty($request->input("outbound_shipping_detail_id".$ship_cnt."_".$cnt)))
-                    {
-                    $outbound_shipping= array("amazon_destination_id"=>$request->input('amazon_destination_id'.$ship_cnt."_".$cnt),
-                                            "outbound_method_id" =>$request->input('outbound_method'.$ship_cnt."_".$cnt),
-                                            "shipment_id" => $request->input('shipment_id'.$ship_cnt),
-                                            "order_id" =>$request->input('order_id'),
-                                            "product_ids"=>implode(',',$product),
-                                            "qty"=>implode(',',$qty)
+                if (empty($request->input("outbound_shipping_detail_id" . $ship_cnt . "_" . $cnt))) {
+                    $outbound_shipping = array("amazon_destination_id" => $request->input('amazon_destination_id' . $ship_cnt . "_" . $cnt),
+                        "outbound_method_id" => $request->input('outbound_method' . $ship_cnt . "_" . $cnt),
+                        "shipment_id" => $request->input('shipment_id' . $ship_cnt),
+                        "order_id" => $request->input('order_id'),
+                        "product_ids" => implode(',', $product),
+                        "qty" => implode(',', $qty)
                     );
-                        $outbound_shipping_detail = new Outbound_Shipping_detail($outbound_shipping);
-                        $outbound_shipping_detail->save();
-                    }
-                    else
-                    {
-                        $outbound_shipping= array("amazon_destination_id"=>$request->input('amazon_destination_id'.$ship_cnt."_".$cnt),
-                            "outbound_method_id" =>$request->input('outbound_method'.$ship_cnt."_".$cnt),
-                            "shipment_id" => $request->input('shipment_id'.$ship_cnt),
-                            "order_id" =>$request->input('order_id'),
-                            "product_ids"=>implode(',',$product),
-                            "qty"=>implode(',',$qty)
-                        );
-                        Outbound_Shipping_detail::where('outbound_shipping_detail_id',$request->input("outbound_shipping_detail_id".$ship_cnt."_".$cnt))->update($outbound_shipping);
-                    }
+                    $outbound_shipping_detail = new Outbound_Shipping_detail($outbound_shipping);
+                    $outbound_shipping_detail->save();
+                } else {
+                    $outbound_shipping = array("amazon_destination_id" => $request->input('amazon_destination_id' . $ship_cnt . "_" . $cnt),
+                        "outbound_method_id" => $request->input('outbound_method' . $ship_cnt . "_" . $cnt),
+                        "shipment_id" => $request->input('shipment_id' . $ship_cnt),
+                        "order_id" => $request->input('order_id'),
+                        "product_ids" => implode(',', $product),
+                        "qty" => implode(',', $qty)
+                    );
+                    Outbound_Shipping_detail::where('outbound_shipping_detail_id', $request->input("outbound_shipping_detail_id" . $ship_cnt . "_" . $cnt))->update($outbound_shipping);
                 }
             }
-
+        }
+    }
+    public function orderpayment(){
+        $card_type= array('visa'=>'visa',
+            'mastercard'=>'mastercard',
+            'amex'=>'amex',
+            'discover'=>'discover',
+            'maestro'=>'maestro'
+        );
+        return view('order.payment')->with(compact('card_type'));
+    }
+    public function addorderpayment(){
 
         return redirect('order/reviewshipment')->with('Success', 'Outbound shipping Information Added Successfully');
-
     }
     public function reviewshipment(Request $request)
     {

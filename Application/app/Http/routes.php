@@ -114,9 +114,12 @@ Route::group(['middleware' => 'web'], function () {
      * Orders routes
      */
     Route::group(['prefix' => 'order'], function () {
+        Route::get('/index', 'OrderController@index');
         Route::get('/shipment', 'OrderController@shipment');
-        Route::get('/updateshipment', ['uses'=>'OrderController@updateshipment','as' =>'shipment']);
+        Route::get('/updateshipment/{order_id?}', ['uses'=>'OrderController@updateshipment','as' =>'shipment']);
         Route::put('/shipment', 'OrderController@addshipment');
+        Route::post('/removeorder', 'OrderController@removeorder');
+
         Route::post('/removeproduct','OrderController@removeproduct');
         Route::get('/supplierdetail',['uses'=>'OrderController@supplierdetail','as'=>'supplierdetail']);
         Route::put('/supplierdetail','OrderController@addsupplierdetail');
@@ -132,6 +135,8 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/outbondshipping',['uses'=>'OrderController@outbondshipping','as'=>'outbondshipping']);
         Route::put('/outbondshipping','OrderController@addoutbondshipping');
         Route::get('/reviewshipment',['uses'=>'OrderController@reviewshipment','as'=>'reviewshipment']);
+        Route::get('/payment',['uses'=>'OrderController@orderpayment','as'=>'payment']);
+        Route::put('/payment','OrderController@addorderpayment');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);

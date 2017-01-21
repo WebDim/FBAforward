@@ -1,5 +1,5 @@
 @extends('layouts.frontend.app')
-@section('title', 'Shipment call')
+@section('title', 'Shipment Information')
 @section('content')
     @include('layouts.frontend.tabs', ['data' => 'shipment'])
     <div class="row">
@@ -9,6 +9,7 @@
         <div class="col-md-12">
             {!! Form::open(['url' => 'order/shipment', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
             {!! Form::hidden('ship_count', old('ship_count',1), ['class' => 'form-control', 'id'=>'ship_count']) !!}
+            {!! Form::hidden('order_id', old('order_id', count($shipment)>0 ? $shipment[0]->order_id  : null), ['class' => 'form-control']) !!}
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -31,7 +32,6 @@
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
                                 {!! Form::text('date', old('date', count($shipment)>0 ? date('m/d/Y',strtotime( $shipment[0]->goods_ready_date)) : null), ['class' => 'datepicker form-control validate[required]', 'placeholder'=>'mm/dd/yyyy']) !!}
-                                {!! Form::hidden('order_id', old('order_id', count($shipment)>0 ? $shipment[0]->order_id  : null), ['class' => 'form-control']) !!}
                             </div>
                         </div>
                     </div>
