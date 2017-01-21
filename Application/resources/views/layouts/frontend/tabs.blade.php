@@ -1,6 +1,9 @@
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-10">
         <h2 class="page-head-line">CREATE NEW ORDER</h2>
+    </div>
+    <div class="col-md-2 ">
+        <a href="{{ url('order/index') }}" class="btn btn-primary">Order Management</a>
     </div>
 </div>
 <ul class="nav nav-tabs" role="tablist">

@@ -29,18 +29,43 @@ class OrderController extends Controller
     }
     public function index()
     {
+        $user = \Auth::user();
+        $orders = Order::where('user_id', $user->id)->where('is_activated', 0)->orderBy('created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Completed');
+        return view('order.index')->with(compact('orders','orderStatus'));
+    }
+    public function removeorder(Request $request)
+    {
+        if ($request->ajax()) {
+            $post = $request->all();
+            Listing_service_detail::where('order_id',$post['order_id'])->delete();
+            Prep_detail::where('order_id',$post['order_id'])->delete();
+            Product_labels_detail::where('order_id',$post['order_id'])->delete();
+            Supplier_detail::where('order_id',$post['order_id'])->delete();
+            Shipments::where('order_id',$post['order_id'])->delete();
+            Order::where('order_id',$post['order_id'])->delete();
+            return 1;
+        }
 
     }
-    public function shipment()
+    public function shipment(Request $request)
     {
+        //Remove session
+        $request->session()->forget('order_id');
         $user = \Auth::user();
         $shipping_method = Shipping_method::all();
         $product = Amazon_inventory::where('user_id', $user->id)->get();
         $shipment=array();
-        return view('order.shipment')->with(compact('shipping_method','product','shipment'));
+        return view('order.shipment')->with(compact('shipping_method','product','shipment','orders'));
     }
     public function updateshipment(Request $request)
     {
+        //print_r($_GET);exit;
+        if(!empty($request->order_id)){
+            $request->session()->put('order_id', $request->order_id);
+
+
+        }
         $user = \Auth::user();
         $order_id = $request->session()->get('order_id');
         $shipping_method = Shipping_method::all();
@@ -69,7 +94,9 @@ class OrderController extends Controller
          {
              $order_id=$request->input('order_id');
          }
+
          $request->session()->put('order_id', $order_id);
+
         if($request->input('split_shipment')=='0') {
             if (!empty($request->input('shipment_id2'))) {
                 $sub_count = $request->input('count2');

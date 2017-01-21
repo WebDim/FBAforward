@@ -56,7 +56,7 @@
                             </li>
                             @if('Customer' === \Auth::user()->role->name)
                             <li>
-                                <a class="external" href="{{ url('order/shipment') }}"><i class="fa fa-btn fa-user"></i>&nbsp;Create New Order</a>
+                                <a class="external" href="{{ url('order/index') }}"><i class="fa fa-btn fa-user"></i> Order Management</a>
                             </li>
                             <li><a class="external" href="{{ url('/amazon_credential') }}"><i class="fa fa-cog"></i>&nbsp;Amazon Credential</a>
                             </li>
