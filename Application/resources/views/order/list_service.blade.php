@@ -77,19 +77,19 @@
         });
         function  get_total(price,no,sub_no) {
             if($("#service"+no+"_"+sub_no).is(':checked')) {
-                total = parseFloat($("#total"+no).val()) + parseFloat(price);
+                total = parseFloat($("#total"+no).val(),2) + parseFloat(price,2);
                 $("#total"+no).val(total);
                 $("#total_span"+no).text(total);
-                grand_total=parseFloat($("#grand_total").val())+parseFloat(price);
+                grand_total=parseFloat($("#grand_total").val(),2)+parseFloat(price,2);
                 $("#grand_total").val(grand_total);
                 $("#grand_total_span").text(grand_total);
             }
             else
             {
-                total = parseFloat($("#total" + no).val() ) - parseFloat(price);
+                total = parseFloat($("#total" + no).val(),2) - parseFloat(price,2);
                 $("#total"+no).val(total);
                 $("#total_span"+no).text(total);
-                grand_total=parseFloat($("#grand_total").val())-parseFloat(price);
+                grand_total=parseFloat($("#grand_total").val(),2)-parseFloat(price,2);
                 $("#grand_total").val(grand_total);
                 $("#grand_total_span").text(grand_total);
             }
