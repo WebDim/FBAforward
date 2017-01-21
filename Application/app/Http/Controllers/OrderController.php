@@ -506,6 +506,7 @@ class OrderController extends Controller
                 }
             }
         }
+        return redirect('order/reviewshipment')->with('Success', 'Outbound Shipping Information Added Successfully');
     }
     public function orderpayment(){
         $card_type= array('visa'=>'visa',

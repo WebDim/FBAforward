@@ -9,7 +9,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            {!! Form::open(['url' =>  'order/payment', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
+
             <div class="row">
                 <div class="col-md-6">
                     <h4>Shipments</h4>
@@ -107,10 +107,11 @@
             <div class="form-group">
                 <div class="col-md-9 col-md-offset-9">
                     <a href="{{ URL::route('outbondshipping') }}" class="btn btn-primary">Previous</a>
-                    {!! Form::submit('  Next  ', ['class'=>'btn btn-primary']) !!}
+                    <a href="{{ URL::route('payment') }}" class="btn btn-primary">Next</a>
+
                 </div>
             </div>
-            {!! Form::close() !!}
+
         </div>
     </div>
 @endsection
