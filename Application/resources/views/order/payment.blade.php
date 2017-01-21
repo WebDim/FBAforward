@@ -153,7 +153,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-md-8 col-md-offset-3">
-                        {!! Form::submit('Save Card', ['class'=>'btn btn-primary']) !!}
+                        <button class="btn btn-primary" onclick="addcreditcard()">Save Card</button>
                     </div>
                 </div>
                 <div class="form-group">
@@ -170,15 +170,28 @@
             </div><!-- .col-md-6 -->
             <div class="form-group">
                 <div class="col-md-9 col-md-offset-9">
-                    <a href="{{ URL::route('supplierdetail') }}" class="btn btn-primary">Previous</a>
+                    <a href="{{ URL::route('reviewshipment') }}" class="btn btn-primary">Previous</a>
                     {!! Form::submit('  Submit  ', ['class'=>'btn btn-primary']) !!}
                 </div>
             </div>
         {!! Form::close() !!}
         </div>
-
-
-
     </div>
+@endsection
+@section('js')
+    {!! Html::script('assets/plugins/validationengine/languages/jquery.validationEngine-en.js') !!}
+    {!! Html::script('assets/plugins/validationengine/jquery.validationEngine.js') !!}
+    <script type="text/javascript">
+        $(document).ready(function () {
+// Validation Engine init
+            var prefix = 's2id_';
+            $("form[id^='validate']").validationEngine('attach',
+                {
+                    promptPosition: "bottomRight", scroll: false,
+                    prettySelect: true,
+                    usePrefix: prefix
+                });
+        });
 
+    </script>
 @endsection
