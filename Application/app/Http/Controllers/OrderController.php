@@ -269,7 +269,9 @@ class OrderController extends Controller
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'supplier_details.product_id')
             ->join('supplier_inspections','supplier_inspections.order_id','=','supplier_details.order_id','left')
             ->where('supplier_details.order_id', $order_id)
+            ->groupby('supplier_details.supplier_detail_id')
             ->get();
+
         return view('order.pre_inspection')->with(compact('product', 'supplier'));
     }
     public function addpreinspection(ShipmentRequest $request)
