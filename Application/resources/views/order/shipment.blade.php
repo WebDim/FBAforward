@@ -1,5 +1,5 @@
 @extends('layouts.frontend.app')
-@section('title', 'Shipment call')
+@section('title', 'Shipment Information')
 @section('content')
     @include('layouts.frontend.tabs', ['data' => 'shipment'])
     <div class="row">

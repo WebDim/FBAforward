@@ -46,7 +46,6 @@ class OrderController extends Controller
             Order::where('order_id',$post['order_id'])->delete();
             return 1;
         }
-
     }
     public function shipment(Request $request)
     {
@@ -465,8 +464,19 @@ class OrderController extends Controller
             ->get();
         return view('order.outbound_shipping')->with(compact('amazon_destination', 'outbound_method', 'shipment', 'product'));
     }
-    public function addoutbondshipping(ShipmentRequest $request)
-    {
+    public function addoutbondshipping(ShipmentRequest $request){
+
+    }
+    public function orderpayment(){
+        $card_type= array('visa'=>'visa',
+            'mastercard'=>'mastercard',
+            'amex'=>'amex',
+            'discover'=>'discover',
+            'maestro'=>'maestro'
+        );
+        return view('order.payment')->with(compact('card_type'));
+    }
+    public function addorderpayment(){
 
     }
 }

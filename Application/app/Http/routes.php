@@ -134,6 +134,9 @@ Route::group(['middleware' => 'web'], function () {
         Route::put('/listservice','OrderController@addlistservice');
         Route::get('/outbondshipping',['uses'=>'OrderController@outbondshipping','as'=>'outbondshipping']);
         Route::put('/outbondshipping','OrderController@addoutbondshipping');
+
+        Route::get('/payment',['uses'=>'OrderController@orderpayment','as'=>'payment']);
+        Route::put('/payment','OrderController@addorderpayment');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);
