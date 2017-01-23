@@ -137,13 +137,16 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/reviewshipment',['uses'=>'OrderController@reviewshipment','as'=>'reviewshipment']);
         Route::get('/payment',['uses'=>'OrderController@orderpayment','as'=>'payment']);
         Route::put('/payment','OrderController@addorderpayment');
+        Route::post('/addcreditcard','OrderController@addcreditcard');
+        Route::post('/addaddress','OrderController@addaddress');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);
         Route::put('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@addamazoncredential']);
         Route::get('/creditcard_detail', ['as' => 'creditcard_detail', 'uses' => 'MemberController@creditcarddetail']);
         Route::put('/creditcard_detail', ['as' => 'creditcard_detail', 'uses' => 'MemberController@addcreditcarddetail']);
-    Route::get('sitemap', function(){
+
+        Route::get('sitemap', function(){
         // create new sitemap object
         $sitemap = App::make("sitemap");
         // set cache key (string), duration in minutes (Carbon|Datetime|int), turn on/off (boolean)

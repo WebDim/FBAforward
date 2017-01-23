@@ -17,11 +17,24 @@ use App\Supplier_inspection;
 use App\Product_labels_detail;
 use App\Shipments;
 use App\Order;
+use App\User_credit_cardinfo;
+use App\Addresses;
 use App\Http\Middleware\Amazoncredential;
 use App\Outbound_Shipping_detail;
+use App\Payment_detail;
 use Illuminate\Http\Request;
 use Webpatser\Uuid\Uuid;
-
+use PayPal\Api\CreditCard;
+use PayPal\Api\Amount;
+use PayPal\Api\Details;
+use PayPal\Api\FundingInstrument;
+use PayPal\Api\Item;
+use PayPal\Api\ItemList;
+use PayPal\Api\Payer;
+use PayPal\Api\Payment;
+use PayPal\Api\PaymentCard;
+use PayPal\Api\RedirectUrls;
+use PayPal\Api\Transaction;
 class OrderController extends Controller
 {
     public function __construct()
@@ -271,7 +284,6 @@ class OrderController extends Controller
             ->where('supplier_details.order_id', $order_id)
             ->groupby('supplier_details.supplier_detail_id')
             ->get();
-
         return view('order.pre_inspection')->with(compact('product', 'supplier'));
     }
     public function addpreinspection(ShipmentRequest $request)
@@ -315,6 +327,7 @@ class OrderController extends Controller
             ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id','left')
             ->join('product_labels_details','shipment_details.shipment_detail_id','=','product_labels_details.shipment_detail_id','left')
             ->where('shipments.order_id', $order_id)
+            ->groupby('shipment_details.shipment_detail_id')
             ->get();
         return view('order.product_labels')->with(compact('product', 'product_label'));
     }
@@ -510,19 +523,6 @@ class OrderController extends Controller
         }
         return redirect('order/reviewshipment')->with('Success', 'Outbound Shipping Information Added Successfully');
     }
-    public function orderpayment(){
-        $card_type= array('visa'=>'visa',
-            'mastercard'=>'mastercard',
-            'amex'=>'amex',
-            'discover'=>'discover',
-            'maestro'=>'maestro'
-        );
-        return view('order.payment')->with(compact('card_type'));
-    }
-    public function addorderpayment(){
-
-        return redirect('order/reviewshipment')->with('Success', 'Outbound shipping Information Added Successfully');
-    }
     public function reviewshipment(Request $request)
     {
         $user = \Auth::user();
@@ -547,5 +547,158 @@ class OrderController extends Controller
         $prep_service= Prep_service::all();
         return view('order.review_shipment')->with(compact('shipment','outbound_detail','product_detail','prep_service'));
     }
+    public function orderpayment(Request $request){
+        $order_id = $request->session()->get('order_id');
+        $supplier = Supplier_detail::where('order_id',$order_id)->groupby('supplier_id')->get();
+        $supplier_count=count($supplier);
+        $pre_shipment_inspection=400*$supplier_count;
+        $label=Product_labels_detail::SelectRaw('sum(qty) as total')->where('order_id',$order_id)->groupby('product_label_id')->get();
+        $label_total=0;
+        foreach ($label as $labels)
+        {
+            $label_total+=$labels->total*0.15;
+        }
+        $price=array('pre_shipment_inspection'=>$pre_shipment_inspection,
+            'shipping_cost'=>'0',
+            'port_fee'=>'0',
+            'custom_brokerage'=>'0',
+            'custom_duty'=>'0',
+            'consult_charge'=>'0',
+            'label_charge'=>$label_total,
+            'prep_forwarding'=>'4',
+            'listing_service'=>'0',
+            'inbound_shipping'=>'0',
+        );
+        $card_type= array('visa'=>'visa',
+            'mastercard'=>'mastercard',
+            'amex'=>'amex',
+            'discover'=>'discover',
+            'maestro'=>'maestro'
+        );
+        $user = \Auth::user();
+        $addresses =Addresses::where('user_id', $user->id)->where('type','B')->get();
+        $credit_card= User_credit_cardinfo::where('user_id',$user->id)->get();
+        return view('order.payment')->with(compact('price','card_type','addresses','credit_card'));
+    }
+    public function addcreditcard(Request $request)
+    {
+        if ($request->ajax()) {
+            $user = \Auth::user();
+            $apiContext = new \PayPal\Rest\ApiContext(
+                new \PayPal\Auth\OAuthTokenCredential(
+                    'ATZYtBR5Q78IyeyfBqznRDn-u5cOmbQ4I-F7SliUlBZnLuvJC2CG78casVBs39nzcowPQxh7UQIh9wxk',
+                    'EB-7iN9A54Z5f70wUQ6Guau1Wj_Kx94EuhFQveM1qlDRcAG6LmYe-MmDsH53phtBRxVhXyc4U_aOX2bz'
+                )
+            );
+            $date = explode('/',$request->input('expire_card'));
+            $card = new CreditCard();
+            $card->setType($request->input('credit_card_type'))
+                ->setNumber($request->input('credit_card_number'))
+                ->setExpireMonth($date[0])
+                ->setExpireYear($date[1])
+                ->setCvv2($request->input('cvv'))
+                ->setFirstName($request->input('first_name'))
+                ->setLastName($request->input('last_name'));
 
+            try {
+                $card->create($apiContext);
+            }
+            catch (\PayPal\Exception\PayPalConnectionException $ex) {
+                echo $ex->getCode();
+                echo $ex->getData();
+                die($ex);
+            }
+            catch (Exception $ex) {
+                die($ex);
+            }
+            $card_detail=array('user_id'=>$user->id,
+                'credit_card_type'=>$card->type,
+                'credit_card_number'=>$card->number,
+                'credit_card_id' =>$card->id
+            );
+            User_credit_cardinfo::create($card_detail);
+        }
+    }
+    public function addaddress(Request $request)
+    {
+        if ($request->ajax()) {
+            $user = \Auth::user();
+            $address_detail=array('user_id'=>$user->id,
+                'type'=>'B',
+                'address_1'=>$request->input('address_line_1'),
+                'address_2'=>$request->input('address_line_2'),
+                'city' =>$request->input('city'),
+                'state' =>$request->input('state'),
+                'postal_code' =>$request->input('postal_code'),
+                'country' => $request->input('country')
+            );
+            Addresses::create($address_detail);
+        }
+    }
+    public function addorderpayment(Request $request){
+
+        $order_id = $request->session()->get('order_id');
+        $payment_detail =array('address_id'=>$request->input('address'),
+            'order_id' =>$order_id,
+            'user_credit_cardinfo_id'=>$request->input('credit_card_detail'),
+            'pre_shipment_inspection'=>$request->input('pre_ship_inspect'),
+            'shipping_cost'=>$request->input('shipping_cost'),
+            'port_fees'=>$request->input('port_fees'),
+            'customs_brokerage'=>$request->input('custom_brokerage'),
+            'customs_duty'=>$request->input('custom_duty'),
+            'consulting_charge'=>$request->input('consulting'),
+            'labels_charge'=>$request->input('label_charge'),
+            'prep_forward_charge'=>$request->input('prep_forward'),
+            'listing_service_charge'=>$request->input('listing_service'),
+            'total_fbaforward_charge'=>$request->input('total_fbaforward'),
+            'inbound_shipping_charge'=>$request->input('inbound_shipping'),
+            'total_cost'=>$request->input('total_cost')
+        );
+        Payment_detail::create($payment_detail);
+        $apiContext = new \PayPal\Rest\ApiContext(
+            new \PayPal\Auth\OAuthTokenCredential(
+                'ATZYtBR5Q78IyeyfBqznRDn-u5cOmbQ4I-F7SliUlBZnLuvJC2CG78casVBs39nzcowPQxh7UQIh9wxk',
+                'EB-7iN9A54Z5f70wUQ6Guau1Wj_Kx94EuhFQveM1qlDRcAG6LmYe-MmDsH53phtBRxVhXyc4U_aOX2bz'
+            )
+        );
+        $payer = new Payer();
+        $payer->setPaymentMethod("paypal");
+        $amount = new Amount();
+        $amount->setCurrency("USD")
+            ->setTotal($request->input('total_cost'));
+        $transaction = new Transaction();
+        $transaction->setAmount($amount)
+            ->setDescription("Payment description")
+            ->setInvoiceNumber(uniqid());
+        $redirectUrls = new RedirectUrls();
+        $redirectUrls->setReturnUrl("http://localhost:8000/order/payment")
+            ->setCancelUrl("http://localhost:8000/order/payment");
+
+        $payment = new Payment();
+        $payment->setIntent("sale")
+            ->setPayer($payer)
+            ->setRedirectUrls($redirectUrls)
+            ->setTransactions(array($transaction));
+        $request = clone $payment;
+        try {
+            $payment->create($apiContext);
+
+        }
+        catch (\PayPal\Exception\PayPalConnectionException $ex) {
+            echo $ex->getCode(); // Prints the Error Code
+            echo $ex->getData(); // Prints the detailed error message
+            die($ex);
+        }
+        catch (Exception $ex) {
+            \ResultPrinter::printError('Create Payment Using Credit Card. If 500 Exception, try creating a new Credit Card using <a href="https://www.paypal-knowledge.com/infocenter/index?page=content&widgetview=true&id=FAQ1413">Step 4, on this link</a>, and using it.', 'Payment', null, $request, $ex);
+            exit(1);
+        }
+
+        //\ResultPrinter::printResult('Create Payment Using Credit Card', 'Payment', $payment->getId(), $request, $payment);
+        echo "<pre>";
+        print_r($payment);
+        exit;
+        return $payment;
+
+    }
 }
