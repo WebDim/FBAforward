@@ -34,8 +34,10 @@
                                 <b class="text-info">{{ $order->created_at }}</b>
                             </td>
                             <td>
-                                <a href="{{ url('order/updateshipment/'.$order->order_id) }}" class="btn btn-info">Edit</a>
-                                <a href="#" onclick="remove_order({{$order->order_id}})" class="btn btn-danger">Delete</a>
+                                @if($order->is_activated == 0)
+                                    <a href="{{ url('order/updateshipment/'.$order->order_id) }}" class="btn btn-info">Edit</a>
+                                    <a href="#" onclick="remove_order({{$order->order_id}})" class="btn btn-danger">Delete</a>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
