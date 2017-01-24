@@ -714,10 +714,10 @@ class OrderController extends Controller
         try {
             $payment->create($apiContext);
         }
-        catch(PayPalConnectionException $e){
-            echo $e->getCode(); // Prints the Error Code
-            echo $e->getData();
-            die($e);
+        catch (\PayPal\Exception\PayPalConnectionException $ex) {
+            echo $ex->getCode(); // Prints the Error Code
+            echo $ex->getData();
+            die($ex);
         }
         catch (Exception $ex) {
             ResultPrinter::printError("Create Payment using Saved Card", "Payment", null, $request, $ex);
