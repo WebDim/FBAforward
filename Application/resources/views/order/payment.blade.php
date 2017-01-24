@@ -117,7 +117,7 @@
                                 <option disabled>Select Credit Card Detail</option>
                                 <option value="">Add New Credit Card Detail</option>
                                 @foreach($credit_card as $credit_card)
-                                    <option value="{{$credit_card->id}}">{{$credit_card->credit_card_type." ".$credit_card->credit_card_number}}</option>
+                                    <option value="{{$credit_card->id." ".$credit_card->credit_card_id}}">{{$credit_card->credit_card_type." ".$credit_card->credit_card_number}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -145,7 +145,7 @@
                         {!! Form::label('expire_card', 'Expire *', ['class' => 'control-label col-md-4']) !!}
                         <div class="col-md-8">
                             <div class="input-group">
-                                {!! Form::text('expire_card', old('expire_card'), ['id' => 'expire_card', 'class' => 'form-control validate[required]', 'placeholder'=>'Expire Card']) !!}
+                                {!! Form::text('expire_card', old('expire_card'), ['id' => 'expire_card', 'class' => 'datepicker form-control validate[required]', 'placeholder'=>'Expire Card']) !!}
                             </div>
                         </div>
                     </div>
@@ -375,6 +375,15 @@
             total_cost=parseFloat($("#pre_ship_inspect").val(),2)+parseFloat($("#shipping_cost").val(),2)+parseFloat($("#port_fees").val(),2)+parseFloat($("#custom_brokerage").val(),2)+parseFloat($("#custom_duty").val(),2)+parseFloat($("#inbound_shipping").val(),2)+fba_total;
             $("#total_fbaforward").val(fba_total);
             $("#total_cost").val(total_cost);
+
         });
+        $(document).ready(function () {
+            $('.datepicker').datepicker({
+                format: "mm-yyyy",
+                viewMode: "months",
+                minViewMode: "months"
+            });
+        });
+
     </script>
 @endsection

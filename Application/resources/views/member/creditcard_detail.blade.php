@@ -83,23 +83,14 @@
     </div>
 @endsection
 @section('js')
-    {!! Html::style('http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css') !!}
-    {!! Html::script("http://code.jquery.com/jquery-1.9.1.js") !!}
-    {!! Html::script("http://code.jquery.com/ui/1.11.0/jquery-ui.js") !!}
-    {!! Html::script("http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js") !!}
-    {!! Html::script("http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js") !!}
+
 
     <script type="text/javascript">
         $(document).ready(function () {
-
             $('#expire_card').datepicker( {
-                changeMonth: true,
-                changeYear: true,
-                showButtonPanel: true,
-                dateFormat: 'm yy',
-                onClose: function(dateText, inst) {
-                    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
-                }
+                format: "mm-yyyy",
+                viewMode: "months",
+                minViewMode: "months"
             });
         });
 

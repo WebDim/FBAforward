@@ -104,12 +104,12 @@ class MemberController extends Controller
        $user = \Auth::user();
        $apiContext = new \PayPal\Rest\ApiContext(
             new \PayPal\Auth\OAuthTokenCredential(
-                'ATZYtBR5Q78IyeyfBqznRDn-u5cOmbQ4I-F7SliUlBZnLuvJC2CG78casVBs39nzcowPQxh7UQIh9wxk',
-                'EB-7iN9A54Z5f70wUQ6Guau1Wj_Kx94EuhFQveM1qlDRcAG6LmYe-MmDsH53phtBRxVhXyc4U_aOX2bz'
+                env('CLIENT_ID'),
+                env('SECRET_KEY')
             )
         );
 
-        $date = explode(' ',$request->input('expire_card'));
+        $date = explode('-',$request->input('expire_card'));
         $card = new CreditCard();
         $card->setType($request->input('credit_card_type'))
             ->setNumber($request->input('credit_card_number'))

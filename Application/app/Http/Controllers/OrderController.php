@@ -5,6 +5,7 @@ use App\Amazon_inventory;
 use App\Listing_service;
 use App\Listing_service_detail;
 use App\Outbound_method;
+use App\Payment_info;
 use App\Prep_detail;
 use App\Prep_service;
 use App\Product_labels;
@@ -26,15 +27,12 @@ use Illuminate\Http\Request;
 use Webpatser\Uuid\Uuid;
 use PayPal\Api\CreditCard;
 use PayPal\Api\Amount;
-use PayPal\Api\Details;
+use PayPal\Api\CreditCardToken;
 use PayPal\Api\FundingInstrument;
-use PayPal\Api\Item;
-use PayPal\Api\ItemList;
 use PayPal\Api\Payer;
 use PayPal\Api\Payment;
-use PayPal\Api\PaymentCard;
-use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
+
 class OrderController extends Controller
 {
     public function __construct()
@@ -76,8 +74,23 @@ class OrderController extends Controller
         //print_r($_GET);exit;
         if(!empty($request->order_id)){
             $request->session()->put('order_id', $request->order_id);
-
-
+            $steps=Order::where('order_id',$request->order_id)->get();
+            if($steps[0]->steps==2)
+                return redirect('order/supplierdetail');
+            else if ($steps[0]->steps==3)
+                return redirect('order/preinspection');
+            else if ($steps[0]->steps==4)
+                return redirect('order/productlabels');
+            else if ($steps[0]->steps==5)
+                return redirect('order/prepservice');
+            else if ($steps[0]->steps==6)
+                return redirect('order/listservice');
+            else if ($steps[0]->steps==7)
+                return redirect('order/outbondshipping');
+            else if ($steps[0]->steps==8)
+                return redirect('order/reviewshipment');
+            else if ($steps[0]->steps==9)
+                return redirect('order/payment');
         }
         $user = \Auth::user();
         $order_id = $request->session()->get('order_id');
@@ -198,6 +211,8 @@ class OrderController extends Controller
                 }
             }
         }
+        $order_detail=array('steps'=>'1');
+        Order::where('order_id',$order_id)->update($order_detail);
         return redirect('order/supplierdetail')->with('Success', 'Shipment Information Added Successfully');
     }
     public function removeproduct(Request $request)
@@ -250,7 +265,8 @@ class OrderController extends Controller
                 Supplier_detail::where('supplier_detail_id',$request->input('supplier_detail_id'.$cnt))->update($supplier);
             }
         }
-
+        $order_detail=array('steps'=>'2');
+        Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/preinspection')->with('Success', 'Supplier Information Added Successfully');
     }
     public function addsupplier(Request $request)
@@ -316,6 +332,8 @@ class OrderController extends Controller
                 }
             }
         }
+        $order_detail=array('steps'=>'3');
+        Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/productlabels')->with('Success', 'Pre inspection Information Added Successfully');
     }
     public function labels(Request $request)
@@ -358,8 +376,9 @@ class OrderController extends Controller
                 );
                 Product_labels_detail::where('product_label_detail_id',$request->input('shipment_detail_id'.$cnt))->update($product_label);
             }
-
         }
+        $order_detail=array('steps'=>'4');
+        Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/prepservice')->with('Success', 'Product Label Information Added Successfully');
     }
     public function prepservice(Request $request)
@@ -412,6 +431,8 @@ class OrderController extends Controller
                 Prep_detail::where('prep_detail_id',$request->input('prep_detail_id'.$cnt))->update($prep_service);
             }
         }
+        $order_detail=array('steps'=>'5');
+        Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/listservice')->with('Success', 'Prep Service Information Added Successfully');
     }
     public function listservice(Request $request)
@@ -461,6 +482,8 @@ class OrderController extends Controller
                 Listing_service_detail::where('listing_service_detail_id',$request->input('listing_service_detail_id'.$cnt))->update($list_service);
             }
         }
+        $order_detail=array('steps'=>'6');
+        Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/outbondshipping')->with('Success', 'Listing service Information Added Successfully');
     }
     public function outbondshipping(Request $request)
@@ -521,6 +544,8 @@ class OrderController extends Controller
                 }
             }
         }
+        $order_detail=array('steps'=>'7');
+        Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/reviewshipment')->with('Success', 'Outbound Shipping Information Added Successfully');
     }
     public function reviewshipment(Request $request)
@@ -549,6 +574,8 @@ class OrderController extends Controller
     }
     public function orderpayment(Request $request){
         $order_id = $request->session()->get('order_id');
+        $order_detail=array('steps'=>'8');
+        Order::where('order_id',$order_id)->update($order_detail);
         $supplier = Supplier_detail::where('order_id',$order_id)->groupby('supplier_id')->get();
         $supplier_count=count($supplier);
         $pre_shipment_inspection=400*$supplier_count;
@@ -586,11 +613,11 @@ class OrderController extends Controller
             $user = \Auth::user();
             $apiContext = new \PayPal\Rest\ApiContext(
                 new \PayPal\Auth\OAuthTokenCredential(
-                    'ATZYtBR5Q78IyeyfBqznRDn-u5cOmbQ4I-F7SliUlBZnLuvJC2CG78casVBs39nzcowPQxh7UQIh9wxk',
-                    'EB-7iN9A54Z5f70wUQ6Guau1Wj_Kx94EuhFQveM1qlDRcAG6LmYe-MmDsH53phtBRxVhXyc4U_aOX2bz'
+                    env('CLIENT_ID'),
+                    env('SECRET_KEY')
                 )
             );
-            $date = explode('/',$request->input('expire_card'));
+            $date = explode('-',$request->input('expire_card'));
             $card = new CreditCard();
             $card->setType($request->input('credit_card_type'))
                 ->setNumber($request->input('credit_card_number'))
@@ -638,9 +665,11 @@ class OrderController extends Controller
     public function addorderpayment(Request $request){
 
         $order_id = $request->session()->get('order_id');
+        $credit_card_detail=explode(' ',$request->input('credit_card_detail'));
+
         $payment_detail =array('address_id'=>$request->input('address'),
             'order_id' =>$order_id,
-            'user_credit_cardinfo_id'=>$request->input('credit_card_detail'),
+            'user_credit_cardinfo_id'=>isset($credit_card_detail[0])?$credit_card_detail[0]:'',
             'pre_shipment_inspection'=>$request->input('pre_ship_inspect'),
             'shipping_cost'=>$request->input('shipping_cost'),
             'port_fees'=>$request->input('port_fees'),
@@ -654,51 +683,50 @@ class OrderController extends Controller
             'inbound_shipping_charge'=>$request->input('inbound_shipping'),
             'total_cost'=>$request->input('total_cost')
         );
-        Payment_detail::create($payment_detail);
+
+        $payment_detail_id=Payment_detail::create($payment_detail);
+        $last_id=$payment_detail_id->payment_detail_id;
         $apiContext = new \PayPal\Rest\ApiContext(
             new \PayPal\Auth\OAuthTokenCredential(
-                'ATZYtBR5Q78IyeyfBqznRDn-u5cOmbQ4I-F7SliUlBZnLuvJC2CG78casVBs39nzcowPQxh7UQIh9wxk',
-                'EB-7iN9A54Z5f70wUQ6Guau1Wj_Kx94EuhFQveM1qlDRcAG6LmYe-MmDsH53phtBRxVhXyc4U_aOX2bz'
+                env('CLIENT_ID'),
+                env('SECRET_KEY')
             )
         );
+        $creditCardToken = new CreditCardToken();
+        $creditCardToken->setCreditCardId($credit_card_detail[1]);
+        $fi = new FundingInstrument();
+        $fi->setCreditCardToken($creditCardToken);
         $payer = new Payer();
-        $payer->setPaymentMethod("paypal");
+        $payer->setPaymentMethod("credit_card")
+            ->setFundingInstruments(array($fi));
         $amount = new Amount();
         $amount->setCurrency("USD")
             ->setTotal($request->input('total_cost'));
         $transaction = new Transaction();
         $transaction->setAmount($amount)
-            ->setDescription("Payment description")
+             ->setDescription("Payment description")
             ->setInvoiceNumber(uniqid());
-        $redirectUrls = new RedirectUrls();
-        $redirectUrls->setReturnUrl("http://localhost:8000/order/payment")
-            ->setCancelUrl("http://localhost:8000/order/payment");
-
         $payment = new Payment();
         $payment->setIntent("sale")
             ->setPayer($payer)
-            ->setRedirectUrls($redirectUrls)
             ->setTransactions(array($transaction));
         $request = clone $payment;
         try {
             $payment->create($apiContext);
-
-        }
-        catch (\PayPal\Exception\PayPalConnectionException $ex) {
-            echo $ex->getCode(); // Prints the Error Code
-            echo $ex->getData(); // Prints the detailed error message
-            die($ex);
-        }
-        catch (Exception $ex) {
-            \ResultPrinter::printError('Create Payment Using Credit Card. If 500 Exception, try creating a new Credit Card using <a href="https://www.paypal-knowledge.com/infocenter/index?page=content&widgetview=true&id=FAQ1413">Step 4, on this link</a>, and using it.', 'Payment', null, $request, $ex);
+        } catch (Exception $ex) {
+            ResultPrinter::printError("Create Payment using Saved Card", "Payment", null, $request, $ex);
             exit(1);
         }
 
-        //\ResultPrinter::printResult('Create Payment Using Credit Card', 'Payment', $payment->getId(), $request, $payment);
-        echo "<pre>";
-        print_r($payment);
-        exit;
-        return $payment;
-
+        //ResultPrinter::printResult("Create Payment using Saved Card", "Payment", $payment->getId(), $request, $payment);
+        //return $payment;
+        $payment_info=array('payment_detail_id'=>$last_id,
+                            'transaction'=>$payment
+            );
+        Payment_info::create($payment_info);
+        $order_detail=array('is_activated'=>'1','steps'=>'9');
+        Order::where('order_id',$order_id)->update($order_detail);
+        return redirect('order/index')->with('success','Your order Successfully Placed');
     }
+
 }

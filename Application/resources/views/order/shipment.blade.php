@@ -93,13 +93,13 @@
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="text" name="qty_per_case1_{{$cnt}}" id="qty_per_case1_{{$cnt}}" placeholder="Qty Per Case" class="form-control validate[required]" value="{{$shipment_details->qty_per_box}}">
+                                            <input type="text" name="qty_per_case1_{{$cnt}}" id="qty_per_case1_{{$cnt}}" placeholder="Qty Per Case" class="form-control validate[required]" value="{{$shipment_details->qty_per_box}}" onblur="get_total(1,{{$cnt}})">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="text" name="no_of_case1_{{$cnt}}" id="no_of_case1_{{$cnt}}" placeholder="# Of Case" class="form-control validate[required]" value="{{$shipment_details->no_boxs}}" >
+                                            <input type="text" name="no_of_case1_{{$cnt}}" id="no_of_case1_{{$cnt}}" placeholder="# Of Case" class="form-control validate[required]" value="{{$shipment_details->no_boxs}}" onblur="get_total(1,{{$cnt}})">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -149,13 +149,13 @@
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('qty_per_case1_1', old('qty_per_case1_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'Qty Per Case', 'id'=>'qty_per_case1_1']) !!}
+                                    {!! Form::text('qty_per_case1_1', old('qty_per_case1_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'Qty Per Case', 'id'=>'qty_per_case1_1','onblur'=>'get_total(1,1)']) !!}
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('no_of_case1_1', old('no_of_case1_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'# Of Case', 'id'=> 'no_of_case1_1']) !!}
+                                    {!! Form::text('no_of_case1_1', old('no_of_case1_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'# Of Case', 'id'=> 'no_of_case1_1','onblur'=>'get_total(1,1)']) !!}
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -228,13 +228,13 @@
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="text" name="qty_per_case2_{{$cnt}}" id="qty_per_case2_{{$cnt}}" placeholder="Qty Per Case" class="form-control validate[required]" value="{{$shipment_details->qty_per_box}}">
+                                            <input type="text" name="qty_per_case2_{{$cnt}}" id="qty_per_case2_{{$cnt}}" placeholder="Qty Per Case" class="form-control validate[required]" value="{{$shipment_details->qty_per_box}}" onblur="get_total(2,{{$cnt}})">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="text" name="no_of_case2_{{$cnt}}" id="no_of_case2_{{$cnt}}" placeholder="# Of Case" class="form-control validate[required]" value="{{$shipment_details->no_boxs}}">
+                                            <input type="text" name="no_of_case2_{{$cnt}}" id="no_of_case2_{{$cnt}}" placeholder="# Of Case" class="form-control validate[required]" value="{{$shipment_details->no_boxs}}" onblur="get_total(2,{{$cnt}})">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -284,13 +284,13 @@
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('qty_per_case2_1', old('qty_per_case2_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'Qty Per Case', 'id'=>'qty_per_case2_1']) !!}
+                                    {!! Form::text('qty_per_case2_1', old('qty_per_case2_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'Qty Per Case', 'id'=>'qty_per_case2_1','onblur'=>'get_total(2,1)']) !!}
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('no_of_case2_1', old('no_of_case2_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'# Of Case','id'=>'no_of_case2_1']) !!}
+                                    {!! Form::text('no_of_case2_1', old('no_of_case2_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'# Of Case','id'=>'no_of_case2_1','onblur'=>'get_total(2,1)']) !!}
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -346,7 +346,7 @@
         {
             sub_cnt=$("#count"+no).val();
             cnt=parseInt(sub_cnt)+1;
-            $('#main'+no).append('<div class="form-group" id="label'+no+'_'+cnt+'">{!! Form::label("product_desc'+no+'_'+cnt+'", "Product Description *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("upc_fnsku'+no+'_'+cnt+'", "UPC/FNSKU *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("qty_per_case'+no+'_'+cnt+'", "Qty Per Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("no_of_case'+no+'_'+cnt+'", "# Of Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("total'+no+'_'+cnt+'", "Total *", ["class" => "control-label col-md-2"]) !!}</div><div class="form-group" id="input'+no+'_'+cnt+'"><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><select name="product_desc'+no+'_'+cnt+'" id="product_desc'+no+'_'+cnt+'" class="form-control select2 validate[required]" onchange="getFnsku('+no+','+cnt+',this.value)"><option value="">Product Description</option>@foreach($product as $products)<option value=" {{ $products->id." ".$products->FNSKU }}"> {{ $products->product_name }}</option>@endforeach</select></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="upc_fnsku'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="UPC/FNSKU" id="upc_fnsku'+no+'_'+cnt+'" readonly></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="qty_per_case'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="Qty Per Case" id="qty_per_case'+no+'_'+cnt+'"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="no_of_case'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="# Of Case" id="no_of_case'+no+'_'+cnt+'"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="total'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="Total" id="total'+no+'_'+cnt+'" onfocus="get_total('+no+','+cnt+')" readonly></div></div><div class="col-md-2"><input type="button" class="btn btn-primary" id="remove'+no+'_'+cnt+'" onclick="remove_shipment('+no+','+cnt+')" value="-"></div></div>');
+            $('#main'+no).append('<div class="form-group" id="label'+no+'_'+cnt+'">{!! Form::label("product_desc'+no+'_'+cnt+'", "Product Description *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("upc_fnsku'+no+'_'+cnt+'", "UPC/FNSKU *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("qty_per_case'+no+'_'+cnt+'", "Qty Per Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("no_of_case'+no+'_'+cnt+'", "# Of Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("total'+no+'_'+cnt+'", "Total *", ["class" => "control-label col-md-2"]) !!}</div><div class="form-group" id="input'+no+'_'+cnt+'"><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><select name="product_desc'+no+'_'+cnt+'" id="product_desc'+no+'_'+cnt+'" class="form-control select2 validate[required]" onchange="getFnsku('+no+','+cnt+',this.value)"><option value="">Product Description</option>@foreach($product as $products)<option value=" {{ $products->id." ".$products->FNSKU }}"> {{ $products->product_name }}</option>@endforeach</select></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="upc_fnsku'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="UPC/FNSKU" id="upc_fnsku'+no+'_'+cnt+'" readonly></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="qty_per_case'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="Qty Per Case" id="qty_per_case'+no+'_'+cnt+'" onblur="get_total('+no+','+cnt+')" ></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="no_of_case'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="# Of Case" id="no_of_case'+no+'_'+cnt+'" onblur="get_total('+no+','+cnt+')"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="total'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="Total" id="total'+no+'_'+cnt+'" onfocus="get_total('+no+','+cnt+')" readonly></div></div><div class="col-md-2"><input type="button" class="btn btn-primary" id="remove'+no+'_'+cnt+'" onclick="remove_shipment('+no+','+cnt+')" value="-"></div></div>');
             $('#count'+no).val(cnt);
             tmp=parseInt($('#original_count'+no).val())+1;
             $('#original_count'+no).val(tmp);

@@ -119,7 +119,6 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/updateshipment/{order_id?}', ['uses'=>'OrderController@updateshipment','as' =>'shipment']);
         Route::put('/shipment', 'OrderController@addshipment');
         Route::post('/removeorder', 'OrderController@removeorder');
-
         Route::post('/removeproduct','OrderController@removeproduct');
         Route::get('/supplierdetail',['uses'=>'OrderController@supplierdetail','as'=>'supplierdetail']);
         Route::put('/supplierdetail','OrderController@addsupplierdetail');
