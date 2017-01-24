@@ -58,7 +58,34 @@
                                 </div>
                             </div>
                         </div>
-
+                        <div class="form-group">
+                            {!! Form::label('service_image', 'Image *', ['class' => 'control-label col-md-3']) !!}
+                            <div class="col-md-9">
+                                <div class="input-group">
+								<span class="btn  btn-file  btn-primary">Upload Image
+                                    {!! Form::file('service_image') !!}
+								</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('description', 'Description *', ['class' => 'control-label col-md-3']) !!}
+                            <div class="col-md-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-star"></i></span>
+                                    {!! Form::textarea('description',isset($prep_service) ? $prep_service->description: null,['class'=>'form-control validate[required]', 'rows' => 2, 'cols' => 40]) !!}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('important_info', 'Important Information ', ['class' => 'control-label col-md-3']) !!}
+                            <div class="col-md-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-star"></i></span>
+                                    {!! Form::textarea('important_info',isset($prep_service) ? $prep_service->important_information: null,['class'=>'form-control', 'rows' => 2, 'cols' => 40]) !!}
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div class="col-md-9 col-md-offset-3">
                                 {!! Form::submit((isset($prep_service)?'Update': 'Add'). ' Prep Services', ['class'=>'btn btn-primary']) !!}

@@ -30,6 +30,8 @@ class ListingServiceRequest extends Request {
                 return [
                     'service_name' => 'required',
                     'price' => 'required',
+
+                    'description' =>'required'
                 ];
             }
             case 'PUT':
@@ -45,6 +47,8 @@ class ListingServiceRequest extends Request {
         return [
             'service_name' => 'required',
             'price' => 'required',
+
+            'description' =>'required'
         ];
     }
 

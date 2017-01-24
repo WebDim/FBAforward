@@ -26,7 +26,9 @@ class AddressesController extends Controller
 
     public function store(AddressesRequest $request)
     {
+        $user=\Auth::user();
         $address = new Addresses();
+        $address->user_id=$user->id;
         $address->type = $request->input('type');
         $address->address_1 = $request->input('address1');
         $address->address_2 = $request->input('address2');

@@ -26,7 +26,9 @@ class SupplierController extends Controller
 
     public function store(SupplierRequest $request)
     {
+        $user=\Auth::user();
         $supplier = new Supplier();
+        $supplier->user_id=$user->id;
         $supplier->company_name = $request->input('company_name');
         $supplier->contact_name = $request->input('contact_name');
         $supplier->email = $request->input('email');

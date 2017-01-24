@@ -30,6 +30,7 @@ class PrepServiceRequest extends Request {
                 return [
                     'service_name' => 'required',
                     'price' => 'required',
+                    'description' =>'required'
                 ];
             }
             case 'PUT':
@@ -45,6 +46,7 @@ class PrepServiceRequest extends Request {
         return [
             'service_name' => 'required',
             'price' => 'required',
+            'description' => 'required'
         ];
     }
 

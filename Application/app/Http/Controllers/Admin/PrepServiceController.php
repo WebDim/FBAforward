@@ -23,9 +23,19 @@ class PrepServiceController extends Controller
     }
     public function store(PrepServiceRequest $request)
     {
+        $image = 'avatar.png';
+        if ($request->hasFile('service_image')) {
+            $destinationPath = public_path() . '/uploads/services';
+            $image = hash('sha256', mt_rand()) . '.' . $request->file('service_image')->getClientOriginalExtension();
+            $request->file('service_image')->move($destinationPath, $image);
+            //\Image::make(asset('uploads/services/' . $image))->fit(300, null, null, 'top-left')->save('uploads/services/' . $image);
+        }
         $prep_service = new Prep_service();
         $prep_service->service_name = $request->input('service_name');
         $prep_service->price = $request->input('price');
+        $prep_service->service_image=$image;
+        $prep_service->description=$request->input('description');
+        $prep_service->important_information=$request->input('important_info');
         $prep_service->save();
         return redirect('admin/prepservices')->with('success', $prep_service->service_name . ' Prep Service Added Successfully');
     }
@@ -35,8 +45,21 @@ class PrepServiceController extends Controller
     }
     public function update(PrepServiceRequest $request, Prep_service $prep_service)
     {
+
+       if ($request->hasFile('service_image')) {
+            $destinationPath = public_path() . '/uploads/services';
+            if ($prep_service->service_image != "uploads/services/avatar.png") {
+                @unlink($prep_service->service_image);
+            }
+            $image = hash('sha256', mt_rand()) . '.' . $request->file('service_image')->getClientOriginalExtension();
+            $request->file('service_image')->move($destinationPath, $image);
+            //\Image::make(asset('uploads/services/' . $image))->fit(300, null, null, 'top-left')->save('uploads/services/' . $image);
+            $prep_service->service_image = $image;
+       }
         $prep_service->service_name = $request->input('service_name');
         $prep_service->price = $request->input('price');
+        $prep_service->description=$request->input('description');
+        $prep_service->important_information=$request->input('important_info');
         $prep_service->save();
         return redirect('admin/prepservices')->with('success', $prep_service->service_name . ' Prep Service Updated Successfully');
     }

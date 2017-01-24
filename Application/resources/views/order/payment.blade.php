@@ -114,7 +114,7 @@
                     <div class="col-md-8">
                         <div class="input-group">
                             <select name="credit_card_detail" class="form-control select2 validate[required]" onchange="creditcard_detail(this.value)">
-                                <option disabled>Select Credit Card Detail</option>
+                                <option value=" ">Select Credit Card Detail</option>
                                 <option value="">Add New Credit Card Detail</option>
                                 @foreach($credit_card as $credit_card)
                                     <option value="{{$credit_card->id." ".$credit_card->credit_card_id}}">{{$credit_card->credit_card_type." ".$credit_card->credit_card_number}}</option>
@@ -123,7 +123,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="creditcard_div">
+                <div id="creditcard_div" hidden>
                 <div class="col-md-12">
                     <div class="form-group">
                         {!! Form::label('credit_card_type', 'Payment Method *', ['class' => 'control-label col-md-4']) !!}
@@ -185,7 +185,7 @@
                     <div class="col-md-8">
                         <div class="input-group">
                             <select name="address" class="form-control select2 validate[required]" onchange="billing_detail(this.value)">
-                                <option disabled>Select Address</option>
+                                <option value=" ">Select Address</option>
                                 <option value="">Add New Billing Address</option>
                                 @foreach($addresses as $address)
                                 <option value="{{$address->address_id}}">{{$address->address_1." ".$address->address_2}}</option>
@@ -194,7 +194,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="billing_div">
+                <div id="billing_div" hidden>
                     <div class="col-md-12">
                         <div class="form-group">
                             {!! Form::label('address_line_1', 'Address Line 1 *', ['class' => 'control-label col-md-4']) !!}
@@ -205,10 +205,10 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('address_line_2', 'Line 2 *', ['class' => 'control-label col-md-4']) !!}
+                            {!! Form::label('address_line_2', 'Line 2 ', ['class' => 'control-label col-md-4']) !!}
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    {!! Form::text('address_line_2', old('address_line_2'), ['class' => 'form-control validate[required]', 'placeholder'=>'Line 2']) !!}
+                                    {!! Form::text('address_line_2', old('address_line_2'), ['class' => 'form-control', 'placeholder'=>'Line 2']) !!}
                                 </div>
                             </div>
                         </div>
