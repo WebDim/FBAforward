@@ -90,7 +90,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-star"></i></span>
-                                    {!! Form::text('postal_code', old('postal_code', isset($address) ? $address->postal_code: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Postal Code']) !!}
+                                    {!! Form::text('postal_code', old('postal_code', isset($address) ? $address->postal_code: null), ['class' => 'form-control validate[required, custom[onlyLetterNumber]]', 'placeholder'=>'Postal Code']) !!}
                                 </div>
                             </div>
                         </div>

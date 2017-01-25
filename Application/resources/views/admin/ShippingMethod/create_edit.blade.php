@@ -54,7 +54,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-star"></i></span>
-                                    {!! Form::text('price', old('price', isset($shipping_method) ? $shipping_method->price: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Price']) !!}
+                                    {!! Form::text('price', old('price', isset($shipping_method) ? $shipping_method->price: null), ['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Price']) !!}
                                 </div>
                             </div>
                         </div>

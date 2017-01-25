@@ -106,7 +106,7 @@
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
-                                {!! Form::text('company_name', old('company_name', !empty($user_info) ? $user_info[0]->company_name : null), ['class' => 'form-control', 'placeholder'=>'Company Name']) !!}
+                                {!! Form::text('company_name', old('company_name', !empty($user_info) ? $user_info[0]->company_name : null), ['class' => 'form-control validate[required]', 'placeholder'=>'Company Name']) !!}
                             </div>
                         </div>
                     </div>
@@ -115,7 +115,7 @@
                         <div class="col-md-9">
                             <div class="input-group">
                                <span class="input-group-addon"></span>
-                               {!! Form::text('contact_fname', old('contact_fname', !empty($user_info) ? $user_info[0]->contact_fname: null), ['class' => 'form-control', 'placeholder'=>'Contact First Name']) !!}
+                               {!! Form::text('contact_fname', old('contact_fname', !empty($user_info) ? $user_info[0]->contact_fname: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Contact First Name']) !!}
                             </div>
                         </div>
                     </div>
@@ -124,7 +124,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('contact_lname', old('contact_lname',!empty($user_info) ? $user_info[0]->contact_lname: null), ['class' => 'form-control', 'placeholder'=>'Contact Last Name']) !!}
+                                    {!! Form::text('contact_lname', old('contact_lname',!empty($user_info) ? $user_info[0]->contact_lname: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Contact Last Name']) !!}
                                 </div>
                             </div>
                         </div>
@@ -133,7 +133,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('company_address', old('company_address',!empty($user_info) ? $user_info[0]->company_address: null), ['class' => 'form-control', 'placeholder'=>'Street Address']) !!}
+                                    {!! Form::text('company_address', old('company_address',!empty($user_info) ? $user_info[0]->company_address: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Street Address']) !!}
                                 </div>
                             </div>
                         </div>
@@ -151,7 +151,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('company_phone', old('company_phone', !empty($user_info) ? $user_info[0]->company_phone: null), ['class' => 'form-control', 'placeholder'=>'Phone']) !!}
+                                    {!! Form::text('company_phone', old('company_phone', !empty($user_info) ? $user_info[0]->company_phone: null), ['class' => 'form-control validate[required, custom[integer, maxSize[10]]]', 'placeholder'=>'Phone']) !!}
                                 </div>
                             </div>
                         </div>
@@ -160,7 +160,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('business_type', old('business_type', !empty($user_info) ? $user_info[0]->primary_bussiness_type: null), ['class' => 'form-control', 'placeholder'=>'Primary Business Type']) !!}
+                                    {!! Form::text('business_type', old('business_type', !empty($user_info) ? $user_info[0]->primary_bussiness_type: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Primary Business Type']) !!}
                                 </div>
                             </div>
                         </div>

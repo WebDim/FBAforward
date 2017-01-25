@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="box-body">
-                {!! Form::open(['url' =>  isset($list_service) ? 'admin/listingservices/'.$list_service->listing_service_id  :  'admin/listingservices', 'method' => isset($list_service) ? 'put' : 'post', 'class' => 'form-horizontal', 'id'=>'validate']) !!}
+                {!! Form::open(['url' =>  isset($list_service) ? 'admin/listingservices/'.$list_service->listing_service_id  :  'admin/listingservices', 'method' => isset($list_service) ? 'put' : 'post', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
                 {!! Form::hidden('list_id', isset($list_service) ? $list_service->listing_service_id: null) !!}
                 <div class="row">
                     <div class="col-md-6">
@@ -54,7 +54,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-star"></i></span>
-                                    {!! Form::text('price', old('price', isset($list_service) ? $list_service->price: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Price']) !!}
+                                    {!! Form::text('price', old('price', isset($list_service) ? $list_service->price: null), ['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Price']) !!}
                                 </div>
                             </div>
                         </div>

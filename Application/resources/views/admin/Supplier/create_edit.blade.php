@@ -12,7 +12,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            <i class="fa fa-star"></i> {{ isset($shipping_method) ? 'Edit' : 'Add' }} Shipping Method
+            <i class="fa fa-star"></i> {{ isset($shipping_method) ? 'Edit' : 'Add' }} Suppliers
         </h1>
         <ol class="breadcrumb">
             <li><a href="{{ url('admin/dashboard') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
@@ -63,7 +63,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-star"></i></span>
-                                    {!! Form::text('email', old('email', isset($supplier) ? $supplier->email: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Email']) !!}
+                                    {!! Form::text('email', old('email', isset($supplier) ? $supplier->email: null), ['class' => 'form-control validate[required, custom[email]]', 'placeholder'=>'Email']) !!}
                                 </div>
                             </div>
                         </div>
@@ -72,7 +72,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-star"></i></span>
-                                    {!! Form::text('phone_number', old('phone_number', isset($supplier) ? $supplier->phone_number: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Phone Number']) !!}
+                                    {!! Form::text('phone_number', old('phone_number', isset($supplier) ? $supplier->phone_number: null), ['class' => 'form-control validate[required, custom[integer, maxSize[10]]]', 'placeholder'=>'Phone Number']) !!}
                                 </div>
                             </div>
                         </div>

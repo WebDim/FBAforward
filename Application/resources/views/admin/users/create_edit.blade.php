@@ -154,7 +154,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-mobile"></i></span>
-                                    {!! Form::text('company_phone', old('company_phone', !empty($user_info) ? $user_info[0]->company_phone: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Phone']) !!}
+                                    {!! Form::text('company_phone', old('company_phone', !empty($user_info) ? $user_info[0]->company_phone: null), ['class' => 'form-control validate[required, custom[integer, maxSize[10]]]', 'placeholder'=>'Phone']) !!}
                                 </div>
                             </div>
                         </div>
@@ -199,7 +199,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('company_zipcode', old('company_zipcode', !empty($user_info) ? $user_info[0]->company_zipcode: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Zipcode']) !!}
+                                    {!! Form::text('company_zipcode', old('company_zipcode', !empty($user_info) ? $user_info[0]->company_zipcode: null), ['class' => 'form-control validate[required, custom[onlyLetterNumber]]', 'placeholder'=>'Zipcode']) !!}
                                 </div>
                             </div>
                         </div>
@@ -223,7 +223,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('tax_id_number', old('tax_id_number', !empty($user_info) ? $user_info[0]->tax_id_number: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Tax ID Number']) !!}
+                                    {!! Form::text('tax_id_number', old('tax_id_number', !empty($user_info) ? $user_info[0]->tax_id_number: null), ['class' => 'form-control validate[required, ,custom[onlyLetterNumber]]', 'placeholder'=>'Tax ID Number']) !!}
                                 </div>
                             </div>
                         </div>
@@ -241,7 +241,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('annual_amazon_revenue', old('annual_amazon_revenue', !empty($user_info) ? $user_info[0]->estimate_annual_amazon_revenue: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Estimated Annual Amazon Revenue']) !!}
+                                    {!! Form::text('annual_amazon_revenue', old('annual_amazon_revenue', !empty($user_info) ? $user_info[0]->estimate_annual_amazon_revenue: null), ['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Estimated Annual Amazon Revenue']) !!}
                                 </div>
                             </div>
                         </div>
@@ -250,7 +250,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('annual_fba_order', old('annual_fba_order', !empty($user_info) ? $user_info[0]->estimate_annual_fba_order: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Estimated Annual FBAforward Order']) !!}
+                                    {!! Form::text('annual_fba_order', old('annual_fba_order', !empty($user_info) ? $user_info[0]->estimate_annual_fba_order: null), ['class' => 'form-control validate[required, custom[integer]]', 'placeholder'=>'Estimated Annual FBAforward Order']) !!}
                                 </div>
                             </div>
                         </div>
@@ -306,7 +306,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('contact_phone', old('contact_phone', !empty($user_info) ? $user_info[0]->contact_phone: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Phone']) !!}
+                                    {!! Form::text('contact_phone', old('contact_phone', !empty($user_info) ? $user_info[0]->contact_phone: null), ['class' => 'form-control validate[required, custom[integer, maxSize[10]]]', 'placeholder'=>'Phone']) !!}
                                 </div>
                             </div>
                         </div>
@@ -315,7 +315,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('secondary_contact_phone', old('secondary_contact_phone', !empty($user_info) ? $user_info[0]->secondary_contact_phone : null), ['class' => 'form-control', 'placeholder'=>'Secondary Contact']) !!}
+                                    {!! Form::text('secondary_contact_phone', old('secondary_contact_phone', !empty($user_info) ? $user_info[0]->secondary_contact_phone : null), ['class' => 'form-control validate[custom[integer, maxSize[10]]', 'placeholder'=>'Secondary Contact']) !!}
                                 </div>
                             </div>
                         </div>
@@ -324,7 +324,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('secondary_contact_email', old('secondary_contact_email', !empty($user_info) ? $user_info[0]->secondary_contact_email : null), ['class' => 'form-control', 'placeholder'=>'Secondary Conatct E-Mail']) !!}
+                                    {!! Form::text('secondary_contact_email', old('secondary_contact_email', !empty($user_info) ? $user_info[0]->secondary_contact_email : null), ['class' => 'form-control validate[custom[email]]', 'placeholder'=>'Secondary Conatct E-Mail']) !!}
                                 </div>
                             </div>
                         </div>
@@ -365,7 +365,7 @@
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    {!! Form::text('account_phone', old('account_phone', !empty($user_info) ? $user_info[0]->account_phone : null), ['class' => 'form-control validate[required]', 'placeholder'=>'Phone']) !!}
+                                    {!! Form::text('account_phone', old('account_phone', !empty($user_info) ? $user_info[0]->account_phone : null), ['class' => 'form-control validate[required, ,custom[integer, maxSize[10]]]', 'placeholder'=>'Phone']) !!}
                                 </div>
                             </div>
                         </div>

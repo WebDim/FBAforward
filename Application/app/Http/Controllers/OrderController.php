@@ -71,8 +71,7 @@ class OrderController extends Controller
     }
     public function updateshipment(Request $request)
     {
-        //print_r($_GET);exit;
-        if(!empty($request->order_id)){
+         if(!empty($request->order_id)){
             $request->session()->put('order_id', $request->order_id);
             $steps=Order::where('order_id',$request->order_id)->get();
             if($steps[0]->steps==2)
@@ -91,7 +90,7 @@ class OrderController extends Controller
                 return redirect('order/reviewshipment');
             else if ($steps[0]->steps==9)
                 return redirect('order/payment');
-        }
+         }
         $user = \Auth::user();
         $order_id = $request->session()->get('order_id');
         $shipping_method = Shipping_method::all();
@@ -104,7 +103,7 @@ class OrderController extends Controller
             ->get();
         return view('order.shipment')->with(compact('shipping_method','product','shipment','shipment_detail'));
     }
-    public function addshipment(ShipmentRequest $request)
+    public function addshipment(Request $request)
     {
          $user = \Auth::user();
          if(empty($request->input('order_id')))
@@ -120,9 +119,7 @@ class OrderController extends Controller
          {
              $order_id=$request->input('order_id');
          }
-
          $request->session()->put('order_id', $order_id);
-
         if($request->input('split_shipment')=='0') {
             if (!empty($request->input('shipment_id2'))) {
                 $sub_count = $request->input('count2');
@@ -139,8 +136,7 @@ class OrderController extends Controller
                 Shipments::where('shipment_id',$request->input('shipment_id2'))->delete();
             }
         }
-
-         for ($cnt = 1; $cnt <= $request->input('ship_count'); $cnt++) {
+        for ($cnt = 1; $cnt <= $request->input('ship_count'); $cnt++) {
             if(!empty($request->input('shipment_id'.$cnt)))
             {
                 $shipment = array('order_id'=>$order_id,
@@ -225,7 +221,6 @@ class OrderController extends Controller
             Supplier_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
             Shipment_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
         }
-
     }
     public function supplierdetail(Request $request)
     {
@@ -240,7 +235,7 @@ class OrderController extends Controller
         $supplier = Supplier::where('user_id',$user->id)->get();
         return view('order.supplier')->with(compact('product', 'supplier'));
     }
-    public function addsupplierdetail(ShipmentRequest $request)
+    public function addsupplierdetail(Request $request)
     {
         $user = \Auth::user();
         $count = $request->input('count');
@@ -263,6 +258,8 @@ class OrderController extends Controller
                     'total_unit' => $request->input('total' . $cnt)
                 );
                 Supplier_detail::where('supplier_detail_id',$request->input('supplier_detail_id'.$cnt))->update($supplier);
+                $supplier_inspection= array('supplier_id'=>$request->input('supplier' . $cnt),'is_inspection'=>'0','inspection_decription'=>'');
+                Supplier_inspection::where('supplier_detail_id',$request->input('supplier_detail_id'.$cnt))->update($supplier_inspection);
             }
         }
         $order_detail=array('steps'=>'2');
@@ -286,23 +283,22 @@ class OrderController extends Controller
     }
     public function preinspection(Request $request)
     {
-
         $order_id = $request->session()->get('order_id');
         $supplier = Supplier::selectRaw("supplier_inspections.is_inspection, supplier_inspections.inspection_decription, suppliers.supplier_id, suppliers.company_name")
             ->join('supplier_details', 'supplier_details.supplier_id', '=', 'suppliers.supplier_id','left')
-            ->join('supplier_inspections','supplier_details.order_id','=','supplier_inspections.order_id','left')
+            ->join('supplier_inspections','supplier_details.supplier_detail_id','=','supplier_inspections.supplier_detail_id','left')
             ->where('supplier_details.order_id', $order_id)
             ->distinct('supplier_inspections.supplier_id')
             ->get();
         $product = Supplier_detail::selectRaw("supplier_details.order_id, supplier_inspections.supplier_inspection_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, supplier_details.product_id, supplier_details.total_unit, amazon_inventories.product_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'supplier_details.product_id')
-            ->join('supplier_inspections','supplier_inspections.order_id','=','supplier_details.order_id','left')
+            ->join('supplier_inspections','supplier_inspections.supplier_detail_id','=','supplier_details.supplier_detail_id','left')
             ->where('supplier_details.order_id', $order_id)
-            ->groupby('supplier_details.supplier_detail_id')
+            ->distinct('supplier_inspections.is_inspection')
             ->get();
         return view('order.pre_inspection')->with(compact('product', 'supplier'));
     }
-    public function addpreinspection(ShipmentRequest $request)
+    public function addpreinspection(Request $request)
     {
         $user = \Auth::user();
         $count = $request->input('count');
@@ -349,7 +345,7 @@ class OrderController extends Controller
             ->get();
         return view('order.product_labels')->with(compact('product', 'product_label'));
     }
-    public function addlabels(ShipmentRequest $request)
+    public function addlabels(Request $request)
     {
         $count = $request->input('count');
         for ($cnt = 1; $cnt < $count; $cnt++) {
@@ -393,7 +389,7 @@ class OrderController extends Controller
             ->get();
         return view('order.prep_service')->with(compact('prep_service', 'product'));
     }
-    public function addprepservice(ShipmentRequest $request)
+    public function addprepservice(Request $request)
     {
         $user = \Auth::user();
         $count = $request->input('count');
@@ -447,7 +443,7 @@ class OrderController extends Controller
             ->get();
       return view('order.list_service')->with(compact('list_service', 'product'));
     }
-    public function addlistservice(ShipmentRequest $request)
+    public function addlistservice(Request $request)
     {
         $count = $request->input('count');
         for ($cnt = 1; $cnt < $count; $cnt++) {
@@ -488,7 +484,6 @@ class OrderController extends Controller
     }
     public function outbondshipping(Request $request)
     {
-        $user = \Auth::user();
         $order_id = $request->session()->get('order_id');
         $outbound_method= Outbound_method::all();
         $amazon_destination = Amazon_destination::all();
@@ -508,7 +503,7 @@ class OrderController extends Controller
         return view('order.outbound_shipping')->with(compact('amazon_destination', 'outbound_method', 'shipment', 'product','outbound_detail'));
     }
 
-    public function addoutbondshipping(ShipmentRequest $request)
+    public function addoutbondshipping(Request $request)
     {
         $ship_count = $request->input('ship_count');
         for ($ship_cnt = 1; $ship_cnt < $ship_count; $ship_cnt++) {
@@ -521,7 +516,6 @@ class OrderController extends Controller
                     $product[] = $request->input('product_id' . $ship_cnt . "_" . $cnt . "_" . $product_cnt);
                     $qty[] = $request->input('total_unit' . $ship_cnt . "_" . $cnt . "_" . $product_cnt);
                 }
-
                 if (empty($request->input("outbound_shipping_detail_id" . $ship_cnt . "_" . $cnt))) {
                     $outbound_shipping = array("amazon_destination_id" => $request->input('amazon_destination_id' . $ship_cnt . "_" . $cnt),
                         "outbound_method_id" => $request->input('outbound_method' . $ship_cnt . "_" . $cnt),
@@ -550,7 +544,6 @@ class OrderController extends Controller
     }
     public function reviewshipment(Request $request)
     {
-        $user = \Auth::user();
         $order_id = $request->session()->get('order_id');
         $shipment = Shipments::selectRaw("shipments.shipment_id, shipping_methods.shipping_name, sum(shipment_details.total) as total")
             ->join('shipping_methods','shipments.shipping_method_id','=','shipping_methods.shipping_method_id')
@@ -572,7 +565,8 @@ class OrderController extends Controller
         $prep_service= Prep_service::all();
         return view('order.review_shipment')->with(compact('shipment','outbound_detail','product_detail','prep_service'));
     }
-    public function orderpayment(Request $request){
+    public function orderpayment(Request $request)
+    {
         $order_id = $request->session()->get('order_id');
         $order_detail=array('steps'=>'8');
         Order::where('order_id',$order_id)->update($order_detail);
@@ -662,11 +656,10 @@ class OrderController extends Controller
             Addresses::create($address_detail);
         }
     }
-    public function addorderpayment(Request $request){
-
+    public function addorderpayment(Request $request)
+    {
         $order_id = $request->session()->get('order_id');
         $credit_card_detail=explode(' ',$request->input('credit_card_detail'));
-
         $payment_detail =array('address_id'=>$request->input('address'),
             'order_id' =>$order_id,
             'user_credit_cardinfo_id'=>isset($credit_card_detail[0])?$credit_card_detail[0]:'',
@@ -683,7 +676,6 @@ class OrderController extends Controller
             'inbound_shipping_charge'=>$request->input('inbound_shipping'),
             'total_cost'=>$request->input('total_cost')
         );
-
         $payment_detail_id=Payment_detail::create($payment_detail);
         $last_id=$payment_detail_id->payment_detail_id;
         $apiContext = new \PayPal\Rest\ApiContext(
@@ -723,9 +715,6 @@ class OrderController extends Controller
             ResultPrinter::printError("Create Payment using Saved Card", "Payment", null, $request, $ex);
             exit(1);
         }
-
-        //ResultPrinter::printResult("Create Payment using Saved Card", "Payment", $payment->getId(), $request, $payment);
-        //return $payment;
         $payment_info=array('payment_detail_id'=>$last_id,
                             'transaction'=>$payment
             );

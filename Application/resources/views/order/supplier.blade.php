@@ -41,9 +41,7 @@
                 </b></td>
         </tr>
           {{--*/ $cnt++ /*--}}
-
     @endforeach
-
     </tbody>
 </table>
 </div>
@@ -85,7 +83,7 @@
     </div>
 </div>
 <div class="form-group">
-    {!! Form::button( 'Add Supplier', ['class'=>'btn btn-primary', 'id'=>'add', 'onclick'=>'add_supplier()']) !!}
+    {!! Form::button( 'Add Supplier', ['class'=>'btn btn-primary', 'id'=>'add', 'onclick'=>'addsupplier()']) !!}
 </div>
 </div>
 </div>
@@ -102,9 +100,10 @@
 </div>
 @endsection
 @section('js')
-{!! Html::script('assets/plugins/validationengine/languages/jquery.validationEngine-en.js') !!}
+    {!! Html::script('https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.js') !!}
+    {!! Html::script('assets/plugins/validationengine/languages/jquery.validationEngine-en.js') !!}
 {!! Html::script('assets/plugins/validationengine/jquery.validationEngine.js') !!}
-{!! Html::script('https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.js') !!}
+
 <script type="text/javascript">
 $(document).ready(function () {
 // Validation Engine init
@@ -116,8 +115,7 @@ $("form[id^='validate']").validationEngine('attach',
     usePrefix: prefix
 });
 });
-</script>
-<script>
+
 function add_Supplier(value) {
 if(value == "")
 {
@@ -130,7 +128,7 @@ else
 }
 </script>
 <script>
-function add_supplier() {
+function addsupplier() {
 company_name=$('#company_name').val();
 contact_name=$('#contact_name').val();
 email=$('#email').val();

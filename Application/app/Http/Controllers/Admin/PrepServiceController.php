@@ -53,7 +53,7 @@ class PrepServiceController extends Controller
             }
             $image = hash('sha256', mt_rand()) . '.' . $request->file('service_image')->getClientOriginalExtension();
             $request->file('service_image')->move($destinationPath, $image);
-            //\Image::make(asset('uploads/services/' . $image))->fit(300, null, null, 'top-left')->save('uploads/services/' . $image);
+            \Image::make(asset('uploads/services/' . $image))->fit(300, null, null, 'top-left')->save('uploads/services/' . $image);
             $prep_service->service_image = $image;
        }
         $prep_service->service_name = $request->input('service_name');
