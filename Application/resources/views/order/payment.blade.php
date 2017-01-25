@@ -337,31 +337,38 @@
             state = $("#state").val();
             postal_code = $("#postal_code").val();
             country = $("#country").val();
-            $.ajax({
-                headers: {
-                    'X-CSRF-Token': $('input[name="_token"]').val()
-                },
-                method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/addaddress', // This is the url we gave in the route
-                data: {
-                    'address_line_1': address_line_1,
-                    'address_line_2': address_line_2,
-                    'city': city,
-                    'state': state,
-                    'postal_code': postal_code,
-                    'country': country
+            flag=true;
+            if(address_line_1=='' || city=='' || state=='' || postal_code=='' || country=='')
+            {
+                flag=false;
+            }
+            if(flag==true) {
+                $.ajax({
+                    headers: {
+                        'X-CSRF-Token': $('input[name="_token"]').val()
+                    },
+                    method: 'POST', // Type of response and matches what we said in the route
+                    url: '/order/addaddress', // This is the url we gave in the route
+                    data: {
+                        'address_line_1': address_line_1,
+                        'address_line_2': address_line_2,
+                        'city': city,
+                        'state': state,
+                        'postal_code': postal_code,
+                        'country': country
 
-                }, // a JSON object to send back
-                success: function (response) { // What to do if we succeed
-                    console.log(response);
-                    alert("Billing Address added Successfully");
-                    location.reload();
-                },
-                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
-                    console.log(JSON.stringify(jqXHR));
-                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
-                }
-            });
+                    }, // a JSON object to send back
+                    success: function (response) { // What to do if we succeed
+                        console.log(response);
+                        alert("Billing Address added Successfully");
+                        location.reload();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                        console.log(JSON.stringify(jqXHR));
+                        console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                    }
+                });
+            }
 
         }
         function gettotal() {
