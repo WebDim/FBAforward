@@ -79,7 +79,7 @@
                                             <select name="product_desc1_{{$cnt}}" id="product_desc1_{{$cnt}}" class="form-control select2 validate[required]" onchange="getFnsku(1,{{$cnt}},this.value)">
                                                 <option value="">Product Description</option>
                                                 @foreach($product as $products)
-                                                    <option value=" {{ $products->id." ".$products->FNSKU }}" @if($shipment_details->product_id==$products->id) {{ "selected" }} @endif> {{ $products->product_name }}</option>
+                                                    <option value=" {{ $products->id." ".$products->FNSKU." ".$products->sellerSKU }}" @if($shipment_details->product_id==$products->id) {{ "selected" }} @endif> {{ $products->product_name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -87,6 +87,7 @@
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
+                                            <input type="hidden" name="sellersku1_{{$cnt}}" id="sellersku1_{{$cnt}}">
                                             <input type="text" name="upc_fnsku1_{{$cnt}}" id="upc_fnsku1_{{$cnt}}" placeholder="UPC/FNSKU" class="form-control validate[required]" value="{{$shipment_details->fnsku}}" readonly>
                                         </div>
                                     </div>
@@ -135,7 +136,7 @@
                                     <select name="product_desc1_1" id="product_desc1_1" class="form-control select2 validate[required]" onchange="getFnsku(1,1,this.value)">
                                         <option value="">Product Description</option>
                                         @foreach($product as $products)
-                                            <option value=" {{ $products->id." ".$products->FNSKU }}"> {{ $products->product_name }}</option>
+                                            <option value=" {{ $products->id." ".$products->FNSKU." ".$products->sellerSKU }}"> {{ $products->product_name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -143,6 +144,7 @@
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
+                                    {!! Form::hidden('sellersku1_1',old('sellersku1_1'),['id'=>'sellersku1_1']) !!}
                                     {!! Form::text('upc_fnsku1_1', old('upc_fnsku1_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'UPC/FNSKU', 'id' => 'upc_fnsku1_1', 'readonly'=>true]) !!}
                                 </div>
                             </div>
@@ -214,7 +216,7 @@
                                             <select name="product_desc2_{{$cnt}}" id="product_desc2_{{$cnt}}" class="form-control select2 validate[required]" onchange="getFnsku(2,{{$cnt}},this.value)">
                                                 <option value="">Product Description</option>
                                                 @foreach($product as $products)
-                                                    <option value=" {{ $products->id." ".$products->FNSKU }}" @if($shipment_details->product_id==$products->id) {{ "selected" }} @endif> {{ $products->product_name }}</option>
+                                                    <option value=" {{ $products->id." ".$products->FNSKU." ".$products->sellerSKU }}" @if($shipment_details->product_id==$products->id) {{ "selected" }} @endif> {{ $products->product_name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -222,6 +224,7 @@
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
+                                            <input type="hidden" name="sellersku2_{{$cnt}}" id="sellersku2_{{$cnt}}">
                                             <input type="text" name="upc_fnsku2_{{$cnt}}" id="upc_fnsku2_{{$cnt}}" placeholder="UPC/FNSKU" class="form-control validate[required]" value="{{$shipment_details->fnsku}}"  readonly>
                                         </div>
                                     </div>
@@ -270,7 +273,7 @@
                                     <select name="product_desc2_1" id="product_desc2_1" class="form-control select2 validate[required]" onchange="getFnsku(2,1,this.value)">
                                         <option value="">Product Description</option>
                                         @foreach($product as $products)
-                                            <option value=" {{ $products->id." ".$products->FNSKU }}"> {{ $products->product_name }}</option>
+                                            <option value=" {{ $products->id." ".$products->FNSKU." ".$products->sellerSKU }}"> {{ $products->product_name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -278,6 +281,7 @@
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
+                                    {!! Form::hidden('sellersku2_1', old('sellersku2_1'),['id'=>'sellersku2_1']) !!}
                                     {!! Form::text('upc_fnsku2_1', old('upc_fnsku2_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'UPC/FNSKU', 'id' => 'upc_fnsku2_1', 'readonly'=>true]) !!}
                                 </div>
                             </div>
@@ -341,12 +345,13 @@
         {
             fnsku=id.split(' ');
             $('#upc_fnsku'+no+"_"+sub_no).val(fnsku[2]);
+            $('#sellersku'+no+"_"+sub_no).val(fnsku[3]);
         }
         function add_shipment(no)
         {
             sub_cnt=$("#count"+no).val();
             cnt=parseInt(sub_cnt)+1;
-            $('#main'+no).append('<div class="form-group" id="label'+no+'_'+cnt+'">{!! Form::label("product_desc'+no+'_'+cnt+'", "Product Description *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("upc_fnsku'+no+'_'+cnt+'", "UPC/FNSKU *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("qty_per_case'+no+'_'+cnt+'", "Qty Per Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("no_of_case'+no+'_'+cnt+'", "# Of Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("total'+no+'_'+cnt+'", "Total *", ["class" => "control-label col-md-2"]) !!}</div><div class="form-group" id="input'+no+'_'+cnt+'"><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><select name="product_desc'+no+'_'+cnt+'" id="product_desc'+no+'_'+cnt+'" class="form-control select2 validate[required]" onchange="getFnsku('+no+','+cnt+',this.value)"><option value="">Product Description</option>@foreach($product as $products)<option value=" {{ $products->id." ".$products->FNSKU }}"> {{ $products->product_name }}</option>@endforeach</select></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="upc_fnsku'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="UPC/FNSKU" id="upc_fnsku'+no+'_'+cnt+'" readonly></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="qty_per_case'+no+'_'+cnt+'" class = "form-control validate[required, custom[integer]]" placeholder="Qty Per Case" id="qty_per_case'+no+'_'+cnt+'" onblur="get_total('+no+','+cnt+')" ></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="no_of_case'+no+'_'+cnt+'" class = "form-control validate[required, custom[integer]]" placeholder="# Of Case" id="no_of_case'+no+'_'+cnt+'" onblur="get_total('+no+','+cnt+')"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="total'+no+'_'+cnt+'" class = "form-control validate[required, custom[integer]]" placeholder="Total" id="total'+no+'_'+cnt+'" onfocus="get_total('+no+','+cnt+')" readonly></div></div><div class="col-md-2"><input type="button" class="btn btn-primary" id="remove'+no+'_'+cnt+'" onclick="remove_shipment('+no+','+cnt+')" value="-"></div></div>');
+            $('#main'+no).append('<div class="form-group" id="label'+no+'_'+cnt+'">{!! Form::label("product_desc'+no+'_'+cnt+'", "Product Description *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("upc_fnsku'+no+'_'+cnt+'", "UPC/FNSKU *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("qty_per_case'+no+'_'+cnt+'", "Qty Per Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("no_of_case'+no+'_'+cnt+'", "# Of Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("total'+no+'_'+cnt+'", "Total *", ["class" => "control-label col-md-2"]) !!}</div><div class="form-group" id="input'+no+'_'+cnt+'"><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><select name="product_desc'+no+'_'+cnt+'" id="product_desc'+no+'_'+cnt+'" class="form-control select2 validate[required]" onchange="getFnsku('+no+','+cnt+',this.value)"><option value="">Product Description</option>@foreach($product as $products)<option value=" {{ $products->id." ".$products->FNSKU." ".$products->sellerSKU }}"> {{ $products->product_name }}</option>@endforeach</select></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="hidden" name="sellersku'+no+'_'+cnt+'" id="sellersku'+no+'_'+cnt+'"><input type="text" name="upc_fnsku'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="UPC/FNSKU" id="upc_fnsku'+no+'_'+cnt+'" readonly></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="qty_per_case'+no+'_'+cnt+'" class = "form-control validate[required, custom[integer]]" placeholder="Qty Per Case" id="qty_per_case'+no+'_'+cnt+'" onblur="get_total('+no+','+cnt+')" ></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="no_of_case'+no+'_'+cnt+'" class = "form-control validate[required, custom[integer]]" placeholder="# Of Case" id="no_of_case'+no+'_'+cnt+'" onblur="get_total('+no+','+cnt+')"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="total'+no+'_'+cnt+'" class = "form-control validate[required, custom[integer]]" placeholder="Total" id="total'+no+'_'+cnt+'" onfocus="get_total('+no+','+cnt+')" readonly></div></div><div class="col-md-2"><input type="button" class="btn btn-primary" id="remove'+no+'_'+cnt+'" onclick="remove_shipment('+no+','+cnt+')" value="-"></div></div>');
             $('#count'+no).val(cnt);
             tmp=parseInt($('#original_count'+no).val())+1;
             $('#original_count'+no).val(tmp);

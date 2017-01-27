@@ -21,10 +21,9 @@ class CreateInboundShipmentPlanSample extends Controller
     public function createshipment()
     {
         $user = \Auth::user();
-        $results = Amazon_marketplace::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken, amazon_marketplaces.market_place_id")
-            ->join('customer_amazon_details', 'customer_amazon_details.mws_market_place_id', '=', 'amazon_marketplaces.id')
-            ->where('customer_amazon_details.user_id',$user->id)
-            ->get();
+        $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
+                 ->where('user_id',$user->id)
+                 ->get();
         foreach ($results as $seller_detail) {
             $this->shipmentplan($seller_detail);
         }
@@ -33,7 +32,6 @@ class CreateInboundShipmentPlanSample extends Controller
     {
         $UserCredentials['mws_authtoken'] = !empty($account->mws_authtoken) ? decrypt($account->mws_authtoken) : '';
         $UserCredentials['mws_seller_id'] = !empty($account->mws_seller_id) ? decrypt($account->mws_seller_id) : '';
-        $this->operation = 'CreateInboundShipmentPlan';
         $service = $this->getReportsClient();
         $request = new \FBAInboundServiceMWS_Model_CreateInboundShipmentPlanRequest();
         $request->setSellerId($UserCredentials['mws_seller_id']);
@@ -43,11 +41,14 @@ class CreateInboundShipmentPlanSample extends Controller
         $fromaddress->setCity('ahmedabad');
         $fromaddress->setCountryCode('in');
         $request->setShipFromAddress($fromaddress);
-        $item= new \FBAInboundServiceMWS_Model_InboundShipmentPlanItem();
-        $item->setSellerSKU('J2-GM5C-C2T1');
-        $item->setQuantity('100');
-        $itemlist= new \FBAInboundServiceMWS_Model_InboundShipmentPlanRequestItemList();
-        $itemlist->setmember($item);
+        $data1 =array('SellerSKU'=>'J2-GM5C-C2T1','Quantity'=>'100');
+        $data2 =array('SellerSKU'=>'OZ-Y576-Y0YY','Quantity'=>'500');
+            $item[] = new \FBAInboundServiceMWS_Model_InboundShipmentPlanItem($data1);
+        $item[] = new \FBAInboundServiceMWS_Model_InboundShipmentPlanItem($data2);
+
+            $itemlist = new \FBAInboundServiceMWS_Model_InboundShipmentPlanRequestItemList();
+            $itemlist->setmember($item);
+
         $request->setInboundShipmentPlanRequestItems($itemlist);
 
         $this->invokeCreateInboundShipmentPlan($service, $request);

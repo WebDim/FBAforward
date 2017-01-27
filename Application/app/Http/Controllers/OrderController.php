@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 use App\Amazon_destination;
 use App\Amazon_inventory;
+use App\Customer_amazon_detail;
+use App\Dev_account;
 use App\Listing_service;
 use App\Listing_service_detail;
 use App\Outbound_method;
@@ -32,7 +34,7 @@ use PayPal\Api\FundingInstrument;
 use PayPal\Api\Payer;
 use PayPal\Api\Payment;
 use PayPal\Api\Transaction;
-
+use App\Libraries;
 class OrderController extends Controller
 {
     public function __construct()
@@ -106,6 +108,11 @@ class OrderController extends Controller
     public function addshipment(Request $request)
     {
          $user = \Auth::user();
+        $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
+            ->where('user_id',$user->id)
+            ->get();
+
+         //create order
          if(empty($request->input('order_id')))
          {
             $order_detail=array('order_no'=>Uuid::generate(1,time())->string,
@@ -120,6 +127,7 @@ class OrderController extends Controller
              $order_id=$request->input('order_id');
          }
          $request->session()->put('order_id', $order_id);
+         //delete shipment2
         if($request->input('split_shipment')=='0') {
             if (!empty($request->input('shipment_id2'))) {
                 $sub_count = $request->input('count2');
@@ -137,6 +145,7 @@ class OrderController extends Controller
             }
         }
         for ($cnt = 1; $cnt <= $request->input('ship_count'); $cnt++) {
+            //update shipment and shipment detail
             if(!empty($request->input('shipment_id'.$cnt)))
             {
                 $shipment = array('order_id'=>$order_id,
@@ -179,6 +188,7 @@ class OrderController extends Controller
                 }
 
             }
+            //insert shipment and shipment detail
             else {
                 $shipment = array('order_id'=>$order_id,
                     'shipping_method_id' => $request->input('shipping_method' . $cnt),
@@ -190,6 +200,18 @@ class OrderController extends Controller
                 $shipment = new Shipments($shipment);
                 $shipment->save();
                 $last_id = $shipment->shipment_id;
+                //create shipmentplan api
+                $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+                $service = $this->getReportsClient();
+                $ship_request = new \FBAInboundServiceMWS_Model_CreateInboundShipmentPlanRequest();
+                $ship_request->setSellerId($UserCredentials['mws_seller_id']);
+                $fromaddress= new \FBAInboundServiceMWS_Model_Address();
+                $fromaddress->setName('Webdimensions');
+                $fromaddress->setAddressLine1('satelite');
+                $fromaddress->setCity('ahmedabad');
+                $fromaddress->setCountryCode('in');
+                $ship_request->setShipFromAddress($fromaddress);
+                $item=array();
                 $sub_count=$request->input('count'.$cnt);
                 for($sub_cnt=1;$sub_cnt<=$sub_count;$sub_cnt++) {
                     if(!empty($request->input('product_desc'.$cnt."_".$sub_cnt))) {
@@ -203,13 +225,138 @@ class OrderController extends Controller
                         );
                         $shipment_detail = new Shipment_detail($shipment_details);
                         $shipment_detail->save();
+                        $data =array('SellerSKU'=>$request->input('sellersku'. $cnt . "_" . $sub_cnt),'Quantity'=>$request->input('total' . $cnt . "_" . $sub_cnt));
+                        $item[] = new \FBAInboundServiceMWS_Model_InboundShipmentPlanItem($data);
                     }
                 }
+                $itemlist = new \FBAInboundServiceMWS_Model_InboundShipmentPlanRequestItemList();
+                $itemlist->setmember($item);
+                $ship_request->setInboundShipmentPlanRequestItems($itemlist);
+                $arr_response =$this->invokeCreateInboundShipmentPlan($service, $ship_request);
+                $shipment_id=$last_id;
+                echo "<pre>";
+                foreach ($arr_response as $new_response) {
+                    foreach ($new_response->InboundShipmentPlans as $planresult) {
+                        foreach ($planresult->member as $member) {
+                            $api_shipment_id = $member->ShipmentId;
+                            $destination_name = $member->DestinationFulfillmentCenterId;
+                            foreach ($member->ShipToAddress as $address)
+                            {
+                                $address_name=$address->Name;
+                                $addressline1=$address->AddressLine1;
+                                $city=$address->City;
+                                $state=$address->StateOrProvinceCode;
+                                $country=$address->CountryCode;
+                                $postal=$address->PostalCode;
+                            }
+                            $preptype=$member->LabelPrepType;
+                            foreach ($member->EstimatedBoxContentsFee as $fee)
+                            {
+                                $total_unit=$fee->TotalUnits;
+                                foreach ($fee->FeePerUnit as $unit)
+                                {
+                                    $unit_currency=$unit->CurrencyCode;
+                                    $unit_value=$unit->Value;
+                                }
+                                foreach ($fee->TotalFee as $total)
+                                {
+                                    $total_currency=$total->CurrencyCode;
+                                    $total_value=$total->Value;
+                                }
+                            }
+                            foreach ($member->Items as $item)
+                            {
+                                foreach ($item->member as $sub_member)
+                                {
+                                    $amazon_destination = array('destination_name'=>$destination_name,
+                                        'shipment_id'=>$shipment_id,
+                                        'api_shipment_id'=>$api_shipment_id,
+                                        'sellerSKU'=>$sub_member->SellerSKU,
+                                        'fulfillment_network_SKU'=>$sub_member->FulfillmentNetworkSKU,
+                                        'qty'=>$sub_member->Quantity,
+                                        'ship_to_address_name'=>$address_name,
+                                        'ship_to_address_line1'=>$addressline1,
+                                        'ship_to_city'=>$city,
+                                        'ship_to_state_code'=>$state,
+                                        'ship_to_country_code'=>$country,
+                                        'ship_to_postal_code'=>$postal,
+                                        'label_prep_type'=>$preptype,
+                                        'total_units'=>$total_unit,
+                                        'fee_per_unit_currency_code'=>$unit_currency,
+                                        'fee_per_unit_value'=>$unit_value,
+                                        'total_fee_value'=>$total_value
+                                    );
+                                    Amazon_destination::create($amazon_destination);
+                                }
+
+                            }
+                        }
+                    }
+                }
+
             }
         }
+
         $order_detail=array('steps'=>'1');
         Order::where('order_id',$order_id)->update($order_detail);
         return redirect('order/supplierdetail')->with('Success', 'Shipment Information Added Successfully');
+    }
+
+    protected function getReportsClient()
+    {
+        list($access_key, $secret_key, $config) = $this->getKeys();
+        return  new \FBAInboundServiceMWS_Client(
+            $access_key,
+            $secret_key,
+            env('APPLICATION_NAME'),
+            env('APPLICATION_VERSION'),
+            $config
+        );
+    }
+    private function getKeys($uri = '')
+    {
+        add_to_path('Libraries');
+        $devAccount = Dev_account::first();
+        return [
+            $devAccount->access_key,
+            $devAccount->secret_key,
+            self::getMWSConfig()
+        ];
+    }
+    public static function getMWSConfig()
+    {
+        return [
+            'ServiceURL' => "https://mws.amazonservices.com/FulfillmentInboundShipment/2010-10-01",
+            'ProxyHost' => null,
+            'ProxyPort' => -1,
+            'ProxyUsername' => null,
+            'ProxyPassword' => null,
+            'MaxErrorRetry' => 3,
+        ];
+    }
+    function invokeCreateInboundShipmentPlan(\FBAInboundServiceMWS_Interface $service, $request)
+    {
+         try {
+            $response = $service->CreateInboundShipmentPlan($request);
+           // echo ("Service Response\n");
+           // echo ("=============================================================================\n");
+            $dom = new \DOMDocument();
+            $dom->loadXML($response->toXML());
+            $dom->preserveWhiteSpace = false;
+            $dom->formatOutput = true;
+            $dom->saveXML();
+            //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
+            return $arr_response = new \SimpleXMLElement($dom->saveXML());
+
+        } catch (\FBAInboundServiceMWS_Exception $ex) {
+            echo("Caught Exception: " . $ex->getMessage() . "\n");
+            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
+            echo("Error Code: " . $ex->getErrorCode() . "\n");
+            echo("Error Type: " . $ex->getErrorType() . "\n");
+            echo("Request ID: " . $ex->getRequestId() . "\n");
+            echo("XML: " . $ex->getXML() . "\n");
+            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
+        }
     }
     public function removeproduct(Request $request)
     {

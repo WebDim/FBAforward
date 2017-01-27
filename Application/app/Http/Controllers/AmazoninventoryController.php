@@ -216,8 +216,7 @@ class AmazoninventoryController extends Controller
                $dom->formatOutput = true;
                $dom->saveXML();
                //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
-               $arr_response = new \SimpleXMLElement($dom->saveXML());
-
+               //$arr_response = new \SimpleXMLElement($dom->saveXML());
                return $arr_response = new \SimpleXMLElement($dom->saveXML());
 
 
