@@ -60,4 +60,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Shipment_detail::class);
     }
+    public function supplier_detail()
+    {
+        return $this->hasMany(Supplier_detail::class);
+    }
 }

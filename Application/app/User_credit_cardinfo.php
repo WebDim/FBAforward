@@ -26,4 +26,9 @@ class User_credit_cardinfo extends Eloquent
         return $this->belongsTo(Users::class);
     }
 
+    public function payment_detail()
+    {
+        return $this->hasMany(Payment_detail::class);
+    }
+
 }

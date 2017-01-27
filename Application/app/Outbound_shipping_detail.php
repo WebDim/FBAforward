@@ -19,4 +19,8 @@ class Outbound_Shipping_detail extends Model
     {
         return $this->belongsTo(Outbound_method::class,'outbound_method_id');
     }
+    public function shipment()
+    {
+        return $this->belongsTo(Shipments::class);
+    }
 }

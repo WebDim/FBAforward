@@ -22,5 +22,13 @@ class Shipment_detail extends Model
     {
         return $this->belongsTo(Amazon_inventory::class);
     }
+    public function shipment()
+    {
+        return $this->belongsTo(Shipments::class);
+    }
+    public function supplier_detail()
+    {
+        return $this->hasMany(Supplier_detail::class);
+    }
 
 }
