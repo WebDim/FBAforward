@@ -149,8 +149,8 @@ return [
         Laravel\Cashier\CashierServiceProvider::class,
 		//Orangehill\Iseed\IseedServiceProvider::class,
 		Roumen\Sitemap\SitemapServiceProvider::class,
-        Aws\Laravel\AwsServiceProvider::class,
-        Barryvdh\Debugbar\ServiceProvider::class,
+        Aws\Laravel\AwsServiceProvider::class
+
 		
     ],
     /*
