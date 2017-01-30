@@ -24,6 +24,7 @@ use App\Addresses;
 use App\Http\Middleware\Amazoncredential;
 use App\Outbound_Shipping_detail;
 use App\Payment_detail;
+use App\User_info;
 use Illuminate\Http\Request;
 use Webpatser\Uuid\Uuid;
 use PayPal\Api\CreditCard;
@@ -107,7 +108,8 @@ class OrderController extends Controller
     public function addshipment(Request $request)
     {
          $user = \Auth::user();
-        $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
+         $user_details = User_info::where('user_id',$user->id)->get();
+         $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
             ->where('user_id',$user->id)
             ->get();
          //create order
@@ -199,15 +201,17 @@ class OrderController extends Controller
                 $shipment->save();
                 $last_id = $shipment->shipment_id;
                 //create shipmentplan api
+                $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
                 $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
-                $service = $this->getReportsClient();
+                $url="https://mws.amazonservices.com/FulfillmentInboundShipment/2010-10-01";
+                $service = $this->getReportsClient($url);
                 $ship_request = new \FBAInboundServiceMWS_Model_CreateInboundShipmentPlanRequest();
                 $ship_request->setSellerId($UserCredentials['mws_seller_id']);
                 $fromaddress= new \FBAInboundServiceMWS_Model_Address();
-                $fromaddress->setName('Webdimensions');
-                $fromaddress->setAddressLine1('satelite');
-                $fromaddress->setCity('ahmedabad');
-                $fromaddress->setCountryCode('in');
+                $fromaddress->setName($user_details[0]->company_name);
+                $fromaddress->setAddressLine1($user_details[0]->company_address);
+                $fromaddress->setCity($user_details[0]->company_city);
+                $fromaddress->setCountryCode("in");//$user_details[0]->company_country
                 $ship_request->setShipFromAddress($fromaddress);
                 $item=array();
                 $sub_count=$request->input('count'.$cnt);
@@ -232,7 +236,16 @@ class OrderController extends Controller
                 $ship_request->setInboundShipmentPlanRequestItems($itemlist);
                 $arr_response =$this->invokeCreateInboundShipmentPlan($service, $ship_request);
                 $shipment_id=$last_id;
-                echo "<pre>";
+                $shipment_url="https://mws.amazonservices.com/FulfillmentInboundShipment/2010-10-01";
+                $shipment_service = $this->getReportsClient($shipment_url);
+                $shipment_request = new \FBAInboundServiceMWS_Model_CreateInboundShipmentRequest();
+                $shipment_request->setSellerId($UserCredentials['mws_seller_id']);
+                $shipment_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
+                $shipment_header= new \FBAInboundServiceMWS_Model_InboundShipmentHeader();
+                $shipment_header->setShipmentName("SHIPMENT_NAME");
+                $shipment_header->setShipFromAddress($fromaddress);
+
+                //response of shipment plan and insert data in amazon destination
                 foreach ($arr_response as $new_response) {
                     foreach ($new_response->InboundShipmentPlans as $planresult) {
                         foreach ($planresult->member as $member) {
@@ -285,6 +298,19 @@ class OrderController extends Controller
                                         'total_fee_value'=>$total_value
                                     );
                                     Amazon_destination::create($amazon_destination);
+                                    $shipment_header->setDestinationFulfillmentCenterId($destination_name);
+                                    $shipment_request->setInboundShipmentHeader($shipment_header);
+                                    $shipment_request->setShipmentId($api_shipment_id);
+                                    $shipment_item= new \FBAInboundServiceMWS_Model_InboundShipmentItem();
+                                    $shipment_item->setShipmentId($api_shipment_id);
+                                    $shipment_item->setSellerSKU($sub_member->SellerSKU);
+                                    $shipment_item->setQuantityShipped($sub_member->Quantity);
+                                    $shipment_item->setFulfillmentNetworkSKU($sub_member->FulfillmentNetworkSKU);
+                                    $api_shipment_detail = new \FBAInboundServiceMWS_Model_InboundShipmentItemList();
+                                    $api_shipment_detail->setmember($shipment_item);
+                                    $shipment_request->setInboundShipmentItems($api_shipment_detail);
+                                    $this->invokeCreateInboundShipment($shipment_service, $shipment_request);
+
                                 }
 
                             }
@@ -300,9 +326,9 @@ class OrderController extends Controller
         return redirect('order/supplierdetail')->with('Success', 'Shipment Information Added Successfully');
     }
 
-    protected function getReportsClient()
+    protected function getReportsClient($url)
     {
-        list($access_key, $secret_key, $config) = $this->getKeys();
+        list($access_key, $secret_key, $config) = $this->getKeys($url);
         return  new \FBAInboundServiceMWS_Client(
             $access_key,
             $secret_key,
@@ -311,20 +337,20 @@ class OrderController extends Controller
             $config
         );
     }
-    private function getKeys($uri = '')
+    private function getKeys($uri)
     {
         add_to_path('Libraries');
         $devAccount = Dev_account::first();
         return [
             $devAccount->access_key,
             $devAccount->secret_key,
-            self::getMWSConfig()
+            self::getMWSConfig($uri)
         ];
     }
-    public static function getMWSConfig()
+    public static function getMWSConfig($uri)
     {
         return [
-            'ServiceURL' => "https://mws.amazonservices.com/FulfillmentInboundShipment/2010-10-01",
+            'ServiceURL' => $uri,
             'ProxyHost' => null,
             'ProxyPort' => -1,
             'ProxyUsername' => null,
@@ -336,7 +362,7 @@ class OrderController extends Controller
     {
          try {
             $response = $service->CreateInboundShipmentPlan($request);
-           // echo ("Service Response\n");
+            // echo ("Service Response\n");
            // echo ("=============================================================================\n");
             $dom = new \DOMDocument();
             $dom->loadXML($response->toXML());
@@ -345,6 +371,30 @@ class OrderController extends Controller
             $dom->saveXML();
             //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
             return $arr_response = new \SimpleXMLElement($dom->saveXML());
+
+        } catch (\FBAInboundServiceMWS_Exception $ex) {
+            echo("Caught Exception: " . $ex->getMessage() . "\n");
+            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
+            echo("Error Code: " . $ex->getErrorCode() . "\n");
+            echo("Error Type: " . $ex->getErrorType() . "\n");
+            echo("Request ID: " . $ex->getRequestId() . "\n");
+            echo("XML: " . $ex->getXML() . "\n");
+            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
+        }
+    }
+    function invokeCreateInboundShipment(\FBAInboundServiceMWS_Interface $service, $request)
+    {
+        try {
+            $response = $service->CreateInboundShipment($request);
+            echo ("Service Response\n");
+            echo ("=============================================================================\n");
+
+            $dom = new \DOMDocument();
+            $dom->loadXML($response->toXML());
+            $dom->preserveWhiteSpace = false;
+            $dom->formatOutput = true;
+            echo $dom->saveXML();
+            echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
 
         } catch (\FBAInboundServiceMWS_Exception $ex) {
             echo("Caught Exception: " . $ex->getMessage() . "\n");
