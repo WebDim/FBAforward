@@ -633,21 +633,46 @@ class OrderController extends Controller
     {
         $order_id = $request->session()->get('order_id');
         $outbound_method= Outbound_method::all();
-        $amazon_destination = Amazon_destination::all();
-        $shipment =Shipments::selectRaw("shipments.*, shipping_methods.shipping_method_id,shipping_methods.shipping_name")
-            ->join('shipping_methods','shipments.shipping_method_id','=','shipping_methods.shipping_method_id','left')
+        //$amazon_destination = Amazon_destination::all();
+        $shipment =Shipments::selectRaw("shipments.shipment_id, shipping_methods.shipping_name, shipments.order_id")
+            ->join('shipping_methods','shipments.shipping_method_id','=','shipping_methods.shipping_method_id')
             ->where('shipments.order_id',$order_id)
+            ->orderby('shipments.shipment_id')
             ->get();
-        $product = Shipment_detail::selectRaw("shipments.order_id, shipment_details.product_id, shipment_details.total, shipment_details.shipment_id, amazon_inventories.product_name")
-            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
-            ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id','left')
+        $product = Amazon_destination::selectRaw("shipments.order_id, shipments.shipment_id, amazon_inventories.id, amazon_inventories.product_name, amazon_destinations.destination_name, amazon_destinations.qty, amazon_destinations.amazon_destination_id")
+            ->join('amazon_inventories', 'amazon_inventories.sellerSKU', '=', 'amazon_destinations.sellersku','left')
+            ->join('shipments','amazon_destinations.shipment_id','=','shipments.shipment_id','left')
            ->where('shipments.order_id', $order_id)
             ->get();
-        $outbound_detail = Outbound_Shipping_detail::selectRaw("shipments.order_id, outbound_shipping_details.* ")
+        $outbound_detail = Outbound_Shipping_detail::selectRaw("shipments.order_id, outbound_shipping_details.*")
             ->join('shipments','outbound_shipping_details.shipment_id','=','shipments.shipment_id','left')
             ->where('shipments.order_id', $order_id)
             ->get();
-        return view('order.outbound_shipping')->with(compact('amazon_destination', 'outbound_method', 'shipment', 'product','outbound_detail'));
+
+        $detail=array();
+        foreach ($shipment as $shipments)
+        {
+            $data=array();
+            $data['order']=$shipments->order_id;
+            $data['shipment_id']=$shipments->shipment_id;
+            $data['shipment_name']=$shipments->shipping_name;
+            foreach ($product as $products)
+            {
+                if($shipments->shipment_id==$products->shipment_id)
+                {
+                    $new_data= array('product_name'=>$products->product_name,
+                                     'product_id'=>$products->id,
+                                    'qty'=>$products->qty,
+                                    'destination_id'=>$products->amazon_destination_id
+                        );
+                        $data['destination'][$products->destination_name][]=$new_data;
+                }
+            }
+            $detail[]=$data;
+        }
+
+        //dd($detail);
+        return view('order.outbound_shipping')->with(compact('outbound_method', 'detail','outbound_detail'));
     }
 
     public function addoutbondshipping(Request $request)
