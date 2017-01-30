@@ -50,13 +50,7 @@
                                 <tr>
                                     <td class="col-md-3"><span>{{ $outbound_details->destination_name }}</span></td>
                                     <td class="col-md-5"><span>
-                                          {{--*/$qty=array()/*--}}
-                                            {{--*/$qty=explode(',',$outbound_details->qty)/*--}}
-                                            {{--*/$total_qty=0/*--}}
-                                            @foreach($qty as $qtys)
-                                                {{--*/$total_qty=$total_qty+$qtys/*--}}
-                                                @endforeach
-                                            {{ $total_qty }}
+                                            {{ $outbound_details->total }}
                                         </span></td>
                                     <td class="col-md-2"><span>{{ $outbound_details->outbound_name }}</span></td>
                                 </tr>

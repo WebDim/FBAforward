@@ -13,7 +13,6 @@ use App\Prep_service;
 use App\Product_labels;
 use App\Supplier_detail;
 use App\Shipping_method;
-use App\Http\Requests\ShipmentRequest;
 use App\Shipment_detail;
 use App\Supplier;
 use App\Supplier_inspection;
@@ -111,10 +110,9 @@ class OrderController extends Controller
         $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
             ->where('user_id',$user->id)
             ->get();
-
          //create order
-         if(empty($request->input('order_id')))
-         {
+        if(empty($request->input('order_id')))
+        {
             $order_detail=array('order_no'=>Uuid::generate(1,time())->string,
                                 'user_id'=>$user->id
              );
@@ -631,82 +629,79 @@ class OrderController extends Controller
     }
     public function outbondshipping(Request $request)
     {
+        $user = \Auth::user();
         $order_id = $request->session()->get('order_id');
         $outbound_method= Outbound_method::all();
-        //$amazon_destination = Amazon_destination::all();
         $shipment =Shipments::selectRaw("shipments.shipment_id, shipping_methods.shipping_name, shipments.order_id")
             ->join('shipping_methods','shipments.shipping_method_id','=','shipping_methods.shipping_method_id')
             ->where('shipments.order_id',$order_id)
             ->orderby('shipments.shipment_id')
             ->get();
         $product = Amazon_destination::selectRaw("shipments.order_id, shipments.shipment_id, amazon_inventories.id, amazon_inventories.product_name, amazon_destinations.destination_name, amazon_destinations.qty, amazon_destinations.amazon_destination_id")
-            ->join('amazon_inventories', 'amazon_inventories.sellerSKU', '=', 'amazon_destinations.sellersku','left')
+            ->join('amazon_inventories', 'amazon_inventories.sellerSKU', '=', 'amazon_destinations.sellerSKU','left')
             ->join('shipments','amazon_destinations.shipment_id','=','shipments.shipment_id','left')
-           ->where('shipments.order_id', $order_id)
-            ->get();
-        $outbound_detail = Outbound_Shipping_detail::selectRaw("shipments.order_id, outbound_shipping_details.*")
-            ->join('shipments','outbound_shipping_details.shipment_id','=','shipments.shipment_id','left')
             ->where('shipments.order_id', $order_id)
+            ->where('amazon_inventories.user_id', $user->id)
             ->get();
-
-        $detail=array();
         foreach ($shipment as $shipments)
         {
             $data=array();
             $data['order']=$shipments->order_id;
             $data['shipment_id']=$shipments->shipment_id;
             $data['shipment_name']=$shipments->shipping_name;
+
             foreach ($product as $products)
             {
+
                 if($shipments->shipment_id==$products->shipment_id)
                 {
+
                     $new_data= array('product_name'=>$products->product_name,
                                      'product_id'=>$products->id,
                                     'qty'=>$products->qty,
                                     'destination_id'=>$products->amazon_destination_id
                         );
-                        $data['destination'][$products->destination_name][]=$new_data;
+                        $outbound_shipping_details= Outbound_Shipping_detail::where('amazon_destination_id',$products->amazon_destination_id)->get();
+                       $data['outbound_shipping_detail_ids'][$products->amazon_destination_id] =(count($outbound_shipping_details)>0) ? $outbound_shipping_details[0]->outbound_shipping_detail_id:null;
+                       $data['outbound_method_ids'][$products->amazon_destination_id] =(count($outbound_shipping_details)>0) ?$outbound_shipping_details[0]->outbound_method_id:null;
+                       $data['destination'][$products->destination_name][]=$new_data;
+
                 }
+
             }
+
             $detail[]=$data;
         }
-
-        //dd($detail);
         return view('order.outbound_shipping')->with(compact('outbound_method', 'detail','outbound_detail'));
     }
-
     public function addoutbondshipping(Request $request)
     {
-        $ship_count = $request->input('ship_count');
+      $ship_count = $request->input('ship_count');
         for ($ship_cnt = 1; $ship_cnt < $ship_count; $ship_cnt++) {
             $count = $request->input('count' . $ship_cnt);
             for ($cnt = 1; $cnt < $count; $cnt++) {
-                $product = array();
-                $qty = array();
                 $product_count = $request->input("product_count" . $ship_cnt . "_" . $cnt);
                 for ($product_cnt = 1; $product_cnt < $product_count; $product_cnt++) {
-                    $product[] = $request->input('product_id' . $ship_cnt . "_" . $cnt . "_" . $product_cnt);
-                    $qty[] = $request->input('total_unit' . $ship_cnt . "_" . $cnt . "_" . $product_cnt);
-                }
-                if (empty($request->input("outbound_shipping_detail_id" . $ship_cnt . "_" . $cnt))) {
-                    $outbound_shipping = array("amazon_destination_id" => $request->input('amazon_destination_id' . $ship_cnt . "_" . $cnt),
-                        "outbound_method_id" => $request->input('outbound_method' . $ship_cnt . "_" . $cnt),
-                        "shipment_id" => $request->input('shipment_id' . $ship_cnt),
-                        "order_id" => $request->input('order_id'),
-                        "product_ids" => implode(',', $product),
-                        "qty" => implode(',', $qty)
-                    );
-                    $outbound_shipping_detail = new Outbound_Shipping_detail($outbound_shipping);
-                    $outbound_shipping_detail->save();
-                } else {
-                    $outbound_shipping = array("amazon_destination_id" => $request->input('amazon_destination_id' . $ship_cnt . "_" . $cnt),
-                        "outbound_method_id" => $request->input('outbound_method' . $ship_cnt . "_" . $cnt),
-                        "shipment_id" => $request->input('shipment_id' . $ship_cnt),
-                        "order_id" => $request->input('order_id'),
-                        "product_ids" => implode(',', $product),
-                        "qty" => implode(',', $qty)
-                    );
-                    Outbound_Shipping_detail::where('outbound_shipping_detail_id', $request->input("outbound_shipping_detail_id" . $ship_cnt . "_" . $cnt))->update($outbound_shipping);
+                    if (empty($request->input("outbound_shipping_detail_id" . $ship_cnt . "_" . $cnt."_".$product_cnt))) {
+                        $outbound_shipping = array("amazon_destination_id" => $request->input('amazon_destination_id' . $ship_cnt . "_" . $cnt . "_" . $product_cnt),
+                            "outbound_method_id" => $request->input('outbound_method' . $ship_cnt . "_" . $cnt),
+                            "shipment_id" => $request->input('shipment_id' . $ship_cnt),
+                            "order_id" => $request->input('order_id'),
+                            "product_ids" => $request->input('product_id' . $ship_cnt . "_" . $cnt . "_" . $product_cnt),
+                            "qty" => $request->input('total_unit' . $ship_cnt . "_" . $cnt . "_" . $product_cnt)
+                        );
+                        $outbound_shipping_detail = new Outbound_Shipping_detail($outbound_shipping);
+                        $outbound_shipping_detail->save();
+                    } else {
+                        $outbound_shipping = array("amazon_destination_id" => $request->input('amazon_destination_id' . $ship_cnt . "_" . $cnt . "_" . $product_cnt),
+                            "outbound_method_id" => $request->input('outbound_method' . $ship_cnt . "_" . $cnt),
+                            "shipment_id" => $request->input('shipment_id' . $ship_cnt),
+                            "order_id" => $request->input('order_id'),
+                            "product_ids" => $request->input('product_id' . $ship_cnt . "_" . $cnt . "_" . $product_cnt),
+                            "qty" => $request->input('total_unit' . $ship_cnt . "_" . $cnt . "_" . $product_cnt)
+                        );
+                        Outbound_Shipping_detail::where('outbound_shipping_detail_id', $request->input("outbound_shipping_detail_id" . $ship_cnt . "_" . $cnt."_".$product_cnt))->update($outbound_shipping);
+                    }
                 }
             }
         }
@@ -723,10 +718,11 @@ class OrderController extends Controller
             ->where('shipments.order_id',$order_id)
             ->groupby('shipment_details.shipment_id')
             ->get();
-        $outbound_detail= Outbound_Shipping_detail::selectRaw('amazon_destinations.destination_name, outbound_shipping_details.qty, outbound_methods.outbound_name')
+        $outbound_detail= Outbound_Shipping_detail::selectRaw('amazon_destinations.destination_name, sum(outbound_shipping_details.qty) as total, outbound_methods.outbound_name')
             ->join('amazon_destinations','outbound_shipping_details.amazon_destination_id','=','amazon_destinations.amazon_destination_id','left')
             ->join('outbound_methods','outbound_shipping_details.outbound_method_id','=','outbound_methods.outbound_method_id','left')
             ->where('outbound_shipping_details.order_id',$order_id)
+            ->groupby('amazon_destinations.destination_name','outbound_shipping_details.outbound_method_id')
             ->get();
         $product_detail= Shipment_detail::selectRaw('shipments.order_id, amazon_inventories.product_name, shipment_details.total, prep_details.prep_service_ids')
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id')

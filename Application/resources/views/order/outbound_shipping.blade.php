@@ -26,19 +26,24 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <input type="hidden" name="order" id="order" value="{{ $details['order'] }}">
+                    <input type="hidden" name="order_id" id="order_id" value="{{ $details['order'] }}">
                     {{--*/ $cnt=1 /*--}}
                    @foreach($details['destination'] as $destination=>$product)
+
                        <tr>
                            <td><b class="text-info"> {{ $destination }}</b></td>
                            <td hidden>
                                {{--*/$product_cnt=1/*--}}
+                               {{--*/ $method=array() /*--}}
                                @foreach($product as $products)
                                    <input type="hidden" name="product_id{{$ship_count."_".$cnt."_".$product_cnt}}" value="{{$products['product_id']}}">
                                    <input type="hidden" name="total_unit{{$ship_count."_".$cnt."_".$product_cnt}}" value="{{$products['qty']}}">
                                    <input type="hidden" name="amazon_destination_id{{$ship_count."_".$cnt."_".$product_cnt}}" value="{{$products['destination_id']}}">
+                                   <input type="text" name="outbound_shipping_detail_id{{$ship_count."_".$cnt."_".$product_cnt}}" value="{{ $details['outbound_shipping_detail_ids'][$products['destination_id']] }}">
+                                    {{--*/  $method[]=$details['outbound_method_ids'][$products['destination_id']]/*--}}
                                    {{--*/$product_cnt++/*--}}
                                @endforeach
+
                            </td>
                            <td><b class="text-info">@foreach($product as $products){{$products['product_name']}}<br>@endforeach</b></td>
                            <td><b class="text-info">@foreach($product as $products){{$products['qty']}}<br>@endforeach</b></td>
@@ -46,12 +51,12 @@
                                <select name="outbound_method{{$ship_count."_".$cnt}}" class="form-control select2 validate[required]">
                                    <option value="">Select Outbound Methods</option>
                                    @foreach ($outbound_method as $outbound_methods)
-                                       <option value="{{ $outbound_methods->outbound_method_id }}">  {{ $outbound_methods->outbound_name }}</option>
+                                       <option value="{{ $outbound_methods->outbound_method_id }}" @if(!empty($method))@if($method[0]==$outbound_methods->outbound_method_id) {{ "selected" }} @endif @endif>  {{ $outbound_methods->outbound_name }}</option>
                                    @endforeach
                                </select>
                            </td>
                        </tr>
-                       <input type="hidden" name="product_count{{$cnt}}" id="product_count{{$cnt}}" value="{{$product_cnt}}">
+                       <input type="hidden" name="product_count{{$ship_count."_".$cnt}}" id="product_count{{$ship_count."_".$cnt}}" value="{{$product_cnt}}">
                        {{--*/$cnt++ /*--}}
                    @endforeach
                     <input  type="hidden" name="count{{$ship_count}}" id="count{{$ship_count}}" value="{{ $cnt }}">
