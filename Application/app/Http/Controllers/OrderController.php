@@ -387,7 +387,6 @@ class OrderController extends Controller
     {
         try {
             $response = $service->CreateInboundShipment($request);
-            print_r($response);
             //echo ("Service Response\n");
             //echo ("=============================================================================\n");
             $dom = new \DOMDocument();
@@ -395,6 +394,7 @@ class OrderController extends Controller
             $dom->preserveWhiteSpace = false;
             $dom->formatOutput = true;
             $dom->saveXML();
+            return 1;
             //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
 
         } catch (\FBAInboundServiceMWS_Exception $ex) {
@@ -405,6 +405,7 @@ class OrderController extends Controller
             echo("Request ID: " . $ex->getRequestId() . "\n");
             echo("XML: " . $ex->getXML() . "\n");
             echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
+
         }
     }
     public function removeproduct(Request $request)
