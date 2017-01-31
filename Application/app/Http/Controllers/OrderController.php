@@ -275,6 +275,12 @@ class OrderController extends Controller
                                     $total_value=$total->Value;
                                 }
                             }
+                            $sller_sku_array=array();
+                            $quantity_array= array();
+                            $shipment_header->setDestinationFulfillmentCenterId($destination_name);
+                            $shipment_request->setInboundShipmentHeader($shipment_header);
+                            $shipment_request->setShipmentId($api_shipment_id);
+                            $shipment_item=array();
                             foreach ($member->Items as $item)
                             {
                                 foreach ($item->member as $sub_member)
@@ -298,22 +304,15 @@ class OrderController extends Controller
                                         'total_fee_value'=>$total_value
                                     );
                                     Amazon_destination::create($amazon_destination);
-                                    $shipment_header->setDestinationFulfillmentCenterId($destination_name);
-                                    $shipment_request->setInboundShipmentHeader($shipment_header);
-                                    $shipment_request->setShipmentId($api_shipment_id);
-                                    $shipment_item= new \FBAInboundServiceMWS_Model_InboundShipmentItem();
-                                    $shipment_item->setShipmentId($api_shipment_id);
-                                    $shipment_item->setSellerSKU($sub_member->SellerSKU);
-                                    $shipment_item->setQuantityShipped($sub_member->Quantity);
-                                    $shipment_item->setFulfillmentNetworkSKU($sub_member->FulfillmentNetworkSKU);
-                                    $api_shipment_detail = new \FBAInboundServiceMWS_Model_InboundShipmentItemList();
-                                    $api_shipment_detail->setmember($shipment_item);
-                                    $shipment_request->setInboundShipmentItems($api_shipment_detail);
-                                    $this->invokeCreateInboundShipment($shipment_service, $shipment_request);
-
+                                    $item_array= array('SellerSKU'=>$sub_member->SellerSKU, 'QuantityShipped'=>$sub_member->Quantity, 'FulfillmentNetworkSKU'=>$sub_member->FulfillmentNetworkSKU);
+                                    $shipment_item[]= new \FBAInboundServiceMWS_Model_InboundShipmentItem($item_array);
                                 }
 
                             }
+                                   $api_shipment_detail = new \FBAInboundServiceMWS_Model_InboundShipmentItemList();
+                                   $api_shipment_detail->setmember($shipment_item);
+                                   $shipment_request->setInboundShipmentItems($api_shipment_detail);
+                                   $this->invokeCreateInboundShipment($shipment_service, $shipment_request);
                         }
                     }
                 }
@@ -388,7 +387,6 @@ class OrderController extends Controller
             $response = $service->CreateInboundShipment($request);
             echo ("Service Response\n");
             echo ("=============================================================================\n");
-
             $dom = new \DOMDocument();
             $dom->loadXML($response->toXML());
             $dom->preserveWhiteSpace = false;
