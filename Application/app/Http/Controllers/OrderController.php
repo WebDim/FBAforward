@@ -213,8 +213,8 @@ class OrderController extends Controller
                 $fromaddress->setAddressLine1($user_details[0]->company_address);
                 $fromaddress->setCity($user_details[0]->company_city);
                 $fromaddress->setPostalCode($user_details[0]->company_zipcode);
-                $fromaddress->setStateOrProvinceCode($user_details[0]->company_state);
-                $fromaddress->setCountryCode("US");//$user_details[0]->company_country
+                $fromaddress->setStateOrProvinceCode('CA');
+                $fromaddress->setCountryCode('US');//$user_details[0]->company_country
                 $ship_request->setShipFromAddress($fromaddress);
                 $item=array();
                 $sub_count=$request->input('count'.$cnt);
@@ -321,7 +321,7 @@ class OrderController extends Controller
 
             }
         }
-            exit;
+
         $order_detail=array('steps'=>'1');
         Order::where('order_id',$order_id)->update($order_detail);
         return redirect('order/supplierdetail')->with('Success', 'Shipment Information Added Successfully');
