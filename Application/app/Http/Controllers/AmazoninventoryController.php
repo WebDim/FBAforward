@@ -159,7 +159,7 @@ class AmazoninventoryController extends Controller
                      $inventory->image_path = '';
                      if (isset($productDetails['ImageSets']['ImageSet'])) {
                          $productImages = $productDetails['ImageSets']['ImageSet'];
-                         $inventory->image_path = $productImages[0]["LargeImage"]["URL"];
+                         $inventory->image_path = isset($productImages[0]["LargeImage"]["URL"]) ? $productImages[0]["LargeImage"]["URL"] : '';
                      }
                      $inventory->save();
                  }
