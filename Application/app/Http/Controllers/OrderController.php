@@ -211,10 +211,10 @@ class OrderController extends Controller
                 $fromaddress= new \FBAInboundServiceMWS_Model_Address();
                 $fromaddress->setName($user_details[0]->company_name);
                 $fromaddress->setAddressLine1($user_details[0]->company_address);
+                $fromaddress->setCountryCode($user_details[0]->company_country);
+                $fromaddress->setStateOrProvinceCode($user_details[0]->company_state);
                 $fromaddress->setCity($user_details[0]->company_city);
                 $fromaddress->setPostalCode($user_details[0]->company_zipcode);
-                $fromaddress->setStateOrProvinceCode('CA');
-                $fromaddress->setCountryCode('US');//$user_details[0]->company_country
                 $ship_request->setShipFromAddress($fromaddress);
                 $item=array();
                 $sub_count=$request->input('count'.$cnt);

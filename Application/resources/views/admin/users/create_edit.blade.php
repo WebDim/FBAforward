@@ -177,6 +177,26 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            {!! Form::label('company_country', 'Country *', ['class' => 'control-label col-md-3']) !!}
+                            <div class="col-md-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"></span>
+                                    {!! Form::select('company_country', array_add($country, '','Please Select'), old('country', !empty($user_info) ? $user_info[0]->company_country: null), ['class' => 'form-control select2 validate[required]','onchange'=>'changeCountryWiseState(this.value)']) !!}
+                                </div>
+                            </div>
+                        </div>
+                        <div id="select_state">
+                            <div class="form-group">
+                                {!! Form::label('company_state', 'State *', ['class' => 'control-label col-md-3']) !!}
+                                <div class="col-md-9">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"></span>
+                                        {!! Form::select('company_state', array_add($states, '','Please Select'), old('state', !empty($user_info) ? $user_info[0]->company_state: null), ['class' => 'form-control select2 validate[required]']) !!}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             {!! Form::label('company_city', 'City *', ['class' => 'control-label col-md-3']) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
@@ -185,36 +205,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            {!! Form::label('company_state', 'State *', ['class' => 'control-label col-md-3']) !!}
-                            <div class="col-md-9">
-                                <div class="input-group">
-                                    <span class="input-group-addon"></span>
-                                    {!! Form::text('company_state', old('company_state', !empty($user_info) ? $user_info[0]->company_state: null), ['class' => 'form-control validate[required]', 'placeholder'=>'State']) !!}
-                                </div>
-                            </div>
-                        </div>
+
+
+                    </div><!-- .col-md-6 -->
+                    <div class="col-md-6">
                         <div class="form-group">
                             {!! Form::label('company_zipcode', 'Zipcode *', ['class' => 'control-label col-md-3']) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
                                     {!! Form::text('company_zipcode', old('company_zipcode', !empty($user_info) ? $user_info[0]->company_zipcode: null), ['class' => 'form-control validate[required, custom[onlyLetterNumber]]', 'placeholder'=>'Zipcode']) !!}
-                                </div>
-                            </div>
-                        </div>
-
-
-                    </div><!-- .col-md-6 -->
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            {!! Form::label('company_country', 'Country *', ['class' => 'control-label col-md-3']) !!}
-                            <div class="col-md-9">
-                                <div class="input-group">
-                                    <span class="input-group-addon"></span>
-
-                                    {!! Form::select('company_country', array_add($country, '','Please Select'), old('country', !empty($user_info) ? $user_info[0]->company_country: null), ['class' => 'form-control select2 validate[required]']) !!}
-
                                 </div>
                             </div>
                         </div>
@@ -408,5 +408,26 @@
                     usePrefix: prefix
                 });
     });
+
+    function changeCountryWiseState(val){
+
+        $.ajax({
+            headers: {
+                'X-CSRF-Token': $('input[name="_token"]').val()
+            },
+            method: 'POST', // Type of response and matches what we said in the route
+            url: '/admin/users/selectState', // This is the url we gave in the route
+            data: {
+                'country_code': val,
+            }, // a JSON object to send back
+            success: function (response) { // What to do if we succeed
+                $('#select_state').html(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                console.log(JSON.stringify(jqXHR));
+                console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+            }
+        });
+    }
 </script>
 @endsection
