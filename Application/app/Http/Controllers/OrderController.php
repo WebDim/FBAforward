@@ -207,11 +207,14 @@ class OrderController extends Controller
                 $service = $this->getReportsClient($url);
                 $ship_request = new \FBAInboundServiceMWS_Model_CreateInboundShipmentPlanRequest();
                 $ship_request->setSellerId($UserCredentials['mws_seller_id']);
+                $ship_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
                 $fromaddress= new \FBAInboundServiceMWS_Model_Address();
                 $fromaddress->setName($user_details[0]->company_name);
                 $fromaddress->setAddressLine1($user_details[0]->company_address);
                 $fromaddress->setCity($user_details[0]->company_city);
-                $fromaddress->setCountryCode("in");//$user_details[0]->company_country
+                $fromaddress->setPostalCode($user_details[0]->company_zipcode);
+                $fromaddress->setStateOrProvinceCode($user_details[0]->company_state);
+                $fromaddress->setCountryCode("US");//$user_details[0]->company_country
                 $ship_request->setShipFromAddress($fromaddress);
                 $item=array();
                 $sub_count=$request->input('count'.$cnt);
@@ -275,8 +278,7 @@ class OrderController extends Controller
                                     $total_value=$total->Value;
                                 }
                             }
-                            $sller_sku_array=array();
-                            $quantity_array= array();
+
                             $shipment_header->setDestinationFulfillmentCenterId($destination_name);
                             $shipment_request->setInboundShipmentHeader($shipment_header);
                             $shipment_request->setShipmentId($api_shipment_id);
@@ -319,7 +321,7 @@ class OrderController extends Controller
 
             }
         }
-
+            exit;
         $order_detail=array('steps'=>'1');
         Order::where('order_id',$order_id)->update($order_detail);
         return redirect('order/supplierdetail')->with('Success', 'Shipment Information Added Successfully');
@@ -385,14 +387,15 @@ class OrderController extends Controller
     {
         try {
             $response = $service->CreateInboundShipment($request);
-            echo ("Service Response\n");
-            echo ("=============================================================================\n");
+            print_r($response);
+            //echo ("Service Response\n");
+            //echo ("=============================================================================\n");
             $dom = new \DOMDocument();
             $dom->loadXML($response->toXML());
             $dom->preserveWhiteSpace = false;
             $dom->formatOutput = true;
-            echo $dom->saveXML();
-            echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
+            $dom->saveXML();
+            //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
 
         } catch (\FBAInboundServiceMWS_Exception $ex) {
             echo("Caught Exception: " . $ex->getMessage() . "\n");
