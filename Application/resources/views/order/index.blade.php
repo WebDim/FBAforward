@@ -12,6 +12,7 @@
             </div>
         </div>
         <div class="box-body">
+            @if(!$orders->isEmpty())
             <table id="data_table" class="table datatable dt-responsive" style="width:100%;">
                 <thead>
                 <tr>
@@ -43,6 +44,16 @@
                     @endforeach
                 </tbody>
             </table>
+            @else
+                <table id="data_table" class="table datatable dt-responsive" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th colspan="4">No Order Data Found !!</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            @endif
         </div><!-- /.box-body -->
     </div><!-- /.box -->
 </section>
