@@ -153,15 +153,28 @@ class AmazoninventoryController extends Controller
                  }
              } else {
                  $productArray = $productdataArray['Items']['Item'];
-                 foreach ($productArray as $productDetails) {
-                     $inventory = Amazon_inventory::where('ASIN', $productDetails['ASIN'])->where('user_id',$user_id)->first();
-                     $inventory->product_name = $productDetails['ItemAttributes']['Title'];
+
+                 if(isset($productArray['ASIN']) && !empty($productArray['ASIN'])){
+                     $inventory = Amazon_inventory::where('ASIN', $productArray['ASIN'])->where('user_id', $user_id)->first();
+                     $inventory->product_name = $productArray['ItemAttributes']['Title'];
                      $inventory->image_path = '';
-                     if (isset($productDetails['ImageSets']['ImageSet'])) {
-                         $productImages = $productDetails['ImageSets']['ImageSet'];
+                     if (isset($productArray['ImageSets']['ImageSet'])) {
+                         $productImages = $productArray['ImageSets']['ImageSet'];
                          $inventory->image_path = isset($productImages[0]["LargeImage"]["URL"]) ? $productImages[0]["LargeImage"]["URL"] : '';
                      }
                      $inventory->save();
+                 }else {
+                     foreach ($productArray as $productDetails) {
+
+                         $inventory = Amazon_inventory::where('ASIN', $productDetails['ASIN'])->where('user_id', $user_id)->first();
+                         $inventory->product_name = $productDetails['ItemAttributes']['Title'];
+                         $inventory->image_path = '';
+                         if (isset($productDetails['ImageSets']['ImageSet'])) {
+                             $productImages = $productDetails['ImageSets']['ImageSet'];
+                             $inventory->image_path = isset($productImages[0]["LargeImage"]["URL"]) ? $productImages[0]["LargeImage"]["URL"] : '';
+                         }
+                         $inventory->save();
+                     }
                  }
              }
          }
