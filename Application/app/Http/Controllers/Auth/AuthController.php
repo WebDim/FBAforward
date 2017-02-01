@@ -10,6 +10,8 @@ use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 use App\Role;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use CountryState;
 
 class AuthController extends Controller {
     /*
@@ -89,13 +91,26 @@ use AuthenticatesAndRegistersUsers,
     public function showRegistrationForm()
     {
         $roles = DB::table('roles')->whereNotIn('id', [1, 2])->get();
-        $country = \Config::get('constant.country_name');
+        //$country = \Config::get('constant.country_name');
+        $country = CountryState::getCountries();
+        $states = CountryState::getStates('US');
         if (property_exists($this, 'registerView')) {
-
             return view($this->registerView)->with(compact('roles','country'));
         }
 
-        return view('auth.register')->with(compact('roles','country'));
+        return view('auth.register')->with(compact('roles','country','states'));
+    }
+
+    /**
+     * @param Request $request ajax call
+     * @return $this
+     */
+    public function selectState(Request $request){
+        if ($request->ajax()) {
+            $post = $request->all();
+            $states = CountryState::getStates($post['country_code']);
+            return view('auth.change_state')->with(compact('states'));
+        }
     }
     protected function create(array $data) {
 

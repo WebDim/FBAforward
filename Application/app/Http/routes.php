@@ -70,6 +70,7 @@ Route::group(['middleware' => 'web'], function () {
      * Authentication routes
      */
     Route::auth();
+    Route::post('selectState','Auth\AuthController@selectState');
     /**
      * Admin routes
      */
@@ -79,6 +80,7 @@ Route::group(['middleware' => 'web'], function () {
         ]);
         Route::get('/dashboard', 'Admin\DashboardController@index');
         Route::resource('users', 'Admin\UsersController');
+        Route::post('users/selectState', 'Admin\UsersController@selectState');
         Route::get('settings/create/{type}', ['as' => 'admin.settings.create.type', 'uses' => 'Admin\SettingsController@createForm']);
         Route::get('settings/download/{settings}', ['as' => 'admin.settings.download', 'uses' => 'Admin\SettingsController@fileDownload']);
         Route::resource('settings', 'Admin\SettingsController');

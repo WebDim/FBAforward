@@ -289,10 +289,10 @@ class OrderController extends Controller
                 $fromaddress= new \FBAInboundServiceMWS_Model_Address();
                 $fromaddress->setName($user_details[0]->company_name);
                 $fromaddress->setAddressLine1($user_details[0]->company_address);
+                $fromaddress->setCountryCode($user_details[0]->company_country);
+                $fromaddress->setStateOrProvinceCode($user_details[0]->company_state);
                 $fromaddress->setCity($user_details[0]->company_city);
                 $fromaddress->setPostalCode($user_details[0]->company_zipcode);
-                $fromaddress->setStateOrProvinceCode('CA');
-                $fromaddress->setCountryCode('US');//$user_details[0]->company_country
                 $ship_request->setShipFromAddress($fromaddress);
                 $item=array();
                 $sub_count=$request->input('count'.$cnt);
@@ -471,6 +471,7 @@ class OrderController extends Controller
             $dom->preserveWhiteSpace = false;
             $dom->formatOutput = true;
             $dom->saveXML();
+            return 1;
             //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
 
         } catch (\FBAInboundServiceMWS_Exception $ex) {
@@ -481,6 +482,7 @@ class OrderController extends Controller
             echo("Request ID: " . $ex->getRequestId() . "\n");
             echo("XML: " . $ex->getXML() . "\n");
             echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
+
         }
     }
     function invokeUpdateInboundShipment(\FBAInboundServiceMWS_Interface $service, $request)

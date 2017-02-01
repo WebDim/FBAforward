@@ -160,9 +160,49 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group{{ $errors->has('company_country') ? ' has-error' : '' }}">
+                    <label class="col-md-2 control-label">Country *</label>
+                    <div class="col-md-7">
+                        <div class="input-group">
+                            <span class="input-group-addon"></span>
+                             <select name="company_country" class="form-control" onchange="changeCountryWiseState(this.value)">
+                                <option value="">Select Country</option>
+                                @foreach ($country as $key=>$country)
+                                    <option value="{{ $key }}">  {{ $country }}</option>
+                                @endforeach
+                            </select>
+
+                        </div>
+                        @if ($errors->has('company_country'))
+                            <span class="help-block">
+                                <strong>{{ $errors->first('company_country') }}</strong>
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                <div id="select_state">
+                    <div class="form-group{{ $errors->has('company_state') ? ' has-error' : '' }}">
+                        <label class="col-md-2 control-label">State *</label>
+                        <div class="col-md-7">
+                            <div class="input-group">
+                                <span class="input-group-addon"></span>
+                                <select name="company_state" class="form-control">
+                                    <option value="">Select State</option>
+                                    @foreach ($states as $key=>$state)
+                                        <option value="{{ $key }}">  {{ $state }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @if ($errors->has('company_state'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('company_state') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group{{ $errors->has('company_city') ? ' has-error' : '' }}">
                     <label class="col-md-2 control-label">City *</label>
-
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
@@ -171,21 +211,6 @@
                         @if ($errors->has('company_city'))
                             <span class="help-block">
                                         <strong>{{ $errors->first('company_city') }}</strong>
-                                    </span>
-                        @endif
-                    </div>
-                </div>
-                <div class="form-group{{ $errors->has('company_state') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">State *</label>
-
-                    <div class="col-md-7">
-                        <div class="input-group">
-                            <span class="input-group-addon"></span>
-                            <input type="text" placeholder="State" class="form-control" name="company_state">
-                        </div>
-                        @if ($errors->has('company_state'))
-                            <span class="help-block">
-                                        <strong>{{ $errors->first('company_state') }}</strong>
                                     </span>
                         @endif
                     </div>
@@ -201,27 +226,6 @@
                         @if ($errors->has('company_zipcode'))
                             <span class="help-block">
                                         <strong>{{ $errors->first('company_zipcode') }}</strong>
-                                    </span>
-                        @endif
-                    </div>
-                </div>
-                <div class="form-group{{ $errors->has('company_country') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Country *</label>
-
-                    <div class="col-md-7">
-                        <div class="input-group">
-                            <span class="input-group-addon"></span>
-                             <select name="company_country" class="form-control">
-                                <option value="">Country</option>
-                                @foreach ($country as $key=>$country)
-                                    <option value="{{ $key }}">  {{ $country }}</option>
-                                @endforeach
-                            </select>
-
-                        </div>
-                        @if ($errors->has('company_country'))
-                            <span class="help-block">
-                                        <strong>{{ $errors->first('company_country') }}</strong>
                                     </span>
                         @endif
                     </div>
@@ -459,6 +463,24 @@
 
 @section('js')
     <script type="text/javascript">
-
+        function changeCountryWiseState(val){
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token': $('input[name="_token"]').val()
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/selectState', // This is the url we gave in the route
+                data: {
+                    'country_code': val,
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    $('#select_state').html(response);
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
     </script>
 @endsection

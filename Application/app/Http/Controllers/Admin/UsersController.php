@@ -11,6 +11,7 @@ use App\Role;
 use App\User;
 use App\User_info;
 use Illuminate\Support\Facades\DB;
+use CountryState;
 
 class UsersController extends Controller
 {
@@ -41,10 +42,11 @@ class UsersController extends Controller
     public function create()
     {
         $roles = Role::lists('name', 'id');
-        $country = \Config::get('constant.country_name');
+        $country = CountryState::getCountries();
+        $states = CountryState::getStates('US');
         //$packages = Package::active()->lists('name', 'id');
         //$job_titles = getSetting('JOB_TITLES');
-        return view('admin.users.create_edit')->with(compact('roles','country'));
+        return view('admin.users.create_edit')->with(compact('roles','country','states'));
     }
 
     /**
@@ -133,12 +135,23 @@ class UsersController extends Controller
     {
         $roles = Role::lists('name', 'id');
         $user_info = DB::table('user_infos')->where('user_id', $user->id)->get();
-        $country = \Config::get('constant.country_name');
+        $country = CountryState::getCountries();
+        $states = CountryState::getStates($user_info[0]->company_country);
         /*$packages = Package::active()->lists('name', 'id');
 
         $job_titles = getSetting('JOB_TITLES');*/
 
-        return view('admin.users.create_edit')->with(compact('user', 'roles','user_info','country'));
+        return view('admin.users.create_edit')->with(compact('user', 'roles','user_info','country','states'));
+    }
+
+    public function selectState(Request $request)
+    {
+        if ($request->ajax()) {
+            $post = $request->all();
+            $states = CountryState::getStates($post['country_code']);
+            return view('admin.users.change_state')->with(compact('states'));
+        }
+
     }
 
     /**

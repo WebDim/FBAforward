@@ -21,14 +21,14 @@
                     <table class="table" id="list">
                         <thead>
                         <tr>
-                            <td><span>&nbsp;</span></td>
-                            <td><span>Product Name</span></td>
-                            <td><span>Condition</span></td>
-                            <td><span>Total Supply Quantity</span></td>
-                            <td><span>FNSKU</span></td>
-                            <td><span>In Stock Supply Quantity</span></td>
-                            <td><span>ASIN</span></td>
-                            <td><span>SellerSKU</span></td>
+                            <th><span>&nbsp;</span></th>
+                            <th><span>Product Name</span></th>
+                            <th><span>Condition</span></th>
+                            <th><span>Total Supply Quantity</span></th>
+                            <th><span>FNSKU</span></th>
+                            <th><span>In Stock Supply Quantity</span></th>
+                            <th><span>ASIN</span></th>
+                            <th><span>SellerSKU</span></th>
                         </tr>
                         </thead>
                         <tbody>
