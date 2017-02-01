@@ -125,7 +125,6 @@ class AmazoninventoryController extends Controller
          foreach ($params as $key => $value) {
              array_push($pairs, rawurlencode($key) . "=" . rawurlencode($value));
          }
-
          // Generate the canonical query
          $canonical_query_string = join("&", $pairs);
 

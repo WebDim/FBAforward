@@ -55,7 +55,7 @@
                                         <option value="{{ $ship_method->shipping_method_id }}"  @if(count($shipment)>0) @if($shipment[0]->shipping_method_id==$ship_method->shipping_method_id){{"selected"}} @endif @endif >  {{ $ship_method->shipping_name }}</option>
                                     @endforeach
                                 </select>
-                                {!! Form::hidden('shipment_id1', old('shipment_id1', count($shipment)>0 ? $shipment[0]->shipment_id  : null), ['class' => 'form-control']) !!}
+                                {!! Form::hidden('shipment_id1', old('shipment_id1', count($shipment)>0 ? $shipment[0]->shipment_id  : null), ['class' => 'form-control','id'=>'shipment_id1']) !!}
 
                             </div>
                         </div>
@@ -87,7 +87,7 @@
                                     <div class="col-md-2">
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
-                                            <input type="hidden" name="sellersku1_{{$cnt}}" id="sellersku1_{{$cnt}}">
+                                            <input type="hidden" name="sellersku1_{{$cnt}}" id="sellersku1_{{$cnt}}" id="sellersku1_{{$cnt}}">
                                             <input type="text" name="upc_fnsku1_{{$cnt}}" id="upc_fnsku1_{{$cnt}}" placeholder="UPC/FNSKU" class="form-control validate[required]" value="{{$shipment_details->fnsku}}" readonly>
                                         </div>
                                     </div>
@@ -193,7 +193,7 @@
                                         <option value="{{ $ship_method->shipping_method_id }}" @if(count($shipment)>1) @if($shipment[1]->shipping_method_id==$ship_method->shipping_method_id){{"selected"}} @endif @endif >  {{ $ship_method->shipping_name }}</option>
                                     @endforeach
                                 </select>
-                                {!! Form::hidden('shipment_id2', old('shipment_id2', count($shipment)>1 ? $shipment[1]->shipment_id  : null), ['class' => 'form-control']) !!}
+                                {!! Form::hidden('shipment_id2', old('shipment_id2', count($shipment)>1 ? $shipment[1]->shipment_id  : null), ['class' => 'form-control','id'=>'shipment_id2']) !!}
                             </div>
                         </div>
                     </div>
@@ -416,9 +416,10 @@
         });
         function remove_shipment(no,sub_no,id)
         {
+            fnsku=$("#upc_fnsku"+no+"_"+sub_no).val();
+            shipment_id=$("#shipment_id"+no).val();
             $("#label"+no+"_"+sub_no).remove();
             $("#input"+no+"_"+sub_no).remove();
-
             $.ajax({
                 headers: {
                     'X-CSRF-Token': $('input[name="_token"]').val()
@@ -427,6 +428,8 @@
                 url: '/order/removeproduct', // This is the url we gave in the route
                 data: {
                     'shipment_detail_id': id,
+                    'fnsku':fnsku,
+                    'shipment_id':shipment_id
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
                     console.log(response);
