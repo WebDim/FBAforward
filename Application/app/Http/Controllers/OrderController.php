@@ -1233,11 +1233,12 @@ class OrderController extends Controller
 
             $shipment_detail = $shipment_detail->toArray();
 
-            $service_name = $listing_service_name = array();
+
             foreach($shipment_detail as $key=>$shipment_details){
                 //Fetch Prep services name
                 $prep_service_ids = explode(",",$shipment_details['prep_service_ids']);
                 $prep_services = Prep_service::selectRaw("service_name")->whereIn('prep_service_id', $prep_service_ids)->get();
+                $service_name = array();
                 if(count($prep_services)>0) {
                     foreach ($prep_services as $prep_service) {
                         $service_name[] = $prep_service->service_name;
@@ -1247,6 +1248,7 @@ class OrderController extends Controller
                 //Fetch Listing services name
                 $listing_service_ids = explode(",",$shipment_details['listing_service_ids']);
                 $listing_services = Listing_service::selectRaw("service_name")->whereIn('listing_service_id', $listing_service_ids)->get();
+                $listing_service_name = array();
                 if(count($listing_services)>0) {
                     foreach ($listing_services as $listing_service) {
                         $listing_service_name[] = $listing_service->service_name;
