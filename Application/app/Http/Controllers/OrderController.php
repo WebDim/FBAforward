@@ -55,6 +55,47 @@ class OrderController extends Controller
     {
         if ($request->ajax()) {
             $post = $request->all();
+            $shipment= Shipments::where('order_id',$post['order_id'])->get();
+            $shipment_id=array();
+            foreach ($shipment as $shipments)
+            {
+                $shipment_id[]=$shipments->shipment_id;
+            }
+            $destinations = Amazon_destination::whereIn('shipment_id',$shipment_id)->get();
+            $user = \Auth::user();
+            $user_details = User_info::where('user_id',$user->id)->get();
+            $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
+                ->where('user_id',$user->id)
+                ->get();
+            $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
+            $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+            $fromaddress= new \FBAInboundServiceMWS_Model_Address();
+            $fromaddress->setName($user_details[0]->company_name);
+            $fromaddress->setAddressLine1($user_details[0]->company_address);
+            $fromaddress->setCountryCode($user_details[0]->company_country);
+            $fromaddress->setStateOrProvinceCode($user_details[0]->company_state);
+            $fromaddress->setCity($user_details[0]->company_city);
+            $fromaddress->setPostalCode($user_details[0]->company_zipcode);
+            $update_service = $this->getReportsClient();
+            $shipment_request = new \FBAInboundServiceMWS_Model_UpdateInboundShipmentRequest();
+            $shipment_request->setSellerId($UserCredentials['mws_seller_id']);
+            $shipment_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
+            foreach ($destinations as $remove_destination) {
+                $shipment_header = new \FBAInboundServiceMWS_Model_InboundShipmentHeader();
+                $shipment_header->setShipmentName("SHIPMENT_NAME");
+                $shipment_header->setShipFromAddress($fromaddress);
+                $shipment_header->setDestinationFulfillmentCenterId($remove_destination->destination_name);
+                $shipment_request->setInboundShipmentHeader($shipment_header);
+                $shipment_request->setShipmentId($remove_destination->api_shipment_id);
+                $item_array=array();
+                $item_array = array('SellerSKU' => isset($remove_destination->sellerSKU) ? $remove_destination->sellerSKU : '', 'QuantityShipped' => '0');
+                $shipment_item = new \FBAInboundServiceMWS_Model_InboundShipmentItem($item_array);
+                $api_shipment_detail = new \FBAInboundServiceMWS_Model_InboundShipmentItemList();
+                $api_shipment_detail->setmember($shipment_item);
+                $shipment_request->setInboundShipmentItems($api_shipment_detail);
+                $update_response = $this->invokeUpdateInboundShipment($update_service, $shipment_request);
+            }
+            Amazon_destination::whereIn('shipment_id',$shipment_id)->delete();
             Listing_service_detail::where('order_id',$post['order_id'])->delete();
             Prep_detail::where('order_id',$post['order_id'])->delete();
             Product_labels_detail::where('order_id',$post['order_id'])->delete();

@@ -352,6 +352,16 @@
             fnsku=id.split(' ');
             $('#upc_fnsku'+no+"_"+sub_no).val(fnsku[2]);
             $('#sellersku'+no+"_"+sub_no).val(fnsku[3]);
+            for(cnt=1;cnt<sub_no;cnt++)
+            {
+                if($('#product_desc'+no+'_'+sub_no).val()==$('#product_desc'+no+'_'+cnt).val())
+                {
+                    alert("Please select another product");
+                    $('#product_desc'+no+'_'+sub_no).val('');
+                    break;
+                }
+            }
+
         }
         function add_shipment(no)
         {
