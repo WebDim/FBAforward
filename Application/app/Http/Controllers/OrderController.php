@@ -1236,18 +1236,22 @@ class OrderController extends Controller
                 //Fetch Prep services name
                 $prep_service_ids = explode(",",$shipment_details['prep_service_ids']);
                 $prep_services = Prep_service::selectRaw("service_name")->whereIn('prep_service_id', $prep_service_ids)->get();
-                foreach($prep_services as $prep_service){
-                    $service_name[] = $prep_service->service_name;
+                $service_name = $listing_service_name = array();
+                if(count($prep_services)>0) {
+                    foreach ($prep_services as $prep_service) {
+                        $service_name[] = $prep_service->service_name;
+                    }
                 }
-                $shipment_detail[$key]['prep_service_name'] = implode($service_name,",");
-
+                $shipment_detail[$key]['prep_service_name'] = implode($service_name, ",");
                 //Fetch Listing services name
                 $listing_service_ids = explode(",",$shipment_details['listing_service_ids']);
                 $listing_services = Listing_service::selectRaw("service_name")->whereIn('listing_service_id', $listing_service_ids)->get();
-                foreach($listing_services as $listing_service){
-                    $listing_service_name[] = $listing_service->service_name;
+                if(count($listing_services)>0) {
+                    foreach ($listing_services as $listing_service) {
+                        $listing_service_name[] = $listing_service->service_name;
+                    }
                 }
-                $shipment_detail[$key]['listing_service_name'] = implode($listing_service_name,",");
+                $shipment_detail[$key]['listing_service_name'] = implode($listing_service_name, ",");
             }
             return view('order.detail_list')->with(compact('shipment_detail'));
         }
