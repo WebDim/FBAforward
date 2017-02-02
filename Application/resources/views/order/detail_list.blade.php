@@ -166,6 +166,33 @@
             <div class="col-md-12" >&nbsp;</div>
             {{--*/ $cntData++ /*--}}
          @endforeach
+        <div class="col-md-12">
+            <div class="form-group">
+                {!! Form::label('payment_info', 'Payment Info', ['class' => 'control-label']) !!}
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form-group">
+                <div class="col-md-6">
+                    {!! Form::label('card_type', 'Card Type:', ['class' => 'control-label col-md-3']) !!}
+                    <div class="input-group col-md-3">
+                        {{$payment_detail['credit_card_type']}}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    {!! Form::label('card_number', 'Card Number:', ['class' => 'control-label col-md-3']) !!}
+                    <div class="input-group col-md-3">
+                        {{$payment_detail['credit_card_number']}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                {!! Form::label('total_cost', 'Total Cost:', ['class' => 'control-label col-md-2']) !!}
+                <div class="input-group">
+                    {{$payment_detail['total_cost']}}
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
