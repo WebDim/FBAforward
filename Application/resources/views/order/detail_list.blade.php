@@ -19,6 +19,7 @@
         </div>
         {{--*/ $cnt = 0 /*--}}
         {{--*/ $shipment_id = 0 /*--}}
+        {{--*/ $cntData = 1 /*--}}
          @foreach($shipment_detail as $shipment_details)
                 @if($shipment_id != $shipment_details['shipment_id'])
                     {{--*/ $cnt++ /*--}}
@@ -32,10 +33,10 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
+                            <div class="col-md-1">&nbsp;</div>
                             {!! Form::label('product_desc1_1', 'Product Description', ['class' => 'control-label col-md-2']) !!}
                             {!! Form::label('suppliers', 'Suppliers', ['class' => 'control-label col-md-2']) !!}
                             {!! Form::label('inspection', 'Inspections', ['class' => 'control-label col-md-2']) !!}
-                            {!! Form::label('label', 'Labels', ['class' => 'control-label col-md-1']) !!}
                             {!! Form::label('upc_fnsku1_1', 'UPC/FNSKU', ['class' => 'control-label col-md-2']) !!}
                             {!! Form::label('qty_per_case1_1', 'Qty Per Case', ['class' => 'control-label col-md-1']) !!}
                             {!! Form::label('no_of_case1_1', '# Of Case', ['class' => 'control-label col-md-1']) !!}
@@ -43,8 +44,11 @@
                         </div>
                     </div>
                 @endif
-            <div class="col-md-12">&nbsp;
+            <div class="col-md-12">
                 <div class="form-group">
+                    <a id="detail_show_{{$cntData}}" class="col-md-1" href="javascript:void(0)" onclick="detailInfo({{$cntData}})">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </a>
                     <div class="col-md-2">
                         <div class="input-group">
                             {{$shipment_details['product_name']}}
@@ -62,13 +66,6 @@
                     <div class="col-md-2">
                         <div class="input-group">
                             {{$shipment_details['inspection_decription']}}
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-1">
-                        <div class="input-group">
-                            {{$shipment_details['label_name']}}
                         </div>
                     </div>
                 </div>
@@ -101,9 +98,81 @@
                     </div>
                 </div>
             </div>
+
             @if($shipment_id != $shipment_details['shipment_id'])
                 {{--*/ $shipment_id = $shipment_details['shipment_id'] /*--}}
             @endif
+            <div class="col-md-12" >&nbsp;</div>
+            <div id="child_view_{{$cntData}}" style="display:none">
+                <div class="col-md-12" >
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            {!! Form::label('label', 'Label:', ['class' => 'control-label col-md-2']) !!}
+                            <div class="input-group col-md-10">
+                                {{$shipment_details['label_name']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            {!! Form::label('prep_service', 'Prep Service Name:', ['class' => 'control-label col-md-2']) !!}
+                            <div class="input-group col-md-10">
+                                {{$shipment_details['prep_service_name']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            {!! Form::label('prep_service_total', 'Prep Service Total:', ['class' => 'control-label col-md-2']) !!}
+                            <div class="input-group col-md-10">
+                                {{$shipment_details['prep_service_total']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            {!! Form::label('listing_service', 'Listing Service Name:', ['class' => 'control-label col-md-2']) !!}
+                            <div class="input-group col-md-10">
+                                {{$shipment_details['listing_service_name']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            {!! Form::label('listing_service_total', 'Listing Service Total:', ['class' => 'control-label col-md-2']) !!}
+                            <div class="input-group col-md-10">
+                                {{$shipment_details['listing_service_total']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            {!! Form::label('destination_name', 'Destination Name:', ['class' => 'control-label col-md-2']) !!}
+                            <div class="input-group col-md-10">
+                                {{$shipment_details['destination_name']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            {!! Form::label('outbound_name', 'Outbound Method:', ['class' => 'control-label col-md-2']) !!}
+                            <div class="input-group col-md-10">
+                                {{$shipment_details['outbound_name']}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12" >&nbsp;</div>
+            {{--*/ $cntData++ /*--}}
          @endforeach
     </div>
+@endsection
+
+@section('js')
+    <script type="text/javascript">
+        function detailInfo(id){
+           $("#child_view_"+id).toggle();
+        }
+    </script>
 @endsection

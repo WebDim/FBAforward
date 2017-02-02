@@ -1252,7 +1252,7 @@ class OrderController extends Controller
         if($request->order_id) {
             $user = \Auth::user();
             DB::enableQueryLog();
-            $shipment_detail = Shipments::selectRaw("shipments.shipment_id,shipments.shipping_method_id,shipping_methods.shipping_name,shipment_details.product_id, shipment_details.fnsku, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total,amazon_inventories.product_name,supplier_details.supplier_detail_id,supplier_details.supplier_id,suppliers.company_name,supplier_inspections.inspection_decription,product_labels_details.product_label_id,product_labels.label_name")
+            $shipment_detail = Shipments::selectRaw("shipments.shipment_id,shipments.shipping_method_id,shipping_methods.shipping_name,shipment_details.product_id, shipment_details.fnsku, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total,amazon_inventories.product_name,supplier_details.supplier_detail_id,supplier_details.supplier_id,suppliers.company_name,supplier_inspections.inspection_decription,product_labels_details.product_label_id,product_labels.label_name,prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.prep_service_ids,listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.listing_service_ids,outbound_shipping_details.amazon_destination_id, outbound_shipping_details.outbound_method_id,outbound_methods.outbound_name,amazon_destinations.destination_name")
                 ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id','left')
                 ->join('shipment_details','shipment_details.shipment_id','=','shipments.shipment_id','left')
                 ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
@@ -1261,6 +1261,11 @@ class OrderController extends Controller
                 ->join('supplier_inspections','supplier_inspections.supplier_detail_id','=','supplier_details.supplier_detail_id','left')
                 ->join('product_labels_details','product_labels_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
                 ->join('product_labels','product_labels.product_label_id','=','product_labels_details.product_label_id','left')
+                ->join('prep_details','prep_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
+                ->join('listing_service_details','listing_service_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
+                ->join('outbound_shipping_details','outbound_shipping_details.shipment_id','=','shipments.shipment_id','left')
+                ->join('outbound_methods','outbound_methods.outbound_method_id','=','outbound_shipping_details.outbound_method_id','left')
+                ->join('amazon_destinations','amazon_destinations.amazon_destination_id','=','outbound_shipping_details.amazon_destination_id','left')
 
                 ->where('shipments.order_id',$request->order_id)
                 ->where('shipments.user_id',$user->id)
@@ -1268,8 +1273,30 @@ class OrderController extends Controller
                 ->get();
 
             $shipment_detail = $shipment_detail->toArray();
-            //print_r($shipment_detail);
-            //exit;
+
+
+            foreach($shipment_detail as $key=>$shipment_details){
+                //Fetch Prep services name
+                $prep_service_ids = explode(",",$shipment_details['prep_service_ids']);
+                $prep_services = Prep_service::selectRaw("service_name")->whereIn('prep_service_id', $prep_service_ids)->get();
+                $service_name = array();
+                if(count($prep_services)>0) {
+                    foreach ($prep_services as $prep_service) {
+                        $service_name[] = $prep_service->service_name;
+                    }
+                }
+                $shipment_detail[$key]['prep_service_name'] = implode($service_name, ",");
+                //Fetch Listing services name
+                $listing_service_ids = explode(",",$shipment_details['listing_service_ids']);
+                $listing_services = Listing_service::selectRaw("service_name")->whereIn('listing_service_id', $listing_service_ids)->get();
+                $listing_service_name = array();
+                if(count($listing_services)>0) {
+                    foreach ($listing_services as $listing_service) {
+                        $listing_service_name[] = $listing_service->service_name;
+                    }
+                }
+                $shipment_detail[$key]['listing_service_name'] = implode($listing_service_name, ",");
+            }
             return view('order.detail_list')->with(compact('shipment_detail'));
         }
     }
