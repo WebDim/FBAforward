@@ -26,6 +26,7 @@ use App\Outbound_Shipping_detail;
 use App\Payment_detail;
 use App\User_info;
 use Illuminate\Http\Request;
+use Symfony\Component\Yaml\Tests\A;
 use Webpatser\Uuid\Uuid;
 use PayPal\Api\CreditCard;
 use PayPal\Api\Amount;
@@ -126,25 +127,24 @@ class OrderController extends Controller
          {
              $order_id=$request->input('order_id');
          }
-         $request->session()->put('order_id', $order_id);
-         //delete shipment2
+        $request->session()->put('order_id', $order_id);
+        $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
+        $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+        $fromaddress= new \FBAInboundServiceMWS_Model_Address();
+        $fromaddress->setName($user_details[0]->company_name);
+        $fromaddress->setAddressLine1($user_details[0]->company_address);
+        $fromaddress->setCountryCode($user_details[0]->company_country);
+        $fromaddress->setStateOrProvinceCode($user_details[0]->company_state);
+        $fromaddress->setCity($user_details[0]->company_city);
+        $fromaddress->setPostalCode($user_details[0]->company_zipcode);
+        //delete shipment2
         if($request->input('split_shipment')=='0') {
             if (!empty($request->input('shipment_id2'))) {
                 $destinations= Amazon_destination::where('shipment_id',$request->input('shipment_id2'))->get();
-                $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
-                $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
                 $update_service = $this->getReportsClient();
                 $shipment_request = new \FBAInboundServiceMWS_Model_UpdateInboundShipmentRequest();
                 $shipment_request->setSellerId($UserCredentials['mws_seller_id']);
                 $shipment_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
-                $fromaddress= new \FBAInboundServiceMWS_Model_Address();
-                $fromaddress->setName($user_details[0]->company_name);
-                $fromaddress->setAddressLine1($user_details[0]->company_address);
-                $fromaddress->setCountryCode($user_details[0]->company_country);
-                $fromaddress->setStateOrProvinceCode($user_details[0]->company_state);
-                $fromaddress->setCity($user_details[0]->company_city);
-                $fromaddress->setPostalCode($user_details[0]->company_zipcode);
-
                 foreach ($destinations as $remove_destination) {
                     $shipment_header = new \FBAInboundServiceMWS_Model_InboundShipmentHeader();
                     $shipment_header->setShipmentName("SHIPMENT_NAME");
@@ -178,7 +178,6 @@ class OrderController extends Controller
             //update shipment and shipment detail
             if(!empty($request->input('shipment_id'.$cnt)))
             {
-                $destinations= Amazon_destination::where('shipment_id',$request->input('shipment_id' . $cnt))->groupby('shipment_id')->get();
                 $shipment = array('order_id'=>$order_id,
                     'shipping_method_id' => $request->input('shipping_method' . $cnt),
                     'user_id' => $user->id,
@@ -188,8 +187,16 @@ class OrderController extends Controller
                 );
                 Shipments::where('shipment_id',$request->input('shipment_id'.$cnt))->update($shipment);
                 $sub_count=$request->input('count'.$cnt);
+                $update_service = $this->getReportsClient();
+                $shipment_request = new \FBAInboundServiceMWS_Model_UpdateInboundShipmentRequest();
+                $shipment_request->setSellerId($UserCredentials['mws_seller_id']);
+                $shipment_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
+                $shipment_header= new \FBAInboundServiceMWS_Model_InboundShipmentHeader();
+                $shipment_header->setShipmentName("SHIPMENT_NAME");
+                $shipment_header->setShipFromAddress($fromaddress);
                 for($sub_cnt=1;$sub_cnt<=$sub_count;$sub_cnt++) {
                     if (!empty($request->input("shipment_detail" . $cnt . "_" . $sub_cnt))) {
+
                         $product_id = explode(' ', $request->input('product_desc' . $cnt . "_" . $sub_cnt));
                         $shipment_details = array(
                             'product_id' => isset($product_id[1]) ? $product_id[1] : '',
@@ -198,11 +205,116 @@ class OrderController extends Controller
                             'no_boxs' => $request->input('no_of_case' . $cnt . "_" . $sub_cnt),
                             'total' => $request->input('total' . $cnt . "_" . $sub_cnt)
                         );
+                        $old_destination=Amazon_destination::where('shipment_id',$request->input('shipment_id'.$cnt))->where('fulfillment_network_SKU',$request->input('original_upc_fnsku' . $cnt . "_" . $sub_cnt))->get();
+                        if($request->input('original_upc_fnsku'.$cnt."_".$sub_cnt)!=$request->input('upc_fnsku' . $cnt . "_" . $sub_cnt))
+                        {
 
+                            foreach ($old_destination as $remove_destination) {
+                                $shipment_header->setDestinationFulfillmentCenterId($remove_destination->destination_name);
+                                $shipment_request->setInboundShipmentHeader($shipment_header);
+                                $shipment_request->setShipmentId($remove_destination->api_shipment_id);
+                                $item_array = array('SellerSKU' => isset($remove_destination->sellerSKU) ? $remove_destination->sellerSKU : '', 'QuantityShipped' => '0');
+                                $shipment_item[] = new \FBAInboundServiceMWS_Model_InboundShipmentItem($item_array);
+                                $api_shipment_detail = new \FBAInboundServiceMWS_Model_InboundShipmentItemList();
+                                $api_shipment_detail->setmember($shipment_item);
+                                $shipment_request->setInboundShipmentItems($api_shipment_detail);
+                                $update_response = $this->invokeUpdateInboundShipment($update_service, $shipment_request);
+                            }
+                            $destination_name=isset($old_destination[0]->destination_name) ? $old_destination[0]->destination_name : '';
+                            $api_shipment_id=isset($old_destination[0]->api_shipment_id) ? $old_destination[0]->api_shipment_id :'';
+                            $shipment_header->setDestinationFulfillmentCenterId($destination_name);
+                            $shipment_request->setInboundShipmentHeader($shipment_header);
+                            $shipment_request->setShipmentId($api_shipment_id);
+                            $item_array= array('SellerSKU'=>$request->input('sellersku'. $cnt . "_" . $sub_cnt),'QuantityShipped'=>$request->input('total'. $cnt . "_" . $sub_cnt));
+                            $shipment_item[]= new \FBAInboundServiceMWS_Model_InboundShipmentItem($item_array);
+                            $api_shipment_detail = new \FBAInboundServiceMWS_Model_InboundShipmentItemList();
+                            $api_shipment_detail->setmember($shipment_item);
+                            $shipment_request->setInboundShipmentItems($api_shipment_detail);
+                            $update_response=$this->invokeUpdateInboundShipment($update_service, $shipment_request);
+                            $amazon_destination = array('destination_name'=>$destination_name,
+                                'shipment_id'=>$request->input('shipment_id' . $cnt),
+                                'api_shipment_id'=>$api_shipment_id,
+                                'sellerSKU'=>$request->input('sellersku'. $cnt . "_" . $sub_cnt),
+                                'fulfillment_network_SKU'=>$request->input('upc_fnsku' . $cnt . "_" . $sub_cnt),
+                                'qty'=>$request->input('total' . $cnt . "_" . $sub_cnt),
+                                'ship_to_address_name'=>isset($old_destination[0]->ship_to_address_name) ? $old_destination[0]->ship_to_address_name :'',
+                                'ship_to_address_line1'=>isset($old_destination[0]->ship_to_address_line1) ? $old_destination[0]->ship_to_address_line1 :'',
+                                'ship_to_city'=>isset($old_destination[0]->ship_to_city) ? $old_destination[0]->ship_to_city :'',
+                                'ship_to_state_code'=>isset($old_destination[0]->ship_to_state_code) ? $old_destination[0]->ship_to_state_code :'',
+                                'ship_to_country_code'=>isset($old_destination[0]->ship_to_country_code) ? $old_destination[0]->ship_to_country_code :'',
+                                'ship_to_postal_code'=>isset($old_destination[0]->ship_to_postal_code) ? $old_destination[0]->ship_to_postal_code :'',
+                                'label_prep_type'=>isset($old_destination[0]->label_prep_type) ? $old_destination[0]->label_prep_type :'',
+                                'total_units'=>$request->input('total' . $cnt . "_" . $sub_cnt),
+                                'fee_per_unit_currency_code'=>isset($old_destination[0]->fee_per_unit_currency_code) ? $old_destination[0]->fee_per_unit_currency_code :'',
+                                'fee_per_unit_value'=>isset($old_destination[0]->fee_per_unit_value) ? $old_destination[0]->fee_per_unit_value :'',
+                                'total_fee_value'=>isset($old_destination[0]->fee_per_unit_value) ? $request->input('total' . $cnt . "_" . $sub_cnt)*$old_destination[0]->fee_per_unit_value:$request->input('total' . $cnt . "_" . $sub_cnt)
+                            );
+                            Amazon_destination::create($amazon_destination);
+                            Amazon_destination::where('shipment_id',$request->input('shipment_id'.$cnt))->where('fulfillment_network_SKU',$request->input('original_upc_fnsku' . $cnt . "_" . $sub_cnt))->delete();
+                        }
+                        else if($request->input('original_total'.$cnt."_".$sub_cnt)!=$request->input('total' . $cnt . "_" . $sub_cnt))
+                        {
+                            if($request->input('total' . $cnt . "_" . $sub_cnt) > $request->input('original_total'.$cnt."_".$sub_cnt))
+                            {
+                                $diff_qty=  $request->input('total' . $cnt . "_" . $sub_cnt)- $request->input('original_total'.$cnt."_".$sub_cnt);
+                                $new_qty= $diff_qty+$old_destination[0]->qty;
+                                $shipment_header->setDestinationFulfillmentCenterId($old_destination[0]->destination_name);
+                                $shipment_request->setInboundShipmentHeader($shipment_header);
+                                $shipment_request->setShipmentId($old_destination[0]->api_shipment_id);
+                                $item_array = array('SellerSKU' => isset($old_destination[0]->sellerSKU) ? $old_destination[0]->sellerSKU : '', 'QuantityShipped' => $new_qty);
+                                $shipment_item[] = new \FBAInboundServiceMWS_Model_InboundShipmentItem($item_array);
+                                $api_shipment_detail = new \FBAInboundServiceMWS_Model_InboundShipmentItemList();
+                                $api_shipment_detail->setmember($shipment_item);
+                                $shipment_request->setInboundShipmentItems($api_shipment_detail);
+                                $update_response = $this->invokeUpdateInboundShipment($update_service, $shipment_request);
+                                $update_quantity= array('qty'=>$new_qty);
+                                Amazon_destination::where('amazon_destination_id',$old_destination[0]->amazon_destination_id)->update($update_quantity);
+                            }
+                            else if($request->input('total' . $cnt . "_" . $sub_cnt) < $request->input('original_total'.$cnt."_".$sub_cnt))
+                            {
+                               $diff_qty=  $request->input('original_total' . $cnt . "_" . $sub_cnt)- $request->input('total'.$cnt."_".$sub_cnt);
+                               foreach ($old_destination as $update_destination)
+                               {
+
+                                $diff_qty=$update_destination->qty-abs($diff_qty);
+                                if($diff_qty<0)
+                                {
+
+                                    $shipment_header->setDestinationFulfillmentCenterId($update_destination->destination_name);
+                                    $shipment_request->setInboundShipmentHeader($shipment_header);
+                                    $shipment_request->setShipmentId($update_destination->api_shipment_id);
+                                    $item_array = array('SellerSKU' => isset($update_destination->sellerSKU) ? $update_destination->sellerSKU : '', 'QuantityShipped' => '0');
+                                    $shipment_item[] = new \FBAInboundServiceMWS_Model_InboundShipmentItem($item_array);
+                                    $api_shipment_detail = new \FBAInboundServiceMWS_Model_InboundShipmentItemList();
+                                    $api_shipment_detail->setmember($shipment_item);
+                                    $shipment_request->setInboundShipmentItems($api_shipment_detail);
+                                    $update_response = $this->invokeUpdateInboundShipment($update_service, $shipment_request);
+                                    $update_quantity= array('qty'=>'0');
+                                    Amazon_destination::where('amazon_destination_id',$update_destination->amazon_destination_id)->update($update_quantity);
+                                }
+                                if($diff_qty>=0) {
+                                    $shipment_header->setDestinationFulfillmentCenterId($update_destination->destination_name);
+                                    $shipment_request->setInboundShipmentHeader($shipment_header);
+                                    $shipment_request->setShipmentId($update_destination->api_shipment_id);
+                                    $item_array = array('SellerSKU' => isset($update_destination->sellerSKU) ? $update_destination->sellerSKU : '', 'QuantityShipped' => $diff_qty);
+                                    $shipment_item[] = new \FBAInboundServiceMWS_Model_InboundShipmentItem($item_array);
+                                    $api_shipment_detail = new \FBAInboundServiceMWS_Model_InboundShipmentItemList();
+                                    $api_shipment_detail->setmember($shipment_item);
+                                    $shipment_request->setInboundShipmentItems($api_shipment_detail);
+                                    $update_response = $this->invokeUpdateInboundShipment($update_service, $shipment_request);
+                                    $update_quantity = array('qty' => $diff_qty);
+                                    Amazon_destination::where('amazon_destination_id', $update_destination->amazon_destination_id)->update($update_quantity);
+                                    break;
+                                }
+                               }
+
+                            }
+                        }
                         Shipment_detail::where('shipment_detail_id', $request->input("shipment_detail" . $cnt . "_" . $sub_cnt))->update($shipment_details);
                     }
                     else
                     {
+                        $destinations= Amazon_destination::where('shipment_id',$request->input('shipment_id' . $cnt))->groupby('shipment_id')->get();
                         if(!empty($request->input('product_desc'.$cnt."_".$sub_cnt))) {
 
                             $product_id = explode(' ', $request->input('product_desc' . $cnt . "_" . $sub_cnt));
@@ -215,24 +327,25 @@ class OrderController extends Controller
                             );
                             $shipment_detail = new Shipment_detail($shipment_details);
                             $shipment_detail->save();
-                            $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
-                            $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
                             $destination_name=isset($destinations[0]->destination_name) ? $destinations[0]->destination_name : '';
                             $api_shipment_id=isset($destinations[0]->api_shipment_id) ? $destinations[0]->api_shipment_id :'';
-                            $update_service = $this->getReportsClient();
-                            $shipment_request = new \FBAInboundServiceMWS_Model_UpdateInboundShipmentRequest();
-                            $shipment_request->setSellerId($UserCredentials['mws_seller_id']);
-                            $shipment_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
-                            $fromaddress= new \FBAInboundServiceMWS_Model_Address();
-                            $fromaddress->setName($user_details[0]->company_name);
-                            $fromaddress->setAddressLine1($user_details[0]->company_address);
-                            $fromaddress->setCountryCode($user_details[0]->company_country);
-                            $fromaddress->setStateOrProvinceCode($user_details[0]->company_state);
-                            $fromaddress->setCity($user_details[0]->company_city);
-                            $fromaddress->setPostalCode($user_details[0]->company_zipcode);
-                            $shipment_header= new \FBAInboundServiceMWS_Model_InboundShipmentHeader();
-                            $shipment_header->setShipmentName("SHIPMENT_NAME");
-                            $shipment_header->setShipFromAddress($fromaddress);
+                            $list_request = new \FBAInboundServiceMWS_Model_ListInboundShipmentsRequest();
+                            $list_request->setSellerId($UserCredentials['mws_seller_id']);
+                            $list_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
+                            /*$item_list= new \FBAInboundServiceMWS_Model_ShipmentIdList();
+                            $item_list->setmember($api_shipment_id);
+                            $list_request->setShipmentIdList($item_list);
+                            $list_response =$this->invokeListInboundShipments($update_service, $list_request);
+                            foreach ($list_response->ListInboundShipmentsResult as $listinboundshipment) {
+                                foreach ($listinboundshipment->ShipmentData as $shipmentdata) {
+                                    foreach ($shipmentdata->member as $member) {
+                                        foreach ($member->EstimatedBoxContentsFee as $estimatebox) {
+                                            $totalunits=$estimatebox->TotalUnits;
+                                        }
+                                    }
+                                }
+                            }
+                            $qty=$totalunits+$request->input('total' . $cnt . "_" . $sub_cnt);*/
                             $shipment_header->setDestinationFulfillmentCenterId($destination_name);
                             $shipment_request->setInboundShipmentHeader($shipment_header);
                             $shipment_request->setShipmentId($api_shipment_id);
@@ -280,19 +393,10 @@ class OrderController extends Controller
                 $shipment->save();
                 $last_id = $shipment->shipment_id;
                 //create shipmentplan api
-                $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
-                $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
                 $service = $this->getReportsClient();
                 $ship_request = new \FBAInboundServiceMWS_Model_CreateInboundShipmentPlanRequest();
                 $ship_request->setSellerId($UserCredentials['mws_seller_id']);
                 $ship_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
-                $fromaddress= new \FBAInboundServiceMWS_Model_Address();
-                $fromaddress->setName($user_details[0]->company_name);
-                $fromaddress->setAddressLine1($user_details[0]->company_address);
-                $fromaddress->setCountryCode($user_details[0]->company_country);
-                $fromaddress->setStateOrProvinceCode($user_details[0]->company_state);
-                $fromaddress->setCity($user_details[0]->company_city);
-                $fromaddress->setPostalCode($user_details[0]->company_zipcode);
                 $ship_request->setShipFromAddress($fromaddress);
                 $item=array();
                 $sub_count=$request->input('count'.$cnt);
@@ -324,7 +428,6 @@ class OrderController extends Controller
                 $shipment_header= new \FBAInboundServiceMWS_Model_InboundShipmentHeader();
                 $shipment_header->setShipmentName("SHIPMENT_NAME");
                 $shipment_header->setShipFromAddress($fromaddress);
-
                 //response of shipment plan and insert data in amazon destination
                 foreach ($arr_response as $new_response) {
                     foreach ($new_response->InboundShipmentPlans as $planresult) {
@@ -386,19 +489,17 @@ class OrderController extends Controller
                                     $item_array= array('SellerSKU'=>$sub_member->SellerSKU, 'QuantityShipped'=>$sub_member->Quantity, 'FulfillmentNetworkSKU'=>$sub_member->FulfillmentNetworkSKU);
                                     $shipment_item[]= new \FBAInboundServiceMWS_Model_InboundShipmentItem($item_array);
                                 }
-
                             }
-                                   $api_shipment_detail = new \FBAInboundServiceMWS_Model_InboundShipmentItemList();
-                                   $api_shipment_detail->setmember($shipment_item);
-                                   $shipment_request->setInboundShipmentItems($api_shipment_detail);
-                                   $this->invokeCreateInboundShipment($shipment_service, $shipment_request);
+                            $api_shipment_detail = new \FBAInboundServiceMWS_Model_InboundShipmentItemList();
+                            $api_shipment_detail->setmember($shipment_item);
+                            $shipment_request->setInboundShipmentItems($api_shipment_detail);
+                            $this->invokeCreateInboundShipment($shipment_service, $shipment_request);
                         }
                     }
                 }
 
             }
         }
-
         $order_detail=array('steps'=>'1');
         Order::where('order_id',$order_id)->update($order_detail);
         return redirect('order/supplierdetail')->with('Success', 'Shipment Information Added Successfully');
@@ -509,6 +610,31 @@ class OrderController extends Controller
             echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
         }
     }
+    function invokeListInboundShipments(\FBAInboundServiceMWS_Interface $service, $request)
+    {
+        try {
+            $response = $service->ListInboundShipments($request);
+            //echo("Service Response\n");
+            //echo("=============================================================================\n");
+
+            $dom = new \DOMDocument();
+            $dom->loadXML($response->toXML());
+            $dom->preserveWhiteSpace = false;
+            $dom->formatOutput = true;
+            $dom->saveXML();
+            //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
+            return $list_response = new \SimpleXMLElement($dom->saveXML());
+
+        } catch (\FBAInboundServiceMWS_Exception $ex) {
+            echo("Caught Exception: " . $ex->getMessage() . "\n");
+            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
+            echo("Error Code: " . $ex->getErrorCode() . "\n");
+            echo("Error Type: " . $ex->getErrorType() . "\n");
+            echo("Request ID: " . $ex->getRequestId() . "\n");
+            echo("XML: " . $ex->getXML() . "\n");
+            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
+        }
+    }
     public function removeproduct(Request $request)
     {
         if ($request->ajax()) {
@@ -520,12 +646,30 @@ class OrderController extends Controller
             $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
                 ->where('user_id',$user->id)
                 ->get();
-            $destinations= Amazon_destination::where('shipment_id',$shipment_id)->groupby('shipment_id')->get();
+            $destinations= Amazon_destination::where('shipment_id',$shipment_id)->where('fulfillment_network_SKU',$fnsku)->groupby('shipment_id')->get();
             $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
             $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
             $destination_name=isset($destinations[0]->destination_name) ? $destinations[0]->destination_name : '';
             $api_shipment_id=isset($destinations[0]->api_shipment_id) ? $destinations[0]->api_shipment_id :'';
             $update_service = $this->getReportsClient();
+            $list_request = new \FBAInboundServiceMWS_Model_ListInboundShipmentsRequest();
+            $list_request->setSellerId($UserCredentials['mws_seller_id']);
+            $list_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
+            /*$item_list= new \FBAInboundServiceMWS_Model_ShipmentIdList();
+            $item_list->setmember($api_shipment_id);
+            $list_request->setShipmentIdList($item_list);
+            $list_response =$this->invokeListInboundShipments($update_service, $list_request);
+            foreach ($list_response->ListInboundShipmentsResult as $listinboundshipment) {
+                foreach ($listinboundshipment->ShipmentData as $shipmentdata) {
+                    foreach ($shipmentdata->member as $member) {
+                        foreach ($member->EstimatedBoxContentsFee as $estimatebox) {
+                            $totalunits=$estimatebox->TotalUnits;
+                        }
+                    }
+                }
+            }
+            $dest_qty= isset($destinations[0]->qty) ? $destinations[0]->qty :'';
+            $qty=$totalunits-$dest_qty;*/
             $shipment_request = new \FBAInboundServiceMWS_Model_UpdateInboundShipmentRequest();
             $shipment_request->setSellerId($UserCredentials['mws_seller_id']);
             $shipment_request->setMWSAuthToken($UserCredentials['mws_authtoken']);

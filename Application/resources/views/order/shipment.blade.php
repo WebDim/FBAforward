@@ -76,6 +76,7 @@
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
                                             <input type="hidden" name="shipment_detail1_{{$cnt}}" id="shipment_detail1_{{$cnt}}" class="form-control" value="{{$shipment_details->shipment_detail_id}}">
+                                            <input type="hidden" name="original_desc1_{{$cnt}}" id="original_desc1_{{$cnt}}" class="form-control" value="{{$shipment_details->product_id}}">
                                             <select name="product_desc1_{{$cnt}}" id="product_desc1_{{$cnt}}" class="form-control select2 validate[required]" onchange="getFnsku(1,{{$cnt}},this.value)">
                                                 <option value="">Product Description</option>
                                                 @foreach($product as $products)
@@ -89,6 +90,7 @@
                                             <span class="input-group-addon"></span>
                                             <input type="hidden" name="sellersku1_{{$cnt}}" id="sellersku1_{{$cnt}}" id="sellersku1_{{$cnt}}">
                                             <input type="text" name="upc_fnsku1_{{$cnt}}" id="upc_fnsku1_{{$cnt}}" placeholder="UPC/FNSKU" class="form-control validate[required]" value="{{$shipment_details->fnsku}}" readonly>
+                                            <input type="hidden" name="original_upc_fnsku1_{{$cnt}}" id="original_upc_fnsku1_{{$cnt}}" placeholder="UPC/FNSKU" class="form-control" value="{{$shipment_details->fnsku}}">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -107,6 +109,7 @@
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
                                             <input type="text" name="total1_{{$cnt}}" id="total1_{{$cnt}}" placeholder="Total" class="form-control validate[required, custom[integer]]" value="{{$shipment_details->total}}" onfocus="get_total(1,{{$cnt}})" readonly>
+                                            <input type="hidden" name="original_total1_{{$cnt}}" id="original_total1_{{$cnt}}" placeholder="Total" class="form-control" value="{{$shipment_details->total}}">
                                         </div>
                                     </div>
                                     @if($cnt>1)
@@ -213,6 +216,7 @@
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
                                             <input type="hidden" name="shipment_detail2_{{$cnt}}" id="shipment_detail2_{{$cnt}}" class="form-control" value="{{$shipment_details->shipment_detail_id}}">
+                                            <input type="hidden" name="original_desc2_{{$cnt}}" id="original_desc2_{{$cnt}}" class="form-control" value="{{$shipment_details->product_id}}">
                                             <select name="product_desc2_{{$cnt}}" id="product_desc2_{{$cnt}}" class="form-control select2 validate[required]" onchange="getFnsku(2,{{$cnt}},this.value)">
                                                 <option value="">Product Description</option>
                                                 @foreach($product as $products)
@@ -226,6 +230,7 @@
                                             <span class="input-group-addon"></span>
                                             <input type="hidden" name="sellersku2_{{$cnt}}" id="sellersku2_{{$cnt}}">
                                             <input type="text" name="upc_fnsku2_{{$cnt}}" id="upc_fnsku2_{{$cnt}}" placeholder="UPC/FNSKU" class="form-control validate[required]" value="{{$shipment_details->fnsku}}"  readonly>
+                                            <input type="hidden" name="original_upc_fnsku2_{{$cnt}}" id="original_upc_fnsku2_{{$cnt}}" placeholder="UPC/FNSKU" class="form-control" value="{{$shipment_details->fnsku}}">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -244,6 +249,7 @@
                                         <div class="input-group">
                                             <span class="input-group-addon"></span>
                                             <input type="text" name="total2_{{$cnt}}" id="total2_{{$cnt}}" placeholder="Total" class="form-control validate[required, custom[integer]]" value="{{$shipment_details->total}}" onfocus="get_total(2,{{$cnt}})" readonly>
+                                            <input type="hidden" name="original_total2_{{$cnt}}" id="original_total2_{{$cnt}}" placeholder="Total" class="form-control" value="{{$shipment_details->total}}">
                                         </div>
                                     </div>
                                     @if($cnt>1)
