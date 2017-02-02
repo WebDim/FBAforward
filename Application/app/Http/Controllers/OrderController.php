@@ -36,6 +36,8 @@ use PayPal\Api\Payer;
 use PayPal\Api\Payment;
 use PayPal\Api\Transaction;
 use App\Libraries;
+use Illuminate\Support\Facades\DB;
+
 class OrderController extends Controller
 {
     public function __construct()
@@ -1224,5 +1226,36 @@ class OrderController extends Controller
         Order::where('order_id',$order_id)->update($order_detail);
         return redirect('order/index')->with('success','Your order Successfully Placed');
     }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function orderDetails(Request $request){
+        if($request->order_id) {
+            $user = \Auth::user();
+            DB::enableQueryLog();
+            $shipment_detail = Shipments::selectRaw("shipments.shipment_id,shipments.shipping_method_id,shipping_methods.shipping_name,shipment_details.product_id, shipment_details.fnsku, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total,amazon_inventories.product_name,supplier_details.supplier_detail_id,supplier_details.supplier_id,suppliers.company_name,supplier_inspections.inspection_decription,product_labels_details.product_label_id,product_labels.label_name")
+                ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id','left')
+                ->join('shipment_details','shipment_details.shipment_id','=','shipments.shipment_id','left')
+                ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
+                ->join('supplier_details','shipment_details.shipment_detail_id','=','supplier_details.shipment_detail_id','left')
+                ->join('suppliers','suppliers.supplier_id','=','supplier_details.supplier_id','left')
+                ->join('supplier_inspections','supplier_inspections.supplier_detail_id','=','supplier_details.supplier_detail_id','left')
+                ->join('product_labels_details','product_labels_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
+                ->join('product_labels','product_labels.product_label_id','=','product_labels_details.product_label_id','left')
+
+                ->where('shipments.order_id',$request->order_id)
+                ->where('shipments.user_id',$user->id)
+                ->orderBy('shipments.shipment_id', 'ASC')
+                ->get();
+
+            $shipment_detail = $shipment_detail->toArray();
+            //print_r($shipment_detail);
+            //exit;
+            return view('order.detail_list')->with(compact('shipment_detail'));
+        }
+    }
+
 
 }

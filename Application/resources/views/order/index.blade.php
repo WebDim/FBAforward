@@ -35,7 +35,9 @@
                             @foreach($orders as $order)
                                 <tr id="tr_{{$order->order_id}}">
                                     <td>
-                                        <b class="text-info">{{ $order->order_no }}</b>
+                                        <a href="{{ url('order/details/'.$order->order_id) }}">
+                                            <b class="text-info">{{ $order->order_no }}</b>
+                                        </a>
                                     </td>
                                     <td>
                                         <b class="text-info">{{ $orderStatus[$order->is_activated] }}</b>
