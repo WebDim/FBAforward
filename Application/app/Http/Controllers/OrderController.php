@@ -1232,11 +1232,12 @@ class OrderController extends Controller
                 ->get();
 
             $shipment_detail = $shipment_detail->toArray();
+
+            $service_name = $listing_service_name = array();
             foreach($shipment_detail as $key=>$shipment_details){
                 //Fetch Prep services name
                 $prep_service_ids = explode(",",$shipment_details['prep_service_ids']);
                 $prep_services = Prep_service::selectRaw("service_name")->whereIn('prep_service_id', $prep_service_ids)->get();
-                $service_name = $listing_service_name = array();
                 if(count($prep_services)>0) {
                     foreach ($prep_services as $prep_service) {
                         $service_name[] = $prep_service->service_name;
