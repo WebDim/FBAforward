@@ -1283,9 +1283,7 @@ class OrderController extends Controller
                 ->where('shipments.user_id',$user->id)
                 ->orderBy('shipments.shipment_id', 'ASC')
                 ->get()->toArray();
-                echo "<pre>";
-                print_r($shipment_detail);
-                exit;
+
             //$shipment_detail = $shipment_detail->toArray();
 
 
