@@ -44,6 +44,7 @@ class OrderController extends Controller
     {
         $this->middleware(['auth',Amazoncredential::class]);
     }
+   //list all order of perticular user
     public function index()
     {
         $user = \Auth::user();
@@ -51,10 +52,12 @@ class OrderController extends Controller
         $orderStatus = array('In Progress', 'Completed');
         return view('order.index')->with(compact('orders','orderStatus'));
     }
+    // remove perticular order
     public function removeorder(Request $request)
     {
         if ($request->ajax()) {
             $post = $request->all();
+            //update shipments with 0 qty when whole order remove
             $shipment= Shipments::where('order_id',$post['order_id'])->get();
             $shipment_id=array();
             foreach ($shipment as $shipments)
@@ -95,6 +98,7 @@ class OrderController extends Controller
                 $shipment_request->setInboundShipmentItems($api_shipment_detail);
                 $update_response = $this->invokeUpdateInboundShipment($update_service, $shipment_request);
             }
+
             Amazon_destination::whereIn('shipment_id',$shipment_id)->delete();
             Listing_service_detail::where('order_id',$post['order_id'])->delete();
             Prep_detail::where('order_id',$post['order_id'])->delete();
@@ -105,6 +109,7 @@ class OrderController extends Controller
             return 1;
         }
     }
+    // For display shipment view
     public function shipment(Request $request)
     {
         //Remove session
@@ -115,6 +120,7 @@ class OrderController extends Controller
         $shipment=array();
         return view('order.shipment')->with(compact('shipping_method','product','shipment','orders'));
     }
+    // For display update shipment view
     public function updateshipment(Request $request)
     {
          if(!empty($request->order_id)){
@@ -149,6 +155,7 @@ class OrderController extends Controller
             ->get();
         return view('order.shipment')->with(compact('shipping_method','product','shipment','shipment_detail'));
     }
+    // Add or Update Shipment and Shipment Detail
     public function addshipment(Request $request)
     {
          $user = \Auth::user();
@@ -171,6 +178,7 @@ class OrderController extends Controller
              $order_id=$request->input('order_id');
          }
         $request->session()->put('order_id', $order_id);
+        // set values for shipment api call this are common for all
         $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
         $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
         $fromaddress= new \FBAInboundServiceMWS_Model_Address();
@@ -183,6 +191,7 @@ class OrderController extends Controller
         //delete shipment2
         if($request->input('split_shipment')=='0') {
             if (!empty($request->input('shipment_id2'))) {
+                //when shipment2 delete whole shipments update with 0 qty
                 $destinations= Amazon_destination::where('shipment_id',$request->input('shipment_id2'))->get();
                 $update_service = $this->getReportsClient();
                 $shipment_request = new \FBAInboundServiceMWS_Model_UpdateInboundShipmentRequest();
@@ -231,6 +240,7 @@ class OrderController extends Controller
                 );
                 Shipments::where('shipment_id',$request->input('shipment_id'.$cnt))->update($shipment);
                 $sub_count=$request->input('count'.$cnt);
+                //set values for shipment api call when new product add or update common for them
                 $update_service = $this->getReportsClient();
                 $shipment_request = new \FBAInboundServiceMWS_Model_UpdateInboundShipmentRequest();
                 $shipment_request->setSellerId($UserCredentials['mws_seller_id']);
@@ -240,6 +250,7 @@ class OrderController extends Controller
                 $shipment_header->setShipFromAddress($fromaddress);
 
                 for($sub_cnt=1;$sub_cnt<=$sub_count;$sub_cnt++) {
+                    //every product update
                     if (!empty($request->input("shipment_detail" . $cnt . "_" . $sub_cnt))) {
 
                         $product_id = explode(' ', $request->input('product_desc' . $cnt . "_" . $sub_cnt));
@@ -250,6 +261,7 @@ class OrderController extends Controller
                             'no_boxs' => $request->input('no_of_case' . $cnt . "_" . $sub_cnt),
                             'total' => $request->input('total' . $cnt . "_" . $sub_cnt)
                         );
+                        // when product update with another product then old update with 0 qty and new product add
                         $old_destination=Amazon_destination::where('shipment_id',$request->input('shipment_id'.$cnt))->where('fulfillment_network_SKU',$request->input('original_upc_fnsku' . $cnt . "_" . $sub_cnt))->get();
                         if($request->input('original_upc_fnsku'.$cnt."_".$sub_cnt)!=$request->input('upc_fnsku' . $cnt . "_" . $sub_cnt))
                         {
@@ -299,6 +311,7 @@ class OrderController extends Controller
                             Amazon_destination::create($amazon_destination);
                             Amazon_destination::where('shipment_id',$request->input('shipment_id'.$cnt))->where('fulfillment_network_SKU',$request->input('original_upc_fnsku' . $cnt . "_" . $sub_cnt))->delete();
                         }
+                        //when product's qty change then update shipments with new qty
                         else if($request->input('original_total'.$cnt."_".$sub_cnt)!=$request->input('total' . $cnt . "_" . $sub_cnt))
                         {
                             $diff_qty=0;
@@ -363,6 +376,7 @@ class OrderController extends Controller
                         }
                         Shipment_detail::where('shipment_detail_id', $request->input("shipment_detail" . $cnt . "_" . $sub_cnt))->update($shipment_details);
                     }
+                    //new product add in current shipment
                     else
                     {
                         $item_array=array();
@@ -413,7 +427,6 @@ class OrderController extends Controller
 
                     }
                 }
-
             }
             //insert shipment and shipment detail
             else {
@@ -456,6 +469,7 @@ class OrderController extends Controller
                 $ship_request->setInboundShipmentPlanRequestItems($itemlist);
                 $arr_response =$this->invokeCreateInboundShipmentPlan($service, $ship_request);
                 $shipment_id=$last_id;
+                //create shipments api of perticular shipmentplan
                 $shipment_service = $this->getReportsClient();
                 $shipment_request = new \FBAInboundServiceMWS_Model_CreateInboundShipmentRequest();
                 $shipment_request->setSellerId($UserCredentials['mws_seller_id']);
@@ -493,7 +507,6 @@ class OrderController extends Controller
                                     $total_value=$total->Value;
                                 }
                             }
-
                             $shipment_header->setDestinationFulfillmentCenterId($destination_name);
                             $shipment_request->setInboundShipmentHeader($shipment_header);
                             $shipment_request->setShipmentId($api_shipment_id);
@@ -533,7 +546,6 @@ class OrderController extends Controller
                         }
                     }
                 }
-
             }
         }
         $order_detail=array('steps'=>'1');
@@ -1270,9 +1282,11 @@ class OrderController extends Controller
                 ->where('shipments.order_id',$request->order_id)
                 ->where('shipments.user_id',$user->id)
                 ->orderBy('shipments.shipment_id', 'ASC')
-                ->get();
-
-            $shipment_detail = $shipment_detail->toArray();
+                ->get()->toArray();
+                echo "<pre>";
+                print_r($shipment_detail);
+                exit;
+            //$shipment_detail = $shipment_detail->toArray();
 
 
             foreach($shipment_detail as $key=>$shipment_details){
