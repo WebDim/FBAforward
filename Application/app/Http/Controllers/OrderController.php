@@ -1311,7 +1311,14 @@ class OrderController extends Controller
                 }
                 $shipment_detail[$key]['listing_service_name'] = implode($listing_service_name, ",");
             }
-            return view('order.detail_list')->with(compact('shipment_detail'));
+
+            // Payment Info get
+            $payment_detail = Payment_detail::selectRaw('payment_details.*,user_credit_cardinfos.credit_card_number,user_credit_cardinfos.credit_card_type,user_credit_cardinfos.credit_card_id,payment_infos.transaction')
+                ->join('payment_infos','payment_infos.payment_detail_id','=','payment_details.payment_detail_id','left')
+                ->join('user_credit_cardinfos','user_credit_cardinfos.id','=','payment_details.user_credit_cardinfo_id','left')
+                ->where('order_id',$request->order_id)->first();
+            $payment_detail = $payment_detail->toArray();
+            return view('order.detail_list')->with(compact('shipment_detail','payment_detail'));
         }
     }
 
