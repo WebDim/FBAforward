@@ -10,64 +10,51 @@
 <div class="row">
     <div class="col-md-12">
         {!! Form::open(['url' =>  'order/outbondshipping', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
-        {{--*/ $ship_count=1 /*--}}
-        @foreach($detail as $key=>$details)
-            <input type="hidden" name="shipment_id{{$ship_count}}" value="{{ $details['shipment_id'] }}">
-        <div>
-            <h4>Shipment # {{$ship_count}}({{$details['shipment_name']}} FREIGHT)</h4>
-            <div class="table-responsive no-padding">
-                <table class="table" id="list">
-                    <thead>
-                    <tr>
-                        <th class="col-md-3"><span>Amazon Destination</span></th>
-                        <th class="col-md-5"><span>Product</span></th>
-                        <th class="col-md-2"><span>Qty</span></th>
-                        <th class="col-md-2"><span>Outbound Method</span></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <input type="hidden" name="order_id" id="order_id" value="{{ $details['order'] }}">
-                    {{--*/ $cnt=1 /*--}}
-                   @foreach($details['destination'] as $destination=>$product)
+       {{--*/$ship_count=1/*--}}
+        @foreach($shipment as $shipments)
+            <div>
+                <h4>Shipment # {{$ship_count}} ({{ $shipments->shipping_name }} FREIGHT)</h4>
+                <input type="hidden" name="order_id" id="order_id" value="{{ $shipments->order_id }}">
 
-                       <tr>
-                           <td><b class="text-info"> {{ $destination }}</b></td>
-                           <td hidden>
-                               {{--*/$product_cnt=1/*--}}
-                               {{--*/ $method=array() /*--}}
-                               @foreach($product as $products)
-                                   <input type="hidden" name="product_id{{$ship_count."_".$cnt."_".$product_cnt}}" value="{{$products['product_id']}}">
-                                   <input type="hidden" name="total_unit{{$ship_count."_".$cnt."_".$product_cnt}}" value="{{$products['qty']}}">
-                                   <input type="hidden" name="amazon_destination_id{{$ship_count."_".$cnt."_".$product_cnt}}" value="{{$products['destination_id']}}">
-                                   <input type="text" name="outbound_shipping_detail_id{{$ship_count."_".$cnt."_".$product_cnt}}" value="{{ $details['outbound_shipping_detail_ids'][$products['destination_id']] }}">
-                                    {{--*/  $method[]=$details['outbound_method_ids'][$products['destination_id']]/*--}}
-                                   {{--*/$product_cnt++/*--}}
-                               @endforeach
+                <div class="table-responsive no-padding">
+                    <table class="table" id="list">
+                        <thead>
+                        <tr>
+                            <th class="col-md-5"><span>Product</span></th>
+                            <th class="col-md-2"><span>Qty</span></th>
+                            <th class="col-md-2"><span>Outbound Method</span></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{--*/$count=1/*--}}
+                            @foreach($product as $products)
+                                @if($products->shipment_id==$shipments->shipment_id)
+                                    <input type="hidden" name="outbound_shipping_detail_id{{$ship_count."_".$count}}" id="outbound_shipping_detail_id{{$ship_count."_".$count}}" value="{{$products->outbound_shipping_detail_id}}">
+                                    <input type="hidden" name="shipment_detail_id{{$ship_count."_".$count}}" id="shipment_detail_id{{$ship_count."_".$count}}" value="{{ $products->shipment_detail_id }}">
+                            <tr>
+                                <td><input type="hidden" name="product_id{{$ship_count."_".$count}}" id="product_id{{$ship_count."_".$count}}" value="{{ $products->product_id }}"> {{ $products->product_name }}</td>
+                                <td><input type="hidden" name="total_unit{{$ship_count."_".$count}}" id="total_unit{{$ship_count."_".$count}}" value="{{ $products->total }}">{{ $products->total }}</td>
+                                <td>
+                                    <select name="outbound_method{{$ship_count."_".$count}}" class="form-control select2 validate[required]">
+                                        <option value="">Select Outbound Methods</option>
+                                        @foreach ($outbound_method as $outbound_methods)
+                                            <option value="{{ $outbound_methods->outbound_method_id }}" @if($products->outbound_method_id==$outbound_methods->outbound_method_id){{ "selected" }} @endif>  {{ $outbound_methods->outbound_name }}</option>
+                                        @endforeach
+                                    </select>
 
-                           </td>
-                           <td><b class="text-info">@foreach($product as $products){{$products['product_name']}}<br>@endforeach</b></td>
-                           <td><b class="text-info">@foreach($product as $products){{$products['qty']}}<br>@endforeach</b></td>
-                           <td>
-                               <select name="outbound_method{{$ship_count."_".$cnt}}" class="form-control select2 validate[required]">
-                                   <option value="">Select Outbound Methods</option>
-                                   @foreach ($outbound_method as $outbound_methods)
-                                       <option value="{{ $outbound_methods->outbound_method_id }}" @if(!empty($method))@if($method[0]==$outbound_methods->outbound_method_id) {{ "selected" }} @endif @endif>  {{ $outbound_methods->outbound_name }}</option>
-                                   @endforeach
-                               </select>
-                           </td>
-                       </tr>
-                       <input type="hidden" name="product_count{{$ship_count."_".$cnt}}" id="product_count{{$ship_count."_".$cnt}}" value="{{$product_cnt}}">
-                       {{--*/$cnt++ /*--}}
-                   @endforeach
-                    <input  type="hidden" name="count{{$ship_count}}" id="count{{$ship_count}}" value="{{ $cnt }}">
-                    </tbody>
-                </table>
+                                </td>
+                            </tr>
+                            {{--*/$count++/*--}}
+                            @endif
+                            @endforeach
+                            <input type="hidden" id="count{{$ship_count}}" name="count{{$ship_count}}" value="{{$count}}">
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-
-            {{--*/$ship_count++ /*--}}
-        @endforeach
-        <input type="hidden" name="ship_count" id="ship_count" value="{{ $ship_count }}">
+            {{--*/$ship_count++/*--}}
+                    @endforeach
+            <input type="hidden" id="ship_count" name="ship_count" value="{{$ship_count}}">
         <div class="col-md-12">
             <div class="form-group">
                 <div class="col-md-9 col-md-offset-9">

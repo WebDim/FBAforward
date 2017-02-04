@@ -40,18 +40,16 @@
                         <table class="table" id="list">
                             <thead>
                             <tr>
-                                <th class="col-md-3"><span>Amazon Destination</span></th>
-                                <th class="col-md-5"><span>Units</span></th>
+                                <th class="col-md-5"><span>Product</span></th>
+                                <th class="col-md-2"><span>Units</span></th>
                                 <th class="col-md-2"><span>Outbound Method</span></th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach($outbound_detail as $outbound_details)
                                 <tr>
-                                    <td class="col-md-3"><span>{{ $outbound_details->destination_name }}</span></td>
-                                    <td class="col-md-5"><span>
-                                            {{ $outbound_details->total }}
-                                        </span></td>
+                                    <td class="col-md-5"><span>{{ $outbound_details->product_name }}</span></td>
+                                    <td class="col-md-2"><span>{{ $outbound_details->qty }}</span></td>
                                     <td class="col-md-2"><span>{{ $outbound_details->outbound_name }}</span></td>
                                 </tr>
                             @endforeach

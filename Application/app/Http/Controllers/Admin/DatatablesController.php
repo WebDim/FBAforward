@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Menu;
 use App\Package;
 use App\Page;
+use App\Product_labels;
 use App\Supplier;
 use Yajra\Datatables\Datatables;
 use App\User;
@@ -226,6 +227,22 @@ class DatatablesController extends Controller
                 if (\Auth::user()->role->name == 'Admin') {
                     $editBtn = '<a style="margin-right: 0.1em;" href="' . url('admin/outboundmethod/' . $method->outbound_method_id . '/edit') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
                     $deleteBtn = '&nbsp;<a href="' . url('admin/outboundmethod/' . $method->outbound_method_id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
+                }
+                $buttons = '' . $editBtn . $deleteBtn;
+                return $buttons;
+            })->make(true);
+    }
+    public function getProductlabel(Product_labels $product_label){
+        $methods = $product_label::all();
+        return Datatables::of($methods)
+            ->editColumn('label_name', '{{ $label_name }}')
+            ->editColumn('price', function ($method) {
+                return $method->Price;
+            })
+            ->addColumn('actions', function ($method) {
+                if (\Auth::user()->role->name == 'Admin') {
+                    $editBtn = '<a style="margin-right: 0.1em;" href="' . url('admin/productlabel/' . $method->product_label_id . '/edit') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
+                    $deleteBtn = '&nbsp;<a href="' . url('admin/productlabel/' . $method->product_label_id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
                 }
                 $buttons = '' . $editBtn . $deleteBtn;
                 return $buttons;

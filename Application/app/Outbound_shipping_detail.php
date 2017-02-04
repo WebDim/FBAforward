@@ -9,7 +9,7 @@ class Outbound_Shipping_detail extends Model
     //
     protected $primaryKey = 'outbound_shipping_detail_id';
     protected $table ='outbound_shipping_details';
-    protected $fillable = ['shipment_id', 'order_id','product_ids','qty', 'amazon_destination_id', 'outbound_method_id','is_activated'];
+    protected $fillable = ['shipment_detail_id', 'order_id','product_ids','qty', 'amazon_destination_id', 'outbound_method_id','is_activated'];
 
     public function amazon_destination()
     {
@@ -19,8 +19,8 @@ class Outbound_Shipping_detail extends Model
     {
         return $this->belongsTo(Outbound_method::class,'outbound_method_id');
     }
-    public function shipment()
+    public function shipment_deatil()
     {
-        return $this->belongsTo(Shipments::class);
+        return $this->belongsTo(Shipment_detail::class);
     }
 }

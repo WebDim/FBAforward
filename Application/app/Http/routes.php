@@ -28,6 +28,7 @@ use App\Page;
 use App\Menu;
 use App\Shipping_method;
 use App\Outbound_method;
+use App\Product_labels;
 use App\Supplier;
 use App\Prep_service;
 use App\Listing_service;
@@ -42,6 +43,7 @@ Route::model('pages', Page::class);
 Route::model('menus', Menu::class);
 Route::model('shippingmethod',Shipping_method::class);
 Route::model('outboundmethod',Outbound_method::class);
+Route::model('productlabel',Product_labels::class);
 Route::model('suppliers',Supplier::class);
 Route::model('prepservices',Prep_service::class);
 Route::model('listingservices',Listing_service::class);
@@ -94,6 +96,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::resource('prepservices', 'Admin\PrepServiceController');
         Route::resource('listingservices', 'Admin\ListingServiceController');
         Route::resource('outboundmethod', 'Admin\OutboundMethodController');
+        Route::resource('productlabel', 'Admin\ProductLabelController');
         Route::resource('addresses', 'Admin\AddressesController');
 
     });
@@ -117,6 +120,7 @@ Route::group(['middleware' => 'web'], function () {
      */
     Route::group(['prefix' => 'order'], function () {
         Route::get('/index', 'OrderController@index');
+        Route::get('/orderhistory', 'OrderController@orderhistory');
         Route::get('/shipment', 'OrderController@shipment');
         Route::get('/updateshipment/{order_id?}', ['uses'=>'OrderController@updateshipment','as' =>'shipment']);
         Route::get('/details/{order_id}', 'OrderController@orderDetails');

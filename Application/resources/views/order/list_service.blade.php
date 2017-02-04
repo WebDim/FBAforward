@@ -21,8 +21,9 @@
                     </thead>
                     <tbody>
                     {{--*/ $cnt = 1 /*--}}
+                    {{--*/ $grand_total = 0 /*--}}
                     @foreach($product as $products)
-
+                        {{--*/ $total = 0 /*--}}
                         {{--*/ $list_service_ids=explode(',', $products->listing_service_ids) /*--}}
                         <tr>
                             <td class="col-md-7">
@@ -38,12 +39,14 @@
                                 </b></td>
                             <td class="col-md-2"><input type="hidden" id="total{{$cnt}}" name="total{{ $cnt }}" value="{{ isset($products->listing_service_total)? $products->listing_service_total : 0 }}" readonly><b class="text-info"><span id="total_span{{$cnt}}">{{ isset($products->listing_service_total)? $products->listing_service_total : 0 }}</span></b></td>
                         </tr>
+                        {{--*/$total= isset($products->listing_service_total)? $products->listing_service_total : 0 /*--}}
+                        {{--*/$grand_total=$grand_total+$total/*--}}
                         {{--*/ $cnt++ /*--}}
                     @endforeach
                     <tr>
                         <td></td>
                         <td>Total</td>
-                        <td><input type="hidden" id="order_id" name="order_id" value="{{ $products->order_id}}"><input type="hidden" id="grand_total" name="grand_total" value="{{ isset($products->grand_total) ? $products->grand_total : 0}}" readonly><span id="grand_total_span">{{ isset($products->grand_total) ? $products->grand_total : 0}}</span></td>
+                        <td><input type="hidden" id="order_id" name="order_id" value="{{ $products->order_id}}"><input type="hidden" id="grand_total" name="grand_total" value="{{ isset($products->grand_total) ? $products->grand_total : $grand_total}}" readonly><span id="grand_total_span">{{ isset($products->grand_total) ? $products->grand_total : $grand_total}}</span></td>
                     </tr>
                     </tbody>
                 </table>

@@ -103,7 +103,22 @@
                         {!! Form::label('total_cost', 'Total Cost', ['class' => 'control-label col-md-5']) !!}
                         <div class="col-md-7">
                             <div class="input-group">
-                                {!! Form::text('total_cost', old('total_cost'),['class' => 'form-control validate[required, custom[number]', 'placeholder'=>'Total Cost','readonly'=>true]) !!}
+                                {!! Form::text('total_cost', old('total_cost'),['class' => 'form-control validate[required, custom[number]]', 'id'=>'total_cost', 'placeholder'=>'Total Cost','readonly'=>true]) !!}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-7">
+                            <div class="input-group">
+                                <label class="control-label">* Check Back For Update Totals</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('', 'Total Due Today', ['class' => 'control-label col-md-5']) !!}
+                        <div class="col-md-7">
+                            <div class="input-group">
+                                {!! Form::text('today_total', old('today_total'),['class' => 'form-control validate[required, custom[number]]','id'=>'today_total', 'placeholder'=>'Total Due Today','readonly'=>true]) !!}
                             </div>
                         </div>
                     </div>
@@ -376,12 +391,14 @@
             total_cost=parseFloat($("#pre_ship_inspect").val(),2)+parseFloat($("#shipping_cost").val(),2)+parseFloat($("#port_fees").val(),2)+parseFloat($("#custom_brokerage").val(),2)+parseFloat($("#custom_duty").val(),2)+parseFloat($("#inbound_shipping").val(),2)+fba_total;
             $("#total_fbaforward").val(fba_total);
             $("#total_cost").val(total_cost);
+            $("#today_total").val(total_cost);
         }
         $(document).ready(function () {
             fba_total=parseFloat($("#consulting").val(),2)+parseFloat($("#label_charge").val(),2)+parseFloat($("#prep_forward").val(),2)+parseFloat($("#listing_service").val(),2);
             total_cost=parseFloat($("#pre_ship_inspect").val(),2)+parseFloat($("#shipping_cost").val(),2)+parseFloat($("#port_fees").val(),2)+parseFloat($("#custom_brokerage").val(),2)+parseFloat($("#custom_duty").val(),2)+parseFloat($("#inbound_shipping").val(),2)+fba_total;
             $("#total_fbaforward").val(fba_total);
             $("#total_cost").val(total_cost);
+            $("#today_total").val(total_cost);
 
         });
         $(document).ready(function () {

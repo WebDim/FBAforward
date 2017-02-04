@@ -24,6 +24,7 @@
                     {{--*/ $cnt = 1 /*--}}
                     {{--*/ $grand_total = 0 /*--}}
                     @foreach($product as $products)
+                        {{--*/ $total = 0 /*--}}
                         <input type="hidden" name="prep_detail_id{{ $cnt }}" value="{{ $products->prep_detail_id }}">
                         <input type="hidden" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id }}">
                         <input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
@@ -41,13 +42,15 @@
                             </b></td>
                             <td class="col-md-2"><input type="hidden" id="total{{$cnt}}" name="total{{ $cnt }}" value="{{ isset($products->prep_service_total)? $products->prep_service_total : 0 }}" readonly><b class="text-info"><span id="total_span{{$cnt}}">{{ isset($products->prep_service_total)? $products->prep_service_total : 0 }}</span></b></td>
                         </tr>
+                        {{--*/$total= isset($products->prep_service_total)? $products->prep_service_total : 0 /*--}}
+                        {{--*/$grand_total=$grand_total+$total/*--}}
                         {{--*/ $cnt++ /*--}}
                     @endforeach
                     <tr>
                         <td></td>
                         <td></td>
                         <td>Total</td>
-                        <td><input type="hidden" id="order_id" name="order_id" value="{{ $products->order_id}}"><input type="hidden" id="grand_total" name="grand_total" value="{{ isset($products->grand_total) ? $products->grand_total : 0}}"><span id="grand_total_span">{{ isset($products->grand_total) ? $products->grand_total : 0}}</span></td>
+                        <td><input type="hidden" id="order_id" name="order_id" value="{{ $products->order_id}}"><input type="hidden" id="grand_total" name="grand_total" value="{{ isset($products->grand_total) ? $products->grand_total : $grand_total}}"><span id="grand_total_span">{{ isset($products->grand_total) ? $products->grand_total : $grand_total}}</span></td>
                     </tr>
                     </tbody>
                 </table>
@@ -99,5 +102,6 @@
                 $("#grand_total_span").text(grand_total.toFixed(2));
             }
         }
+
     </script>
 @endsection

@@ -43,7 +43,8 @@ class AmazonController extends Controller
         $account->dev_account_id = '9534-7346-7280';
         $account->mws_market_place_id = $request->input('mws_market_place_id');
         $validamazonMWS = $this->amazonAccountValidation($account);
-        if ($validamazonMWS == 1) {
+
+      if ($validamazonMWS == 1) {
             $credentail=array(
                 'user_id' =>$user->id,
                 'mws_seller_id'=>encrypt($request->input('mws_seller_id')),
@@ -52,9 +53,10 @@ class AmazonController extends Controller
             );
             Customer_amazon_detail::where("user_id", "=", $user->id)->update($credentail);
             return redirect('member/amazoninventorylist')->with('success', 'Your Amazon Credential Updated Successfully, We are fetching your new products, Please passionate check it after 5 minutes.');
-        } else {
-            return redirect('amazon_credential')->with('error', 'Your Amazon Credential Invalid');
         }
+      else{
+          return redirect('amazon_credential')->with('error', 'Invalid Login Credential ');
+    }
     }
     public function amazonAccountValidation($account)
     {
@@ -67,10 +69,12 @@ class AmazonController extends Controller
         $service = $this->getReportsClient();
         $request = $this->getRequest($UserCredentials);
         $response = $service->requestReport($request);
-        if ($response == false) {
-            return 0;
-        } else {
-           return 1;
+           if(is_array($response))
+           {
+               return $response;
+           }
+           else {
+            return 1;
         }
     }
     private function getKeys($uri = '')

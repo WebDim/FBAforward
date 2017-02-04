@@ -11,6 +11,7 @@ use App\Payment_info;
 use App\Prep_detail;
 use App\Prep_service;
 use App\Product_labels;
+use App\Setting;
 use App\Supplier_detail;
 use App\Shipping_method;
 use App\Shipment_detail;
@@ -44,13 +45,21 @@ class OrderController extends Controller
     {
         $this->middleware(['auth',Amazoncredential::class]);
     }
-   //list all order of perticular user
+   //list Inprogress, Order Placed or Pending For Approval orders of perticular user
     public function index()
     {
         $user = \Auth::user();
-        $orders = Order::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Completed');
+        $orders = Order::where('user_id', $user->id)->whereIn('is_activated',array('0','1','2'))->orderBy('created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval');
         return view('order.index')->with(compact('orders','orderStatus'));
+    }
+    //list Rejected or Approved orders of perticular user
+    public function orderhistory()
+    {
+        $user = \Auth::user();
+        $orders = Order::where('user_id', $user->id)->whereIn('is_activated',array('3','4'))->orderBy('created_at', 'desc')->get();
+        $orderStatus = array('','','','Approved', 'Rejected');
+        return view('order.order_history')->with(compact('orders','orderStatus'));
     }
     // remove perticular order
     public function removeorder(Request $request)
@@ -58,7 +67,7 @@ class OrderController extends Controller
         if ($request->ajax()) {
             $post = $request->all();
             //update shipments with 0 qty when whole order remove
-            $shipment= Shipments::where('order_id',$post['order_id'])->get();
+            /*$shipment= Shipments::where('order_id',$post['order_id'])->get();
             $shipment_id=array();
             foreach ($shipment as $shipments)
             {
@@ -99,7 +108,7 @@ class OrderController extends Controller
                 $update_response = $this->invokeUpdateInboundShipment($update_service, $shipment_request);
             }
 
-            Amazon_destination::whereIn('shipment_id',$shipment_id)->delete();
+            Amazon_destination::whereIn('shipment_id',$shipment_id)->delete();*/
             Listing_service_detail::where('order_id',$post['order_id'])->delete();
             Prep_detail::where('order_id',$post['order_id'])->delete();
             Product_labels_detail::where('order_id',$post['order_id'])->delete();
@@ -179,7 +188,7 @@ class OrderController extends Controller
          }
         $request->session()->put('order_id', $order_id);
         // set values for shipment api call this are common for all
-        $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
+        /*$UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
         $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
         $fromaddress= new \FBAInboundServiceMWS_Model_Address();
         $fromaddress->setName($user_details[0]->company_name);
@@ -187,12 +196,12 @@ class OrderController extends Controller
         $fromaddress->setCountryCode($user_details[0]->company_country);
         $fromaddress->setStateOrProvinceCode($user_details[0]->company_state);
         $fromaddress->setCity($user_details[0]->company_city);
-        $fromaddress->setPostalCode($user_details[0]->company_zipcode);
+        $fromaddress->setPostalCode($user_details[0]->company_zipcode);*/
         //delete shipment2
         if($request->input('split_shipment')=='0') {
             if (!empty($request->input('shipment_id2'))) {
                 //when shipment2 delete whole shipments update with 0 qty
-                $destinations= Amazon_destination::where('shipment_id',$request->input('shipment_id2'))->get();
+                /*$destinations= Amazon_destination::where('shipment_id',$request->input('shipment_id2'))->get();
                 $update_service = $this->getReportsClient();
                 $shipment_request = new \FBAInboundServiceMWS_Model_UpdateInboundShipmentRequest();
                 $shipment_request->setSellerId($UserCredentials['mws_seller_id']);
@@ -212,7 +221,7 @@ class OrderController extends Controller
                     $shipment_request->setInboundShipmentItems($api_shipment_detail);
                     $update_response = $this->invokeUpdateInboundShipment($update_service, $shipment_request);
                 }
-                Amazon_destination::where('shipment_id',$request->input('shipment_id2'))->delete();
+                Amazon_destination::where('shipment_id',$request->input('shipment_id2'))->delete();*/
                 $sub_count = $request->input('count2');
                 for ($sub_cnt = 1; $sub_cnt <= $sub_count; $sub_cnt++) {
                     if (!empty($request->input("shipment_detail2_" . $sub_cnt))) {
@@ -241,13 +250,13 @@ class OrderController extends Controller
                 Shipments::where('shipment_id',$request->input('shipment_id'.$cnt))->update($shipment);
                 $sub_count=$request->input('count'.$cnt);
                 //set values for shipment api call when new product add or update common for them
-                $update_service = $this->getReportsClient();
+                /*$update_service = $this->getReportsClient();
                 $shipment_request = new \FBAInboundServiceMWS_Model_UpdateInboundShipmentRequest();
                 $shipment_request->setSellerId($UserCredentials['mws_seller_id']);
                 $shipment_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
                 $shipment_header= new \FBAInboundServiceMWS_Model_InboundShipmentHeader();
                 $shipment_header->setShipmentName("SHIPMENT_NAME");
-                $shipment_header->setShipFromAddress($fromaddress);
+                $shipment_header->setShipFromAddress($fromaddress);*/
 
                 for($sub_cnt=1;$sub_cnt<=$sub_count;$sub_cnt++) {
                     //every product update
@@ -261,8 +270,9 @@ class OrderController extends Controller
                             'no_boxs' => $request->input('no_of_case' . $cnt . "_" . $sub_cnt),
                             'total' => $request->input('total' . $cnt . "_" . $sub_cnt)
                         );
+                        Shipment_detail::where('shipment_detail_id', $request->input("shipment_detail" . $cnt . "_" . $sub_cnt))->update($shipment_details);
                         // when product update with another product then old update with 0 qty and new product add
-                        $old_destination=Amazon_destination::where('shipment_id',$request->input('shipment_id'.$cnt))->where('fulfillment_network_SKU',$request->input('original_upc_fnsku' . $cnt . "_" . $sub_cnt))->get();
+                        /*$old_destination=Amazon_destination::where('shipment_id',$request->input('shipment_id'.$cnt))->where('fulfillment_network_SKU',$request->input('original_upc_fnsku' . $cnt . "_" . $sub_cnt))->get();
                         if($request->input('original_upc_fnsku'.$cnt."_".$sub_cnt)!=$request->input('upc_fnsku' . $cnt . "_" . $sub_cnt))
                         {
 
@@ -373,14 +383,14 @@ class OrderController extends Controller
                                }
 
                             }
-                        }
-                        Shipment_detail::where('shipment_detail_id', $request->input("shipment_detail" . $cnt . "_" . $sub_cnt))->update($shipment_details);
+                        }*/
+
                     }
                     //new product add in current shipment
                     else
                     {
-                        $item_array=array();
-                        $destinations= Amazon_destination::where('shipment_id',$request->input('shipment_id' . $cnt))->groupby('shipment_id')->get();
+                        //$item_array=array();
+                        //$destinations= Amazon_destination::where('shipment_id',$request->input('shipment_id' . $cnt))->groupby('shipment_id')->get();
                         if(!empty($request->input('product_desc'.$cnt."_".$sub_cnt))) {
                             $product_id = explode(' ', $request->input('product_desc' . $cnt . "_" . $sub_cnt));
                             $shipment_details = array('shipment_id' => $request->input('shipment_id' . $cnt),
@@ -392,7 +402,7 @@ class OrderController extends Controller
                             );
                             $shipment_detail = new Shipment_detail($shipment_details);
                             $shipment_detail->save();
-                            $destination_name=isset($destinations[0]->destination_name) ? $destinations[0]->destination_name : '';
+                            /*$destination_name=isset($destinations[0]->destination_name) ? $destinations[0]->destination_name : '';
                             $api_shipment_id=isset($destinations[0]->api_shipment_id) ? $destinations[0]->api_shipment_id :'';
                             $shipment_header->setDestinationFulfillmentCenterId($destination_name);
                             $shipment_request->setInboundShipmentHeader($shipment_header);
@@ -422,7 +432,7 @@ class OrderController extends Controller
                                 'fee_per_unit_value'=>isset($destinations[0]->fee_per_unit_value) ? $destinations[0]->fee_per_unit_value :'',
                                 'total_fee_value'=>isset($destinations[0]->fee_per_unit_value) ? $request->input('total' . $cnt . "_" . $sub_cnt)*$destinations[0]->fee_per_unit_value:$request->input('total' . $cnt . "_" . $sub_cnt)
                             );
-                            Amazon_destination::create($amazon_destination);
+                            Amazon_destination::create($amazon_destination);*/
                         }
 
                     }
@@ -441,12 +451,12 @@ class OrderController extends Controller
                 $shipment->save();
                 $last_id = $shipment->shipment_id;
                 //create shipmentplan api
-                $service = $this->getReportsClient();
+                /*$service = $this->getReportsClient();
                 $ship_request = new \FBAInboundServiceMWS_Model_CreateInboundShipmentPlanRequest();
                 $ship_request->setSellerId($UserCredentials['mws_seller_id']);
                 $ship_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
                 $ship_request->setShipFromAddress($fromaddress);
-                $item=array();
+                $item=array();*/
                 $sub_count=$request->input('count'.$cnt);
                 for($sub_cnt=1;$sub_cnt<=$sub_count;$sub_cnt++) {
                     if(!empty($request->input('product_desc'.$cnt."_".$sub_cnt))) {
@@ -460,11 +470,11 @@ class OrderController extends Controller
                         );
                         $shipment_detail = new Shipment_detail($shipment_details);
                         $shipment_detail->save();
-                        $data =array('SellerSKU'=>$request->input('sellersku'. $cnt . "_" . $sub_cnt),'Quantity'=>$request->input('total' . $cnt . "_" . $sub_cnt));
-                        $item[] = new \FBAInboundServiceMWS_Model_InboundShipmentPlanItem($data);
+                        //$data =array('SellerSKU'=>$request->input('sellersku'. $cnt . "_" . $sub_cnt),'Quantity'=>$request->input('total' . $cnt . "_" . $sub_cnt));
+                        //$item[] = new \FBAInboundServiceMWS_Model_InboundShipmentPlanItem($data);
                     }
                 }
-                $itemlist = new \FBAInboundServiceMWS_Model_InboundShipmentPlanRequestItemList();
+                /*$itemlist = new \FBAInboundServiceMWS_Model_InboundShipmentPlanRequestItemList();
                 $itemlist->setmember($item);
                 $ship_request->setInboundShipmentPlanRequestItems($itemlist);
                 $arr_response =$this->invokeCreateInboundShipmentPlan($service, $ship_request);
@@ -545,7 +555,7 @@ class OrderController extends Controller
                             $this->invokeCreateInboundShipment($shipment_service, $shipment_request);
                         }
                     }
-                }
+                }*/
             }
         }
         $order_detail=array('steps'=>'1');
@@ -687,7 +697,7 @@ class OrderController extends Controller
     {
         if ($request->ajax()) {
             $post = $request->all();
-             $fnsku=$post['fnsku'];
+            /* $fnsku=$post['fnsku'];
              $shipment_id=$post['shipment_id'];
             $user = \Auth::user();
             $user_details = User_info::where('user_id',$user->id)->get();
@@ -723,7 +733,7 @@ class OrderController extends Controller
             $api_shipment_detail->setmember($shipment_item);
             $shipment_request->setInboundShipmentItems($api_shipment_detail);
             $update_response=$this->invokeUpdateInboundShipment($update_service, $shipment_request);
-            Amazon_destination::where('fulfillment_network_SKU',$fnsku)->where('shipment_id',$shipment_id)->delete();
+            Amazon_destination::where('fulfillment_network_SKU',$fnsku)->where('shipment_id',$shipment_id)->delete();*/
             Listing_service_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
             Prep_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
             Product_labels_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
@@ -797,7 +807,7 @@ class OrderController extends Controller
             ->join('supplier_details', 'supplier_details.supplier_id', '=', 'suppliers.supplier_id','left')
             ->join('supplier_inspections','supplier_details.supplier_detail_id','=','supplier_inspections.supplier_detail_id','left')
             ->where('supplier_details.order_id', $order_id)
-            ->distinct('supplier_inspections.supplier_id')
+            ->groupby('suppliers.supplier_id')
             ->get();
         $product = Supplier_detail::selectRaw("supplier_details.order_id, supplier_inspections.supplier_inspection_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, supplier_details.product_id, supplier_details.total_unit, amazon_inventories.product_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'supplier_details.product_id')
@@ -805,6 +815,7 @@ class OrderController extends Controller
             ->where('supplier_details.order_id', $order_id)
             ->distinct('supplier_inspections.is_inspection')
             ->get();
+
         return view('order.pre_inspection')->with(compact('product', 'supplier'));
     }
     public function addpreinspection(Request $request)
@@ -845,7 +856,7 @@ class OrderController extends Controller
     {
         $order_id = $request->session()->get('order_id');
         $product_label= Product_labels::all();
-        $product = Shipment_detail::selectRaw(" shipments.order_id, product_labels_details.product_label_detail_id, product_labels_details.product_label_id, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
+        $product = Shipment_detail::selectRaw(" shipments.order_id, product_labels_details.price, product_labels_details.product_label_detail_id, product_labels_details.product_label_id, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
             ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id','left')
             ->join('product_labels_details','shipment_details.shipment_detail_id','=','product_labels_details.shipment_detail_id','left')
@@ -858,26 +869,30 @@ class OrderController extends Controller
     {
         $count = $request->input('count');
         for ($cnt = 1; $cnt < $count; $cnt++) {
-            if(empty($request->input('product_label_detail_id'.$cnt))) {
 
+            if(empty($request->input('product_label_detail_id'.$cnt))) {
+                $product_label_id= explode(' ',$request->input('labels' . $cnt));
                 $product_label = array('order_id'=>$request->input('order_id'),
                     'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
                     'product_id' => $request->input('product_id' . $cnt),
-                    'product_label_id' => $request->input('labels' . $cnt),
+                    'product_label_id' => isset($product_label_id[0])? $product_label_id[0] : '',
                     'fbsku' => $request->input('sku' . $cnt),
-                    'qty' => $request->input('total' . $cnt)
+                    'qty' => $request->input('total' . $cnt),
+                    'price' =>$request->input('price'. $cnt)
                 );
                 $product_labels_detail = new Product_labels_detail($product_label);
                 $product_labels_detail->save();
             }
             else
             {
+                $product_label_id= explode(' ',$request->input('labels' . $cnt));
                 $product_label = array(
                     'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
                     'product_id' => $request->input('product_id' . $cnt),
-                    'product_label_id' => $request->input('labels' . $cnt),
+                    'product_label_id' => isset($product_label_id[0])? $product_label_id[0] : '',
                     'fbsku' => $request->input('sku' . $cnt),
-                    'qty' => $request->input('total' . $cnt)
+                    'qty' => $request->input('total' . $cnt),
+                    'price'=>$request->input('price'. $cnt)
                 );
                 Product_labels_detail::where('product_label_detail_id',$request->input('shipment_detail_id'.$cnt))->update($product_label);
             }
@@ -998,10 +1013,18 @@ class OrderController extends Controller
         $outbound_method= Outbound_method::all();
         $shipment =Shipments::selectRaw("shipments.shipment_id, shipping_methods.shipping_name, shipments.order_id")
             ->join('shipping_methods','shipments.shipping_method_id','=','shipping_methods.shipping_method_id')
+            ->join('shipment_details','shipment_details.shipment_id','=','shipments.shipment_id')
             ->where('shipments.order_id',$order_id)
-            ->orderby('shipments.shipment_id')
+            ->groupby('shipments.shipment_id')
             ->get();
-        $product = Amazon_destination::selectRaw("shipments.order_id, shipments.shipment_id, amazon_inventories.id, amazon_inventories.product_name, amazon_destinations.destination_name, amazon_destinations.qty, amazon_destinations.amazon_destination_id")
+        $product = Shipment_detail::selectRaw("shipment_details.shipment_id, outbound_shipping_details.outbound_shipping_detail_id,outbound_shipping_details.outbound_method_id, shipment_details.shipment_detail_id, shipments.order_id, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total,  amazon_inventories.product_name  ")
+            ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
+            ->join('outbound_shipping_details','shipment_details.shipment_detail_id','=','outbound_shipping_details.shipment_detail_id','left')
+            ->where('shipments.order_id',$order_id)
+            ->get();
+
+        /*$product = Amazon_destination::selectRaw("shipments.order_id, shipments.shipment_id, amazon_inventories.id, amazon_inventories.product_name, amazon_destinations.destination_name, amazon_destinations.qty, amazon_destinations.amazon_destination_id")
             ->join('amazon_inventories', 'amazon_inventories.sellerSKU', '=', 'amazon_destinations.sellerSKU','left')
             ->join('shipments','amazon_destinations.shipment_id','=','shipments.shipment_id','left')
             ->where('shipments.order_id', $order_id)
@@ -1029,18 +1052,15 @@ class OrderController extends Controller
                        $data['outbound_shipping_detail_ids'][$products->amazon_destination_id] =(count($outbound_shipping_details)>0) ? $outbound_shipping_details[0]->outbound_shipping_detail_id:null;
                        $data['outbound_method_ids'][$products->amazon_destination_id] =(count($outbound_shipping_details)>0) ?$outbound_shipping_details[0]->outbound_method_id:null;
                        $data['destination'][$products->destination_name][]=$new_data;
-
                 }
-
             }
-
             $detail[]=$data;
-        }
-        return view('order.outbound_shipping')->with(compact('outbound_method', 'detail','outbound_detail'));
+        }*/
+        return view('order.outbound_shipping')->with(compact('outbound_method','product','shipment'));
     }
     public function addoutbondshipping(Request $request)
     {
-      $ship_count = $request->input('ship_count');
+      /*$ship_count = $request->input('ship_count');
         for ($ship_cnt = 1; $ship_cnt < $ship_count; $ship_cnt++) {
             $count = $request->input('count' . $ship_cnt);
             for ($cnt = 1; $cnt < $count; $cnt++) {
@@ -1068,7 +1088,36 @@ class OrderController extends Controller
                     }
                 }
             }
+        }*/
+
+        $ship_count = $request->input('ship_count');
+        for ($ship_cnt = 1; $ship_cnt < $ship_count; $ship_cnt++) {
+            $count = $request->input('count' . $ship_cnt);
+            for ($cnt = 1; $cnt < $count; $cnt++) {
+                if (empty($request->input("outbound_shipping_detail_id" . $ship_cnt . "_" . $cnt))) {
+                    $outbound_shipping = array(
+                        "outbound_method_id" => $request->input('outbound_method' . $ship_cnt . "_" . $cnt),
+                        "shipment_detail_id" => $request->input('shipment_detail_id' . $ship_cnt."_".$cnt),
+                        "order_id" => $request->input('order_id'),
+                        "product_ids" => $request->input('product_id' . $ship_cnt . "_" . $cnt ),
+                        "qty" => $request->input('total_unit' . $ship_cnt . "_" . $cnt )
+                    );
+
+                    $outbound_shipping_detail = new Outbound_Shipping_detail($outbound_shipping);
+                    $outbound_shipping_detail->save();
+                } else {
+                    $outbound_shipping = array(
+                        "outbound_method_id" => $request->input('outbound_method' . $ship_cnt . "_" . $cnt),
+                        "shipment_detail_id" => $request->input('shipment_detail_id' . $ship_cnt."_".$cnt),
+                        "order_id" => $request->input('order_id'),
+                        "product_ids" => $request->input('product_id' . $ship_cnt . "_" . $cnt),
+                        "qty" => $request->input('total_unit' . $ship_cnt . "_" . $cnt)
+                    );
+                    Outbound_Shipping_detail::where('outbound_shipping_detail_id', $request->input("outbound_shipping_detail_id" . $ship_cnt . "_" . $cnt))->update($outbound_shipping);
+                }
+            }
         }
+
         $order_detail=array('steps'=>'7');
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/reviewshipment')->with('Success', 'Outbound Shipping Information Added Successfully');
@@ -1082,11 +1131,16 @@ class OrderController extends Controller
             ->where('shipments.order_id',$order_id)
             ->groupby('shipment_details.shipment_id')
             ->get();
-        $outbound_detail= Outbound_Shipping_detail::selectRaw('amazon_destinations.destination_name, sum(outbound_shipping_details.qty) as total, outbound_methods.outbound_name')
+        /*$outbound_detail= Outbound_Shipping_detail::selectRaw('amazon_destinations.destination_name, sum(outbound_shipping_details.qty) as total, outbound_methods.outbound_name')
             ->join('amazon_destinations','outbound_shipping_details.amazon_destination_id','=','amazon_destinations.amazon_destination_id','left')
             ->join('outbound_methods','outbound_shipping_details.outbound_method_id','=','outbound_methods.outbound_method_id','left')
             ->where('outbound_shipping_details.order_id',$order_id)
             ->groupby('amazon_destinations.destination_name','outbound_shipping_details.outbound_method_id')
+            ->get();*/
+        $outbound_detail=Outbound_Shipping_detail::selectRaw('outbound_shipping_details.qty, amazon_inventories.product_name, outbound_methods.outbound_name')
+            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'outbound_shipping_details.product_ids','left')
+            ->join('outbound_methods','outbound_shipping_details.outbound_method_id','=','outbound_methods.outbound_method_id','left')
+            ->where('outbound_shipping_details.order_id',$order_id)
             ->get();
         $product_detail= Shipment_detail::selectRaw('shipments.order_id, amazon_inventories.product_name, shipment_details.total, prep_details.prep_service_ids')
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id')
@@ -1100,26 +1154,26 @@ class OrderController extends Controller
     public function orderpayment(Request $request)
     {
         $order_id = $request->session()->get('order_id');
+        $pre_shipment_inspection=Setting::where('key_cd','Pre Shipment Inspection')->get();
         $order_detail=array('steps'=>'8');
         Order::where('order_id',$order_id)->update($order_detail);
         $supplier = Supplier_detail::where('order_id',$order_id)->groupby('supplier_id')->get();
         $supplier_count=count($supplier);
-        $pre_shipment_inspection=400*$supplier_count;
-        $label=Product_labels_detail::SelectRaw('sum(qty) as total')->where('order_id',$order_id)->groupby('product_label_id')->get();
-        $label_total=0;
-        foreach ($label as $labels)
-        {
-            $label_total+=$labels->total*0.15;
-        }
-        $price=array('pre_shipment_inspection'=>$pre_shipment_inspection,
+        $pre_shipment_inspection_value=isset($pre_shipment_inspection[0]->value)?$pre_shipment_inspection[0]->value:'0';
+        $pre_shipment_inspection_value=$pre_shipment_inspection_value*$supplier_count;
+        $label=Product_labels_detail::SelectRaw('sum(qty) as total')->where('order_id',$order_id)->groupby('order_id')->get();
+        $prep_service=Prep_detail::selectRaw('grand_total')->where('order_id',$order_id)->groupby('order_id')->get();
+        $listing_service=Listing_service_detail::selectRaw('grand_total')->where('order_id',$order_id)->groupby('order_id')->get();
+
+        $price=array('pre_shipment_inspection'=>$pre_shipment_inspection_value,
             'shipping_cost'=>'0',
             'port_fee'=>'0',
             'custom_brokerage'=>'0',
             'custom_duty'=>'0',
             'consult_charge'=>'0',
-            'label_charge'=>$label_total,
-            'prep_forwarding'=>'4',
-            'listing_service'=>'0',
+            'label_charge'=>isset($label[0]->total)?$label[0]->total:'0',
+            'prep_forwarding'=>isset($prep_service[0]->grand_total)?$prep_service[0]->grand_total:'0',
+            'listing_service'=>isset($listing_service[0]->grand_total)?$listing_service[0]->grand_total:'0',
             'inbound_shipping'=>'0',
         );
         $card_type= array('visa'=>'visa',
@@ -1275,7 +1329,7 @@ class OrderController extends Controller
                 ->join('product_labels','product_labels.product_label_id','=','product_labels_details.product_label_id','left')
                 ->join('prep_details','prep_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
                 ->join('listing_service_details','listing_service_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
-                ->join('outbound_shipping_details','outbound_shipping_details.shipment_id','=','shipments.shipment_id','left')
+                ->join('outbound_shipping_details','outbound_shipping_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
                 ->join('outbound_methods','outbound_methods.outbound_method_id','=','outbound_shipping_details.outbound_method_id','left')
                 ->join('amazon_destinations','amazon_destinations.amazon_destination_id','=','outbound_shipping_details.amazon_destination_id','left')
 
@@ -1314,10 +1368,9 @@ class OrderController extends Controller
             $payment_detail = Payment_detail::selectRaw('payment_details.*,user_credit_cardinfos.credit_card_number,user_credit_cardinfos.credit_card_type,user_credit_cardinfos.credit_card_id,payment_infos.transaction')
                 ->join('payment_infos','payment_infos.payment_detail_id','=','payment_details.payment_detail_id','left')
                 ->join('user_credit_cardinfos','user_credit_cardinfos.id','=','payment_details.user_credit_cardinfo_id','left')
-                ->where('order_id',$request->order_id)->get();
-
-
-            //$payment_detail = $payment_detail->toArray();
+                ->where('order_id',$request->order_id)->first();
+            if(count($payment_detail)>0)
+             $payment_detail = $payment_detail->toArray();
             return view('order.detail_list')->with(compact('shipment_detail','payment_detail'));
         }
     }

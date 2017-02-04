@@ -166,7 +166,7 @@
             <div class="col-md-12" >&nbsp;</div>
             {{--*/ $cntData++ /*--}}
          @endforeach
-        {{--<div class="col-md-12">
+        <div class="col-md-12">
             <div class="form-group">
                 {!! Form::label('payment_info', 'Payment Info', ['class' => 'control-label']) !!}
             </div>
@@ -192,7 +192,7 @@
                     {{$payment_detail['total_cost']}}
                 </div>
             </div>
-        </div>--}}
+        </div>
     </div>
 @endsection
 

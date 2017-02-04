@@ -475,9 +475,8 @@ class MarketplaceWebService_Client implements MarketplaceWebService_Interface
     }
     require_once ('MarketplaceWebService/Model/RequestReportResponse.php');
     $httpResponse = $this->invoke($this->convertRequestReport($request));
-    
-    if($httpResponse['code']== 400)
-          return false;
+    if($httpResponse['code']== 400 || $httpResponse['code']==401)
+          return $httpResponse;
     $response = MarketplaceWebService_Model_RequestReportResponse::fromXML($httpResponse['ResponseBody']);
     
     $response->setResponseHeaderMetadata($httpResponse['ResponseHeaderMetadata']);
@@ -803,7 +802,7 @@ class MarketplaceWebService_Client implements MarketplaceWebService_Interface
     $response = array();
     $responseBody = null;
     $statusCode = 200;
-    
+
     /* Submit the request and read response body */
     try {
     	
@@ -823,9 +822,9 @@ class MarketplaceWebService_Client implements MarketplaceWebService_Interface
       do {
         try {
           $response = $this->performRequest($actionName, $converted, $dataHandle, $contentMd5);
-          
+
           $httpStatus = $response['Status'];
-                    
+
           switch ($httpStatus) {
           	case 200:
           		$shouldRetry = false;
@@ -834,7 +833,9 @@ class MarketplaceWebService_Client implements MarketplaceWebService_Interface
                 case 400:
                         $shouldRetry = false;
           		break;
-                        
+              case 401:
+                  $shouldRetry= false;
+                  break;
           	case 500:
           	case 503:
           		require_once('MarketplaceWebService/Model/ErrorResponse.php');
@@ -871,6 +872,7 @@ class MarketplaceWebService_Client implements MarketplaceWebService_Interface
     } catch (Exception $t) {
       throw new MarketplaceWebService_Exception(array('Exception' => $t, 'Message' => $t->getMessage()));
     }
+
     return array('code'=> $response['Status'],'ResponseBody' => $response['ResponseBody'], 'ResponseHeaderMetadata' => $response['ResponseHeaderMetadata']);
   }
 

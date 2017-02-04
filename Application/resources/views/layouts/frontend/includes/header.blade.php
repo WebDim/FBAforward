@@ -58,6 +58,9 @@
                             <li>
                                 <a class="external" href="{{ url('order/index') }}"><i class="fa fa-btn fa-user"></i> Order Management</a>
                             </li>
+                            <li>
+                                <a class="external" href="{{ url('order/orderhistory') }}"><i class="fa fa-btn fa-user"></i> Order History</a>
+                            </li>
                             <li><a class="external" href="{{ url('/amazon_credential') }}"><i class="fa fa-cog"></i>&nbsp;Amazon Credential</a>
                             </li>
                             <li><a class="external" href="{{ url('member/amazoninventorylist') }}"><i class="fa fa-list"></i>&nbsp;Amazon Inventory List</a>

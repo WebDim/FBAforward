@@ -82,6 +82,23 @@
                     </li>
                 </ul>
             </li>
+            <li class="treeview {{  Request::is('admin/Productlabel*') ? 'active': '' }}">
+                <a href="#">
+                    <i class="fa fa-briefcase"></i> <span>Product Labels</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li class="{{ Request::is('admin/productlabel')? 'active': '' }}">
+                        <a href="{{ url('admin/productlabel') }}">
+                            <i class="fa fa-list"></i> <span>Manage Product Label</span>
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('admin/productlabel/create')? 'active': '' }}">
+                        <a href="{{ url('admin/productlabel/create') }}">
+                            <i class="fa fa-plus"></i> <span>Add Product Label</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
             <li class="treeview {{  Request::is('admin/suppliers*') ? 'active': '' }}">
                 <a href="#">
                     <i class="fa fa-briefcase"></i> <span>Suppliers</span> <i class="fa fa-angle-left pull-right"></i>
