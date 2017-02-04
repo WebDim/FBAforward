@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\ProductlabelRequest;
+use App\Http\Requests\ProductLabelRequest;
 use App\Http\Controllers\Controller;
 use App\Product_labels;
 class ProductLabelController extends Controller
