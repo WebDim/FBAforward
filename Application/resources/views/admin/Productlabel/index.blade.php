@@ -80,7 +80,7 @@
                 ajax: '{!! url("admin/datatables/productlabel") !!}',
                 columns: [
                     {data: 'label_name', name: 'label_name'},
-                    {data: 'Price', name: 'price'},
+                    {data: 'Price', name: 'Price'},
                     {data: 'created_at', name: 'created_at'},
                     {data: 'actions', name: 'actions', orderable: false, searchable: false}
                 ]

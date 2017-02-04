@@ -236,7 +236,7 @@ class DatatablesController extends Controller
         $methods = $product_label::all();
         return Datatables::of($methods)
             ->editColumn('label_name', '{{ $label_name }}')
-            ->editColumn('price', function ($method) {
+            ->editColumn('Price', function ($method) {
                 return $method->Price;
             })
             ->addColumn('actions', function ($method) {
