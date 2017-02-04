@@ -78,8 +78,8 @@
         function getprice(no,value)
         {
             price=value.split(' ');
-            qty= parseFloat($("#total"+no).val())*parseFloat(price[1]);
-            $("#price"+no).val(qty);
+            qty= parseFloat($("#total"+no).val(),2)*parseFloat(price[1],2);
+            $("#price"+no).val(qty.toFixed(2));
         }
     </script>
 @endsection

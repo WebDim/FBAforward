@@ -867,6 +867,7 @@ class OrderController extends Controller
     }
     public function addlabels(Request $request)
     {
+
         $count = $request->input('count');
         for ($cnt = 1; $cnt < $count; $cnt++) {
 
@@ -880,6 +881,7 @@ class OrderController extends Controller
                     'qty' => $request->input('total' . $cnt),
                     'price' =>$request->input('price'. $cnt)
                 );
+
                 $product_labels_detail = new Product_labels_detail($product_label);
                 $product_labels_detail->save();
             }
@@ -894,9 +896,10 @@ class OrderController extends Controller
                     'qty' => $request->input('total' . $cnt),
                     'price'=>$request->input('price'. $cnt)
                 );
-                Product_labels_detail::where('product_label_detail_id',$request->input('shipment_detail_id'.$cnt))->update($product_label);
+                Product_labels_detail::where('product_label_detail_id',$request->input('product_label_detail_id'.$cnt))->update($product_label);
             }
         }
+
         $order_detail=array('steps'=>'4');
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/prepservice')->with('Success', 'Product Label Information Added Successfully');
@@ -1161,7 +1164,7 @@ class OrderController extends Controller
         $supplier_count=count($supplier);
         $pre_shipment_inspection_value=isset($pre_shipment_inspection[0]->value)?$pre_shipment_inspection[0]->value:'0';
         $pre_shipment_inspection_value=$pre_shipment_inspection_value*$supplier_count;
-        $label=Product_labels_detail::SelectRaw('sum(qty) as total')->where('order_id',$order_id)->groupby('order_id')->get();
+        $label=Product_labels_detail::SelectRaw('sum(price) as total')->where('order_id',$order_id)->groupby('order_id')->get();
         $prep_service=Prep_detail::selectRaw('grand_total')->where('order_id',$order_id)->groupby('order_id')->get();
         $listing_service=Listing_service_detail::selectRaw('grand_total')->where('order_id',$order_id)->groupby('order_id')->get();
 
