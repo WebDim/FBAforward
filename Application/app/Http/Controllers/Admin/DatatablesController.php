@@ -165,9 +165,15 @@ class DatatablesController extends Controller
        $methods = Shipping_method::all();
        return Datatables::of($methods)
             ->editColumn('shipping_name', '{{ $shipping_name }}')
-            ->editColumn('price', function ($method) {
-                        return $method->price;
+            ->editColumn('port_fee', function ($method) {
+                        return $method->port_fee;
             })
+           ->editColumn('custom_brokrage', function ($method) {
+               return $method->custom_brokrage;
+           })
+           ->editColumn('consulting_fee', function ($method) {
+               return $method->consulting_fee;
+           })
             ->addColumn('actions', function ($method) {
                 if (\Auth::user()->role->name == 'Admin') {
                     $editBtn = '<a style="margin-right: 0.1em;" href="' . url('admin/shippingmethod/' . $method->shipping_method_id . '/edit') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';

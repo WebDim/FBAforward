@@ -39,7 +39,9 @@
                     <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Price</th>
+                        <th>Port Fee</th>
+                        <th>Custom Brokrage</th>
+                        <th>Consulting Fee</th>
                         <th>Created At</th>
                         <th>Actions</th>
                     </tr>
@@ -80,7 +82,9 @@
                 ajax: '{!! url("admin/datatables/shippingmethod") !!}',
                 columns: [
                     {data: 'shipping_name', name: 'shipping_name'},
-                    {data: 'price', name: 'price'},
+                    {data: 'port_fee', name: 'port_fee'},
+                    {data: 'custom_brokrage', name: 'custom_brokrage'},
+                    {data: 'consulting_fee', name: 'consulting_fee'},
                     {data: 'created_at', name: 'created_at'},
                     {data: 'actions', name: 'actions', orderable: false, searchable: false}
                 ]

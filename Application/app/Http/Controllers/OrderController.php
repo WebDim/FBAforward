@@ -6,8 +6,10 @@ use App\Customer_amazon_detail;
 use App\Dev_account;
 use App\Listing_service;
 use App\Listing_service_detail;
+use App\Other_label_detail;
 use App\Outbound_method;
 use App\Payment_info;
+use App\Photo_list_detail;
 use App\Prep_detail;
 use App\Prep_service;
 use App\Product_labels;
@@ -562,137 +564,6 @@ class OrderController extends Controller
         Order::where('order_id',$order_id)->update($order_detail);
         return redirect('order/supplierdetail')->with('Success', 'Shipment Information Added Successfully');
     }
-
-    protected function getReportsClient()
-    {
-        list($access_key, $secret_key, $config) = $this->getKeys();
-        return  new \FBAInboundServiceMWS_Client(
-            $access_key,
-            $secret_key,
-            env('APPLICATION_NAME'),
-            env('APPLICATION_VERSION'),
-            $config
-        );
-    }
-    private function getKeys()
-    {
-        add_to_path('Libraries');
-        $devAccount = Dev_account::first();
-        return [
-            $devAccount->access_key,
-            $devAccount->secret_key,
-            self::getMWSConfig()
-        ];
-    }
-    public static function getMWSConfig()
-    {
-        return [
-            'ServiceURL' =>"https://mws.amazonservices.com/FulfillmentInboundShipment/2010-10-01" ,
-            'ProxyHost' => null,
-            'ProxyPort' => -1,
-            'ProxyUsername' => null,
-            'ProxyPassword' => null,
-            'MaxErrorRetry' => 3,
-        ];
-    }
-    function invokeCreateInboundShipmentPlan(\FBAInboundServiceMWS_Interface $service, $request)
-    {
-         try {
-            $response = $service->CreateInboundShipmentPlan($request);
-            // echo ("Service Response\n");
-           // echo ("=============================================================================\n");
-            $dom = new \DOMDocument();
-            $dom->loadXML($response->toXML());
-            $dom->preserveWhiteSpace = false;
-            $dom->formatOutput = true;
-            $dom->saveXML();
-            //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
-            return $arr_response = new \SimpleXMLElement($dom->saveXML());
-
-        } catch (\FBAInboundServiceMWS_Exception $ex) {
-            echo("Caught Exception: " . $ex->getMessage() . "\n");
-            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
-            echo("Error Code: " . $ex->getErrorCode() . "\n");
-            echo("Error Type: " . $ex->getErrorType() . "\n");
-            echo("Request ID: " . $ex->getRequestId() . "\n");
-            echo("XML: " . $ex->getXML() . "\n");
-            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
-        }
-    }
-    function invokeCreateInboundShipment(\FBAInboundServiceMWS_Interface $service, $request)
-    {
-        try {
-            $response = $service->CreateInboundShipment($request);
-            //echo ("Service Response\n");
-            //echo ("=============================================================================\n");
-            $dom = new \DOMDocument();
-            $dom->loadXML($response->toXML());
-            $dom->preserveWhiteSpace = false;
-            $dom->formatOutput = true;
-            $dom->saveXML();
-            return 1;
-            //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
-
-        } catch (\FBAInboundServiceMWS_Exception $ex) {
-            echo("Caught Exception: " . $ex->getMessage() . "\n");
-            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
-            echo("Error Code: " . $ex->getErrorCode() . "\n");
-            echo("Error Type: " . $ex->getErrorType() . "\n");
-            echo("Request ID: " . $ex->getRequestId() . "\n");
-            echo("XML: " . $ex->getXML() . "\n");
-            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
-
-        }
-    }
-    function invokeUpdateInboundShipment(\FBAInboundServiceMWS_Interface $service, $request)
-    {
-        try {
-            $response = $service->UpdateInboundShipment($request);
-            //echo ("Service Response\n");
-            //echo ("=============================================================================\n");
-
-            $dom = new \DOMDocument();
-            $dom->loadXML($response->toXML());
-            $dom->preserveWhiteSpace = false;
-            $dom->formatOutput = true;
-            $dom->saveXML();
-            //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
-            return $update_response = new \SimpleXMLElement($dom->saveXML());
-        } catch (\FBAInboundServiceMWS_Exception $ex) {
-            echo("Caught Exception: " . $ex->getMessage() . "\n");
-            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
-            echo("Error Code: " . $ex->getErrorCode() . "\n");
-            echo("Error Type: " . $ex->getErrorType() . "\n");
-            echo("Request ID: " . $ex->getRequestId() . "\n");
-            echo("XML: " . $ex->getXML() . "\n");
-            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
-        }
-    }
-    function invokeListInboundShipments(\FBAInboundServiceMWS_Interface $service, $request)
-    {
-        try {
-            $response = $service->ListInboundShipments($request);
-            //echo("Service Response\n");
-            //echo("=============================================================================\n");
-
-            $dom = new \DOMDocument();
-            $dom->loadXML($response->toXML());
-            $dom->preserveWhiteSpace = false;
-            $dom->formatOutput = true;
-            $dom->saveXML();
-            //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
-            return $list_response = new \SimpleXMLElement($dom->saveXML());
-
-        } catch (\FBAInboundServiceMWS_Exception $ex) {
-            echo("Caught Exception: " . $ex->getMessage() . "\n");
-            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
-            echo("Error Code: " . $ex->getErrorCode() . "\n");
-            echo("Error Type: " . $ex->getErrorType() . "\n");
-            echo("Request ID: " . $ex->getRequestId() . "\n");
-            echo("XML: " . $ex->getXML() . "\n");
-            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
-        }
-    }
     public function removeproduct(Request $request)
     {
         if ($request->ajax()) {
@@ -908,10 +779,11 @@ class OrderController extends Controller
     {
         $order_id = $request->session()->get('order_id');
         $prep_service= Prep_service::all();
-        $product = Shipment_detail::selectRaw("shipments.order_id, prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.grand_total, prep_details.prep_service_ids, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
+        $product = Shipment_detail::selectRaw("other_label_details.other_label_detail_id, other_label_details.label_id, shipments.order_id, prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.grand_total, prep_details.prep_service_ids, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
             ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id','left')
             ->join('prep_details','prep_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
+            ->join('other_label_details','other_label_details.prep_detail_id','=','prep_details.prep_detail_id','left')
             ->where('shipments.order_id', $order_id)
             ->get();
         return view('order.prep_service')->with(compact('prep_service', 'product'));
@@ -928,7 +800,8 @@ class OrderController extends Controller
                     $service[]=$request->input('service' . $cnt . "_" . $sub_cnt);
                 }
             }
-            if(empty($request->input('prep_detail_id'.$cnt))) {
+
+           if(empty($request->input('prep_detail_id'.$cnt))) {
                 $prep_service = array('user_id' => $user->id,
                     'order_id'=>$request->input('order_id'),
                     'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
@@ -940,6 +813,16 @@ class OrderController extends Controller
                 );
                 $prep_service_detail = new Prep_detail($prep_service);
                 $prep_service_detail->save();
+               foreach ($service as $services) {
+                   if ($services == 2) {
+                       $other_label = array('label_id'=>$request->input('other_label'.$cnt),
+                           'prep_detail_id'=>$prep_service_detail->prep_detail_id
+                       );
+
+                       $other_label_detail= new Other_label_detail($other_label);
+                       $other_label_detail->save();
+                   }
+               }
             }
             else
             {
@@ -949,23 +832,57 @@ class OrderController extends Controller
                     'total_qty' => $request->input('qty' . $cnt),
                     'prep_service_ids' => implode(',', $service),
                     'prep_service_total' => $request->input('total' . $cnt),
-                    'grand_total' => $request->input('grand_total')
+                       'grand_total' => $request->input('grand_total')
                 );
                 Prep_detail::where('prep_detail_id',$request->input('prep_detail_id'.$cnt))->update($prep_service);
+                if(empty($request->input('other_label_detail_id'.$cnt))) {
+                    foreach ($service as $services) {
+                        if ($services == 2) {
+                            $other_label = array('label_id' => $request->input('other_label' . $cnt),
+                                'prep_detail_id' => $request->input('prep_detail_id' . $cnt)
+                            );
+                            $other_label_detail= new Other_label_detail($other_label);
+                            $other_label_detail->save();
+                        }
+                    }
+                }
+                else
+                {
+                    foreach ($service as $services) {
+                        if ($services == 2) {
+                            $other_label = array('label_id' => $request->input('other_label' . $cnt),
+                                'prep_detail_id' => $request->input('prep_detail_id' . $cnt)
+                            );
+
+                            Other_label_detail::where('other_label_detail_id', $request->input('other_label_detail_id' . $cnt))->update($other_label);
+
+                        }
+                    }
+                }
             }
         }
+
         $order_detail=array('steps'=>'5');
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/listservice')->with('Success', 'Prep Service Information Added Successfully');
+    }
+    public function removeotherlabel(Request $request)
+    {
+        if ($request->ajax()) {
+            $post = $request->all();
+            Other_label_detail::where('other_label_detail_id',$post['label_detail_id'])->delete();
+
+        }
     }
     public function listservice(Request $request)
     {
         $order_id = $request->session()->get('order_id');
         $list_service= Listing_service::all();
-        $product = Shipment_detail::selectRaw("shipments.order_id, listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.grand_total, listing_service_details.listing_service_ids,shipment_details.product_id, shipment_details.shipment_detail_id, shipment_details.total, amazon_inventories.product_name")
+        $product = Shipment_detail::selectRaw("photo_list_details.photo_list_detail_id, photo_list_details.standard_photo, photo_list_details.prop_photo, shipments.order_id, listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.grand_total, listing_service_details.listing_service_ids,shipment_details.product_id, shipment_details.shipment_detail_id, shipment_details.total, amazon_inventories.product_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
             ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id')
             ->join('listing_service_details','listing_service_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
+            ->join('photo_list_details','photo_list_details.listing_service_detail_id','=','listing_service_details.listing_service_detail_id','left')
             ->where('shipments.order_id', $order_id)
             ->get();
       return view('order.list_service')->with(compact('list_service', 'product'));
@@ -991,6 +908,16 @@ class OrderController extends Controller
                     );
                     $list_service_detail = new Listing_service_detail($list_service);
                     $list_service_detail->save();
+                    foreach ($service as $services) {
+                    if ($services == 1) {
+                        $photo_detail = array('listing_service_detail_id'=>$list_service_detail->listing_service_detail_id,
+                                            'standard_photo'=>$request->input('standard'.$cnt),
+                                            'prop_photo'=>$request->input('prop'.$cnt)
+                        );
+                        $photo_list_detail= new Photo_list_detail($photo_detail);
+                        $photo_list_detail->save();
+                    }
+                }
 
             }
             else
@@ -1003,11 +930,43 @@ class OrderController extends Controller
                     'grand_total' => $request->input('grand_total')
                 );
                 Listing_service_detail::where('listing_service_detail_id',$request->input('listing_service_detail_id'.$cnt))->update($list_service);
+                if(empty($request->input('photo_list_detail_id'.$cnt))) {
+                    foreach ($service as $services) {
+                        if ($services == 1) {
+                            $photo_detail = array('listing_service_detail_id'=>$request->input('listing_service_detail_id'.$cnt),
+                                'standard_photo'=>$request->input('standard'.$cnt),
+                                'prop_photo'=>$request->input('prop'.$cnt)
+                            );
+                            $photo_list_detail= new Photo_list_detail($photo_detail);
+                            $photo_list_detail->save();
+                        }
+                    }
+                }
+                else
+                {
+                    foreach ($service as $services) {
+                        if ($services == 1) {
+                            $photo_detail = array('listing_service_detail_id'=>$request->input('listing_service_detail_id'.$cnt),
+                                'standard_photo'=>$request->input('standard'.$cnt),
+                                'prop_photo'=>$request->input('prop'.$cnt)
+                            );
+                           Photo_list_detail::where('listing_service_detail_id', $request->input('listing_service_detail_id'.$cnt))->update($photo_detail);
+                        }
+                    }
+                }
             }
         }
         $order_detail=array('steps'=>'6');
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/outbondshipping')->with('Success', 'Listing service Information Added Successfully');
+    }
+    public function removephotolabel(Request $request)
+    {
+        if ($request->ajax()) {
+            $post = $request->all();
+            Photo_list_detail::where('photo_list_detail_id',$post['photo_list_detail_id'])->delete();
+
+        }
     }
     public function outbondshipping(Request $request)
     {
@@ -1160,20 +1119,36 @@ class OrderController extends Controller
         $pre_shipment_inspection=Setting::where('key_cd','Pre Shipment Inspection')->get();
         $order_detail=array('steps'=>'8');
         Order::where('order_id',$order_id)->update($order_detail);
-        $supplier = Supplier_detail::where('order_id',$order_id)->groupby('supplier_id')->get();
+        $supplier = Supplier_detail::selectRaw('supplier_details.supplier_id, supplier_inspections.is_inspection')
+        ->join('supplier_inspections','supplier_inspections.supplier_id','=','supplier_details.supplier_id')
+        ->where('supplier_details.order_id',$order_id)
+        ->where('supplier_inspections.is_inspection','1')
+        ->groupby('supplier_details.supplier_id')->get();
         $supplier_count=count($supplier);
         $pre_shipment_inspection_value=isset($pre_shipment_inspection[0]->value)?$pre_shipment_inspection[0]->value:'0';
         $pre_shipment_inspection_value=$pre_shipment_inspection_value*$supplier_count;
         $label=Product_labels_detail::SelectRaw('sum(price) as total')->where('order_id',$order_id)->groupby('order_id')->get();
         $prep_service=Prep_detail::selectRaw('grand_total')->where('order_id',$order_id)->groupby('order_id')->get();
         $listing_service=Listing_service_detail::selectRaw('grand_total')->where('order_id',$order_id)->groupby('order_id')->get();
-
+        $shipment_fee=Shipping_method::selectRaw("shipments.shipment_id, shipments.shipping_method_id, shipping_methods.port_fee, shipping_methods.custom_brokrage, shipping_methods.consulting_fee")
+                        ->join('shipments','shipments.shipping_method_id','=','shipping_methods.shipping_method_id','left')
+                        ->where('shipments.order_id',$order_id)
+                        ->get();
+        $port_fee=0;
+        $custom_brokrage=0;
+        $consulting_fee=0;
+        foreach ($shipment_fee as $shipment_fees)
+        {
+            $port_fee=$port_fee+$shipment_fees->port_fee;
+            $custom_brokrage=$custom_brokrage+$shipment_fees->custom_brokrage;
+            $consulting_fee=$consulting_fee+$shipment_fees->consulting_fee;
+        }
         $price=array('pre_shipment_inspection'=>$pre_shipment_inspection_value,
             'shipping_cost'=>'0',
-            'port_fee'=>'0',
-            'custom_brokerage'=>'0',
+            'port_fee'=>$port_fee,
+            'custom_brokerage'=>$custom_brokrage,
             'custom_duty'=>'0',
-            'consult_charge'=>'0',
+            'consult_charge'=>$consulting_fee,
             'label_charge'=>isset($label[0]->total)?$label[0]->total:'0',
             'prep_forwarding'=>isset($prep_service[0]->grand_total)?$prep_service[0]->grand_total:'0',
             'listing_service'=>isset($listing_service[0]->grand_total)?$listing_service[0]->grand_total:'0',
@@ -1319,7 +1294,16 @@ class OrderController extends Controller
      */
     public function orderDetails(Request $request){
         if($request->order_id) {
-            $user = \Auth::user();
+            if($request->user_id)
+            {
+                $user_id=$request->user_id;
+            }
+            else {
+                $user = \Auth::user();
+                $user_id=$user->id;
+                $user_role=$user->role_id;
+                $id=$request->id;
+            }
             DB::enableQueryLog();
             $shipment_detail = Shipments::selectRaw("shipments.shipment_id,shipments.shipping_method_id,shipping_methods.shipping_name,shipment_details.product_id, shipment_details.fnsku, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total,amazon_inventories.product_name,supplier_details.supplier_detail_id,supplier_details.supplier_id,suppliers.company_name,supplier_inspections.inspection_decription,product_labels_details.product_label_id,product_labels.label_name,prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.prep_service_ids,listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.listing_service_ids,outbound_shipping_details.amazon_destination_id, outbound_shipping_details.outbound_method_id,outbound_methods.outbound_name,amazon_destinations.destination_name")
                 ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id','left')
@@ -1337,7 +1321,7 @@ class OrderController extends Controller
                 ->join('amazon_destinations','amazon_destinations.amazon_destination_id','=','outbound_shipping_details.amazon_destination_id','left')
 
                 ->where('shipments.order_id',$request->order_id)
-                ->where('shipments.user_id',$user->id)
+                ->where('shipments.user_id',$user_id)
                 ->orderBy('shipments.shipment_id', 'ASC')
                 ->get()->toArray();
 
@@ -1374,9 +1358,279 @@ class OrderController extends Controller
                 ->where('order_id',$request->order_id)->first();
             if(count($payment_detail)>0)
              $payment_detail = $payment_detail->toArray();
-            return view('order.detail_list')->with(compact('shipment_detail','payment_detail'));
+            return view('order.detail_list')->with(compact('shipment_detail','payment_detail','user_role','id'));
+        }
+    }
+    public function orderstatus(Request $request)
+    {
+        if ($request->ajax()) {
+            $post = $request->all();
+            $status=array('is_activated'=>$post['status']);
+            Order::where('order_id',$post['order_id'])->update($status);
         }
     }
 
+    //list Approved orders of All users for warhouse manager
+    public function ordershipping()
+    {
+        $orders = Order::where('is_activated','3')->orderBy('created_at', 'desc')->get();
+        $orderStatus = array('', '','','Approved');
+        return view('order.ordershipping')->with(compact('orders','orderStatus'));
+    }
+    public function createshipments(Request $request)
+    {
+        if ($request->ajax()) {
+            $post = $request->all();
+            $order_id=$post['order_id'];
+            $user_id=$post['user_id'];
+            $shipment=Order::selectRaw('orders.order_id,shipments.*')
+                ->join('shipments','shipments.order_id','=','orders.order_id')
+                ->where('orders.order_id',$order_id)
+                ->get();
+            $user_details = User_info::where('user_id',$user_id)->get();
+            $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
+                ->where('user_id',$user_id)
+                ->get();
+            $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
+            $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+            $fromaddress= new \FBAInboundServiceMWS_Model_Address();
+            $fromaddress->setName($user_details[0]->company_name);
+            $fromaddress->setAddressLine1($user_details[0]->company_address);
+            $fromaddress->setCountryCode($user_details[0]->company_country);
+            $fromaddress->setStateOrProvinceCode($user_details[0]->company_state);
+            $fromaddress->setCity($user_details[0]->company_city);
+            $fromaddress->setPostalCode($user_details[0]->company_zipcode);
+            $service = $this->getReportsClient();
+            $ship_request = new \FBAInboundServiceMWS_Model_CreateInboundShipmentPlanRequest();
+            $ship_request->setSellerId($UserCredentials['mws_seller_id']);
+            $ship_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
+            $ship_request->setShipFromAddress($fromaddress);
+            foreach ($shipment as $shipments)
+            {
+                $shipment_detail=Shipment_detail::selectRaw('shipment_details.total, amazon_inventories.sellerSKU')
+                ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id')
+                ->where('shipment_details.shipment_id',$shipments->shipment_id)->get();
+                $item=array();
+                foreach ($shipment_detail as $shipment_details)
+                {
+                    $data =array('SellerSKU'=>$shipment_details->sellerSKU,'Quantity'=>$shipment_details->total);
+                    $item[] = new \FBAInboundServiceMWS_Model_InboundShipmentPlanItem($data);
+                }
+                $itemlist = new \FBAInboundServiceMWS_Model_InboundShipmentPlanRequestItemList();
+                $itemlist->setmember($item);
+                $ship_request->setInboundShipmentPlanRequestItems($itemlist);
+                $arr_response =$this->invokeCreateInboundShipmentPlan($service, $ship_request);
+                $shipment_id=$shipments->shipment_id;
+                //create shipments api of perticular shipmentplan
+                $shipment_service = $this->getReportsClient();
+                $shipment_request = new \FBAInboundServiceMWS_Model_CreateInboundShipmentRequest();
+                $shipment_request->setSellerId($UserCredentials['mws_seller_id']);
+                $shipment_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
+                $shipment_header= new \FBAInboundServiceMWS_Model_InboundShipmentHeader();
+                $shipment_header->setShipmentName("SHIPMENT_NAME");
+                $shipment_header->setShipFromAddress($fromaddress);
+                //response of shipment plan and insert data in amazon destination
+                foreach ($arr_response as $new_response) {
+                    foreach ($new_response->InboundShipmentPlans as $planresult) {
+                        foreach ($planresult->member as $member) {
+                            $api_shipment_id = $member->ShipmentId;
+                            $destination_name = $member->DestinationFulfillmentCenterId;
+                            foreach ($member->ShipToAddress as $address)
+                            {
+                                $address_name=$address->Name;
+                                $addressline1=$address->AddressLine1;
+                                $city=$address->City;
+                                $state=$address->StateOrProvinceCode;
+                                $country=$address->CountryCode;
+                                $postal=$address->PostalCode;
+                            }
+                            $preptype=$member->LabelPrepType;
+                            foreach ($member->EstimatedBoxContentsFee as $fee)
+                            {
+                                $total_unit=$fee->TotalUnits;
+                                foreach ($fee->FeePerUnit as $unit)
+                                {
+                                    $unit_currency=$unit->CurrencyCode;
+                                    $unit_value=$unit->Value;
+                                }
+                                foreach ($fee->TotalFee as $total)
+                                {
+                                    $total_currency=$total->CurrencyCode;
+                                    $total_value=$total->Value;
+                                }
+                            }
+                            $shipment_header->setDestinationFulfillmentCenterId($destination_name);
+                            $shipment_request->setInboundShipmentHeader($shipment_header);
+                            $shipment_request->setShipmentId($api_shipment_id);
+                            $shipment_item=array();
+                            foreach ($member->Items as $item)
+                            {
+                                foreach ($item->member as $sub_member)
+                                {
+                                    $amazon_destination = array('destination_name'=>$destination_name,
+                                        'shipment_id'=>$shipment_id,
+                                        'api_shipment_id'=>$api_shipment_id,
+                                        'sellerSKU'=>$sub_member->SellerSKU,
+                                        'fulfillment_network_SKU'=>$sub_member->FulfillmentNetworkSKU,
+                                        'qty'=>$sub_member->Quantity,
+                                        'ship_to_address_name'=>$address_name,
+                                        'ship_to_address_line1'=>$addressline1,
+                                        'ship_to_city'=>$city,
+                                        'ship_to_state_code'=>$state,
+                                        'ship_to_country_code'=>$country,
+                                        'ship_to_postal_code'=>$postal,
+                                        'label_prep_type'=>$preptype,
+                                        'total_units'=>$total_unit,
+                                        'fee_per_unit_currency_code'=>$unit_currency,
+                                        'fee_per_unit_value'=>$unit_value,
+                                        'total_fee_value'=>$total_value
+                                    );
+                                    Amazon_destination::create($amazon_destination);
+                                    $item_array= array('SellerSKU'=>$sub_member->SellerSKU, 'QuantityShipped'=>$sub_member->Quantity, 'FulfillmentNetworkSKU'=>$sub_member->FulfillmentNetworkSKU);
+                                    $shipment_item[]= new \FBAInboundServiceMWS_Model_InboundShipmentItem($item_array);
+                                }
+                            }
+                            $api_shipment_detail = new \FBAInboundServiceMWS_Model_InboundShipmentItemList();
+                            $api_shipment_detail->setmember($shipment_item);
+                            $shipment_request->setInboundShipmentItems($api_shipment_detail);
+                            $this->invokeCreateInboundShipment($shipment_service, $shipment_request);
+                        }
+                    }
+                }
+            }
+            $plan=array('shipmentplan'=>'1');
+            Order::where('order_id',$order_id)->update($plan);
+        }
+    }
+    protected function getReportsClient()
+    {
+        list($access_key, $secret_key, $config) = $this->getKeys();
+        return  new \FBAInboundServiceMWS_Client(
+            $access_key,
+            $secret_key,
+            env('APPLICATION_NAME'),
+            env('APPLICATION_VERSION'),
+            $config
+        );
+    }
+    private function getKeys()
+    {
+        add_to_path('Libraries');
+        $devAccount = Dev_account::first();
+        return [
+            $devAccount->access_key,
+            $devAccount->secret_key,
+            self::getMWSConfig()
+        ];
+    }
+    public static function getMWSConfig()
+    {
+        return [
+            'ServiceURL' =>"https://mws.amazonservices.com/FulfillmentInboundShipment/2010-10-01" ,
+            'ProxyHost' => null,
+            'ProxyPort' => -1,
+            'ProxyUsername' => null,
+            'ProxyPassword' => null,
+            'MaxErrorRetry' => 3,
+        ];
+    }
+    function invokeCreateInboundShipmentPlan(\FBAInboundServiceMWS_Interface $service, $request)
+    {
+        try {
+            $response = $service->CreateInboundShipmentPlan($request);
+            // echo ("Service Response\n");
+            // echo ("=============================================================================\n");
+            $dom = new \DOMDocument();
+            $dom->loadXML($response->toXML());
+            $dom->preserveWhiteSpace = false;
+            $dom->formatOutput = true;
+            $dom->saveXML();
+            //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
+            return $arr_response = new \SimpleXMLElement($dom->saveXML());
+
+        } catch (\FBAInboundServiceMWS_Exception $ex) {
+            echo("Caught Exception: " . $ex->getMessage() . "\n");
+            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
+            echo("Error Code: " . $ex->getErrorCode() . "\n");
+            echo("Error Type: " . $ex->getErrorType() . "\n");
+            echo("Request ID: " . $ex->getRequestId() . "\n");
+            echo("XML: " . $ex->getXML() . "\n");
+            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
+        }
+    }
+    function invokeCreateInboundShipment(\FBAInboundServiceMWS_Interface $service, $request)
+    {
+        try {
+            $response = $service->CreateInboundShipment($request);
+            //echo ("Service Response\n");
+            //echo ("=============================================================================\n");
+            $dom = new \DOMDocument();
+            $dom->loadXML($response->toXML());
+            $dom->preserveWhiteSpace = false;
+            $dom->formatOutput = true;
+            $dom->saveXML();
+            return 1;
+            //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
+
+        } catch (\FBAInboundServiceMWS_Exception $ex) {
+            echo("Caught Exception: " . $ex->getMessage() . "\n");
+            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
+            echo("Error Code: " . $ex->getErrorCode() . "\n");
+            echo("Error Type: " . $ex->getErrorType() . "\n");
+            echo("Request ID: " . $ex->getRequestId() . "\n");
+            echo("XML: " . $ex->getXML() . "\n");
+            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
+
+        }
+    }
+    function invokeUpdateInboundShipment(\FBAInboundServiceMWS_Interface $service, $request)
+    {
+        try {
+            $response = $service->UpdateInboundShipment($request);
+            //echo ("Service Response\n");
+            //echo ("=============================================================================\n");
+
+            $dom = new \DOMDocument();
+            $dom->loadXML($response->toXML());
+            $dom->preserveWhiteSpace = false;
+            $dom->formatOutput = true;
+            $dom->saveXML();
+            //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
+            return $update_response = new \SimpleXMLElement($dom->saveXML());
+        } catch (\FBAInboundServiceMWS_Exception $ex) {
+            echo("Caught Exception: " . $ex->getMessage() . "\n");
+            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
+            echo("Error Code: " . $ex->getErrorCode() . "\n");
+            echo("Error Type: " . $ex->getErrorType() . "\n");
+            echo("Request ID: " . $ex->getRequestId() . "\n");
+            echo("XML: " . $ex->getXML() . "\n");
+            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
+        }
+    }
+    function invokeListInboundShipments(\FBAInboundServiceMWS_Interface $service, $request)
+    {
+        try {
+            $response = $service->ListInboundShipments($request);
+            //echo("Service Response\n");
+            //echo("=============================================================================\n");
+
+            $dom = new \DOMDocument();
+            $dom->loadXML($response->toXML());
+            $dom->preserveWhiteSpace = false;
+            $dom->formatOutput = true;
+            $dom->saveXML();
+            //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
+            return $list_response = new \SimpleXMLElement($dom->saveXML());
+
+        } catch (\FBAInboundServiceMWS_Exception $ex) {
+            echo("Caught Exception: " . $ex->getMessage() . "\n");
+            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
+            echo("Error Code: " . $ex->getErrorCode() . "\n");
+            echo("Error Type: " . $ex->getErrorType() . "\n");
+            echo("Request ID: " . $ex->getRequestId() . "\n");
+            echo("XML: " . $ex->getXML() . "\n");
+            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
+        }
+    }
 
 }

@@ -42,7 +42,9 @@ class ShippingMethodController extends Controller
     {
         $method = new Shipping_method();
         $method->shipping_name = $request->input('name');
-        $method->price = $request->input('price');
+        $method->port_fee = $request->input('port_fee');
+        $method->custom_brokrage = $request->input('custom_brokrage');
+        $method->consulting_fee  = $request->input('consulting_fee');
         $method->save();
        //$package->features()->sync($features);
        return redirect('admin/shippingmethod')->with('success', $method->shipping_name . ' Shipping Method Added Successfully');
@@ -67,7 +69,9 @@ class ShippingMethodController extends Controller
     {
 
         $method->shipping_name = $request->input('name');
-        $method->price = $request->input('price');
+        $method->port_fee = $request->input('port_fee');
+        $method->custom_brokrage = $request->input('custom_brokrage');
+        $method->consulting_fee  = $request->input('consulting_fee');
         $method->save();
         return redirect('admin/shippingmethod')->with('success', $method->shipping_name . ' Shipping Method Updated Successfully');
     }

@@ -29,7 +29,9 @@ class ShippingMethodRequest extends Request {
             case 'POST': {
                 return [
                     'name' => 'required',
-                    'price' => 'required',
+                    'port_fee' => 'required',
+                    'custom_brokrage'=>'required',
+                    'consulting_fee'=>'required'
                 ];
             }
             case 'PUT':
@@ -44,7 +46,9 @@ class ShippingMethodRequest extends Request {
 
         return [
             'name' => 'required',
-            'price' => 'required',
+            'port_fee' => 'required',
+            'custom_brokrage'=>'required',
+            'consulting_fee'=>'required'
         ];
     }
 
