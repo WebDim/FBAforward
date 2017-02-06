@@ -35,7 +35,7 @@
                             @foreach($orders as $order)
                                 <tr id="tr_{{$order->order_id}}">
                                     <td>
-                                        <a href="{{ url('order/details/'.$order->order_id) }}">
+                                        <a href="{{ url('order/details/'.$order->order_id).'/0' }}">
                                             <b class="text-info">{{ $order->order_no }}</b>
                                         </a>
                                     </td>
@@ -50,6 +50,10 @@
                                             <a href="{{ url('order/updateshipment/'.$order->order_id) }}" class="btn btn-info">Edit</a>
                                             <a href="#" onclick="remove_order({{$order->order_id}})" class="btn btn-danger">Delete</a>
                                         @endif
+                                        {{--@if($order->is_activated==1)
+                                                <a href="#" onclick="order_status({{$order->order_id}},3)" class="btn btn-info">Approve</a>
+                                                <a href="#" onclick="order_status({{$order->order_id}},4)" class="btn btn-danger">Reject</a>
+                                        @endif--}}
                                     </td>
                                 </tr>
                             @endforeach
@@ -105,6 +109,30 @@
                 }
             });
         }
+    }
+    function order_status(order_id,status){
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/orderstatus', // This is the url we gave in the route
+                data: {
+                    'order_id': order_id,
+                    'status':status
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    console.log(response);
+                    alert('Order status successfully changed');
+
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+
     }
 </script>
 @endsection

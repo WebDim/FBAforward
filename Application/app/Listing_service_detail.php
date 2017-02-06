@@ -7,13 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class Listing_service_detail extends Model
 {
     //
-    protected $primaryKey = 'listing_service_detail_id ';
+    protected $primaryKey = 'listing_service_detail_id';
     protected $table ='listing_service_details';
     protected $fillable = ['product_id', 'shipment_detail_id', 'order_id','listing_service_ids', 'listing_service_total','grand_total','	is_activated'];
 
     public function listing_service()
     {
         return $this->belongsTo(Listing_service::class,'listing_service_id');
+    }
+    public function photo_list_detail()
+    {
+        return $this->hasMany(Photo_list_detail::class,'listing_service_detail_id');
     }
 
 }

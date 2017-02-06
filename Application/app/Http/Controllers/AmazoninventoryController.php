@@ -218,7 +218,6 @@ class AmazoninventoryController extends Controller
     function invokeListInventorySupply(\FBAInventoryServiceMWS_Interface $service, $request)
     {
         try {
-
                $response = $service->ListInventorySupply($request);
                //echo ("Service Response\n");
                //echo ("=============================================================================\n");

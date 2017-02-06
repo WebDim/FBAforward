@@ -123,7 +123,8 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/orderhistory', 'OrderController@orderhistory');
         Route::get('/shipment', 'OrderController@shipment');
         Route::get('/updateshipment/{order_id?}', ['uses'=>'OrderController@updateshipment','as' =>'shipment']);
-        Route::get('/details/{order_id}', 'OrderController@orderDetails');
+        Route::get('/details/{order_id}/{id}', 'OrderController@orderDetails');
+        Route::get('/details/{order_id}/{id}/{user_id}', 'OrderController@orderDetails');
         Route::put('/shipment', 'OrderController@addshipment');
         Route::post('/removeorder', 'OrderController@removeorder');
         Route::post('/removeproduct','OrderController@removeproduct');
@@ -145,6 +146,11 @@ Route::group(['middleware' => 'web'], function () {
         Route::put('/payment','OrderController@addorderpayment');
         Route::post('/addcreditcard','OrderController@addcreditcard');
         Route::post('/addaddress','OrderController@addaddress');
+        Route::post('/orderstatus', 'OrderController@orderstatus');
+        Route::get('/ordershipping', 'OrderController@ordershipping');
+        Route::post('/createshipments', 'OrderController@createshipments');
+        Route::post('/removeotherlabel', 'OrderController@removeotherlabel');
+        Route::post('/removephotolabel', 'OrderController@removephotolabel');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);

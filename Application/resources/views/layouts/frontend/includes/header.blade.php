@@ -66,6 +66,11 @@
                             <li><a class="external" href="{{ url('member/amazoninventorylist') }}"><i class="fa fa-list"></i>&nbsp;Amazon Inventory List</a>
                             </li>
                             @endif
+                            @if('Warehouse Manager'===\Auth::user()->role->name)
+                                <li>
+                                    <a class="external" href="{{ url('order/ordershipping') }}"><i class="fa fa-btn fa-user"></i> Ship Order</a>
+                                </li>
+                            @endif
                             @if('Admin' === \Auth::user()->role->name)
                                 <li><a class="external" href="{{ url('admin/dashboard') }}"><i
                                                 class="fa fa-btn fa-user-secret"></i>&nbsp;

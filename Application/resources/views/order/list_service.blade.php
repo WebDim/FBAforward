@@ -30,10 +30,22 @@
                                 <input type="hidden" name="listing_service_detail_id{{ $cnt }}" value="{{ $products->listing_service_detail_id  }}">
                                 <input type="hidden" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id }}">
                                 <input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
+                                <input type="hidden" name="photo_list_detail_id{{$cnt}}" id="photo_list_detail_id{{$cnt}}" value="{{$products->photo_list_detail_id}}">
                                 <b class="text-info">{{ $products->product_name }}</b></td>
                             <td class="col-md-3"><b class="text-info">
                                     @foreach ($list_service as $list_services)
                                         <input type="checkbox" name="service{{$cnt}}_{{ $list_services->listing_service_id }}" id="service{{$cnt}}_{{$list_services->listing_service_id}}" value="{{ $list_services->listing_service_id }}" onchange="get_total({{$list_services->price}},{{$cnt}},{{$list_services->listing_service_id}})" @if(in_array($list_services->listing_service_id,$list_service_ids)) {{ "checked" }} @endif>{{ $list_services->service_name }}<br>
+                                        @if(isset($products->photo_list_detail_id) && $list_services->listing_service_id==1)
+                                        <div id="service_div{{$cnt}}">
+                                            STANDARD PHOTOS<input type="hidden" id="old_standard{{$cnt}}"  name="old_standard{{$cnt}}"  size="3"   value="{{$products->standard_photo}}"><input type="text" id="standard{{$cnt}}"  name="standard{{$cnt}}"  size="3" class="validate[required]" onchange="get_standard_subtotal(this.value,{{$cnt}},{{$list_services->listing_service_id}},{{$list_services->price}})" value="{{$products->standard_photo}}"><br>
+                                            PROP PHOTOS<input type="hidden" id="old_prop{{$cnt}}" name="old_prop{{$cnt}}" size="3"  value="{{$products->prop_photo}}"><input type="text" id="prop{{$cnt}}" name="prop{{$cnt}}" size="3" class="validate[required]" onchange="get_prop_subtotal(this.value,{{$cnt}},{{$list_services->listing_service_id}},{{$list_services->price}})" value="{{$products->prop_photo}}">
+                                        </div>
+                                        @elseif($list_services->listing_service_id==1)
+                                        <div id="service_div{{$cnt}}" hidden>
+                                           STANDARD PHOTOS<input type="hidden" id="old_standard{{$cnt}}"  name="old_standard{{$cnt}}"  size="3"><input type="text" id="standard{{$cnt}}" name="standard{{$cnt}}"  size="3" class="validate[required]" onchange="get_standard_subtotal(this.value,{{$cnt}},{{$list_services->listing_service_id}},{{$list_services->price}})"><br>
+                                           PROP PHOTOS<input type="hidden" id="old_prop{{$cnt}}" name="old_prop{{$cnt}}" size="3"><input type="text" id="prop{{$cnt}}" name="prop{{$cnt}}" size="3" class="validate[required]" onchange="get_prop_subtotal(this.value,{{$cnt}},{{$list_services->listing_service_id}},{{$list_services->price}})">
+                                        </div>
+                                        @endif
                                     @endforeach
                                         <input type="hidden" name="sub_count{{$cnt}}" id="sub_count{{$cnt}}" value="{{ $list_services->listing_service_id }}">
                                 </b></td>
@@ -78,23 +90,153 @@
                     usePrefix: prefix
                 });
         });
+        function get_standard_subtotal(qty,no,service_id,price)
+        {
+            if($("#old_standard"+no).val()!=$("#standard"+no).val())
+            {
+                 if($("#old_standard"+no).val()>0) {
+                     temp_total = parseFloat($("#old_standard" + no).val(), 2) * parseFloat(price, 2);
+                     total = parseFloat($("#total" + no).val(), 2) - parseFloat(temp_total, 2);
+                     $("#total" + no).val(total.toFixed(2));
+                     $("#total_span" + no).text(total.toFixed(2));
+                     grand_total = parseFloat($("#grand_total").val(), 2) - parseFloat(temp_total, 2);
+                     $("#grand_total").val(grand_total.toFixed(2));
+                     $("#grand_total_span").text(grand_total.toFixed(2));
+                     if($("#standard"+no).val()>0) {
+                         temp_total = parseFloat(qty, 2) * parseFloat(price, 2);
+                         total = parseFloat($("#total" + no).val(), 2) + parseFloat(temp_total, 2);
+                         $("#total" + no).val(total.toFixed(2));
+                         $("#total_span" + no).text(total.toFixed(2));
+                         grand_total = parseFloat($("#grand_total").val(), 2) + parseFloat(temp_total, 2);
+                         $("#grand_total").val(grand_total.toFixed(2));
+                         $("#grand_total_span").text(grand_total.toFixed(2));
+                     }
+                     $("#old_standard"+no).val(qty);
+                 }
+                 else
+                 {
+                     if($("#standard"+no).val()>0) {
+                         temp_total = parseFloat(qty, 2) * parseFloat(price, 2);
+                         total = parseFloat($("#total" + no).val(), 2) + parseFloat(temp_total, 2);
+                         $("#total" + no).val(total.toFixed(2));
+                         $("#total_span" + no).text(total.toFixed(2));
+                         grand_total = parseFloat($("#grand_total").val(), 2) + parseFloat(temp_total, 2);
+                         $("#grand_total").val(grand_total.toFixed(2));
+                         $("#grand_total_span").text(grand_total.toFixed(2));
+                     }
+                     $("#old_standard"+no).val(qty);
+                 }
+            }
+            else {
+                temp_total = parseFloat(qty, 2) * parseFloat(price, 2);
+                total = parseFloat($("#total" + no).val(), 2) + parseFloat(temp_total, 2);
+                $("#total" + no).val(total.toFixed(2));
+                $("#total_span" + no).text(total.toFixed(2));
+                grand_total = parseFloat($("#grand_total").val(), 2) + parseFloat(temp_total, 2);
+                $("#grand_total").val(grand_total.toFixed(2));
+                $("#grand_total_span").text(grand_total.toFixed(2));
+                $("#old_standard"+no).val(qty);
+            }
+
+
+        }
+        function get_prop_subtotal(qty,no,service_id,price)
+        {
+            if($("#old_prop"+no).val()!=$("#prop"+no).val())
+            {
+                if($("#old_prop"+no).val()>0) {
+                    temp_total = parseFloat($("#old_prop" + no).val(), 2) * parseFloat(price, 2);
+                    total = parseFloat($("#total" + no).val(), 2) - parseFloat(temp_total, 2);
+                    $("#total" + no).val(total.toFixed(2));
+                    $("#total_span" + no).text(total.toFixed(2));
+                    grand_total = parseFloat($("#grand_total").val(), 2) - parseFloat(temp_total, 2);
+                    $("#grand_total").val(grand_total.toFixed(2));
+                    $("#grand_total_span").text(grand_total.toFixed(2));
+                    if($("#prop"+no).val()>0) {
+                        temp_total = parseFloat(qty, 2) * parseFloat(price, 2);
+                        total = parseFloat($("#total" + no).val(), 2) + parseFloat(temp_total, 2);
+                        $("#total" + no).val(total.toFixed(2));
+                        $("#total_span" + no).text(total.toFixed(2));
+                        grand_total = parseFloat($("#grand_total").val(), 2) + parseFloat(temp_total, 2);
+                        $("#grand_total").val(grand_total.toFixed(2));
+                        $("#grand_total_span").text(grand_total.toFixed(2));
+                    }
+                    $("#old_prop"+no).val(qty);
+                }
+                else
+                {
+                    if($("#prop"+no).val()>0) {
+                        temp_total = parseFloat(qty, 2) * parseFloat(price, 2);
+                        total = parseFloat($("#total" + no).val(), 2) + parseFloat(temp_total, 2);
+                        $("#total" + no).val(total.toFixed(2));
+                        $("#total_span" + no).text(total.toFixed(2));
+                        grand_total = parseFloat($("#grand_total").val(), 2) + parseFloat(temp_total, 2);
+                        $("#grand_total").val(grand_total.toFixed(2));
+                        $("#grand_total_span").text(grand_total.toFixed(2));
+                    }
+                    $("#old_prop"+no).val(qty);
+                }
+            }
+            else {
+                temp_total = parseFloat(qty, 2) * parseFloat(price, 2);
+                total = parseFloat($("#total" + no).val(), 2) + parseFloat(temp_total, 2);
+                $("#total" + no).val(total.toFixed(2));
+                $("#total_span" + no).text(total.toFixed(2));
+                grand_total = parseFloat($("#grand_total").val(), 2) + parseFloat(temp_total, 2);
+                $("#grand_total").val(grand_total.toFixed(2));
+                $("#grand_total_span").text(grand_total.toFixed(2));
+                $("#old_prop"+no).val(qty);
+            }
+        }
         function  get_total(price,no,sub_no) {
             if($("#service"+no+"_"+sub_no).is(':checked')) {
-                total = parseFloat($("#total"+no).val(),2) + parseFloat(price,2);
-                $("#total"+no).val(total.toFixed(2));
-                $("#total_span"+no).text(total.toFixed(2));
-                grand_total=parseFloat($("#grand_total").val(),2)+parseFloat(price,2);
-                $("#grand_total").val(grand_total.toFixed(2));
-                $("#grand_total_span").text(grand_total.toFixed(2));
+                if($('#service'+no+'_'+sub_no).val()==1)
+                {
+                    $("#service_div"+no).show();
+                }
+                else {
+                    total = parseFloat($("#total" + no).val(), 2) + parseFloat(price, 2);
+                    $("#total" + no).val(total.toFixed(2));
+                    $("#total_span" + no).text(total.toFixed(2));
+                    grand_total = parseFloat($("#grand_total").val(), 2) + parseFloat(price, 2);
+                    $("#grand_total").val(grand_total.toFixed(2));
+                    $("#grand_total_span").text(grand_total.toFixed(2));
+                }
             }
-            else
-            {
-                total = parseFloat($("#total" + no).val(),2) - parseFloat(price,2);
-                $("#total"+no).val(total.toFixed(2));
-                $("#total_span"+no).text(total.toFixed(2));
-                grand_total=parseFloat($("#grand_total").val(),2)-parseFloat(price,2);
-                $("#grand_total").val(grand_total.toFixed(2));
-                $("#grand_total_span").text(grand_total.toFixed(2));
+            else {
+                if($('#service'+no+'_'+sub_no).val()==1)
+                {
+                    photo_list_detail_id = $("#photo_list_detail_id" + no).val();
+                    $("#service_div" + no).hide();
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-Token': $('input[name="_token"]').val()
+                        },
+                        method: 'POST', // Type of response and matches what we said in the route
+                        url: '/order/removephotolabel', // This is the url we gave in the route
+                        data: {
+                            'photo_list_detail_id': photo_list_detail_id,
+
+                        }, // a JSON object to send back
+                        success: function (response) { // What to do if we succeed
+                            console.log(response);
+                            //alert("product deleted Successfully");
+
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                            console.log(JSON.stringify(jqXHR));
+                            console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                        }
+                    });
+                }
+                else {
+                    total = parseFloat($("#total" + no).val(), 2) - parseFloat(price, 2);
+                    $("#total" + no).val(total.toFixed(2));
+                    $("#total_span" + no).text(total.toFixed(2));
+                    grand_total = parseFloat($("#grand_total").val(), 2) - parseFloat(price, 2);
+                    $("#grand_total").val(grand_total.toFixed(2));
+                    $("#grand_total_span").text(grand_total.toFixed(2));
+                }
             }
         }
     </script>

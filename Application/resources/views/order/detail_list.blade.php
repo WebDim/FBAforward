@@ -6,9 +6,19 @@
             <div class="col-md-10">
                 <h2 class="page-head-line">ORDER DETAIL</h2>
             </div>
+
             <div class="col-md-2 ">
-                <a href="{{ url('order/index') }}" class="btn btn-primary">Order Management</a>
+                @if(isset($user_role))
+                    @if($id==0)
+                         <a href="{{ url('order/index') }}" class="btn btn-primary">Order Management</a>
+                    @else
+                        <a href="{{ url('order/orderhistory') }}" class="btn btn-primary">Order History</a>
+                    @endif
+                    @else
+                <a href="{{ url('order/ordershipping') }}" class="btn btn-primary">Order Shipping</a>
+                @endif
             </div>
+
         </div>
     </div>
     <div class="row">
