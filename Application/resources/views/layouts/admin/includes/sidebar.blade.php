@@ -167,6 +167,23 @@
                     </li>
                 </ul>
             </li>
+            <li class="treeview {{  Request::is('admin/Charges*') ? 'active': '' }}">
+                <a href="#">
+                    <i class="fa fa-briefcase"></i> <span>Charges</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li class="{{ Request::is('admin/charges')? 'active': '' }}">
+                        <a href="{{ url('admin/charges') }}">
+                            <i class="fa fa-list"></i> <span>Manage Charges</span>
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('admin/charges/create')? 'active': '' }}">
+                        <a href="{{ url('admin/charges/create') }}">
+                            <i class="fa fa-plus"></i> <span>Add Charges</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
            <!-- <li class="treeview {{ Request::is('admin/package*') || Request::is('admin/feature*') ? 'active': '' }}">
                 <a href="#">
                     <i class="fa fa-briefcase"></i> <span>Packages</span> <i class="fa fa-angle-left pull-right"></i>

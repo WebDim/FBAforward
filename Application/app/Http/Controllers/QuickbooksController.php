@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class QuickBookController extends Controller
+class QuickbooksController extends Controller
 {
 
     private $IntuitAnywhere;
@@ -25,7 +25,7 @@ class QuickBookController extends Controller
 
         if ($this->IntuitAnywhere->check(env('QBO_USERNAME'), env('QBO_TENANT')) && $this->IntuitAnywhere->test(env('QBO_USERNAME'), env('QBO_TENANT'))) {
             // Set up the IPP instance
-            $IPP = new \QuickBooks_IPP(env('QBO_DSN'));
+                $IPP = new \QuickBooks_IPP(env('QBO_DSN'));
             // Get our OAuth credentials from the database
             $creds = $this->IntuitAnywhere->load(env('QBO_USERNAME'), env('QBO_TENANT'));
             // Tell the framework to load some data from the OAuth store
@@ -77,40 +77,40 @@ class QuickBookController extends Controller
 
         $Customer = new \QuickBooks_IPP_Object_Customer();
         $Customer->setTitle('Ms');
-        $Customer->setGivenName('Shannon');
-        $Customer->setMiddleName('B');
-        $Customer->setFamilyName('Palmer');
-        $Customer->setDisplayName('Shannon B Palmer ' . mt_rand(0, 1000));
+        $Customer->setGivenName('Riddhi');
+        $Customer->setMiddleName('D');
+        $Customer->setFamilyName('Parmar');
+        $Customer->setDisplayName('Riddhi Parmar ' . mt_rand(0, 1000));
         // Terms (e.g. Net 30, etc.)
         $Customer->setSalesTermRef(4);
 
         // Phone #
         $PrimaryPhone = new \QuickBooks_IPP_Object_PrimaryPhone();
-        $PrimaryPhone->setFreeFormNumber('860-532-0089');
+        $PrimaryPhone->setFreeFormNumber('917-378-3135');
         $Customer->setPrimaryPhone($PrimaryPhone);
 
         // Mobile #
         $Mobile = new \QuickBooks_IPP_Object_Mobile();
-        $Mobile->setFreeFormNumber('860-532-0089');
+        $Mobile->setFreeFormNumber('917-378-3135');
         $Customer->setMobile($Mobile);
 
         // Fax #
         $Fax = new \QuickBooks_IPP_Object_Fax();
-        $Fax->setFreeFormNumber('860-532-0089');
+        $Fax->setFreeFormNumber('917-378-3135');
         $Customer->setFax($Fax);
 
         // Bill address
         $BillAddr = new \QuickBooks_IPP_Object_BillAddr();
-        $BillAddr->setLine1('72 E Blue Grass Road');
-        $BillAddr->setLine2('Suite D');
-        $BillAddr->setCity('Mt Pleasant');
-        $BillAddr->setCountrySubDivisionCode('MI');
-        $BillAddr->setPostalCode('48858');
+        $BillAddr->setLine1('satelite');
+        $BillAddr->setLine2('Jodhpur');
+        $BillAddr->setCity('Ahmedabad');
+        $BillAddr->setCountrySubDivisionCode('IN');
+        $BillAddr->setPostalCode('380015');
         $Customer->setBillAddr($BillAddr);
 
         // Email
         $PrimaryEmailAddr = new \QuickBooks_IPP_Object_PrimaryEmailAddr();
-        $PrimaryEmailAddr->setAddress('support@consolibyte.com');
+        $PrimaryEmailAddr->setAddress('webdimensionsindia@gmail.com');
         $Customer->setPrimaryEmailAddr($PrimaryEmailAddr);
 
         if ($resp = $CustomerService->add($this->context, $this->realm, $Customer))

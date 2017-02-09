@@ -5,6 +5,17 @@
         .margin-bottom {
             margin-bottom: 5px;
         }
+        .modal-dialog {
+            width: 80%;
+            height: 80%;
+            margin: 3;
+            padding: 0;
+        }
+        .modal-content {
+            height: auto;
+            min-height: 80%;
+            border-radius: 0;
+        }
     </style>
 @endsection
 @section('content')
@@ -49,7 +60,14 @@
                                         @if($order->is_activated == 0)
                                             <a href="{{ url('order/updateshipment/'.$order->order_id) }}" class="btn btn-info">Edit</a>
                                             <a href="#" onclick="remove_order({{$order->order_id}})" class="btn btn-danger">Delete</a>
+                                        @elseif($order->is_activated == 2)
+                                            <a href="{{ url('order/downloadreport/'.$order->order_id) }}">Download Report</a>
+                                            <a onclick="approvereport({{$order->order_id}})" class="btn btn-info">Approve Inspection Report</a>
+                                        @elseif($order->is_activated==4)
+                                            <a onclick="openquote({{$order->order_id}})">View Shipping Quote</a>
+                                            <a onclick="approveshippingquote({{$order->order_id}})" class="btn btn-info">Approve Shipping Quote</a>
                                         @endif
+
                                         {{--@if($order->is_activated==1)
                                                 <a href="#" onclick="order_status({{$order->order_id}},3)" class="btn btn-info">Approve</a>
                                                 <a href="#" onclick="order_status({{$order->order_id}},4)" class="btn btn-danger">Reject</a>
@@ -74,6 +92,23 @@
         </div>
 </section>
 <!-- /.content -->
+<div class="modal fade" id="openquote" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="myModalLabel">View Shipping Quote</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" id="main">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @section('js')
     <link href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.css" rel="stylesheet">
@@ -133,6 +168,72 @@
                 }
             });
 
+    }
+    function approvereport(order_id)
+    {
+        $.ajax({
+            headers: {
+                'X-CSRF-Token':  "{{ csrf_token() }}"
+            },
+            method: 'POST', // Type of response and matches what we said in the route
+            url: '/order/approvereport', // This is the url we gave in the route
+            data: {
+                'order_id': order_id,
+            }, // a JSON object to send back
+            success: function (response) { // What to do if we succeed
+                console.log(response);
+                alert("Report Approved");
+                location.reload();
+            },
+            error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                console.log(JSON.stringify(jqXHR));
+                console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+            }
+        });
+    }
+    function openquote(order_id)
+    {
+        $.noConflict();
+        $.ajax({
+            headers: {
+                'X-CSRF-Token':  "{{ csrf_token() }}"
+            },
+            method: 'POST', // Type of response and matches what we said in the route
+            url: '/order/viewshippingquote', // This is the url we gave in the route
+            data: {
+                'order_id': order_id,
+            }, // a JSON object to send back
+            success: function (response) { // What to do if we succeed
+             $('#main').html(response);
+                $("#openquote").modal('show');
+            },
+            error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                console.log(JSON.stringify(jqXHR));
+                console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+            }
+        });
+    }
+    function approveshippingquote(order_id)
+    {
+        $.ajax({
+            headers: {
+                'X-CSRF-Token':  "{{ csrf_token() }}"
+            },
+            method: 'POST', // Type of response and matches what we said in the route
+            url: '/order/approveshippingquote', // This is the url we gave in the route
+            data: {
+                'order_id': order_id,
+            }, // a JSON object to send back
+            success: function (response) { // What to do if we succeed
+                console.log(response);
+                //alert("Report Approved");
+                location.reload();
+            },
+            error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                console.log(JSON.stringify(jqXHR));
+                console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+            }
+        });
     }
 </script>
 @endsection

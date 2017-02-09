@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Addresses;
+use App\Charges;
 use App\Feature;
 use App\Http\Controllers\Controller;
 use App\Menu;
@@ -298,6 +299,22 @@ class DatatablesController extends Controller
                 if (\Auth::user()->role->name == 'Admin') {
                     $editBtn = '<a style="margin-right: 0.1em;" href="' . url('admin/addresses/' . $method->address_id . '/edit') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
                     $deleteBtn = '&nbsp;<a href="' . url('admin/addresses/' . $method->address_id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
+                }
+                $buttons = '' . $editBtn . $deleteBtn;
+                return $buttons;
+            })->make(true);
+    }
+    public function getCharges(Charges $charges){
+        $methods = $charges::all();
+        return Datatables::of($methods)
+            ->editColumn('name', '{{ $name }}')
+            ->editColumn('price', function ($method) {
+                return $method->price;
+            })
+            ->addColumn('actions', function ($method) {
+                if (\Auth::user()->role->name == 'Admin') {
+                    $editBtn = '<a style="margin-right: 0.1em;" href="' . url('admin/charges/' . $method->id . '/edit') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
+                    $deleteBtn = '&nbsp;<a href="' . url('admin/charges/' . $method->id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
                 }
                 $buttons = '' . $editBtn . $deleteBtn;
                 return $buttons;

@@ -33,6 +33,7 @@ use App\Supplier;
 use App\Prep_service;
 use App\Listing_service;
 use App\Addresses;
+use App\Charges;
 
 Route::model('users', User::class);
 Route::model('settings', Setting::class);
@@ -48,6 +49,7 @@ Route::model('suppliers',Supplier::class);
 Route::model('prepservices',Prep_service::class);
 Route::model('listingservices',Listing_service::class);
 Route::model('addresses',Addresses::class);
+Route::model('charges',Charges::class);
 
 Route::group(['middleware' => ['web']], function () {
     Route::get('/page/{slug}', 'FrontendController@staticPages');
@@ -61,9 +63,11 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('stripe/webhook', '\Laravel\Cashier\WebhookController@handleWebhook');
     Route::get('/notify', 'EmailController@getnotify');
     Route::post('/notify', 'EmailController@notify');
-    Route::get('qbo/oauth','QuickBookController@qboOauth');
-    Route::get('qbo/success','QuickBookController@qboSuccess');
-    Route::get('qbo/disconnect','QuickBookController@qboDisconnect');
+    Route::get('qbo/oauth','QuickbooksController@qboOauth');
+    Route::get('qbo/success','QuickbooksController@qboSuccess');
+    Route::get('qbo/disconnect','QuickbooksController@qboDisconnect');
+    Route::get('qbo/createcustomer','QuickbooksController@createCustomer');
+    Route::get('qbo/connect','QuickbooksController@qboConnect');
     Route::get('/amazon_inventory', ['as' => 'amazon_inventory', 'uses' => 'AmazoninventoryController@index']);
 
 });
@@ -98,6 +102,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::resource('outboundmethod', 'Admin\OutboundMethodController');
         Route::resource('productlabel', 'Admin\ProductLabelController');
         Route::resource('addresses', 'Admin\AddressesController');
+        Route::resource('charges', 'Admin\ChargesController');
 
     });
     /**
@@ -151,6 +156,15 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/createshipments', 'OrderController@createshipments');
         Route::post('/removeotherlabel', 'OrderController@removeotherlabel');
         Route::post('/removephotolabel', 'OrderController@removephotolabel');
+        Route::get('/inspectionreport', 'OrderController@inspectionreport');
+        Route::put('/inspectionreport', 'OrderController@uploadinspectionreport');
+        Route::get('/downloadreport/{order_id}', 'OrderController@downloadreport');
+        Route::post('/approvereport', 'OrderController@approvereport');
+        Route::get('/shippingquote', 'OrderController@shippingquote');
+        Route::get('/shippingquoteform/{order_id}', 'OrderController@shippingquoteform');
+        Route::put('/shippingquoteform', 'OrderController@addshippingquoteform');
+        Route::post('/viewshippingquote', 'OrderController@viewshippingquote');
+        Route::post('/approveshippingquote', 'OrderController@approveshippingquote');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);
