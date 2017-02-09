@@ -6,7 +6,7 @@
     'qbo_encryption_key' => env('QBO_ENCRYPTION_KEY'),
     'qbo_username' => env('QBO_USERNAME'),
     'qbo_tenant' => env('QBO_TENANT'),
-    'qbo_auth_url' => 'http://app.yoursite.com/qbo/oauth',
-    'qbo_success_url' => 'http://app.yoursite.com/qbo/success',
+    'qbo_auth_url' => 'http://fbaforward.amzsellersengine.com/qbo/oauth',
+    'qbo_success_url' => 'http://fbaforward.amzsellersengine.com/qbo/success',
     'qbo_mysql_connection' => 'mysqli://'. env('DB_USERNAME') .':'. env('DB_PASSWORD') .'@'. env('DB_HOST') .'/'. env('DB_DATABASE')
 ];
