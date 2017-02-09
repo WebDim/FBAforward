@@ -1011,8 +1011,19 @@ class OrderController extends Controller
     {
         $user= \Auth::user();
         $user_role=$user->role_id;
-
-        $orders = Order::where('orders.is_activated','3')->orderBy('orders.created_at', 'desc')->get();
+        $details=Order::selectRaw('orders.order_id')
+            ->join('supplier_inspections','supplier_inspections.order_id','=','orders.order_id')
+            ->where('orders.is_activated','1')
+            ->where('supplier_inspections.is_inspection','1')
+            ->orderBy('orders.created_at', 'desc')
+            ->distinct('supplier_inspections.order_id')
+            ->get();
+        $order_ids=array();
+        foreach ($details as $detail)
+        {
+            $order_ids[]=$detail->order_id;
+        }
+        $orders = Order::where('orders.is_activated','3')->orWhereNotIn('orders.order_id',$order_ids)->orderBy('orders.created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role'));
     }
