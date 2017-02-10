@@ -66,8 +66,11 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('qbo/oauth','QuickbooksController@qboOauth');
     Route::get('qbo/success','QuickbooksController@qboSuccess');
     Route::get('qbo/disconnect','QuickbooksController@qboDisconnect');
+    Route::get('qbo/addinvoice','QuickbooksController@addInvoice');
+    Route::get('qbo/removeinvoice','QuickbooksController@removeInvoice');
     Route::get('qbo/createcustomer','QuickbooksController@createCustomer');
-    Route::get('qbo/connect','QuickbooksController@qboConnect');
+    Route::get('qbo/invoicepdf','QuickbooksController@invoice_pdf');
+    Route::get('order/createcustomer','OrderController@createCustomer');
     Route::get('/amazon_inventory', ['as' => 'amazon_inventory', 'uses' => 'AmazoninventoryController@index']);
 
 });

@@ -21,8 +21,6 @@ class QuickbooksController extends Controller
         $this->IntuitAnywhere = new \QuickBooks_IPP_IntuitAnywhere(env('QBO_DSN'), env('QBO_ENCRYPTION_KEY'), env('QBO_OAUTH_CONSUMER_KEY'), env('QBO_CONSUMER_SECRET'), env('QBO_OAUTH_URL'), env('QBO_SUCCESS_URL'));
     }
     public function  qboConnect(){
-
-
         if ($this->IntuitAnywhere->check(env('QBO_USERNAME'), env('QBO_TENANT')) && $this->IntuitAnywhere->test(env('QBO_USERNAME'), env('QBO_TENANT'))) {
             // Set up the IPP instance
                 $IPP = new \QuickBooks_IPP(env('QBO_DSN'));
@@ -72,9 +70,8 @@ class QuickbooksController extends Controller
     }
 
     public function createCustomer(){
-
+        $this->qboConnect();
         $CustomerService = new \QuickBooks_IPP_Service_Customer();
-
         $Customer = new \QuickBooks_IPP_Object_Customer();
         $Customer->setTitle('Ms');
         $Customer->setGivenName('Riddhi');
@@ -115,12 +112,6 @@ class QuickbooksController extends Controller
 
         if ($resp = $CustomerService->add($this->context, $this->realm, $Customer))
         {
-            //print('Our new customer ID is: [' . $resp . '] (name "' . $Customer->getDisplayName() . '")');
-            //return $resp;
-            //echo $resp;exit;
-            //$resp = str_replace('{','',$resp);
-            //$resp = str_replace('}','',$resp);
-            //$resp = abs($resp);
             return $this->getId($resp);
         }
         else
@@ -129,16 +120,13 @@ class QuickbooksController extends Controller
             print($CustomerService->lastError($this->context));
         }
     }
-
     public function addItem(){
         $ItemService = new \QuickBooks_IPP_Service_Item();
 
         $Item = new \QuickBooks_IPP_Object_Item();
-
         $Item->setName('My Item');
         $Item->setType('Inventory');
         $Item->setIncomeAccountRef('53');
-
         if ($resp = $ItemService->add($this->context, $this->realm, $Item))
         {
             return $this->getId($resp);
@@ -148,35 +136,30 @@ class QuickbooksController extends Controller
             print($ItemService->lastError($this->context));
         }
     }
+    public function addInvoice(){
+        $this->qboConnect();
 
-    public function addInvoice($invoiceArray,$itemArray,$customerRef){
 
+        $ItemService = new \QuickBooks_IPP_Service_Item();
+        $items = $ItemService->query($this->context, $this->realm, "SELECT * FROM Item WHERE Name = 'hello' ORDER BY Metadata.LastUpdatedTime ");
+        echo "<pre>";
+        print_r($items);
+        exit;
         $InvoiceService = new \QuickBooks_IPP_Service_Invoice();
-
         $Invoice = new \QuickBooks_IPP_Object_Invoice();
-
-        $Invoice = new QuickBooks_IPP_Object_Invoice();
-
         $Invoice->setDocNumber('WEB' . mt_rand(0, 10000));
         $Invoice->setTxnDate('2013-10-11');
-
-        $Line = new QuickBooks_IPP_Object_Line();
+        $Line = new \QuickBooks_IPP_Object_Line();
         $Line->setDetailType('SalesItemLineDetail');
         $Line->setAmount(12.95 * 2);
         $Line->setDescription('Test description goes here.');
-
-        $SalesItemLineDetail = new QuickBooks_IPP_Object_SalesItemLineDetail();
+        $SalesItemLineDetail = new \QuickBooks_IPP_Object_SalesItemLineDetail();
         $SalesItemLineDetail->setItemRef('8');
         $SalesItemLineDetail->setUnitPrice(12.95);
         $SalesItemLineDetail->setQty(2);
-
         $Line->addSalesItemLineDetail($SalesItemLineDetail);
-
         $Invoice->addLine($Line);
-
-        $Invoice->setCustomerRef('67');
-
-
+        $Invoice->setCustomerRef('58');
         if ($resp = $InvoiceService->add($this->context, $this->realm, $Invoice))
         {
             return $this->getId($resp);
@@ -186,12 +169,45 @@ class QuickbooksController extends Controller
             print($InvoiceService->lastError());
         }
     }
-
+    public function invoice_pdf()
+    {
+        $this->qboConnect();
+        $Context=$this->context;
+        $realm=$this->realm;
+        $InvoiceService = new \QuickBooks_IPP_Service_Invoice();
+        $invoices = $InvoiceService->query($Context, $realm, "SELECT * FROM Invoice STARTPOSITION 1 MAXRESULTS 1");
+        $invoice = reset($invoices);
+        $id = substr($invoice->getId(), 2, -1);
+        header("Content-Disposition: attachment; filename=example_invoice.pdf");
+        header("Content-type: application/x-pdf");
+        print $InvoiceService->pdf($Context, $realm, $id);
+    }
     public function getId($resp){
         $resp = str_replace('{','',$resp);
         $resp = str_replace('}','',$resp);
         $resp = abs($resp);
         return $resp;
     }
+    public function removeinvoice()
+    {
+        $this->qboConnect();
+        $Context=$this->context;
+        $realm=$this->realm;
+        $InvoiceService = new \QuickBooks_IPP_Service_Invoice();
+
+        $the_invoice_to_delete = '{-10}';
+
+        $retr = $InvoiceService->delete($Context, $realm, $the_invoice_to_delete);
+        if ($retr)
+        {
+            print('The invoice was deleted!');
+        }
+        else
+        {
+            print('Could not delete invoice: ' . $InvoiceService->lastError());
+        }
+
+    }
+
 
 }

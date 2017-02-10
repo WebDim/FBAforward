@@ -48,6 +48,9 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
+    private $IntuitAnywhere;
+    private $context;
+    private $realm;
     public function __construct()
     {
         $this->middleware(['auth',Amazoncredential::class]);
@@ -992,7 +995,7 @@ class OrderController extends Controller
         $inspection=Inspection_report::where('order_id',$order_id)->get();
         $inspection_file=isset($inspection[0]->uploaded_file)?$inspection[0]->uploaded_file:'';
         $file= public_path(). "/uploads/reports/".$inspection_file;
-        $headers = array('Content-Type: application/png',
+        $headers = array('Content-Type: application/pdf',
         );
         return response()->download($file,$inspection_file, $headers);
     }
@@ -1110,7 +1113,163 @@ class OrderController extends Controller
             Shipping_quote::where('order_id', $order_id)->update($shipping_quotes_data);
             $data = array('is_activated' => '5');
             Order::where('order_id', $order_id)->update($data);
+            //$this->createCustomer($order_id);
+
         }
+    }
+    public function  qboConnect(){
+        $this->IntuitAnywhere = new \QuickBooks_IPP_IntuitAnywhere(env('QBO_DSN'), env('QBO_ENCRYPTION_KEY'), env('QBO_OAUTH_CONSUMER_KEY'), env('QBO_CONSUMER_SECRET'), env('QBO_OAUTH_URL'), env('QBO_SUCCESS_URL'));
+        if ($this->IntuitAnywhere->check(env('QBO_USERNAME'), env('QBO_TENANT')) && $this->IntuitAnywhere->test(env('QBO_USERNAME'), env('QBO_TENANT'))) {
+            // Set up the IPP instance
+            $IPP = new \QuickBooks_IPP(env('QBO_DSN'));
+            // Get our OAuth credentials from the database
+            $creds = $this->IntuitAnywhere->load(env('QBO_USERNAME'), env('QBO_TENANT'));
+            // Tell the framework to load some data from the OAuth store
+            $IPP->authMode(
+                \QuickBooks_IPP::AUTHMODE_OAUTH,
+                env('QBO_USERNAME'),
+                $creds);
+
+            if (env('QBO_SANDBOX')) {
+                // Turn on sandbox mode/URLs
+                $IPP->sandbox(true);
+            }
+            // This is our current realm
+            $this->realm = $creds['qb_realm'];
+            // Load the OAuth information from the database
+            $this->context = $IPP->context();
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function createCustomer(){
+        $order_id='3';
+        $user__detail= User::selectRaw('user_infos.*')
+            ->join('orders','users.id','=','orders.user_id')
+            ->join('user_infos','user_infos.user_id','=','users.id')
+            ->where('orders.order_id',$order_id)
+            ->get();
+
+        $this->qboConnect();
+        $CustomerService = new \QuickBooks_IPP_Service_Customer();
+        $Customer = new \QuickBooks_IPP_Object_Customer();
+        $Customer->setDisplayName($user__detail[0]->company_name . mt_rand(0, 1000));
+        // Terms (e.g. Net 30, etc.)
+        //$Customer->setSalesTermRef(4);
+        // Phone #
+        $PrimaryPhone = new \QuickBooks_IPP_Object_PrimaryPhone();
+        $PrimaryPhone->setFreeFormNumber($user__detail[0]->company_phone);
+        $Customer->setPrimaryPhone($PrimaryPhone);
+        // Mobile #
+        $Mobile = new \QuickBooks_IPP_Object_Mobile();
+        $Mobile->setFreeFormNumber($user__detail[0]->company_phone);
+        $Customer->setMobile($Mobile);
+        // Fax #
+        $Fax = new \QuickBooks_IPP_Object_Fax();
+        $Fax->setFreeFormNumber($user__detail[0]->company_phone);
+        $Customer->setFax($Fax);
+        // Bill address
+        $BillAddr = new \QuickBooks_IPP_Object_BillAddr();
+        $BillAddr->setLine1($user__detail[0]->company_address);
+        $BillAddr->setLine2($user__detail[0]->company_address2);
+        $BillAddr->setCity($user__detail[0]->company_city);
+        $BillAddr->setCountrySubDivisionCode($user__detail[0]->company_country);
+        $BillAddr->setPostalCode($user__detail[0]->company_zipcode);
+        $Customer->setBillAddr($BillAddr);
+        // Email
+        $PrimaryEmailAddr = new \QuickBooks_IPP_Object_PrimaryEmailAddr();
+        $PrimaryEmailAddr->setAddress($user__detail[0]->contact_email);
+        $Customer->setPrimaryEmailAddr($PrimaryEmailAddr);
+        if ($resp = $CustomerService->add($this->context, $this->realm, $Customer))
+        {
+            $resp=$this->getId($resp);
+             $this->addItem($resp,$order_id);
+
+        }
+        else
+        {
+            //echo 'Not Added qbo';
+            print($CustomerService->lastError($this->context));
+        }
+    }
+    public function addItem($cust_resp,$order_id){
+        $product=Amazon_inventory::selectRaw('amazon_inventories.*')
+                 ->join('shipment_details','shipment_details.product_id','=','amazon_inventories.id','left')
+                 ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+                 ->where('shipments.order_id',$order_id)
+                 ->get();
+
+        $ItemService = new \QuickBooks_IPP_Service_Item();
+        $items = $ItemService->query($this->context, $this->realm, "SELECT * FROM Item WHERE Name ='hello'  ORDER BY Metadata.LastUpdatedTime ");
+
+        if(isset($items)) {
+            foreach ($items as $Item) {
+                $resp = $this->getId($Item->getId());
+                $this->addInvoice($resp, $cust_resp, $order_id);
+            }
+        }
+        else {
+            $Item = new \QuickBooks_IPP_Object_Item();
+            $Item->setName('ttthello');
+            $Item->setType('NonInventory');
+            $Item->setIncomeAccountRef('53');
+            if ($resp = $ItemService->add($this->context, $this->realm, $Item)) {
+                $resp = $this->getId($resp);
+                $this->addInvoice($resp, $cust_resp, $order_id);
+                //return $this->getId($resp);
+            } else {
+                print($ItemService->lastError($this->context));
+            }
+        }
+    }
+    public function addInvoice($resp,$cust_resp,$order_id){
+
+        $details= Payment_detail::where('order_id',$order_id)->get();
+        $InvoiceService = new \QuickBooks_IPP_Service_Invoice();
+        $Invoice = new \QuickBooks_IPP_Object_Invoice();
+        $Invoice->setDocNumber('WEB' . mt_rand(0, 10000));
+        $Invoice->setTxnDate('2013-10-11');
+        $Line = new \QuickBooks_IPP_Object_Line();
+        $Line->setDetailType('SalesItemLineDetail');
+        $Line->setAmount($details[0]->total_cost);
+        $Line->setDescription('');
+        $SalesItemLineDetail = new \QuickBooks_IPP_Object_SalesItemLineDetail();
+        $SalesItemLineDetail->setItemRef($resp);
+       // $SalesItemLineDetail->setUnitPrice();
+       // $SalesItemLineDetail->setQty(2);
+        $Line->addSalesItemLineDetail($SalesItemLineDetail);
+        $Invoice->addLine($Line);
+        $Invoice->setCustomerRef($cust_resp);
+        if ($resp = $InvoiceService->add($this->context, $this->realm, $Invoice))
+        {
+            $resp=$this->getId($resp);
+            $this->invoice_pdf();
+        }
+        else
+        {
+            print($InvoiceService->lastError());
+        }
+    }
+    public function invoice_pdf()
+    {
+        $this->qboConnect();
+        $Context=$this->context;
+        $realm=$this->realm;
+        $InvoiceService = new \QuickBooks_IPP_Service_Invoice();
+        $invoices = $InvoiceService->query($Context, $realm, "SELECT * FROM Invoice STARTPOSITION 1 MAXRESULTS 1");
+        $invoice = reset($invoices);
+        $id = substr($invoice->getId(), 2, -1);
+        header("Content-Disposition: attachment; filename=example_invoice.pdf");
+        header("Content-type: application/x-pdf");
+        print $InvoiceService->pdf($Context, $realm, $id);
+    }
+    public function getId($resp){
+        $resp = str_replace('{','',$resp);
+        $resp = str_replace('}','',$resp);
+        $resp = abs($resp);
+        return $resp;
     }
     public function createshipments(Request $request)
     {
