@@ -48,7 +48,7 @@
                                             <a onclick="openform({{$order->order_id}})">Upload Report</a>
                                             @endif
                                         @elseif($user_role==5)
-                                            @if($order->is_activated==3)
+                                            @if($order->is_activated==3 || $order->is_activated == 1)
                                             <a href="{{ url('order/shippingquoteform/'.$order->order_id)}}" class="btn btn-info">Shipping Quote</a>
                                             @endif
                                             @if($order->is_activated==6)

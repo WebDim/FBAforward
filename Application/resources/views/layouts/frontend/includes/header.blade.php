@@ -81,6 +81,11 @@
                                     <a class="external" href="{{ url('order/ordershipping') }}"><i class="fa fa-btn fa-user"></i> Ship Order</a>
                                 </li>
                             @endif
+                            @if('Logistics'===\Auth::user()->role->name)
+                                <li>
+                                    <a class="external" href="{{ url('order/billoflading') }}"><i class="fa fa-btn fa-user"></i> Bill Of Lading</a>
+                                </li>
+                            @endif
                             @if('Admin' === \Auth::user()->role->name)
                                 <li><a class="external" href="{{ url('admin/dashboard') }}"><i
                                                 class="fa fa-btn fa-user-secret"></i>&nbsp;

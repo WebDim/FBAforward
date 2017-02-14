@@ -55,7 +55,7 @@ use AuthenticatesAndRegistersUsers,
                     'name' => 'required|max:255',
                     'email' => 'required|email|max:255|unique:users',
                     'password' => 'required|min:6|confirmed',
-                    'role' => 'required',
+                    //'role' => 'required',
                     'company_name' => 'required',
                     'company_phone' => 'required',
                     'company_address' => 'required',
@@ -90,15 +90,15 @@ use AuthenticatesAndRegistersUsers,
     }
     public function showRegistrationForm()
     {
-        $roles = DB::table('roles')->whereNotIn('id', [1, 2])->get();
+       // $roles = DB::table('roles')->whereNotIn('id', [1, 2])->get();
         //$country = \Config::get('constant.country_name');
         $country = CountryState::getCountries();
         $states = CountryState::getStates('US');
         if (property_exists($this, 'registerView')) {
-            return view($this->registerView)->with(compact('roles','country'));
+            return view($this->registerView)->with(compact('country'));
         }
 
-        return view('auth.register')->with(compact('roles','country','states'));
+        return view('auth.register')->with(compact('country','states'));
     }
 
     /**
@@ -117,7 +117,7 @@ use AuthenticatesAndRegistersUsers,
         $user = User::create([
                     'name' => $data['name'],
                     'email' => $data['email'],
-                    'role_id' => $data['role'],
+                    'role_id' => '3',
                     'avatar' => 'avatar.png',
                     'password' => bcrypt($data['password']),
 

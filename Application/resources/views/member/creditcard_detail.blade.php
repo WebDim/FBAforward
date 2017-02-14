@@ -22,7 +22,7 @@
                         <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
-                                {!! Form::text('credit_card_number', old('credit_card_number'), ['class' => 'form-control validate[required]', 'placeholder'=>'Credit Card Number']) !!}
+                                {!! Form::text('credit_card_number', old('credit_card_number'), ['class' => 'form-control validate[required, custom[creditCard]]', 'placeholder'=>'Credit Card Number']) !!}
                             </div>
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                         <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
-                                {!! Form::text('cvv', old('cvv'), ['class' => 'form-control validate[required]', 'placeholder'=>'CVV']) !!}
+                                {!! Form::text('cvv', old('cvv'), ['class' => 'form-control validate[required, custom[maxSize[3]]]', 'placeholder'=>'CVV']) !!}
                             </div>
                         </div>
                     </div>
@@ -83,8 +83,20 @@
     </div>
 @endsection
 @section('js')
-
-
+    {!! Html::script('assets/plugins/validationengine/languages/jquery.validationEngine-en.js') !!}
+    {!! Html::script('assets/plugins/validationengine/jquery.validationEngine.js') !!}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Validation Engine init
+            var prefix = 's2id_';
+            $("form[id^='validate']").validationEngine('attach',
+                {
+                    promptPosition: "bottomRight", scroll: false,
+                    prettySelect: true,
+                    usePrefix: prefix
+                });
+        });
+    </script>
     <script type="text/javascript">
         $(document).ready(function () {
             $('#expire_card').datepicker( {

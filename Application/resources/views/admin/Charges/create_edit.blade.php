@@ -16,7 +16,7 @@
         </h1>
         <ol class="breadcrumb">
             <li><a href="{{ url('admin/dashboard') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-            <li><a href="{{ url('admin/productlabel') }}"><i class="fa fa-star"></i> Charges</a></li>
+            <li><a href="{{ url('admin/charges') }}"><i class="fa fa-star"></i> Charges</a></li>
             <li class="active"><i
                         class="fa {{ isset($charges) ? 'fa-pencil' : 'fa-plus' }}"></i> {{ isset($charges) ? 'Edit' : 'Add' }}
                 Charges

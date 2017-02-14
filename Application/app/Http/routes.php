@@ -168,6 +168,14 @@ Route::group(['middleware' => 'web'], function () {
         Route::put('/shippingquoteform', 'OrderController@addshippingquoteform');
         Route::post('/viewshippingquote', 'OrderController@viewshippingquote');
         Route::post('/approveshippingquote', 'OrderController@approveshippingquote');
+        Route::get('/billofladingform/{order_id}', 'OrderController@billofladingform');
+        Route::put('/billofladingform/', 'OrderController@addbillofladingform');
+        Route::get('/billoflading/', 'OrderController@billoflading');
+        Route::post('/viewbilloflading', 'OrderController@viewbilloflading');
+        Route::post('/approvebilloflading', 'OrderController@approvebilloflading');
+        Route::get('/downloadladingbill/{order_id}/{shipment_id}', 'OrderController@downloadladingbill');
+        Route::get('/prealertform/{order_id}', 'OrderController@prealertform');
+        Route::put('/prealertform/', 'OrderController@addprealertform');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);

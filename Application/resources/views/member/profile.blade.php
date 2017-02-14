@@ -59,7 +59,7 @@
                             </td>
                             <td><b class="text-info">{{ $user->email }}</b></td>
                         </tr>
-                       
+                        @if($user->role_id==3)
                         <tr>
                             <td>
                                 <span>Company Name:</span>
@@ -96,7 +96,7 @@
                             </td>
                             <td><b class="text-info">@if(!empty($user_info)) {{ $user_info[0]->primary_bussiness_type }} @endif</b></td>
                         </tr>
-
+                        @endif
                         {{--<tr>
                             <td>
                                 <span>Job Title:</span>

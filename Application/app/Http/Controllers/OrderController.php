@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use App\Amazon_destination;
 use App\Amazon_inventory;
+use App\Bill_of_lading;
 use App\Charges;
 use App\Customer_amazon_detail;
 use App\Dev_account;
@@ -12,6 +13,7 @@ use App\Other_label_detail;
 use App\Outbound_method;
 use App\Payment_info;
 use App\Photo_list_detail;
+use App\Prealert_detail;
 use App\Prep_detail;
 use App\Prep_service;
 use App\Product_labels;
@@ -1017,7 +1019,7 @@ class OrderController extends Controller
         $details=Order::selectRaw('orders.order_id')
             ->join('supplier_inspections','supplier_inspections.order_id','=','orders.order_id')
             ->where('orders.is_activated','1')
-            ->where('supplier_inspections.is_inspection','1')
+            ->where('supplier_inspections.is_inspection','0')
             ->orderBy('orders.created_at', 'desc')
             ->distinct('supplier_inspections.order_id')
             ->get();
@@ -1026,7 +1028,11 @@ class OrderController extends Controller
         {
             $order_ids[]=$detail->order_id;
         }
-        $orders = Order::where('orders.is_activated','3')->orWhereNotIn('orders.order_id',$order_ids)->orderBy('orders.created_at', 'desc')->get();
+
+        if(!empty($order_ids))
+        $orders = Order::where('orders.is_activated','3')->orWhereIn('orders.order_id',$order_ids)->orderBy('orders.created_at', 'desc')->get();
+        else
+        $orders = Order::where('orders.is_activated','3')->orWhere('orders.is_activated','6')->orWhere('orders.is_activated','8')->orderBy('orders.created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role'));
     }
@@ -1113,8 +1119,7 @@ class OrderController extends Controller
             Shipping_quote::where('order_id', $order_id)->update($shipping_quotes_data);
             $data = array('is_activated' => '5');
             Order::where('order_id', $order_id)->update($data);
-            //$this->createCustomer($order_id);
-
+            $this->createCustomer($order_id);
         }
     }
     public function  qboConnect(){
@@ -1144,14 +1149,13 @@ class OrderController extends Controller
             return false;
         }
     }
-    public function createCustomer(){
-        $order_id='3';
+    public function createCustomer($order_id){
+
         $user__detail= User::selectRaw('user_infos.*')
             ->join('orders','users.id','=','orders.user_id')
             ->join('user_infos','user_infos.user_id','=','users.id')
             ->where('orders.order_id',$order_id)
             ->get();
-
         $this->qboConnect();
         $CustomerService = new \QuickBooks_IPP_Service_Customer();
         $Customer = new \QuickBooks_IPP_Object_Customer();
@@ -1185,8 +1189,7 @@ class OrderController extends Controller
         if ($resp = $CustomerService->add($this->context, $this->realm, $Customer))
         {
             $resp=$this->getId($resp);
-             $this->addItem($resp,$order_id);
-
+            $this->addInvoice($resp, $order_id);
         }
         else
         {
@@ -1196,80 +1199,241 @@ class OrderController extends Controller
     }
     public function addItem($cust_resp,$order_id){
         $product=Amazon_inventory::selectRaw('amazon_inventories.*')
-                 ->join('shipment_details','shipment_details.product_id','=','amazon_inventories.id','left')
-                 ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
-                 ->where('shipments.order_id',$order_id)
-                 ->get();
-
-        $ItemService = new \QuickBooks_IPP_Service_Item();
-        $items = $ItemService->query($this->context, $this->realm, "SELECT * FROM Item WHERE Name ='hello'  ORDER BY Metadata.LastUpdatedTime ");
-
-        if(isset($items)) {
-            foreach ($items as $Item) {
-                $resp = $this->getId($Item->getId());
-                $this->addInvoice($resp, $cust_resp, $order_id);
+            ->join('shipment_details','shipment_details.product_id','=','amazon_inventories.id','left')
+            ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+            ->where('shipments.order_id',$order_id)
+            ->get();
+        if(isset($product)) {
+            $ItemService = new \QuickBooks_IPP_Service_Item();
+            foreach ($product as $Item) {
+                $items = $ItemService->query($this->context, $this->realm, "SELECT * FROM Item WHERE Name = '$Item->product_name'  ORDER BY Metadata.LastUpdatedTime ");
+                $resp[] = $this->getId($items[0]->getId());
             }
+            $this->addInvoice($resp, $cust_resp, $order_id);
         }
         else {
+            $ItemService = new \QuickBooks_IPP_Service_Item();
             $Item = new \QuickBooks_IPP_Object_Item();
             $Item->setName('ttthello');
             $Item->setType('NonInventory');
             $Item->setIncomeAccountRef('53');
             if ($resp = $ItemService->add($this->context, $this->realm, $Item)) {
-                $resp = $this->getId($resp);
-                $this->addInvoice($resp, $cust_resp, $order_id);
+                $resp[] = $this->getId($resp);
                 //return $this->getId($resp);
             } else {
                 print($ItemService->lastError($this->context));
             }
+            $this->addInvoice(\GuzzleHttp\json_encode($resp), $cust_resp, $order_id);
         }
     }
-    public function addInvoice($resp,$cust_resp,$order_id){
+    public function addInvoice($cust_resp,$order_id){
 
         $details= Payment_detail::where('order_id',$order_id)->get();
         $InvoiceService = new \QuickBooks_IPP_Service_Invoice();
         $Invoice = new \QuickBooks_IPP_Object_Invoice();
         $Invoice->setDocNumber('WEB' . mt_rand(0, 10000));
         $Invoice->setTxnDate('2013-10-11');
-        $Line = new \QuickBooks_IPP_Object_Line();
-        $Line->setDetailType('SalesItemLineDetail');
-        $Line->setAmount($details[0]->total_cost);
-        $Line->setDescription('');
-        $SalesItemLineDetail = new \QuickBooks_IPP_Object_SalesItemLineDetail();
-        $SalesItemLineDetail->setItemRef($resp);
-       // $SalesItemLineDetail->setUnitPrice();
-       // $SalesItemLineDetail->setQty(2);
-        $Line->addSalesItemLineDetail($SalesItemLineDetail);
-        $Invoice->addLine($Line);
-        $Invoice->setCustomerRef($cust_resp);
+        $product=Amazon_inventory::selectRaw('amazon_inventories.*')
+            ->join('shipment_details','shipment_details.product_id','=','amazon_inventories.id','left')
+            ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+            ->where('shipments.order_id',$order_id)
+            ->get();
+        if(isset($product)) {
+            $ItemService = new \QuickBooks_IPP_Service_Item();
+            foreach ($product as $Item) {
+                $Line = new \QuickBooks_IPP_Object_Line();
+                $Line->setDetailType('SalesItemLineDetail');
+                $Line->setAmount($details[0]->total_cost);
+                $Line->setDescription('');
+                $items = $ItemService->query($this->context, $this->realm, "SELECT * FROM Item WHERE Name = '$Item->product_name'  ORDER BY Metadata.LastUpdatedTime ");
+                $resp = $this->getId($items[0]->getId());
+                $SalesItemLineDetail = new \QuickBooks_IPP_Object_SalesItemLineDetail();
+                $SalesItemLineDetail->setUnitPrice();
+                $SalesItemLineDetail->setQty($Item->total);
+                $SalesItemLineDetail->setItemRef($resp);
+                $Line->addSalesItemLineDetail($SalesItemLineDetail);
+                $Invoice->addLine($Line);
+            }
+            $Invoice->setCustomerRef($cust_resp);
+//            $this->addInvoice($resp, $cust_resp, $order_id);
+        }
+        else{
+            exit;
+        }
         if ($resp = $InvoiceService->add($this->context, $this->realm, $Invoice))
         {
             $resp=$this->getId($resp);
-            $this->invoice_pdf();
+            $this->invoice_pdf($order_id);
         }
         else
         {
             print($InvoiceService->lastError());
         }
     }
-    public function invoice_pdf()
+    public function invoice_pdf($order_id)
     {
-        $this->qboConnect();
+        //$this->qboConnect();
         $Context=$this->context;
         $realm=$this->realm;
         $InvoiceService = new \QuickBooks_IPP_Service_Invoice();
         $invoices = $InvoiceService->query($Context, $realm, "SELECT * FROM Invoice STARTPOSITION 1 MAXRESULTS 1");
         $invoice = reset($invoices);
-        $id = substr($invoice->getId(), 2, -1);
+        $id = $invoice->getId();
+        $data = array('is_activated' => '6');
+        Order::where('order_id', $order_id)->update($data);
         header("Content-Disposition: attachment; filename=example_invoice.pdf");
         header("Content-type: application/x-pdf");
         print $InvoiceService->pdf($Context, $realm, $id);
+
     }
     public function getId($resp){
         $resp = str_replace('{','',$resp);
         $resp = str_replace('}','',$resp);
         $resp = abs($resp);
         return $resp;
+    }
+
+    public function billofladingform(Request $request)
+    {
+        $order_id=$request->order_id;
+        $user=User_info::selectRaw('user_infos.contact_email, orders.order_no')
+            ->join('orders','orders.user_id','=','user_infos.user_id')
+            ->where('orders.order_id',$order_id)
+            ->get();
+        $shipment=Shipments::where('order_id',$order_id)->get();
+        $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name')
+            ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+            ->join('orders','orders.order_id','=','shipments.order_id','left')
+            ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
+            ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
+            ->where('orders.order_id',$order_id)
+            ->get();
+        return view('order.billoflading')->with(compact('order_id','shipment','shipment_detail','user'));
+    }
+    public function addbillofladingform(Request $request)
+    {
+        $count=$request->input('count');
+        for($cnt=1;$cnt<$count;$cnt++)
+        {
+            if ($request->hasFile('bill'.$cnt)) {
+                $destinationPath = public_path() . '/uploads/bills';
+                $image = $request->input('order_id') . '_' . $request->input('shipment_id'.$cnt) . '_' . 'lading_bill' . '.' . $request->file('bill'.$cnt)->getClientOriginalExtension();
+                $request->file('bill'.$cnt)->move($destinationPath, $image);
+
+                $bill_detail = array('order_id' => $request->input('order_id'),
+                    'shipment_id' => $request->input('shipment_id' . $cnt),
+                    'sbnumber' => $request->input('ref_number' . $cnt),
+                    'bill' => $image,
+                    'status' => '0'
+                );
+                Bill_of_lading::create($bill_detail);
+            }
+        }
+        $order= array('is_activated'=>'7');
+        Order::where('order_id',$request->input('order_id'))->update($order);
+        return redirect('order/shippingquote')->with('success','Bill of Lading Uploaded Successfully');
+    }
+    public function billoflading()
+    {
+        $user= \Auth::user();
+        $user_role=$user->role_id;
+        $orders = Order::where('orders.is_activated','7')->orderBy('orders.created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role'));
+    }
+    public function viewbilloflading(Request $request)
+    {
+        if($request->ajax())
+        {
+            $post=$request->all();
+            $order_id=$post['order_id'];
+            $shipment=Shipments::selectRaw('bill_of_ladings.*')
+                ->join('bill_of_ladings','bill_of_ladings.shipment_id','=','shipments.shipment_id')
+                ->where('shipments.order_id',$order_id)->get();
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name')
+                ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+                ->join('orders','orders.order_id','=','shipments.order_id','left')
+                ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
+                ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
+                ->where('orders.order_id',$order_id)
+                ->get();
+           return view('order/viewbilloflading')->with(compact('shipment','shipment_detail','order_id'));
+        }
+    }
+    public function downloadladingbill(Request $request)
+    {
+        $order_id=$request->order_id;
+        $shipment_id=$request->shipment_id;
+        $ladingbill=Bill_of_lading::where('order_id',$order_id)->where('shipment_id',$shipment_id)->get();
+        $bill=isset($ladingbill[0]->bill)?$ladingbill[0]->bill:'';
+        $file= public_path(). "/uploads/bills/".$bill;
+        $headers = array('Content-Type: application/pdf',
+        );
+        return response()->download($file,$bill, $headers);
+    }
+    public function approvebilloflading(Request $request)
+    {
+        if($request->ajax()){
+            $post=$request->all();
+            $order_id = $post['order_id'];
+            $ladingbill = array('status' => '1');
+            Bill_of_lading::where('order_id', $order_id)->update($ladingbill);
+            $data = array('is_activated' => '8');
+            Order::where('order_id', $order_id)->update($data);
+            //$this->createCustomer($order_id);
+
+        }
+    }
+    public function prealertform(Request $request)
+    {
+        $order_id=$request->order_id;
+        $user=User_info::selectRaw('user_infos.company_name, user_infos.contact_email, orders.order_no')
+            ->join('orders','orders.user_id','=','user_infos.user_id')
+            ->where('orders.order_id',$order_id)
+            ->get();
+        $shipment=Shipments::selectRaw('shipments.shipment_id, shipping_methods.shipping_name')
+            ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
+            ->where('shipments.order_id',$order_id)
+            ->orderby('shipments.shipment_id','asc')
+            ->get();
+        return view('order.prealert')->with(compact('order_id','shipment','user'));
+    }
+    public function addprealertform(Request $request)
+    {
+        $count=$request->input('count');
+        for($cnt=1;$cnt<$count;$cnt++)
+        {
+            if ($request->hasFile('ISF'.$cnt)) {
+                $destinationPath = public_path() . '/uploads/bills';
+                $isfimage = $request->input('order_id') . '_' . $request->input('shipment_id' . $cnt) . '_' . 'ISF' . '.' . $request->file('ISF' . $cnt)->getClientOriginalExtension();
+                $request->file('ISF' . $cnt)->move($destinationPath, $isfimage);
+            }
+            if ($request->hasFile('HBL'.$cnt)) {
+                $destinationPath = public_path() . '/uploads/bills';
+                $hblimage = $request->input('order_id') . '_' . $request->input('shipment_id' . $cnt) . '_' . 'HBL' . '.' . $request->file('HBL' . $cnt)->getClientOriginalExtension();
+                $request->file('HBL' . $cnt)->move($destinationPath, $hblimage);
+            }
+            if ($request->hasFile('MBL'.$cnt)) {
+                $destinationPath = public_path() . '/uploads/bills';
+                $mblimage = $request->input('order_id') . '_' . $request->input('shipment_id' . $cnt) . '_' . 'MBL' . '.' . $request->file('MBL' . $cnt)->getClientOriginalExtension();
+                $request->file('MBL' . $cnt)->move($destinationPath, $mblimage);
+            }
+                $prealert_detail = array('order_id' => $request->input('order_id'),
+                    'shipment_id' => $request->input('shipment_id' . $cnt),
+                    'ISF' => $isfimage,
+                    'HBL' => $hblimage,
+                    'MBL' => $mblimage,
+                    'ETD_china' => $request->input('ETD_china'.$cnt),
+                    'ETA_US' => $request->input('ETA_US'.$cnt),
+                    'delivery_port' => $request->input('delivery_port'.$cnt),
+                    'status' => '0'
+                );
+                Prealert_detail::create($prealert_detail);
+
+        }
+        $order= array('is_activated'=>'9');
+        Order::where('order_id',$request->input('order_id'))->update($order);
+        return redirect('order/shippingquote')->with('success','Shipment Pre Alert Submitted Successfully');
     }
     public function createshipments(Request $request)
     {

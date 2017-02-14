@@ -34,7 +34,7 @@ class UserRequest extends Request {
                         'role' => 'required',
                         //'address' => 'required',
                         'avatar' => 'mimes:jpg,jpeg,png|max:500',
-                        'company_name' =>'required',
+                        /*'company_name' =>'required',
                         'company_phone' => 'required',
                         'company_address' => 'required',
                         'company_city' => 'required',
@@ -51,7 +51,7 @@ class UserRequest extends Request {
                         'contact_phone' => 'required',
                         'account_payable' => 'required',
                         'account_email' => 'required|email',
-                        'account_phone' => 'required'
+                        'account_phone' => 'required'*/
                     ];
                 }
             case 'PUT':

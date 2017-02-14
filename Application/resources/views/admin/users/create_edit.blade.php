@@ -83,7 +83,7 @@
                         <div class="form-group">
                             {!! Form::label('role', 'Role *', ['class' => 'control-label col-md-3']) !!}
                             <div class="col-md-9">
-                                {!! Form::select('role', array_add($roles, '','Please Select'), old('role', !empty($user) ? $user->role_id: null), ['class' => 'form-control select2 validate[required]']) !!}
+                                {!! Form::select('role', array_add($roles, '','Please Select'), old('role', !empty($user) ? $user->role_id: null), ['class' => 'form-control select2 validate[required]', 'onchange'=>'show()']) !!}
                             </div>
                         </div>
                         <div class="form-group">
@@ -108,7 +108,7 @@
                     </div><!-- .col-md-6 -->
                 </div><!-- .row -->
             </fieldset>
-
+            <div id="main" hidden>
             <fieldset>
                 <legend>Company Information</legend>
                 <div class="row">
@@ -353,11 +353,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <div class="col-md-9 col-md-offset-3">
-                                {!! Form::submit((!empty($user)?'Update': 'Add'). ' User', ['class'=>'btn btn-primary']) !!}
-                            </div>
-                        </div>
+
                     </div><!-- .col-md-6 -->
                     <div class="col-md-6">
                         <div class="form-group">
@@ -373,7 +369,16 @@
                     </div><!-- .col-md-6 -->
                 </div><!-- .row -->
             </fieldset>
-
+        </div>
+            <fieldset>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <div class="col-md-9 col-md-offset-3">
+                            {!! Form::submit((!empty($user)?'Update': 'Add'). ' User', ['class'=>'btn btn-primary']) !!}
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
             {!! Form::close() !!}
         </div><!-- /.box-body -->
         <div class="box-footer">
@@ -428,6 +433,17 @@
                 console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
             }
         });
+    }
+    function  show() {
+
+      if($('#role').val()==3)
+      {
+          $('#main').show();
+      }
+      else
+      {
+          $('#main').hide();
+      }
     }
 </script>
 @endsection

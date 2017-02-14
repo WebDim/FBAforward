@@ -59,7 +59,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('service_image', 'Image *', ['class' => 'control-label col-md-3']) !!}
+                            {!! Form::label('service_image', 'Image ', ['class' => 'control-label col-md-3']) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
 								<span class="btn  btn-file  btn-primary">Upload Image

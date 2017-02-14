@@ -8,7 +8,7 @@
 
 @section('content')
     <div class="row">
-        <form class="form-horizontal" role="form" method="POST" action="{{ url('/register') }}">
+        <form class="form-horizontal" id="validate" role="form" method="POST" action="{{ url('/register') }}">
             {!! csrf_field() !!}
             <div class="col-md-12">
             <h4> Website Login Credentials</h4>
@@ -20,7 +20,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                            <input type="text" placeholder="Name" class="form-control" name="name" value="{{ old('name') }}">
+                            <input type="text" placeholder="Name" class="form-control validate[required]" name="name" value="{{ old('name') }}">
                         </div>
                         @if ($errors->has('name'))
                             <span class="help-block">
@@ -35,7 +35,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-                            <input type="email" placeholder="E-Mail Address" class="form-control" name="email" value="{{ old('email') }}">
+                            <input type="email" placeholder="E-Mail Address" class="form-control validate[required,custom[email]]" name="email" value="{{ old('email') }}">
                         </div>
                         @if ($errors->has('email'))
                             <span class="help-block">
@@ -51,7 +51,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                            <input type="password" placeholder="Password" class="form-control" name="password">
+                            <input type="password" placeholder="Password" class="form-control validate[required]" name="password">
                         </div>
                         @if ($errors->has('password'))
                             <span class="help-block">
@@ -67,7 +67,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                            <input type="password" placeholder="Confirmation" class="form-control" name="password_confirmation">
+                            <input type="password" placeholder="Confirmation" class="form-control validate[required]" name="password_confirmation">
                         </div>
                         @if ($errors->has('password_confirmation'))
                             <span class="help-block">
@@ -76,28 +76,7 @@
                         @endif
                     </div>
                 </div>
-                <div class="form-group{{ $errors->has('role') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">User Role *</label>
 
-                    <div class="col-md-7">
-                        <div class="input-group">
-                            <span class="input-group-addon"></span>
-                            <select name="role" class="form-control">
-                                <option value="">User Role</option>
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}">  {{ $role->name }}</option>
-                                @endforeach
-                            </select>
-
-
-                        </div>
-                        @if ($errors->has('role'))
-                            <span class="help-block">
-                                        <strong>{{ $errors->first('role') }}</strong>
-                                    </span>
-                        @endif
-                    </div>
-                </div>
             </div>
             <div class="col-md-12">
                 <h4> Company Information</h4>
@@ -109,7 +88,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Company Name" class="form-control" name="company_name" value="{{ old('company_name') }}">
+                            <input type="text" placeholder="Company Name" class="form-control validate[required]" name="company_name" value="{{ old('company_name') }}">
                         </div>
                         @if ($errors->has('company_name'))
                             <span class="help-block">
@@ -125,7 +104,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Phone" class="form-control" name="company_phone" value="{{ old('company_phone') }}">
+                            <input type="text" placeholder="Phone" class="form-control validate[required, custom[integer, maxSize[10]]]" name="company_phone" value="{{ old('company_phone') }}">
                         </div>
                         @if ($errors->has('company_phone'))
                             <span class="help-block">
@@ -141,7 +120,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Street Address" class="form-control" name="company_address">
+                            <input type="text" placeholder="Street Address" class="form-control validate[required]" name="company_address">
                         </div>
                         @if ($errors->has('company_address'))
                             <span class="help-block">
@@ -165,7 +144,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                             <select name="company_country" class="form-control" onchange="changeCountryWiseState(this.value)">
+                             <select name="company_country" class="form-control validate[required]" onchange="changeCountryWiseState(this.value)">
                                 <option value="">Select Country</option>
                                 @foreach ($country as $key=>$country)
                                     <option value="{{ $key }}">  {{ $country }}</option>
@@ -186,7 +165,7 @@
                         <div class="col-md-7">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
-                                <select name="company_state" class="form-control">
+                                <select name="company_state" class="form-control validate[required]">
                                     <option value="">Select State</option>
                                     @foreach ($states as $key=>$state)
                                         <option value="{{ $key }}">  {{ $state }}</option>
@@ -206,7 +185,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="City" class="form-control" name="company_city">
+                            <input type="text" placeholder="City" class="form-control validate[required]" name="company_city">
                         </div>
                         @if ($errors->has('company_city'))
                             <span class="help-block">
@@ -221,7 +200,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Zipcode" class="form-control" name="company_zipcode">
+                            <input type="text" placeholder="Zipcode" class="form-control validate[required]" name="company_zipcode">
                         </div>
                         @if ($errors->has('company_zipcode'))
                             <span class="help-block">
@@ -236,7 +215,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Tax ID Number" class="form-control" name="tax_id_number">
+                            <input type="text" placeholder="Tax ID Number" class="form-control validate[required]" name="tax_id_number">
                         </div>
                         @if ($errors->has('tax_id_number'))
                             <span class="help-block">
@@ -251,7 +230,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Primary Amazon Business Type" class="form-control" name="business_type">
+                            <input type="text" placeholder="Primary Amazon Business Type" class="form-control validate[required]" name="business_type">
                         </div>
                         @if ($errors->has('business_type'))
                             <span class="help-block">
@@ -266,7 +245,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Estimated Annual Amazon Revenue" class="form-control" name="annual_amazon_revenue">
+                            <input type="text" placeholder="Estimated Annual Amazon Revenue" class="form-control validate[required]" name="annual_amazon_revenue">
                         </div>
                         @if ($errors->has('annual_amazon_revenue'))
                             <span class="help-block">
@@ -281,7 +260,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Estimated Annual FBAforward Orders" class="form-control" name="annual_order">
+                            <input type="text" placeholder="Estimated Annual FBAforward Orders" class="form-control validate[required]" name="annual_order">
                         </div>
                         @if ($errors->has('annual_order'))
                             <span class="help-block">
@@ -296,7 +275,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="How did you hear about us?" class="form-control" name="reference">
+                            <input type="text" placeholder="How did you hear about us?" class="form-control validate[required]" name="reference">
                         </div>
                         @if ($errors->has('reference'))
                             <span class="help-block">
@@ -316,7 +295,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Contact First Name" class="form-control" name="contact_fname" value="{{ old('contact_fname') }}">
+                            <input type="text" placeholder="Contact First Name" class="form-control validate[required]" name="contact_fname" value="{{ old('contact_fname') }}">
                         </div>
                         @if ($errors->has('contact_fname'))
                             <span class="help-block">
@@ -331,7 +310,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Contact Last Name" class="form-control" name="contact_lname" value="{{ old('contact_lname') }}">
+                            <input type="text" placeholder="Contact Last Name" class="form-control validate[required]" name="contact_lname" value="{{ old('contact_lname') }}">
                         </div>
                         @if ($errors->has('contact_lname'))
                             <span class="help-block">
@@ -346,7 +325,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-                            <input type="email" placeholder="Email" class="form-control" name="contact_email" value="{{ old('contact_email') }}">
+                            <input type="email" placeholder="Email" class="form-control validate[required,custom[email]]" name="contact_email" value="{{ old('contact_email') }}">
                         </div>
                         @if ($errors->has('contact_email'))
                             <span class="help-block">
@@ -361,7 +340,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Phone" class="form-control" name="contact_phone" value="{{ old('contact_phone') }}">
+                            <input type="text" placeholder="Phone" class="form-control validate[required, custom[integer, maxSize[10]]]" name="contact_phone" value="{{ old('contact_phone') }}">
                         </div>
                         @if ($errors->has('contact_phone'))
                             <span class="help-block">
@@ -376,7 +355,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Secondary Contact" class="form-control" name="secondary_contact_phone" value="{{ old('secondary_contact_phone') }}">
+                            <input type="text" placeholder="Secondary Contact" class="form-control validate[custom[integer, maxSize[10]]]" name="secondary_contact_phone" value="{{ old('secondary_contact_phone') }}">
                         </div>
 
                     </div>
@@ -387,7 +366,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-                            <input type="email" placeholder="Secondary Contact Email" class="form-control" name="secondary_contact_email" value="{{ old('secondary_contact_email') }}">
+                            <input type="email" placeholder="Secondary Contact Email" class="form-control validate[custom[email]]" name="secondary_contact_email" value="{{ old('secondary_contact_email') }}">
                         </div>
 
                     </div>
@@ -404,7 +383,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Accounts Payable Contact" class="form-control" name="accounts_payable" value="{{ old('accounts_payable') }}">
+                            <input type="text" placeholder="Accounts Payable Contact" class="form-control validate[required]" name="accounts_payable" value="{{ old('accounts_payable') }}">
                         </div>
                         @if ($errors->has('accounts_payable'))
                             <span class="help-block">
@@ -420,7 +399,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-                            <input type="email" placeholder="E-Mail" class="form-control" name="accounts_email" value="{{ old('accounts_email') }}">
+                            <input type="email" placeholder="E-Mail" class="form-control validate[required,custom[email]]" name="accounts_email" value="{{ old('accounts_email') }}">
                         </div>
                         @if ($errors->has('accounts_email'))
                             <span class="help-block">
@@ -436,7 +415,7 @@
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
-                            <input type="text" placeholder="Phone" class="form-control" name="accounts_phone">
+                            <input type="text" placeholder="Phone" class="form-control validate[required, custom[integer, maxSize[10]]]" name="accounts_phone">
                         </div>
                         @if ($errors->has('accounts_phone'))
                             <span class="help-block">
@@ -462,6 +441,20 @@
 @endsection
 
 @section('js')
+    {!! Html::script('assets/plugins/validationengine/languages/jquery.validationEngine-en.js') !!}
+    {!! Html::script('assets/plugins/validationengine/jquery.validationEngine.js') !!}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Validation Engine init
+            var prefix = 's2id_';
+            $("form[id^='validate']").validationEngine('attach',
+                {
+                    promptPosition: "bottomRight", scroll: false,
+                    prettySelect: true,
+                    usePrefix: prefix
+                });
+        });
+    </script>
     <script type="text/javascript">
         function changeCountryWiseState(val){
             $.ajax({

@@ -9,7 +9,7 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <h2 class="page-head-line">Update Profile</h2>
+            <h2 class="page-head-line">Update Profile </h2>
         </div>
     </div>
     <div class="row">
@@ -45,7 +45,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('password_confirmation', 'Confirmation', ['class' => 'control-label col-md-3']) !!}
+                        {!! Form::label('password_confirmation', 'Confirmation Password', ['class' => 'control-label col-md-3']) !!}
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-lock"></i></span>
@@ -77,7 +77,8 @@
                     </div>
                 </div><!-- .col-md-6 -->
             </div><!-- .row -->
-            <div class="row">
+
+            <div class="row" >
                 <div class="col-md-6">
                    {{-- <div class="form-group">
                         {!! Form::label('mobile', 'Mobile', ['class' => 'control-label col-md-3']) !!}
@@ -100,7 +101,7 @@
                             {!! Form::text('address', old('address', $user->address), ['class' => 'form-control validate[required]', 'placeholder'=>'Address']) !!}
                         </div>
                     </div>--}}
-                  
+                    @if($user->role_id==3)
                     <div class="form-group">
                         {!! Form::label('company_name', 'Company Name *', ['class' => 'control-label col-md-3']) !!}
                         <div class="col-md-9">
@@ -164,7 +165,7 @@
                                 </div>
                             </div>
                         </div>
-                
+                    @endif
                     <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
                             {!! Form::submit('Update Profile', ['class'=>'btn btn-primary']) !!}
@@ -172,6 +173,7 @@
                     </div>
                 </div><!-- .col-md-6 -->
             </div><!-- .row -->
+
             {!! Form::close() !!}
         </div>
     </div>

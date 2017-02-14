@@ -41,7 +41,7 @@
                     <tr>
                         <th>id</th>
                         <th>Name</th>
-                        <th>Routes</th>
+                       {{-- <th>Routes</th> --}}
                         <th>Created At</th>
                         <th>Actions</th>
                     </tr>
@@ -84,7 +84,7 @@
             columns: [
                 {data: 'id', name: 'id'},
                 {data: 'name', name: 'name'},
-                {data: 'routes', name: 'routes'},
+               // {data: 'routes', name: 'routes'},
                 {data: 'created_at', name: 'created_at'},
                 {data: 'actions', name: 'actions', orderable: false, searchable: false}
             ]

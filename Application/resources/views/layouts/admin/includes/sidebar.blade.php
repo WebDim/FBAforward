@@ -99,7 +99,7 @@
                     </li>
                 </ul>
             </li>
-            <li class="treeview {{  Request::is('admin/suppliers*') ? 'active': '' }}">
+           {{-- <li class="treeview {{  Request::is('admin/suppliers*') ? 'active': '' }}">
                 <a href="#">
                     <i class="fa fa-briefcase"></i> <span>Suppliers</span> <i class="fa fa-angle-left pull-right"></i>
                 </a>
@@ -115,7 +115,7 @@
                         </a>
                     </li>
                 </ul>
-            </li>
+            </li>--}}
             <li class="treeview {{  Request::is('admin/prepservices*') ? 'active': '' }}">
                 <a href="#">
                     <i class="fa fa-briefcase"></i> <span>Prep Services</span> <i class="fa fa-angle-left pull-right"></i>
@@ -150,7 +150,7 @@
                     </li>
                 </ul>
             </li>
-            <li class="treeview {{  Request::is('admin/addresses*') ? 'active': '' }}">
+            {{--<li class="treeview {{  Request::is('admin/addresses*') ? 'active': '' }}">
                 <a href="#">
                     <i class="fa fa-briefcase"></i> <span>Addresses</span> <i class="fa fa-angle-left pull-right"></i>
                 </a>
@@ -166,7 +166,7 @@
                         </a>
                     </li>
                 </ul>
-            </li>
+            </li>--}}
             <li class="treeview {{  Request::is('admin/Charges*') ? 'active': '' }}">
                 <a href="#">
                     <i class="fa fa-briefcase"></i> <span>Charges</span> <i class="fa fa-angle-left pull-right"></i>

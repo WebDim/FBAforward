@@ -41,12 +41,12 @@
                         {!! Form::text('name', old('name', isset($role) ? $role->name : null), ['class' => 'form-control validate[required]', 'placeholder'=>'Role Name']) !!}
                     </div>
                 </div>
-                <div class="form-group">
+               {{-- <div class="form-group">
                     {!! Form::label('routes', 'Role Routes', ['class' => 'control-label col-md-2']) !!}
                     <div class="col-md-8">
                         {!! Form::select('routes[]', $routes, old('routes', isset($role) ? json_decode($role->routes): null), ['class' => 'form-control select2', 'multiple', 'data-placeholder'=>'Select a Route', 'style'=>'width: 100%;']) !!}
                     </div>
-                </div>
+                </div>--}}
                 <div class="form-group">
                     <div class="col-md-8 col-md-offset-2">
                         {!! Form::submit( (isset($role) ? 'Update': 'Add') . ' Role', ['class'=>'btn btn-primary']) !!}
