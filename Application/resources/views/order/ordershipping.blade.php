@@ -48,7 +48,20 @@
                                             <a onclick="openform({{$order->order_id}})">Upload Report</a>
                                             @endif
                                         @elseif($user_role==5)
+                                            @if($order->is_activated==3)
                                             <a href="{{ url('order/shippingquoteform/'.$order->order_id)}}" class="btn btn-info">Shipping Quote</a>
+                                            @endif
+                                            @if($order->is_activated==6)
+                                            <a href="{{ url('order/billofladingform/'.$order->order_id)}}" class="btn btn-info">Bill Of Lading</a>
+                                            @endif
+                                            @if($order->is_activated==8)
+                                            <a href="{{ url('order/prealertform/'.$order->order_id)}}" class="btn btn-info">Shipment Pre-Alert</a>
+                                            @endif
+                                        @elseif($user_role==6)
+                                            @if($order->is_activated==7)
+                                            <a onclick="openbill({{$order->order_id}})">View Lading Bill</a>
+                                            <a onclick="approvebilloflading({{$order->order_id}})" class="btn btn-info">Approve Lading Bill</a>
+                                            @endif
                                         @endif
                                         {{--@if($order->is_activated == 3 && $order->shipmentplan==0)
                                             <a href="#" onclick="order_shipping({{$order->order_id}},{{$order->user_id}})" class="btn btn-info">Create Shipment</a>
@@ -115,6 +128,23 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="openbill" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">View Lading Bill</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12" id="main">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @section('js')
     <link href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.css" rel="stylesheet">
@@ -157,6 +187,49 @@
          $("#openformmodal").modal('show');
 
         }
-
+        function openbill(order_id)
+        {
+            $.noConflict();
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/viewbilloflading', // This is the url we gave in the route
+                data: {
+                    'order_id': order_id,
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    $('#main').html(response);
+                    $("#openbill").modal('show');
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
+        function approvebilloflading(order_id)
+        {
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/approvebilloflading', // This is the url we gave in the route
+                data: {
+                    'order_id': order_id,
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    console.log(response);
+                    //alert("Report Approved");
+                    location.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
     </script>
 @endsection
