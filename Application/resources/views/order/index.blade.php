@@ -227,7 +227,7 @@
             success: function (response) { // What to do if we succeed
                 console.log(response);
                 //alert("Report Approved");
-                if("success" == response) {
+                if(response==1) {
                     location.reload();
                 }
                 //location.reload();
