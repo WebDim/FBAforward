@@ -1030,7 +1030,7 @@ class OrderController extends Controller
         }
 
         if(!empty($order_ids))
-        $orders = Order::where('orders.is_activated','3')->orWhereIn('orders.order_id',$order_ids)->orderBy('orders.created_at', 'desc')->get();
+        $orders = Order::where('orders.is_activated','3')->orWhereIn('orders.order_id',$order_ids)->orWhere('orders.is_activated','6')->orWhere('orders.is_activated','8')->orderBy('orders.created_at', 'desc')->get();
         else
         $orders = Order::where('orders.is_activated','3')->orWhere('orders.is_activated','6')->orWhere('orders.is_activated','8')->orderBy('orders.created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
