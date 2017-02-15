@@ -827,7 +827,7 @@ class OrderController extends Controller
             'total_cost'=>$request->input('total_cost')
         );
         $payment_detail_id=Payment_detail::create($payment_detail);
-       /* $last_id=$payment_detail_id->payment_detail_id;
+        $last_id=$payment_detail_id->payment_detail_id;
         $apiContext = new \PayPal\Rest\ApiContext(
             new \PayPal\Auth\OAuthTokenCredential(
                 env('CLIENT_ID'),
@@ -868,7 +868,7 @@ class OrderController extends Controller
         $payment_info=array('payment_detail_id'=>$last_id,
                             'transaction'=>$payment
             );
-        Payment_info::create($payment_info);*/
+        Payment_info::create($payment_info);
         $order_detail=array('is_activated'=>'1','steps'=>'9');
         Order::where('order_id',$order_id)->update($order_detail);
         return redirect('order/index')->with('success','Your order Successfully Placed');
@@ -1107,6 +1107,7 @@ class OrderController extends Controller
                     ->join('shipping_quotes','shipping_quotes.id','=','shipping_charges.shipping_id')
                     ->where('shipping_quotes.order_id',$order_id)
                     ->get();
+
             return view('order/viewshippingquote')->with(compact('shipment','shipment_detail','charges'));
         }
     }
@@ -1120,6 +1121,7 @@ class OrderController extends Controller
             $data = array('is_activated' => '5');
             Order::where('order_id', $order_id)->update($data);
             $this->createCustomer($order_id);
+            return 1;
         }
     }
     public function  qboConnect(){
@@ -1238,22 +1240,39 @@ class OrderController extends Controller
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
             ->where('shipments.order_id',$order_id)
             ->get();
-        if(isset($product)) {
+        $service=array('Sea Freight Shipping from China - Dog','Training Collars','Customs Brokerage Fees','U.S. Port Fees','Container Delivery Fee','Wire Transfer Fee');
+        if(isset($service)) {
             $ItemService = new \QuickBooks_IPP_Service_Item();
-            foreach ($product as $Item) {
+            foreach ($service as $services) {
                 $Line = new \QuickBooks_IPP_Object_Line();
                 $Line->setDetailType('SalesItemLineDetail');
                 $Line->setAmount($details[0]->total_cost);
                 $Line->setDescription('');
-                $items = $ItemService->query($this->context, $this->realm, "SELECT * FROM Item WHERE Name = '$Item->product_name'  ORDER BY Metadata.LastUpdatedTime ");
-                $resp = $this->getId($items[0]->getId());
+                $items = $ItemService->query($this->context, $this->realm, "SELECT * FROM Item WHERE Name = '$services'  ORDER BY Metadata.LastUpdatedTime ");
+                if(!empty($items)) {
+                    $resp = $this->getId($items[0]->getId());
+                }
+                else
+                {
+                    $Item = new \QuickBooks_IPP_Object_Item();
+                    $Item->setName($services);
+                    $Item->setType('Service');
+                    $Item->setIncomeAccountRef('10');
+                    if ($resp = $ItemService->add($this->context, $this->realm, $Item)) {
+                        $resp = $this->getId($resp);
+                        //return $this->getId($resp);
+                    } else {
+                        print($ItemService->lastError($this->context));
+                    }
+                }
                 $SalesItemLineDetail = new \QuickBooks_IPP_Object_SalesItemLineDetail();
                 $SalesItemLineDetail->setUnitPrice();
-                $SalesItemLineDetail->setQty($Item->total);
+                $SalesItemLineDetail->setQty(2);
                 $SalesItemLineDetail->setItemRef($resp);
                 $Line->addSalesItemLineDetail($SalesItemLineDetail);
                 $Invoice->addLine($Line);
             }
+
             $Invoice->setCustomerRef($cust_resp);
 //            $this->addInvoice($resp, $cust_resp, $order_id);
         }
@@ -1278,12 +1297,13 @@ class OrderController extends Controller
         $InvoiceService = new \QuickBooks_IPP_Service_Invoice();
         $invoices = $InvoiceService->query($Context, $realm, "SELECT * FROM Invoice STARTPOSITION 1 MAXRESULTS 1");
         $invoice = reset($invoices);
-        $id = $invoice->getId();
+        $id = substr($invoice->getId(), 2, -1);
         $data = array('is_activated' => '6');
         Order::where('order_id', $order_id)->update($data);
-        header("Content-Disposition: attachment; filename=example_invoice.pdf");
+        header("Content-Disposition: attachment; filename=".$order_id."_invoice.pdf");
         header("Content-type: application/x-pdf");
-        print $InvoiceService->pdf($Context, $realm, $id);
+        $dir=public_path() ."/uploads/bills/";
+        file_put_contents($dir.$order_id."_invoice.pdf", $InvoiceService->pdf($Context, $realm, $id));
 
     }
     public function getId($resp){

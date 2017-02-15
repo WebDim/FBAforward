@@ -227,7 +227,10 @@
             success: function (response) { // What to do if we succeed
                 console.log(response);
                 //alert("Report Approved");
-                location.reload();
+                if("success" == response) {
+                    location.reload();
+                }
+                //location.reload();
             },
             error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
                 console.log(JSON.stringify(jqXHR));
