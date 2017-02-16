@@ -445,5 +445,15 @@
           $('#main').hide();
       }
     }
+    $(document).ready(function () {
+        if($('#role').val()==3)
+        {
+            $('#main').show();
+        }
+        else
+        {
+            $('#main').hide();
+        }
+    });
 </script>
 @endsection
