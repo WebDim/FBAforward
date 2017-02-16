@@ -16,4 +16,5 @@ class Additional_service extends Model
     {
         return $this->belongsTo(Custom_clearance::class);
     }
+
 }
