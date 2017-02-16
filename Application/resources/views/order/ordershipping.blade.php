@@ -61,6 +61,10 @@
                                             @if($order->is_activated==7)
                                             <a onclick="openbill({{$order->order_id}})">View Lading Bill</a>
                                             <a onclick="approvebilloflading({{$order->order_id}})" class="btn btn-info">Approve Lading Bill</a>
+                                            @elseif($order->is_activated==9)
+                                            <a href="{{ url('order/customclearanceform/'.$order->order_id)}}" class="btn btn-info">Customs Clearance</a>
+                                            @elseif($order->is_activated==10)
+                                                <a href="{{ url('order/deliverybookingform/'.$order->order_id)}}" class="btn btn-info">Delivery Booking</a>
                                             @endif
                                         @endif
                                         {{--@if($order->is_activated == 3 && $order->shipmentplan==0)

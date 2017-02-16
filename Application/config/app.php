@@ -150,6 +150,7 @@ return [
 		Roumen\Sitemap\SitemapServiceProvider::class,
         Aws\Laravel\AwsServiceProvider::class,
         DougSisk\CountryState\CountryStateServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
 
 		
     ],
@@ -200,5 +201,6 @@ return [
         'Image' => Intervention\Image\Facades\Image::class,
         'Carbon' => Carbon\Carbon::class,
         'AWS' => Aws\Laravel\AwsFacade::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
     ],
 ];

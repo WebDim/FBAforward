@@ -84,6 +84,8 @@
                             @if('Logistics'===\Auth::user()->role->name)
                                 <li>
                                     <a class="external" href="{{ url('order/billoflading') }}"><i class="fa fa-btn fa-user"></i> Bill Of Lading</a>
+                                    <a class="external" href="{{ url('order/customclearance') }}"><i class="fa fa-btn fa-user"></i> Custom Clearance</a>
+                                    <a class="external" href="{{ url('order/deliverybooking') }}"><i class="fa fa-btn fa-user"></i> Delivery Booking</a>
                                 </li>
                             @endif
                             @if('Admin' === \Auth::user()->role->name)

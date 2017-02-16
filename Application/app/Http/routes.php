@@ -176,6 +176,15 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/downloadladingbill/{order_id}/{shipment_id}', 'OrderController@downloadladingbill');
         Route::get('/prealertform/{order_id}', 'OrderController@prealertform');
         Route::put('/prealertform/', 'OrderController@addprealertform');
+        Route::get('/downloadquote/{order_id}','OrderController@viewshippingquote');
+        Route::get('/customclearance/', 'OrderController@customclearance');
+        Route::get('/customclearanceform/{order_id}', 'OrderController@customclearanceform');
+        Route::put('/customclearanceform/', 'OrderController@addcustomclearanceform');
+        Route::get('/deliverybooking/', 'OrderController@deliverybooking');
+        Route::get('/deliverybookingform/{order_id}', 'OrderController@deliverybookingform');
+        Route::put('/deliverybookingform/', 'OrderController@adddeliverybookingform');
+        Route::post('/addtrucking','OrderController@addtrucking');
+        Route::post('/addterminal','OrderController@addterminal');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);

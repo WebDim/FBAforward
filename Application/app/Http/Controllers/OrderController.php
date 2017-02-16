@@ -1,10 +1,14 @@
 <?php
 namespace App\Http\Controllers;
+use App\Additional_service;
 use App\Amazon_destination;
 use App\Amazon_inventory;
 use App\Bill_of_lading;
+use App\CFS_terminal;
 use App\Charges;
+use App\Custom_clearance;
 use App\Customer_amazon_detail;
+use App\Delivery_booking;
 use App\Dev_account;
 use App\Inspection_report;
 use App\Listing_service;
@@ -12,6 +16,7 @@ use App\Listing_service_detail;
 use App\Other_label_detail;
 use App\Outbound_method;
 use App\Payment_info;
+use App\Payment_type;
 use App\Photo_list_detail;
 use App\Prealert_detail;
 use App\Prep_detail;
@@ -28,6 +33,7 @@ use App\Supplier_inspection;
 use App\Product_labels_detail;
 use App\Shipments;
 use App\Order;
+use App\Trucking_company;
 use App\User;
 use App\User_credit_cardinfo;
 use App\Addresses;
@@ -47,7 +53,7 @@ use PayPal\Api\Payment;
 use PayPal\Api\Transaction;
 use App\Libraries;
 use Illuminate\Support\Facades\DB;
-
+use PDF;
 class OrderController extends Controller
 {
     private $IntuitAnywhere;
@@ -57,7 +63,7 @@ class OrderController extends Controller
     {
         $this->middleware(['auth',Amazoncredential::class]);
     }
-   //list Inprogress, Order Placed or Pending For Approval orders of perticular user
+    //list Inprogress, Order Placed or Pending For Approval orders of perticular user
     public function index()
     {
         $user = \Auth::user();
@@ -101,7 +107,7 @@ class OrderController extends Controller
     // For display update shipment view
     public function updateshipment(Request $request)
     {
-         if(!empty($request->order_id)){
+        if(!empty($request->order_id)){
             $request->session()->put('order_id', $request->order_id);
             $steps=Order::where('order_id',$request->order_id)->get();
             if($steps[0]->steps==2)
@@ -120,7 +126,7 @@ class OrderController extends Controller
                 return redirect('order/reviewshipment');
             else if ($steps[0]->steps==9)
                 return redirect('order/payment');
-         }
+        }
         $user = \Auth::user();
         $order_id = $request->session()->get('order_id');
         $shipping_method = Shipping_method::all();
@@ -136,23 +142,22 @@ class OrderController extends Controller
     // Add or Update Shipment and Shipment Detail
     public function addshipment(Request $request)
     {
-         $user = \Auth::user();
-         //create order
+        $user = \Auth::user();
+        //create order
         if(empty($request->input('order_id')))
         {
             $order_detail=array('order_no'=>Uuid::generate(1,time())->string,
-                                'user_id'=>$user->id
-             );
-             $order = new Order($order_detail);
-             $order->save();
-             $order_id = $order->order_id;
-         }
-         else
-         {
-             $order_id=$request->input('order_id');
-         }
+                'user_id'=>$user->id
+            );
+            $order = new Order($order_detail);
+            $order->save();
+            $order_id = $order->order_id;
+        }
+        else
+        {
+            $order_id=$request->input('order_id');
+        }
         $request->session()->put('order_id', $order_id);
-
         //delete shipment2
         if($request->input('split_shipment')=='0') {
             if (!empty($request->input('shipment_id2'))) {
@@ -186,7 +191,6 @@ class OrderController extends Controller
                 for($sub_cnt=1;$sub_cnt<=$sub_count;$sub_cnt++) {
                     //every product update
                     if (!empty($request->input("shipment_detail" . $cnt . "_" . $sub_cnt))) {
-
                         $product_id = explode(' ', $request->input('product_desc' . $cnt . "_" . $sub_cnt));
                         $shipment_details = array(
                             'product_id' => isset($product_id[1]) ? $product_id[1] : '',
@@ -200,7 +204,6 @@ class OrderController extends Controller
                     //new product add in current shipment
                     else
                     {
-
                         if(!empty($request->input('product_desc'.$cnt."_".$sub_cnt))) {
                             $product_id = explode(' ', $request->input('product_desc' . $cnt . "_" . $sub_cnt));
                             $shipment_details = array('shipment_id' => $request->input('shipment_id' . $cnt),
@@ -212,9 +215,7 @@ class OrderController extends Controller
                             );
                             $shipment_detail = new Shipment_detail($shipment_details);
                             $shipment_detail->save();
-
                         }
-
                     }
                 }
             }
@@ -243,7 +244,6 @@ class OrderController extends Controller
                         );
                         $shipment_detail = new Shipment_detail($shipment_details);
                         $shipment_detail->save();
-
                     }
                 }
             }
@@ -256,7 +256,6 @@ class OrderController extends Controller
     {
         if ($request->ajax()) {
             $post = $request->all();
-
             Listing_service_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
             Prep_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
             Product_labels_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
@@ -321,7 +320,6 @@ class OrderController extends Controller
             $supplier->phone_number = $post['phone'];
             $supplier->save();
         }
-
     }
     public function preinspection(Request $request)
     {
@@ -338,7 +336,6 @@ class OrderController extends Controller
             ->where('supplier_details.order_id', $order_id)
             ->distinct('supplier_inspections.is_inspection')
             ->get();
-
         return view('order.pre_inspection')->with(compact('product', 'supplier'));
     }
     public function addpreinspection(Request $request)
@@ -390,10 +387,8 @@ class OrderController extends Controller
     }
     public function addlabels(Request $request)
     {
-
         $count = $request->input('count');
         for ($cnt = 1; $cnt < $count; $cnt++) {
-
             if(empty($request->input('product_label_detail_id'.$cnt))) {
                 $product_label_id= explode(' ',$request->input('labels' . $cnt));
                 $product_label = array('order_id'=>$request->input('order_id'),
@@ -404,7 +399,6 @@ class OrderController extends Controller
                     'qty' => $request->input('total' . $cnt),
                     'price' =>$request->input('price'. $cnt)
                 );
-
                 $product_labels_detail = new Product_labels_detail($product_label);
                 $product_labels_detail->save();
             }
@@ -422,7 +416,6 @@ class OrderController extends Controller
                 Product_labels_detail::where('product_label_detail_id',$request->input('product_label_detail_id'.$cnt))->update($product_label);
             }
         }
-
         $order_detail=array('steps'=>'4');
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/prepservice')->with('Success', 'Product Label Information Added Successfully');
@@ -452,8 +445,7 @@ class OrderController extends Controller
                     $service[]=$request->input('service' . $cnt . "_" . $sub_cnt);
                 }
             }
-
-           if(empty($request->input('prep_detail_id'.$cnt))) {
+            if(empty($request->input('prep_detail_id'.$cnt))) {
                 $prep_service = array('user_id' => $user->id,
                     'order_id'=>$request->input('order_id'),
                     'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
@@ -465,16 +457,15 @@ class OrderController extends Controller
                 );
                 $prep_service_detail = new Prep_detail($prep_service);
                 $prep_service_detail->save();
-               foreach ($service as $services) {
-                   if ($services == 2) {
-                       $other_label = array('label_id'=>$request->input('other_label'.$cnt),
-                           'prep_detail_id'=>$prep_service_detail->prep_detail_id
-                       );
-
-                       $other_label_detail= new Other_label_detail($other_label);
-                       $other_label_detail->save();
-                   }
-               }
+                foreach ($service as $services) {
+                    if ($services == 2) {
+                        $other_label = array('label_id'=>$request->input('other_label'.$cnt),
+                            'prep_detail_id'=>$prep_service_detail->prep_detail_id
+                        );
+                        $other_label_detail= new Other_label_detail($other_label);
+                        $other_label_detail->save();
+                    }
+                }
             }
             else
             {
@@ -484,7 +475,7 @@ class OrderController extends Controller
                     'total_qty' => $request->input('qty' . $cnt),
                     'prep_service_ids' => implode(',', $service),
                     'prep_service_total' => $request->input('total' . $cnt),
-                       'grand_total' => $request->input('grand_total')
+                    'grand_total' => $request->input('grand_total')
                 );
                 Prep_detail::where('prep_detail_id',$request->input('prep_detail_id'.$cnt))->update($prep_service);
                 if(empty($request->input('other_label_detail_id'.$cnt))) {
@@ -505,15 +496,12 @@ class OrderController extends Controller
                             $other_label = array('label_id' => $request->input('other_label' . $cnt),
                                 'prep_detail_id' => $request->input('prep_detail_id' . $cnt)
                             );
-
                             Other_label_detail::where('other_label_detail_id', $request->input('other_label_detail_id' . $cnt))->update($other_label);
-
                         }
                     }
                 }
             }
         }
-
         $order_detail=array('steps'=>'5');
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/listservice')->with('Success', 'Prep Service Information Added Successfully');
@@ -523,7 +511,6 @@ class OrderController extends Controller
         if ($request->ajax()) {
             $post = $request->all();
             Other_label_detail::where('other_label_detail_id',$post['label_detail_id'])->delete();
-
         }
     }
     public function listservice(Request $request)
@@ -537,7 +524,7 @@ class OrderController extends Controller
             ->join('photo_list_details','photo_list_details.listing_service_detail_id','=','listing_service_details.listing_service_detail_id','left')
             ->where('shipments.order_id', $order_id)
             ->get();
-      return view('order.list_service')->with(compact('list_service', 'product'));
+        return view('order.list_service')->with(compact('list_service', 'product'));
     }
     public function addlistservice(Request $request)
     {
@@ -552,25 +539,24 @@ class OrderController extends Controller
             }
             if(empty($request->input('listing_service_detail_id'.$cnt))) {
                 $list_service = array('order_id'=>$request->input('order_id'),
-                        'product_id' => $request->input('product_id' . $cnt),
-                        'listing_service_ids' => implode(',', $service),
-                        'shipment_detail_id' => $request->input('shipment_detail_id'.$cnt),
-                        'listing_service_total' => $request->input('total' . $cnt),
-                        'grand_total' => $request->input('grand_total')
-                    );
-                    $list_service_detail = new Listing_service_detail($list_service);
-                    $list_service_detail->save();
-                    foreach ($service as $services) {
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'listing_service_ids' => implode(',', $service),
+                    'shipment_detail_id' => $request->input('shipment_detail_id'.$cnt),
+                    'listing_service_total' => $request->input('total' . $cnt),
+                    'grand_total' => $request->input('grand_total')
+                );
+                $list_service_detail = new Listing_service_detail($list_service);
+                $list_service_detail->save();
+                foreach ($service as $services) {
                     if ($services == 1) {
                         $photo_detail = array('listing_service_detail_id'=>$list_service_detail->listing_service_detail_id,
-                                            'standard_photo'=>$request->input('standard'.$cnt),
-                                            'prop_photo'=>$request->input('prop'.$cnt)
+                            'standard_photo'=>$request->input('standard'.$cnt),
+                            'prop_photo'=>$request->input('prop'.$cnt)
                         );
                         $photo_list_detail= new Photo_list_detail($photo_detail);
                         $photo_list_detail->save();
                     }
                 }
-
             }
             else
             {
@@ -602,7 +588,7 @@ class OrderController extends Controller
                                 'standard_photo'=>$request->input('standard'.$cnt),
                                 'prop_photo'=>$request->input('prop'.$cnt)
                             );
-                           Photo_list_detail::where('listing_service_detail_id', $request->input('listing_service_detail_id'.$cnt))->update($photo_detail);
+                            Photo_list_detail::where('listing_service_detail_id', $request->input('listing_service_detail_id'.$cnt))->update($photo_detail);
                         }
                     }
                 }
@@ -617,7 +603,6 @@ class OrderController extends Controller
         if ($request->ajax()) {
             $post = $request->all();
             Photo_list_detail::where('photo_list_detail_id',$post['photo_list_detail_id'])->delete();
-
         }
     }
     public function outbondshipping(Request $request)
@@ -637,7 +622,6 @@ class OrderController extends Controller
             ->join('outbound_shipping_details','shipment_details.shipment_detail_id','=','outbound_shipping_details.shipment_detail_id','left')
             ->where('shipments.order_id',$order_id)
             ->get();
-
         return view('order.outbound_shipping')->with(compact('outbound_method','product','shipment'));
     }
     public function addoutbondshipping(Request $request)
@@ -654,7 +638,6 @@ class OrderController extends Controller
                         "product_ids" => $request->input('product_id' . $ship_cnt . "_" . $cnt ),
                         "qty" => $request->input('total_unit' . $ship_cnt . "_" . $cnt )
                     );
-
                     $outbound_shipping_detail = new Outbound_Shipping_detail($outbound_shipping);
                     $outbound_shipping_detail->save();
                 } else {
@@ -669,7 +652,6 @@ class OrderController extends Controller
                 }
             }
         }
-
         $order_detail=array('steps'=>'7');
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/reviewshipment')->with('Success', 'Outbound Shipping Information Added Successfully');
@@ -683,7 +665,6 @@ class OrderController extends Controller
             ->where('shipments.order_id',$order_id)
             ->groupby('shipment_details.shipment_id')
             ->get();
-
         $outbound_detail=Outbound_Shipping_detail::selectRaw('outbound_shipping_details.qty, amazon_inventories.product_name, outbound_methods.outbound_name')
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'outbound_shipping_details.product_ids','left')
             ->join('outbound_methods','outbound_shipping_details.outbound_method_id','=','outbound_methods.outbound_method_id','left')
@@ -705,10 +686,10 @@ class OrderController extends Controller
         $order_detail=array('steps'=>'8');
         Order::where('order_id',$order_id)->update($order_detail);
         $supplier = Supplier_detail::selectRaw('supplier_details.supplier_id, supplier_inspections.is_inspection')
-        ->join('supplier_inspections','supplier_inspections.supplier_id','=','supplier_details.supplier_id')
-        ->where('supplier_inspections.order_id',$order_id)
-        ->where('supplier_inspections.is_inspection','1')
-        ->groupby('supplier_details.supplier_id')->get();
+            ->join('supplier_inspections','supplier_inspections.supplier_id','=','supplier_details.supplier_id')
+            ->where('supplier_inspections.order_id',$order_id)
+            ->where('supplier_inspections.is_inspection','1')
+            ->groupby('supplier_details.supplier_id')->get();
         $supplier_count=count($supplier);
         $pre_shipment_inspection_value=isset($pre_shipment_inspection[0]->value)?$pre_shipment_inspection[0]->value:'0';
         $pre_shipment_inspection_value=$pre_shipment_inspection_value*$supplier_count;
@@ -716,9 +697,9 @@ class OrderController extends Controller
         $prep_service=Prep_detail::selectRaw('grand_total')->where('order_id',$order_id)->groupby('order_id')->get();
         $listing_service=Listing_service_detail::selectRaw('grand_total')->where('order_id',$order_id)->groupby('order_id')->get();
         $shipment_fee=Shipping_method::selectRaw("shipments.shipment_id, shipments.shipping_method_id, shipping_methods.port_fee, shipping_methods.custom_brokrage, shipping_methods.consulting_fee")
-                        ->join('shipments','shipments.shipping_method_id','=','shipping_methods.shipping_method_id','left')
-                        ->where('shipments.order_id',$order_id)
-                        ->get();
+            ->join('shipments','shipments.shipping_method_id','=','shipping_methods.shipping_method_id','left')
+            ->where('shipments.order_id',$order_id)
+            ->get();
         $port_fee=0;
         $custom_brokrage=0;
         $consulting_fee=0;
@@ -769,7 +750,6 @@ class OrderController extends Controller
                 ->setCvv2($request->input('cvv'))
                 ->setFirstName($request->input('first_name'))
                 ->setLastName($request->input('last_name'));
-
             try {
                 $card->create($apiContext);
             }
@@ -788,7 +768,6 @@ class OrderController extends Controller
             );
             User_credit_cardinfo::create($card_detail);
         }
-
     }
     public function addaddress(Request $request)
     {
@@ -846,7 +825,7 @@ class OrderController extends Controller
             ->setTotal($request->input('total_cost'));
         $transaction = new Transaction();
         $transaction->setAmount($amount)
-             ->setDescription("Payment description")
+            ->setDescription("Payment description")
             ->setInvoiceNumber(uniqid());
         $payment = new Payment();
         $payment->setIntent("sale")
@@ -866,14 +845,13 @@ class OrderController extends Controller
             exit(1);
         }
         $payment_info=array('payment_detail_id'=>$last_id,
-                            'transaction'=>$payment
-            );
+            'transaction'=>$payment
+        );
         Payment_info::create($payment_info);
         $order_detail=array('is_activated'=>'1','steps'=>'9');
         Order::where('order_id',$order_id)->update($order_detail);
         return redirect('order/index')->with('success','Your order Successfully Placed');
     }
-
     /**
      * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -905,12 +883,10 @@ class OrderController extends Controller
                 ->join('outbound_shipping_details','outbound_shipping_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
                 ->join('outbound_methods','outbound_methods.outbound_method_id','=','outbound_shipping_details.outbound_method_id','left')
                 ->join('amazon_destinations','amazon_destinations.amazon_destination_id','=','outbound_shipping_details.amazon_destination_id','left')
-
                 ->where('shipments.order_id',$request->order_id)
                 ->where('shipments.user_id',$user_id)
                 ->orderBy('shipments.shipment_id', 'ASC')
                 ->get()->toArray();
-
             foreach($shipment_detail as $key=>$shipment_details){
                 //Fetch Prep services name
                 $prep_service_ids = explode(",",$shipment_details['prep_service_ids']);
@@ -933,14 +909,13 @@ class OrderController extends Controller
                 }
                 $shipment_detail[$key]['listing_service_name'] = implode($listing_service_name, ",");
             }
-
             // Payment Info get
             $payment_detail = Payment_detail::selectRaw('payment_details.*,user_credit_cardinfos.credit_card_number,user_credit_cardinfos.credit_card_type,user_credit_cardinfos.credit_card_id,payment_infos.transaction')
                 ->join('payment_infos','payment_infos.payment_detail_id','=','payment_details.payment_detail_id','left')
                 ->join('user_credit_cardinfos','user_credit_cardinfos.id','=','payment_details.user_credit_cardinfo_id','left')
                 ->where('order_id',$request->order_id)->first();
             if(count($payment_detail)>0)
-             $payment_detail = $payment_detail->toArray();
+                $payment_detail = $payment_detail->toArray();
             return view('order.detail_list')->with(compact('shipment_detail','payment_detail','user_role','id'));
         }
     }
@@ -952,7 +927,6 @@ class OrderController extends Controller
             Order::where('order_id',$post['order_id'])->update($status);
         }
     }
-
     //list Approved orders of All users for warhouse manager
     public function ordershipping()
     {
@@ -965,8 +939,8 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::selectRaw('orders.*')
-                       ->join('supplier_inspections','supplier_inspections.order_id','=','orders.order_id')
-                ->where('orders.is_activated','1')
+            ->join('supplier_inspections','supplier_inspections.order_id','=','orders.order_id')
+            ->where('orders.is_activated','1')
             ->where('supplier_inspections.is_inspection','1')
             ->orderBy('orders.created_at', 'desc')
             ->distinct('supplier_inspections.order_id')
@@ -982,9 +956,9 @@ class OrderController extends Controller
             $image =  $order_id.'_'.'inspectionreport'.'.' . $request->file('report')->getClientOriginalExtension();
             $request->file('report')->move($destinationPath, $image);
             $inpection_data= array('order_id'=>$order_id,
-                                    'uploaded_file'=>$image,
-                                    'status'=>'0'
-                );
+                'uploaded_file'=>$image,
+                'status'=>'0'
+            );
             Inspection_report::create($inpection_data);
             $data= array('is_activated'=>'2');
             Order::where('order_id',$order_id)->update($data);
@@ -995,11 +969,13 @@ class OrderController extends Controller
     {
         $order_id=$request->order_id;
         $inspection=Inspection_report::where('order_id',$order_id)->get();
-        $inspection_file=isset($inspection[0]->uploaded_file)?$inspection[0]->uploaded_file:'';
-        $file= public_path(). "/uploads/reports/".$inspection_file;
-        $headers = array('Content-Type: application/pdf',
-        );
-        return response()->download($file,$inspection_file, $headers);
+        if(!empty($inspection[0]->uploaded_file)) {
+            $inspection_file = isset($inspection[0]->uploaded_file) ? $inspection[0]->uploaded_file : '';
+            $file = public_path() . "/uploads/reports/" . $inspection_file;
+            $headers = array('Content-Type: application/pdf',
+            );
+            return response()->download($file, $inspection_file, $headers);
+        }
     }
     public function approvereport(Request $request)
     {
@@ -1028,11 +1004,10 @@ class OrderController extends Controller
         {
             $order_ids[]=$detail->order_id;
         }
-
         if(!empty($order_ids))
-        $orders = Order::where('orders.is_activated','3')->orWhereIn('orders.order_id',$order_ids)->orWhere('orders.is_activated','6')->orWhere('orders.is_activated','8')->orderBy('orders.created_at', 'desc')->get();
+            $orders = Order::where('orders.is_activated','3')->orWhereIn('orders.order_id',$order_ids)->orWhere('orders.is_activated','6')->orWhere('orders.is_activated','8')->orderBy('orders.created_at', 'desc')->get();
         else
-        $orders = Order::where('orders.is_activated','3')->orWhere('orders.is_activated','6')->orWhere('orders.is_activated','8')->orderBy('orders.created_at', 'desc')->get();
+            $orders = Order::where('orders.is_activated','3')->orWhere('orders.is_activated','6')->orWhere('orders.is_activated','8')->orderBy('orders.created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role'));
     }
@@ -1040,18 +1015,18 @@ class OrderController extends Controller
     {
         $order_id=$request->order_id;
         $user=User_info::selectRaw('user_infos.company_name, user_infos.contact_email, orders.order_no')
-                            ->join('orders','orders.user_id','=','user_infos.user_id')
-                            ->where('orders.order_id',$order_id)
-                            ->get();
+            ->join('orders','orders.user_id','=','user_infos.user_id')
+            ->where('orders.order_id',$order_id)
+            ->get();
         $shipment=Shipments::where('order_id',$order_id)->get();
         $charges=Charges::all();
         $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
-                        ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
-                        ->join('orders','orders.order_id','=','shipments.order_id','left')
-                        ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
-                        ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
-                        ->where('orders.order_id',$order_id)
-                        ->get();
+            ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+            ->join('orders','orders.order_id','=','shipments.order_id','left')
+            ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
+            ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
+            ->where('orders.order_id',$order_id)
+            ->get();
         return view('order.shippingquote')->with(compact('order_id','shipping_method','shipment','charges','shipment_detail','user'));
     }
     public function addshippingquoteform(Request $request)
@@ -1060,15 +1035,15 @@ class OrderController extends Controller
         for($cnt=1;$cnt<$count;$cnt++)
         {
             $shipping_quote=array('order_id'=>$request->input('order_id'),
-                                  'shipment_id'=>$request->input('shipment_id'.$cnt),
-                                  'shipment_port'=>$request->input('shipping_port'.$cnt),
-                                  'shipment_term'=>$request->input('shipping_term'.$cnt),
-                                  'shipment_weights'=>$request->input('weight'.$cnt),
-                                  'chargable_weights'=>$request->input('chargable_weight'.$cnt),
-                                  'cubic_meters'=>$request->input('cubic_meter'.$cnt),
-                                  'total_shipping_cost'=>$request->input('total_shipping_cost'.$cnt),
-                                  'status'=>'0'
-                            );
+                'shipment_id'=>$request->input('shipment_id'.$cnt),
+                'shipment_port'=>$request->input('shipping_port'.$cnt),
+                'shipment_term'=>$request->input('shipping_term'.$cnt),
+                'shipment_weights'=>$request->input('weight'.$cnt),
+                'chargable_weights'=>$request->input('chargable_weight'.$cnt),
+                'cubic_meters'=>$request->input('cubic_meter'.$cnt),
+                'total_shipping_cost'=>$request->input('total_shipping_cost'.$cnt),
+                'status'=>'0'
+            );
             $shipping_quote_detail=Shipping_quote::create($shipping_quote);
             $sub_count=$request->input('sub_count'.$cnt);
             for($sub_cnt=1;$sub_cnt<=$sub_count; $sub_cnt++)
@@ -1087,7 +1062,29 @@ class OrderController extends Controller
     }
     public function viewshippingquote(Request $request)
     {
-        if($request->ajax())
+        $order_id=$request->order_id;
+        $shipment=Shipments::selectRaw('shipping_quotes.*')
+            ->join('shipping_quotes','shipping_quotes.shipment_id','=','shipments.shipment_id')
+            ->where('shipments.order_id',$order_id)->get();
+        $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
+            ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+            ->join('orders','orders.order_id','=','shipments.order_id','left')
+            ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
+            ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
+            ->where('orders.order_id',$order_id)
+            ->distinct('shipment_quotes.shipment_id')
+            ->get();
+        $charges = Charges::selectRaw('charges.name, charges.price, shipping_quotes.shipment_id')
+            ->join('shipping_charges','shipping_charges.charges_id','=','charges.id')
+            ->join('shipping_quotes','shipping_quotes.id','=','shipping_charges.shipping_id')
+            ->where('shipping_quotes.order_id',$order_id)
+            ->get();
+        view()->share('shipment',$shipment);
+        view()->share('shipment_detail',$shipment_detail);
+        view()->share('charges',$charges);
+        $pdf = PDF::loadView('order/viewshippingquote');
+        return $pdf->download('viewshippingquote.pdf');
+        /*if($request->ajax())
         {
             $post=$request->all();
             $order_id=$post['order_id'];
@@ -1103,13 +1100,12 @@ class OrderController extends Controller
                 ->distinct('shipment_quotes.shipment_id')
                 ->get();
             $charges = Charges::selectRaw('charges.name, charges.price, shipping_quotes.shipment_id')
-                    ->join('shipping_charges','shipping_charges.charges_id','=','charges.id')
-                    ->join('shipping_quotes','shipping_quotes.id','=','shipping_charges.shipping_id')
-                    ->where('shipping_quotes.order_id',$order_id)
-                    ->get();
-
+                ->join('shipping_charges','shipping_charges.charges_id','=','charges.id')
+                ->join('shipping_quotes','shipping_quotes.id','=','shipping_charges.shipping_id')
+                ->where('shipping_quotes.order_id',$order_id)
+                ->get();
             return view('order/viewshippingquote')->with(compact('shipment','shipment_detail','charges'));
-        }
+        }*/
     }
     public function approveshippingquote(Request $request)
     {
@@ -1136,7 +1132,6 @@ class OrderController extends Controller
                 \QuickBooks_IPP::AUTHMODE_OAUTH,
                 env('QBO_USERNAME'),
                 $creds);
-
             if (env('QBO_SANDBOX')) {
                 // Turn on sandbox mode/URLs
                 $IPP->sandbox(true);
@@ -1145,14 +1140,12 @@ class OrderController extends Controller
             $this->realm = $creds['qb_realm'];
             // Load the OAuth information from the database
             $this->context = $IPP->context();
-
             return true;
         } else {
             return false;
         }
     }
     public function createCustomer($order_id){
-
         $user__detail= User::selectRaw('user_infos.*')
             ->join('orders','users.id','=','orders.user_id')
             ->join('user_infos','user_infos.user_id','=','users.id')
@@ -1229,7 +1222,6 @@ class OrderController extends Controller
         }
     }
     public function addInvoice($cust_resp,$order_id){
-
         $details= Payment_detail::where('order_id',$order_id)->get();
         $InvoiceService = new \QuickBooks_IPP_Service_Invoice();
         $Invoice = new \QuickBooks_IPP_Object_Invoice();
@@ -1272,7 +1264,6 @@ class OrderController extends Controller
                 $Line->addSalesItemLineDetail($SalesItemLineDetail);
                 $Invoice->addLine($Line);
             }
-
             $Invoice->setCustomerRef($cust_resp);
 //            $this->addInvoice($resp, $cust_resp, $order_id);
         }
@@ -1304,7 +1295,6 @@ class OrderController extends Controller
         header("Content-type: application/x-pdf");
         $dir=public_path() ."/uploads/bills/";
         file_put_contents($dir.$order_id."_invoice.pdf", $InvoiceService->pdf($Context, $realm, $id));
-
     }
     public function getId($resp){
         $resp = str_replace('{','',$resp);
@@ -1312,7 +1302,6 @@ class OrderController extends Controller
         $resp = abs($resp);
         return $resp;
     }
-
     public function billofladingform(Request $request)
     {
         $order_id=$request->order_id;
@@ -1339,7 +1328,6 @@ class OrderController extends Controller
                 $destinationPath = public_path() . '/uploads/bills';
                 $image = $request->input('order_id') . '_' . $request->input('shipment_id'.$cnt) . '_' . 'lading_bill' . '.' . $request->file('bill'.$cnt)->getClientOriginalExtension();
                 $request->file('bill'.$cnt)->move($destinationPath, $image);
-
                 $bill_detail = array('order_id' => $request->input('order_id'),
                     'shipment_id' => $request->input('shipment_id' . $cnt),
                     'sbnumber' => $request->input('ref_number' . $cnt),
@@ -1377,7 +1365,7 @@ class OrderController extends Controller
                 ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
                 ->where('orders.order_id',$order_id)
                 ->get();
-           return view('order/viewbilloflading')->with(compact('shipment','shipment_detail','order_id'));
+            return view('order/viewbilloflading')->with(compact('shipment','shipment_detail','order_id'));
         }
     }
     public function downloadladingbill(Request $request)
@@ -1401,7 +1389,6 @@ class OrderController extends Controller
             $data = array('is_activated' => '8');
             Order::where('order_id', $order_id)->update($data);
             //$this->createCustomer($order_id);
-
         }
     }
     public function prealertform(Request $request)
@@ -1438,22 +1425,150 @@ class OrderController extends Controller
                 $mblimage = $request->input('order_id') . '_' . $request->input('shipment_id' . $cnt) . '_' . 'MBL' . '.' . $request->file('MBL' . $cnt)->getClientOriginalExtension();
                 $request->file('MBL' . $cnt)->move($destinationPath, $mblimage);
             }
-                $prealert_detail = array('order_id' => $request->input('order_id'),
-                    'shipment_id' => $request->input('shipment_id' . $cnt),
-                    'ISF' => $isfimage,
-                    'HBL' => $hblimage,
-                    'MBL' => $mblimage,
-                    'ETD_china' => $request->input('ETD_china'.$cnt),
-                    'ETA_US' => $request->input('ETA_US'.$cnt),
-                    'delivery_port' => $request->input('delivery_port'.$cnt),
-                    'status' => '0'
-                );
-                Prealert_detail::create($prealert_detail);
-
+            $prealert_detail = array('order_id' => $request->input('order_id'),
+                'shipment_id' => $request->input('shipment_id' . $cnt),
+                'ISF' => $isfimage,
+                'HBL' => $hblimage,
+                'MBL' => $mblimage,
+                'ETD_china' => $request->input('ETD_china'.$cnt),
+                'ETA_US' => $request->input('ETA_US'.$cnt),
+                'delivery_port' => $request->input('delivery_port'.$cnt),
+                'status' => '0'
+            );
+            Prealert_detail::create($prealert_detail);
         }
         $order= array('is_activated'=>'9');
         Order::where('order_id',$request->input('order_id'))->update($order);
         return redirect('order/shippingquote')->with('success','Shipment Pre Alert Submitted Successfully');
+    }
+    public function customclearance()
+    {
+        $user= \Auth::user();
+        $user_role=$user->role_id;
+        $orders = Order::where('orders.is_activated','9')->orderBy('orders.created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role'));
+    }
+    public function customclearanceform(Request $request)
+    {
+        $order_id=$request->order_id;
+        $user=User_info::selectRaw('user_infos.company_name, user_infos.contact_email, orders.order_no')
+            ->join('orders','orders.user_id','=','user_infos.user_id')
+            ->where('orders.order_id',$order_id)
+            ->get();
+        $shipment=Shipments::selectRaw('shipments.shipment_id, shipping_methods.shipping_name')
+            ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
+            ->where('shipments.order_id',$order_id)
+            ->orderby('shipments.shipment_id','asc')
+            ->get();
+        return view('order.customclearance')->with(compact('order_id','shipment','user'));
+    }
+    public function addcustomclearanceform(Request $request)
+    {
+        $count=$request->input('count');
+        for($cnt=1;$cnt<$count;$cnt++)
+        {
+            if ($request->hasFile('form_3461'.$cnt)) {
+                $destinationPath = public_path() . '/uploads/customclearance';
+                $form_3461image = $request->input('order_id') . '_' . $request->input('shipment_id' . $cnt) . '_' . 'form_3461' . '.' . $request->file('form_3461' . $cnt)->getClientOriginalExtension();
+                $request->file('form_3461' . $cnt)->move($destinationPath, $form_3461image);
+            }
+            if ($request->hasFile('form_7501'.$cnt)) {
+                $destinationPath = public_path() . '/uploads/customclearance';
+                $form_7501image = $request->input('order_id') . '_' . $request->input('shipment_id' . $cnt) . '_' . 'form_7501' . '.' . $request->file('form_7501' . $cnt)->getClientOriginalExtension();
+                $request->file('form_7501' . $cnt)->move($destinationPath, $form_7501image);
+            }
+            if ($request->hasFile('delivery_order'.$cnt)) {
+                $destinationPath = public_path() . '/uploads/customclearance';
+                $delivery_orderimage = $request->input('order_id') . '_' . $request->input('shipment_id' . $cnt) . '_' . 'delivery_order' . '.' . $request->file('delivery_order' . $cnt)->getClientOriginalExtension();
+                $request->file('delivery_order' . $cnt)->move($destinationPath, $delivery_orderimage);
+            }
+            $custom_clearance_detail = array('order_id' => $request->input('order_id'),
+                'shipment_id' => $request->input('shipment_id' . $cnt),
+                'form_3461' => $form_3461image,
+                'form_7501' => $form_7501image,
+                'delivery_order' => $delivery_orderimage,
+                'custom_duty' => $request->input('custom_duty'.$cnt),
+                'terminal_fee' => $request->input('terminal_fee'.$cnt),
+                'status' => '0'
+            );
+            $detail=Custom_clearance::create($custom_clearance_detail);
+            for($sub_cnt=1;$sub_cnt<=3; $sub_cnt++)
+            {
+                if(!empty($request->input('addition_service'.$cnt."_".$sub_cnt))) {
+                    $additional_service = array('custom_clearance_id' => $detail->id,
+                        'service_id' => $request->input('addition_service' . $cnt . "_" . $sub_cnt)
+                    );
+                    Additional_service::create($additional_service);
+                }
+            }
+        }
+        $order= array('is_activated'=>'10');
+        Order::where('order_id',$request->input('order_id'))->update($order);
+        return redirect('order/customclearance')->with('success','Custom Clearance Submitted Successfully');
+    }
+    public function deliverybooking()
+    {
+        $user= \Auth::user();
+        $user_role=$user->role_id;
+        $orders = Order::where('orders.is_activated','10')->orderBy('orders.created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role'));
+    }
+    public function deliverybookingform(Request $request)
+    {
+        $order_id=$request->order_id;
+        $user=User_info::selectRaw('user_infos.company_name, user_infos.contact_email, orders.order_no')
+            ->join('orders','orders.user_id','=','user_infos.user_id')
+            ->where('orders.order_id',$order_id)
+            ->get();
+        $shipment=Shipments::selectRaw('shipments.shipment_id, shipping_methods.shipping_name')
+            ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
+            ->where('shipments.order_id',$order_id)
+            ->orderby('shipments.shipment_id','asc')
+            ->get();
+        $payment_type=Payment_type::all();
+        $trucking_company=Trucking_company::all();
+        $cfs_terminal=CFS_terminal::all();
+        return view('order.delivery_booking')->with(compact('order_id','shipment','user','payment_type','trucking_company','cfs_terminal'));
+    }
+    public function adddeliverybookingform(Request $request)
+    {
+        $count=$request->input('count');
+        for($cnt=1;$cnt<$count;$cnt++)
+        {
+            $delivery_booking_detail = array('order_id' => $request->input('order_id'),
+                'shipment_id' => $request->input('shipment_id' . $cnt),
+                'CFS_terminal' => $request->input('CFS_terminal'.$cnt),
+                'trucking_company' => $request->input('trucking_company'.$cnt),
+                'warehouse_fee' => $request->input('warehouse_fee'.$cnt),
+                'fee_paid' => $request->input('fee_paid'.$cnt),
+                'ETA_warehouse' => date('Y-m-d H:i:s', strtotime($request->input('ETA_warehouse'.$cnt))),
+                'status' => '0'
+            );
+            Delivery_booking::create($delivery_booking_detail);
+        }
+        $order= array('is_activated'=>'11');
+        Order::where('order_id',$request->input('order_id'))->update($order);
+        return redirect('order/deliverybooking')->with('success','Delivery Booking Submitted Successfully');
+    }
+    public function addtrucking(Request $request)
+    {
+        if ($request->ajax()) {
+            $post = $request->all();
+            $trucking = new Trucking_company();
+            $trucking->company_name = $post['company_name'];
+            $trucking->save();
+        }
+    }
+    public function addterminal(Request $request)
+    {
+        if ($request->ajax()) {
+            $post = $request->all();
+            $terminal = new CFS_terminal();
+            $terminal->terminal_name = $post['terminal_name'];
+            $terminal->save();
+        }
     }
     public function createshipments(Request $request)
     {
@@ -1486,8 +1601,8 @@ class OrderController extends Controller
             foreach ($shipment as $shipments)
             {
                 $shipment_detail=Shipment_detail::selectRaw('shipment_details.total, amazon_inventories.sellerSKU')
-                ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id')
-                ->where('shipment_details.shipment_id',$shipments->shipment_id)->get();
+                    ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id')
+                    ->where('shipment_details.shipment_id',$shipments->shipment_id)->get();
                 $item=array();
                 foreach ($shipment_detail as $shipment_details)
                 {
@@ -1625,7 +1740,6 @@ class OrderController extends Controller
             $dom->saveXML();
             //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
             return $arr_response = new \SimpleXMLElement($dom->saveXML());
-
         } catch (\FBAInboundServiceMWS_Exception $ex) {
             echo("Caught Exception: " . $ex->getMessage() . "\n");
             echo("Response Status Code: " . $ex->getStatusCode() . "\n");
@@ -1649,7 +1763,6 @@ class OrderController extends Controller
             $dom->saveXML();
             return 1;
             //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
-
         } catch (\FBAInboundServiceMWS_Exception $ex) {
             echo("Caught Exception: " . $ex->getMessage() . "\n");
             echo("Response Status Code: " . $ex->getStatusCode() . "\n");
@@ -1658,7 +1771,6 @@ class OrderController extends Controller
             echo("Request ID: " . $ex->getRequestId() . "\n");
             echo("XML: " . $ex->getXML() . "\n");
             echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
-
         }
     }
     function invokeUpdateInboundShipment(\FBAInboundServiceMWS_Interface $service, $request)
@@ -1667,7 +1779,6 @@ class OrderController extends Controller
             $response = $service->UpdateInboundShipment($request);
             //echo ("Service Response\n");
             //echo ("=============================================================================\n");
-
             $dom = new \DOMDocument();
             $dom->loadXML($response->toXML());
             $dom->preserveWhiteSpace = false;
@@ -1691,7 +1802,6 @@ class OrderController extends Controller
             $response = $service->ListInboundShipments($request);
             //echo("Service Response\n");
             //echo("=============================================================================\n");
-
             $dom = new \DOMDocument();
             $dom->loadXML($response->toXML());
             $dom->preserveWhiteSpace = false;
@@ -1699,7 +1809,6 @@ class OrderController extends Controller
             $dom->saveXML();
             //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
             return $list_response = new \SimpleXMLElement($dom->saveXML());
-
         } catch (\FBAInboundServiceMWS_Exception $ex) {
             echo("Caught Exception: " . $ex->getMessage() . "\n");
             echo("Response Status Code: " . $ex->getStatusCode() . "\n");

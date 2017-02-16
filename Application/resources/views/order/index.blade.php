@@ -64,7 +64,9 @@
                                             <a href="{{ url('order/downloadreport/'.$order->order_id) }}">Download Report</a>
                                             <a onclick="approvereport({{$order->order_id}})" class="btn btn-info">Approve Inspection Report</a>
                                         @elseif($order->is_activated==4)
-                                            <a onclick="openquote({{$order->order_id}})">View Shipping Quote</a>
+                                            {{--<a onclick="openquote({{$order->order_id}})">View Shipping Quote</a>--}}
+                                            <a href="{{ url('order/downloadquote/'.$order->order_id) }}">Download Quote</a>
+
                                             <a onclick="approveshippingquote({{$order->order_id}})" class="btn btn-info">Approve Shipping Quote</a>
                                         @endif
 
