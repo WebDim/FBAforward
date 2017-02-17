@@ -1,5 +1,5 @@
 @extends('layouts.frontend.app')
-@section('title', 'Shipping Quote Form')
+@section('title', $title)
 @section('content')
     <div class="row">
         <div class="col-md-12">&nbsp;</div>

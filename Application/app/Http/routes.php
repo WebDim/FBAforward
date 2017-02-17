@@ -166,17 +166,19 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/shippingquote', 'OrderController@shippingquote');
         Route::get('/shippingquoteform/{order_id}', 'OrderController@shippingquoteform');
         Route::put('/shippingquoteform', 'OrderController@addshippingquoteform');
-        Route::post('/viewshippingquote', 'OrderController@viewshippingquote');
+        Route::get('/downloadquote/{order_id}','OrderController@viewshippingquote');
+        //Route::post('/viewshippingquote', 'OrderController@viewshippingquote');
         Route::post('/approveshippingquote', 'OrderController@approveshippingquote');
+        Route::get('/billoflading', 'OrderController@billoflading');
         Route::get('/billofladingform/{order_id}', 'OrderController@billofladingform');
         Route::put('/billofladingform/', 'OrderController@addbillofladingform');
-        Route::get('/billoflading/', 'OrderController@billoflading');
+        Route::get('/billofladingapprove/', 'OrderController@billofladingapprove');
         Route::post('/viewbilloflading', 'OrderController@viewbilloflading');
         Route::post('/approvebilloflading', 'OrderController@approvebilloflading');
         Route::get('/downloadladingbill/{order_id}/{shipment_id}', 'OrderController@downloadladingbill');
+        Route::get('/prealert', 'OrderController@prealert');
         Route::get('/prealertform/{order_id}', 'OrderController@prealertform');
         Route::put('/prealertform/', 'OrderController@addprealertform');
-        Route::get('/downloadquote/{order_id}','OrderController@viewshippingquote');
         Route::get('/customclearance/', 'OrderController@customclearance');
         Route::get('/customclearanceform/{order_id}', 'OrderController@customclearanceform');
         Route::put('/customclearanceform/', 'OrderController@addcustomclearanceform');
@@ -185,6 +187,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::put('/deliverybookingform/', 'OrderController@adddeliverybookingform');
         Route::post('/addtrucking','OrderController@addtrucking');
         Route::post('/addterminal','OrderController@addterminal');
+        Route::get('/orderlist','OrderController@orderlist');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);

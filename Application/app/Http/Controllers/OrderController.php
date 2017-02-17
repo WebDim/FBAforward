@@ -66,18 +66,20 @@ class OrderController extends Controller
     //list Inprogress, Order Placed or Pending For Approval orders of perticular user
     public function index()
     {
+        $title="Order Management";
         $user = \Auth::user();
         $orders = Order::where('user_id', $user->id)->whereIn('is_activated',array('0','1','2','4'))->orderBy('created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
-        return view('order.index')->with(compact('orders','orderStatus'));
+        return view('order.index')->with(compact('orders','orderStatus','title'));
     }
-    //list Rejected or Approved orders of perticular user
+    //list completed orders of perticular user
     public function orderhistory()
     {
+        $title="Order History";
         $user = \Auth::user();
         $orders = Order::where('user_id', $user->id)->whereIn('is_activated',array('14'))->orderBy('created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
-        return view('order.order_history')->with(compact('orders','orderStatus'));
+        return view('order.order_history')->with(compact('orders','orderStatus','title'));
     }
     // remove perticular order
     public function removeorder(Request $request)
@@ -252,6 +254,7 @@ class OrderController extends Controller
         Order::where('order_id',$order_id)->update($order_detail);
         return redirect('order/supplierdetail')->with('Success', 'Shipment Information Added Successfully');
     }
+    //remove perticular product from shipment
     public function removeproduct(Request $request)
     {
         if ($request->ajax()) {
@@ -263,6 +266,7 @@ class OrderController extends Controller
             Shipment_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
         }
     }
+    //For display supplier information of perticular order
     public function supplierdetail(Request $request)
     {
         $user = \Auth::user();
@@ -276,6 +280,7 @@ class OrderController extends Controller
         $supplier = Supplier::where('user_id',$user->id)->get();
         return view('order.supplier')->with(compact('product', 'supplier'));
     }
+    //add suplier for perticular order
     public function addsupplierdetail(Request $request)
     {
         $user = \Auth::user();
@@ -307,6 +312,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/preinspection')->with('Success', 'Supplier Information Added Successfully');
     }
+    //add supplier for perticular user
     public function addsupplier(Request $request)
     {
         if ($request->ajax()) {
@@ -321,6 +327,7 @@ class OrderController extends Controller
             $supplier->save();
         }
     }
+    //For display pre inspection information of perticular order
     public function preinspection(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -338,6 +345,7 @@ class OrderController extends Controller
             ->get();
         return view('order.pre_inspection')->with(compact('product', 'supplier'));
     }
+    //add pre inspection information for perticular order
     public function addpreinspection(Request $request)
     {
         $user = \Auth::user();
@@ -372,6 +380,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/productlabels')->with('Success', 'Pre inspection Information Added Successfully');
     }
+    //For display Label of perticular order
     public function labels(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -385,6 +394,7 @@ class OrderController extends Controller
             ->get();
         return view('order.product_labels')->with(compact('product', 'product_label'));
     }
+    //add labels for perticular order
     public function addlabels(Request $request)
     {
         $count = $request->input('count');
@@ -420,6 +430,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/prepservice')->with('Success', 'Product Label Information Added Successfully');
     }
+    //For display prep service information of perticular order
     public function prepservice(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -433,6 +444,7 @@ class OrderController extends Controller
             ->get();
         return view('order.prep_service')->with(compact('prep_service', 'product'));
     }
+    //add prep service for perticular order
     public function addprepservice(Request $request)
     {
         $user = \Auth::user();
@@ -506,6 +518,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/listservice')->with('Success', 'Prep Service Information Added Successfully');
     }
+    //to remove perticular other label detail from order
     public function removeotherlabel(Request $request)
     {
         if ($request->ajax()) {
@@ -513,6 +526,7 @@ class OrderController extends Controller
             Other_label_detail::where('other_label_detail_id',$post['label_detail_id'])->delete();
         }
     }
+    //For display list service information of perticular order
     public function listservice(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -526,6 +540,7 @@ class OrderController extends Controller
             ->get();
         return view('order.list_service')->with(compact('list_service', 'product'));
     }
+    //add list services for perticular order
     public function addlistservice(Request $request)
     {
         $count = $request->input('count');
@@ -598,6 +613,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/outbondshipping')->with('Success', 'Listing service Information Added Successfully');
     }
+    //remove perticular photo details of perticular order
     public function removephotolabel(Request $request)
     {
         if ($request->ajax()) {
@@ -605,6 +621,7 @@ class OrderController extends Controller
             Photo_list_detail::where('photo_list_detail_id',$post['photo_list_detail_id'])->delete();
         }
     }
+    //For display outbound shipping information of perticular order
     public function outbondshipping(Request $request)
     {
         $user = \Auth::user();
@@ -624,6 +641,7 @@ class OrderController extends Controller
             ->get();
         return view('order.outbound_shipping')->with(compact('outbound_method','product','shipment'));
     }
+    // add outbound shipping details of perticular order
     public function addoutbondshipping(Request $request)
     {
         $ship_count = $request->input('ship_count');
@@ -656,6 +674,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/reviewshipment')->with('Success', 'Outbound Shipping Information Added Successfully');
     }
+    //For display review information of perticular order
     public function reviewshipment(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -679,6 +698,7 @@ class OrderController extends Controller
         $prep_service= Prep_service::all();
         return view('order.review_shipment')->with(compact('shipment','outbound_detail','product_detail','prep_service'));
     }
+    //For display payment information of perticular order
     public function orderpayment(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -731,6 +751,7 @@ class OrderController extends Controller
         $credit_card= User_credit_cardinfo::where('user_id',$user->id)->get();
         return view('order.payment')->with(compact('price','card_type','addresses','credit_card'));
     }
+    //add credit card information for perticular user
     public function addcreditcard(Request $request)
     {
         if ($request->ajax()) {
@@ -769,6 +790,7 @@ class OrderController extends Controller
             User_credit_cardinfo::create($card_detail);
         }
     }
+    //add billing address for perticular user
     public function addaddress(Request $request)
     {
         if ($request->ajax()) {
@@ -785,6 +807,7 @@ class OrderController extends Controller
             Addresses::create($address_detail);
         }
     }
+    //add payment detail of perticular order
     public function addorderpayment(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -852,11 +875,9 @@ class OrderController extends Controller
         Order::where('order_id',$order_id)->update($order_detail);
         return redirect('order/index')->with('success','Your order Successfully Placed');
     }
-    /**
-     * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
+    //to display whole information of perticular order
     public function orderDetails(Request $request){
+        $title="Order Detail";
         if($request->order_id) {
             if($request->user_id)
             {
@@ -916,9 +937,10 @@ class OrderController extends Controller
                 ->where('order_id',$request->order_id)->first();
             if(count($payment_detail)>0)
                 $payment_detail = $payment_detail->toArray();
-            return view('order.detail_list')->with(compact('shipment_detail','payment_detail','user_role','id'));
+            return view('order.detail_list')->with(compact('shipment_detail','payment_detail','user_role','id','title'));
         }
     }
+    //change order status of perticular order
     public function orderstatus(Request $request)
     {
         if ($request->ajax()) {
@@ -930,12 +952,15 @@ class OrderController extends Controller
     //list Approved orders of All users for warhouse manager
     public function ordershipping()
     {
+        $title='Ship Order';
         $orders = Order::where('is_activated','3')->orderBy('created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
-        return view('order.ordershipping')->with(compact('orders','orderStatus'));
+        return view('order.ordershipping')->with(compact('orders','orderStatus','title'));
     }
+    //list orders of All users which select inspections, uploading inspection report by inspector
     public function inspectionreport()
     {
+        $title="Inspection Report";
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::selectRaw('orders.*')
@@ -946,8 +971,9 @@ class OrderController extends Controller
             ->distinct('supplier_inspections.order_id')
             ->get();
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
-        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role'));
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
+    // to upload inspection report
     public function uploadinspectionreport(Request $request)
     {
         $order_id=$request->input('order_id');
@@ -965,6 +991,7 @@ class OrderController extends Controller
             return redirect('order/inspectionreport')->with('success','Report successfully uploaded');
         }
     }
+    //to download inspection report
     public function downloadreport(Request $request)
     {
         $order_id=$request->order_id;
@@ -977,6 +1004,7 @@ class OrderController extends Controller
             return response()->download($file, $inspection_file, $headers);
         }
     }
+    //inspection report approve by customer
     public function approvereport(Request $request)
     {
         if($request->ajax()){
@@ -988,8 +1016,10 @@ class OrderController extends Controller
             Order::where('order_id', $order_id)->update($data);
         }
     }
+    //list of all orders which needs upload shipping quote by shipper
     public function shippingquote()
     {
+        $title="Shipping Quote";
         $user= \Auth::user();
         $user_role=$user->role_id;
         $details=Order::selectRaw('orders.order_id')
@@ -1005,14 +1035,16 @@ class OrderController extends Controller
             $order_ids[]=$detail->order_id;
         }
         if(!empty($order_ids))
-            $orders = Order::where('orders.is_activated','3')->orWhereIn('orders.order_id',$order_ids)->orWhere('orders.is_activated','6')->orWhere('orders.is_activated','8')->orderBy('orders.created_at', 'desc')->get();
+            $orders = Order::where('orders.is_activated','3')->orWhereIn('orders.order_id',$order_ids)->orderBy('orders.created_at', 'desc')->get();
         else
-            $orders = Order::where('orders.is_activated','3')->orWhere('orders.is_activated','6')->orWhere('orders.is_activated','8')->orderBy('orders.created_at', 'desc')->get();
+            $orders = Order::where('orders.is_activated','3')->orderBy('orders.created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
-        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role'));
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
+   // to display shippingquote form
     public function shippingquoteform(Request $request)
     {
+        $title="Shipping Quote Form";
         $order_id=$request->order_id;
         $user=User_info::selectRaw('user_infos.company_name, user_infos.contact_email, orders.order_no')
             ->join('orders','orders.user_id','=','user_infos.user_id')
@@ -1027,8 +1059,9 @@ class OrderController extends Controller
             ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
             ->where('orders.order_id',$order_id)
             ->get();
-        return view('order.shippingquote')->with(compact('order_id','shipping_method','shipment','charges','shipment_detail','user'));
+        return view('order.shippingquote')->with(compact('order_id','shipping_method','shipment','charges','shipment_detail','user','title'));
     }
+    // to add shipping quote form details
     public function addshippingquoteform(Request $request)
     {
         $count=$request->input('count');
@@ -1060,6 +1093,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order);
         return redirect('order/shippingquote')->with('success','Shipping Quote Submitted Successfully');
     }
+    //to download shipping quote
     public function viewshippingquote(Request $request)
     {
         $order_id=$request->order_id;
@@ -1107,6 +1141,7 @@ class OrderController extends Controller
             return view('order/viewshippingquote')->with(compact('shipment','shipment_detail','charges'));
         }*/
     }
+    // to approve shipping quote by customer
     public function approveshippingquote(Request $request)
     {
         if($request->ajax()){
@@ -1120,6 +1155,7 @@ class OrderController extends Controller
             return 1;
         }
     }
+    // quickbook for send automated invoice
     public function  qboConnect(){
         $this->IntuitAnywhere = new \QuickBooks_IPP_IntuitAnywhere(env('QBO_DSN'), env('QBO_ENCRYPTION_KEY'), env('QBO_OAUTH_CONSUMER_KEY'), env('QBO_CONSUMER_SECRET'), env('QBO_OAUTH_URL'), env('QBO_SUCCESS_URL'));
         if ($this->IntuitAnywhere->check(env('QBO_USERNAME'), env('QBO_TENANT')) && $this->IntuitAnywhere->test(env('QBO_USERNAME'), env('QBO_TENANT'))) {
@@ -1302,8 +1338,20 @@ class OrderController extends Controller
         $resp = abs($resp);
         return $resp;
     }
+    //list of all orders which needs upload bill of lading by shipper
+    public function billoflading()
+    {
+        $title="Bill of Lading";
+        $user= \Auth::user();
+        $user_role=$user->role_id;
+        $orders = Order::where('orders.is_activated','6')->orderBy('orders.created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
+    }
+    //to display bill of lading form
     public function billofladingform(Request $request)
     {
+        $title="Bill Of Lading Form";
         $order_id=$request->order_id;
         $user=User_info::selectRaw('user_infos.contact_email, orders.order_no')
             ->join('orders','orders.user_id','=','user_infos.user_id')
@@ -1317,8 +1365,9 @@ class OrderController extends Controller
             ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
             ->where('orders.order_id',$order_id)
             ->get();
-        return view('order.billoflading')->with(compact('order_id','shipment','shipment_detail','user'));
+        return view('order.billoflading')->with(compact('order_id','shipment','shipment_detail','user','title'));
     }
+    // to add bill of lading details
     public function addbillofladingform(Request $request)
     {
         $count=$request->input('count');
@@ -1341,14 +1390,17 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order);
         return redirect('order/shippingquote')->with('success','Bill of Lading Uploaded Successfully');
     }
-    public function billoflading()
+    // display list of order which need approve for bill of lading by logistics
+    public function billofladingapprove()
     {
+        $title="Bill Of Lading";
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','7')->orderBy('orders.created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
-        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role'));
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
+    //display detail of bill of lading to logistic
     public function viewbilloflading(Request $request)
     {
         if($request->ajax())
@@ -1368,6 +1420,7 @@ class OrderController extends Controller
             return view('order/viewbilloflading')->with(compact('shipment','shipment_detail','order_id'));
         }
     }
+    //to download bill of lading
     public function downloadladingbill(Request $request)
     {
         $order_id=$request->order_id;
@@ -1379,6 +1432,7 @@ class OrderController extends Controller
         );
         return response()->download($file,$bill, $headers);
     }
+    //approve bill of lading by logistics
     public function approvebilloflading(Request $request)
     {
         if($request->ajax()){
@@ -1391,8 +1445,20 @@ class OrderController extends Controller
             //$this->createCustomer($order_id);
         }
     }
+    //list of all orders which needs upload shipment pre alert by shipper
+    public function prealert()
+    {
+        $title="Shipment Pre Alert";
+        $user= \Auth::user();
+        $user_role=$user->role_id;
+        $orders = Order::where('orders.is_activated','8')->orderBy('orders.created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
+    }
+    //to display pre alert form
     public function prealertform(Request $request)
     {
+        $title="Shipment Pre Alert Form";
         $order_id=$request->order_id;
         $user=User_info::selectRaw('user_infos.company_name, user_infos.contact_email, orders.order_no')
             ->join('orders','orders.user_id','=','user_infos.user_id')
@@ -1403,8 +1469,9 @@ class OrderController extends Controller
             ->where('shipments.order_id',$order_id)
             ->orderby('shipments.shipment_id','asc')
             ->get();
-        return view('order.prealert')->with(compact('order_id','shipment','user'));
+        return view('order.prealert')->with(compact('order_id','shipment','user','title'));
     }
+    // add prealert form details
     public function addprealertform(Request $request)
     {
         $count=$request->input('count');
@@ -1441,16 +1508,20 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order);
         return redirect('order/shippingquote')->with('success','Shipment Pre Alert Submitted Successfully');
     }
+    //display list of orders which need custom clearnce by logistics
     public function customclearance()
     {
+        $title="Custom Clearance";
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','9')->orderBy('orders.created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
-        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role'));
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
+    //to display custom clearance form
     public function customclearanceform(Request $request)
     {
+        $title="Custom Clearance Form";
         $order_id=$request->order_id;
         $user=User_info::selectRaw('user_infos.company_name, user_infos.contact_email, orders.order_no')
             ->join('orders','orders.user_id','=','user_infos.user_id')
@@ -1461,8 +1532,9 @@ class OrderController extends Controller
             ->where('shipments.order_id',$order_id)
             ->orderby('shipments.shipment_id','asc')
             ->get();
-        return view('order.customclearance')->with(compact('order_id','shipment','user'));
+        return view('order.customclearance')->with(compact('order_id','shipment','user','title'));
     }
+    //  to add custom clearance form detail
     public function addcustomclearanceform(Request $request)
     {
         $count=$request->input('count');
@@ -1507,16 +1579,20 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order);
         return redirect('order/customclearance')->with('success','Custom Clearance Submitted Successfully');
     }
+    //list of order which need delivery booking
     public function deliverybooking()
     {
+        $title="Delivery Booking";
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','10')->orderBy('orders.created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
-        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role'));
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
+    //to display delivery booking form
     public function deliverybookingform(Request $request)
     {
+        $title="Delivery Booking Form";
         $order_id=$request->order_id;
         $user=User_info::selectRaw('user_infos.company_name, user_infos.contact_email, orders.order_no')
             ->join('orders','orders.user_id','=','user_infos.user_id')
@@ -1530,8 +1606,9 @@ class OrderController extends Controller
         $payment_type=Payment_type::all();
         $trucking_company=Trucking_company::all();
         $cfs_terminal=CFS_terminal::all();
-        return view('order.delivery_booking')->with(compact('order_id','shipment','user','payment_type','trucking_company','cfs_terminal'));
+        return view('order.delivery_booking')->with(compact('order_id','shipment','user','payment_type','trucking_company','cfs_terminal','title'));
     }
+    // to add delivery booking form details
     public function adddeliverybookingform(Request $request)
     {
         $count=$request->input('count');
@@ -1552,6 +1629,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order);
         return redirect('order/deliverybooking')->with('success','Delivery Booking Submitted Successfully');
     }
+    //add trucking company
     public function addtrucking(Request $request)
     {
         if ($request->ajax()) {
@@ -1561,6 +1639,7 @@ class OrderController extends Controller
             $trucking->save();
         }
     }
+    // add terminal
     public function addterminal(Request $request)
     {
         if ($request->ajax()) {
@@ -1570,6 +1649,7 @@ class OrderController extends Controller
             $terminal->save();
         }
     }
+    // create shipment plan and shipments
     public function createshipments(Request $request)
     {
         if ($request->ajax()) {
@@ -1818,6 +1898,16 @@ class OrderController extends Controller
             echo("XML: " . $ex->getXML() . "\n");
             echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
         }
+    }
+    //list orders for sales person
+    public function orderlist()
+    {
+        $title="Orders";
+        $user= \Auth::user();
+        $user_role=$user->role_id;
+        $orders = Order::where('orders.is_activated','<>','0')->orderBy('orders.created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
 
 }

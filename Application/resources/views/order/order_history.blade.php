@@ -1,5 +1,5 @@
 @extends('layouts.frontend.app')
-@section('title', 'Order History')
+@section('title', $title)
 @section('css')
     <style type="text/css">
         .margin-bottom {
@@ -12,7 +12,7 @@
     <section class="content">
         <div class="row">
             <div class="col-md-12">
-                <h3 class="page-head-line col-md-10">Order History</h3>
+                <h3 class="page-head-line col-md-10">{{$title}}</h3>
             </div>
         </div>
         <div class="row">

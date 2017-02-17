@@ -74,6 +74,8 @@
                             @if('Shipper'===\Auth::user()->role->name)
                                 <li>
                                     <a class="external" href="{{ url('order/shippingquote') }}"><i class="fa fa-btn fa-user"></i> Shipping Quote</a>
+                                    <a class="external" href="{{ url('order/billoflading') }}"><i class="fa fa-btn fa-user"></i> Bill Of Lading</a>
+                                    <a class="external" href="{{ url('order/prealert') }}"><i class="fa fa-btn fa-user"></i> Shipment Pre Alert</a>
                                 </li>
                             @endif
                             @if('Warehouse Manager'===\Auth::user()->role->name)
@@ -83,9 +85,14 @@
                             @endif
                             @if('Logistics'===\Auth::user()->role->name)
                                 <li>
-                                    <a class="external" href="{{ url('order/billoflading') }}"><i class="fa fa-btn fa-user"></i> Bill Of Lading</a>
+                                    <a class="external" href="{{ url('order/billofladingapprove') }}"><i class="fa fa-btn fa-user"></i> Bill Of Lading</a>
                                     <a class="external" href="{{ url('order/customclearance') }}"><i class="fa fa-btn fa-user"></i> Custom Clearance</a>
                                     <a class="external" href="{{ url('order/deliverybooking') }}"><i class="fa fa-btn fa-user"></i> Delivery Booking</a>
+                                </li>
+                            @endif
+                            @if('Sales'===\Auth::user()->role->name)
+                                <li>
+                                    <a class="external" href="{{ url('order/orderlist') }}"><i class="fa fa-btn fa-user"></i> Orders</a>
                                 </li>
                             @endif
                             @if('Admin' === \Auth::user()->role->name)

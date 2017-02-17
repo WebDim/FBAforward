@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-md-12">&nbsp;
             <div class="col-md-10">
-                <h2 class="page-head-line">ORDER DETAIL</h2>
+                <h2 class="page-head-line">{{$title}}</h2>
             </div>
 
             <div class="col-md-2 ">

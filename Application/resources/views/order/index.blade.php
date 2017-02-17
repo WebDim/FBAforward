@@ -1,5 +1,5 @@
 @extends('layouts.frontend.app')
-@section('title', 'Order Management')
+@section('title', $title)
 @section('css')
     <style type="text/css">
         .margin-bottom {
@@ -23,7 +23,7 @@
 <section class="content">
         <div class="row">
             <div class="col-md-12">
-                <h3 class="page-head-line col-md-10">Order Management</h3>
+                <h3 class="page-head-line col-md-10">{{$title}}</h3>
                 <div class="col-md-2">
                     <a href="{{ url('order/shipment') }}" class="btn btn-primary">Create New Order</a>
                 </div>
