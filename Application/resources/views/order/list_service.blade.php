@@ -33,19 +33,33 @@
                                 <input type="hidden" name="photo_list_detail_id{{$cnt}}" id="photo_list_detail_id{{$cnt}}" value="{{$products->photo_list_detail_id}}">
                                 <b class="text-info">{{ $products->product_name }}</b></td>
                             <td class="col-md-3"><b class="text-info">
+                                    {{--*/$listing_standard=env('LIST_STANDARD')/*--}}
+                                    {{--*/$listing_standard_price=env('LIST_STANDARD_PRICE')/*--}}
+                                    {{--*/$listing_prop=env('LIST_PROP')/*--}}
+                                    {{--*/$listing_prop_price=env('LIST_PROP_PRICE')/*--}}
+                                    <input type="checkbox" name="service{{$cnt}}_1" id="service{{$cnt}}_1" value="1" onchange="get_total({{$listing_standard_price}},{{$cnt}},1)" @if(in_array(1,$list_service_ids)) {{ "checked" }} @endif>{{ $listing_standard }}<br>
+                                    @if(isset($products->photo_list_detail_id))
+                                        <div id="standard_div{{$cnt}}">
+                                            STANDARD PHOTOS<input type="hidden" id="old_standard{{$cnt}}"  name="old_standard{{$cnt}}"  size="3"   value="{{$products->standard_photo}}"><input type="text" id="standard{{$cnt}}"  name="standard{{$cnt}}"  size="3" class="validate[required]" onchange="get_standard_subtotal(this.value,{{$cnt}},1,{{$listing_standard_price}})" value="{{$products->standard_photo}}"><br>
+                                        </div>
+                                    @else
+                                        <div id="standard_div{{$cnt}}" hidden>
+                                            STANDARD PHOTOS<input type="hidden" id="old_standard{{$cnt}}"  name="old_standard{{$cnt}}"  size="3"><input type="text" id="standard{{$cnt}}" name="standard{{$cnt}}"  size="3" class="validate[required]" onchange="get_standard_subtotal(this.value,{{$cnt}},1,{{$listing_standard_price}})"><br>
+                                        </div>
+                                    @endif
+                                    <input type="checkbox" name="service{{$cnt}}_2" id="service{{$cnt}}_2" value="2" onchange="get_total({{$listing_prop_price}},{{$cnt}},2)" @if(in_array(2,$list_service_ids)) {{ "checked" }} @endif>{{ $listing_prop }}<br>
+                                    @if(isset($products->photo_list_detail_id))
+                                        <div id="prop_div{{$cnt}}">
+                                            PROP PHOTOS<input type="hidden" id="old_prop{{$cnt}}" name="old_prop{{$cnt}}" size="3"  value="{{$products->prop_photo}}"><input type="text" id="prop{{$cnt}}" name="prop{{$cnt}}" size="3" class="validate[required]" onchange="get_prop_subtotal(this.value,{{$cnt}},2,{{$listing_prop_price}})" value="{{$products->prop_photo}}"><br>
+                                        </div>
+                                    @else
+                                        <div id="prop_div{{$cnt}}" hidden>
+                                            PROP PHOTOS<input type="hidden" id="old_prop{{$cnt}}" name="old_prop{{$cnt}}"  size="3"><input type="text" id="prop{{$cnt}}" name="prop{{$cnt}}" size="3" class="validate[required]" onchange="get_prop_subtotal(this.value,{{$cnt}},2,{{$listing_prop_price}})">
+                                        </div>
+                                    @endif
+
                                     @foreach ($list_service as $list_services)
                                         <input type="checkbox" name="service{{$cnt}}_{{ $list_services->listing_service_id }}" id="service{{$cnt}}_{{$list_services->listing_service_id}}" value="{{ $list_services->listing_service_id }}" onchange="get_total({{$list_services->price}},{{$cnt}},{{$list_services->listing_service_id}})" @if(in_array($list_services->listing_service_id,$list_service_ids)) {{ "checked" }} @endif>{{ $list_services->service_name }}<br>
-                                        @if(isset($products->photo_list_detail_id) && $list_services->listing_service_id==1)
-                                        <div id="service_div{{$cnt}}">
-                                            STANDARD PHOTOS<input type="hidden" id="old_standard{{$cnt}}"  name="old_standard{{$cnt}}"  size="3"   value="{{$products->standard_photo}}"><input type="text" id="standard{{$cnt}}"  name="standard{{$cnt}}"  size="3" class="validate[required]" onchange="get_standard_subtotal(this.value,{{$cnt}},{{$list_services->listing_service_id}},{{$list_services->price}})" value="{{$products->standard_photo}}"><br>
-                                            PROP PHOTOS<input type="hidden" id="old_prop{{$cnt}}" name="old_prop{{$cnt}}" size="3"  value="{{$products->prop_photo}}"><input type="text" id="prop{{$cnt}}" name="prop{{$cnt}}" size="3" class="validate[required]" onchange="get_prop_subtotal(this.value,{{$cnt}},{{$list_services->listing_service_id}},{{$list_services->price}})" value="{{$products->prop_photo}}">
-                                        </div>
-                                        @elseif($list_services->listing_service_id==1)
-                                        <div id="service_div{{$cnt}}" hidden>
-                                           STANDARD PHOTOS<input type="hidden" id="old_standard{{$cnt}}"  name="old_standard{{$cnt}}"  size="3"><input type="text" id="standard{{$cnt}}" name="standard{{$cnt}}"  size="3" class="validate[required]" onchange="get_standard_subtotal(this.value,{{$cnt}},{{$list_services->listing_service_id}},{{$list_services->price}})"><br>
-                                           PROP PHOTOS<input type="hidden" id="old_prop{{$cnt}}" name="old_prop{{$cnt}}" size="3"><input type="text" id="prop{{$cnt}}" name="prop{{$cnt}}" size="3" class="validate[required]" onchange="get_prop_subtotal(this.value,{{$cnt}},{{$list_services->listing_service_id}},{{$list_services->price}})">
-                                        </div>
-                                        @endif
                                     @endforeach
                                         <input type="hidden" name="sub_count{{$cnt}}" id="sub_count{{$cnt}}" value="{{ $list_services->listing_service_id }}">
                                 </b></td>
@@ -92,6 +106,7 @@
         });
         function get_standard_subtotal(qty,no,service_id,price)
         {
+
             if($("#old_standard"+no).val()!=$("#standard"+no).val())
             {
                  if($("#old_standard"+no).val()>0) {
@@ -142,6 +157,7 @@
         }
         function get_prop_subtotal(qty,no,service_id,price)
         {
+
             if($("#old_prop"+no).val()!=$("#prop"+no).val())
             {
                 if($("#old_prop"+no).val()>0) {
@@ -192,7 +208,11 @@
             if($("#service"+no+"_"+sub_no).is(':checked')) {
                 if($('#service'+no+'_'+sub_no).val()==1)
                 {
-                    $("#service_div"+no).show();
+                    $("#standard_div"+no).show();
+                }
+                else if($('#service'+no+'_'+sub_no).val()==2)
+                {
+                    $("#prop_div"+no).show();
                 }
                 else {
                     total = parseFloat($("#total" + no).val(), 2) + parseFloat(price, 2);
@@ -207,7 +227,32 @@
                 if($('#service'+no+'_'+sub_no).val()==1)
                 {
                     photo_list_detail_id = $("#photo_list_detail_id" + no).val();
-                    $("#service_div" + no).hide();
+                    $("#standard_div" + no).hide();
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-Token': $('input[name="_token"]').val()
+                        },
+                        method: 'POST', // Type of response and matches what we said in the route
+                        url: '/order/removephotolabel', // This is the url we gave in the route
+                        data: {
+                            'photo_list_detail_id': photo_list_detail_id,
+
+                        }, // a JSON object to send back
+                        success: function (response) { // What to do if we succeed
+                            console.log(response);
+                            //alert("product deleted Successfully");
+
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                            console.log(JSON.stringify(jqXHR));
+                            console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                        }
+                    });
+                }
+                else if($('#service'+no+'_'+sub_no).val()==2)
+                {
+                    photo_list_detail_id = $("#photo_list_detail_id" + no).val();
+                    $("#prop_div" + no).hide();
                     $.ajax({
                         headers: {
                             'X-CSRF-Token': $('input[name="_token"]').val()
