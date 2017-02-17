@@ -188,6 +188,8 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/addtrucking','OrderController@addtrucking');
         Route::post('/addterminal','OrderController@addterminal');
         Route::get('/orderlist','OrderController@orderlist');
+        Route::get('/customers','OrderController@customers');
+        Route::get('/switchuser/{user_id}/{status}','OrderController@switchuser');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);

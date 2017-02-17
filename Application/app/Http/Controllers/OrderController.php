@@ -1149,8 +1149,8 @@ class OrderController extends Controller
             $order_id = $post['order_id'];
             $shipping_quotes_data = array('status' => '1');
             Shipping_quote::where('order_id', $order_id)->update($shipping_quotes_data);
-            $data = array('is_activated' => '5');
-            Order::where('order_id', $order_id)->update($data);
+            /*$data = array('is_activated' => '5');
+            Order::where('order_id', $order_id)->update($data);*/
             $this->createCustomer($order_id);
             return 1;
         }
@@ -1909,5 +1909,28 @@ class OrderController extends Controller
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
+    public function customers()
+    {
+        $title="Customer List";
+        $user= User::selectRaw('users.*, user_infos.*')
+                      ->join('user_infos','users.id','=','user_infos.user_id')
+                      ->where('role_id','3')
+                      ->get();
+       return view('order.customers_detail')->with(compact('user','title'));
+    }
+    public function switchuser(Request $request)
+    {
+       $user= \Auth::user();
+       if($request->status=='0') {
+           $request->session()->put('old_user', $user->id);
+       }
+       else
+       {
+           $request->session()->forget('old_user');
+       }
+        \Auth::loginUsingId($request->user_id);
+        return view('member.home');
+    }
+
 
 }

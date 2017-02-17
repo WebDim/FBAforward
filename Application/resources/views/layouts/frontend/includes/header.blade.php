@@ -14,6 +14,10 @@
                 <li><a href="{{ url('/#home') }}">Home</a></li>
                 @if (!Auth::guest())
             @if('Customer' === \Auth::user()->role->name)
+                {{--*/ $old_user= session('old_user')/*--}}
+                @if(session('old_user'))
+                    <li><a href="/order/switchuser/{{$old_user}}/1">Switch user</a> </li>
+                    @endif
                     <li><a href="{{ url('/creditcard_detail') }}">Paypal Vault</a></li>
                 @endif
                 @endif
@@ -93,6 +97,7 @@
                             @if('Sales'===\Auth::user()->role->name)
                                 <li>
                                     <a class="external" href="{{ url('order/orderlist') }}"><i class="fa fa-btn fa-user"></i> Orders</a>
+                                    <a class="external" href="{{ url('order/customers') }}"><i class="fa fa-btn fa-user"></i>Customers</a>
                                 </li>
                             @endif
                             @if('Admin' === \Auth::user()->role->name)
