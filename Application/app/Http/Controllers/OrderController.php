@@ -1388,7 +1388,7 @@ class OrderController extends Controller
         }
         $order= array('is_activated'=>'7');
         Order::where('order_id',$request->input('order_id'))->update($order);
-        return redirect('order/shippingquote')->with('success','Bill of Lading Uploaded Successfully');
+        return redirect('order/billoflading')->with('success','Bill of Lading Uploaded Successfully');
     }
     // display list of order which need approve for bill of lading by logistics
     public function billofladingapprove()
@@ -1506,7 +1506,7 @@ class OrderController extends Controller
         }
         $order= array('is_activated'=>'9');
         Order::where('order_id',$request->input('order_id'))->update($order);
-        return redirect('order/shippingquote')->with('success','Shipment Pre Alert Submitted Successfully');
+        return redirect('order/prealert')->with('success','Shipment Pre Alert Submitted Successfully');
     }
     //display list of orders which need custom clearnce by logistics
     public function customclearance()
