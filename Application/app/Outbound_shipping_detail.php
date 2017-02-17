@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Outbound_Shipping_detail extends Model
+class Outbound_shipping_detail extends Model
 {
     //
     protected $primaryKey = 'outbound_shipping_detail_id';
