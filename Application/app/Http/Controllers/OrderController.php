@@ -38,7 +38,7 @@ use App\User;
 use App\User_credit_cardinfo;
 use App\Addresses;
 use App\Http\Middleware\Amazoncredential;
-use App\Outbound_Shipping_detail;
+use App\Outbound_shipping_detail;
 use App\Payment_detail;
 use App\User_info;
 use Illuminate\Http\Request;
@@ -638,7 +638,7 @@ class OrderController extends Controller
                         "product_ids" => $request->input('product_id' . $ship_cnt . "_" . $cnt ),
                         "qty" => $request->input('total_unit' . $ship_cnt . "_" . $cnt )
                     );
-                    $outbound_shipping_detail = new Outbound_Shipping_detail($outbound_shipping);
+                    $outbound_shipping_detail = new Outbound_shipping_detail($outbound_shipping);
                     $outbound_shipping_detail->save();
                 } else {
                     $outbound_shipping = array(
@@ -648,7 +648,7 @@ class OrderController extends Controller
                         "product_ids" => $request->input('product_id' . $ship_cnt . "_" . $cnt),
                         "qty" => $request->input('total_unit' . $ship_cnt . "_" . $cnt)
                     );
-                    Outbound_Shipping_detail::where('outbound_shipping_detail_id', $request->input("outbound_shipping_detail_id" . $ship_cnt . "_" . $cnt))->update($outbound_shipping);
+                    Outbound_shipping_detail::where('outbound_shipping_detail_id', $request->input("outbound_shipping_detail_id" . $ship_cnt . "_" . $cnt))->update($outbound_shipping);
                 }
             }
         }
@@ -665,7 +665,7 @@ class OrderController extends Controller
             ->where('shipments.order_id',$order_id)
             ->groupby('shipment_details.shipment_id')
             ->get();
-        $outbound_detail=Outbound_Shipping_detail::selectRaw('outbound_shipping_details.qty, amazon_inventories.product_name, outbound_methods.outbound_name')
+        $outbound_detail=Outbound_shipping_detail::selectRaw('outbound_shipping_details.qty, amazon_inventories.product_name, outbound_methods.outbound_name')
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'outbound_shipping_details.product_ids','left')
             ->join('outbound_methods','outbound_shipping_details.outbound_method_id','=','outbound_methods.outbound_method_id','left')
             ->where('outbound_shipping_details.order_id',$order_id)
