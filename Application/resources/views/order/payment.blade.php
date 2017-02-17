@@ -388,17 +388,17 @@
         }
         function gettotal() {
             fba_total=parseFloat($("#consulting").val(),2)+parseFloat($("#label_charge").val(),2)+parseFloat($("#prep_forward").val(),2)+parseFloat($("#listing_service").val(),2);
-            total_cost=parseFloat($("#pre_ship_inspect").val(),2)+parseFloat($("#shipping_cost").val(),2)+parseFloat($("#port_fees").val(),2)+parseFloat($("#custom_brokerage").val(),2)+parseFloat($("#custom_duty").val(),2)+parseFloat($("#inbound_shipping").val(),2)+fba_total;
-            $("#total_fbaforward").val(fba_total);
-            $("#total_cost").val(total_cost);
-            $("#today_total").val(total_cost);
+            total_cost=parseFloat($("#pre_ship_inspect").val(),2)+parseFloat($("#shipping_cost").val(),2)+parseFloat($("#port_fees").val(),2)+parseFloat($("#custom_brokerage").val(),2)+parseFloat($("#custom_duty").val(),2)+parseFloat($("#inbound_shipping").val(),2)+parseFloat(fba_total,2);
+            $("#total_fbaforward").val(fba_total.toFixed(2));
+            $("#total_cost").val(total_cost.toFixed(2));
+            $("#today_total").val(total_cost.toFixed(2));
         }
         $(document).ready(function () {
             fba_total=parseFloat($("#consulting").val(),2)+parseFloat($("#label_charge").val(),2)+parseFloat($("#prep_forward").val(),2)+parseFloat($("#listing_service").val(),2);
-            total_cost=parseFloat($("#pre_ship_inspect").val(),2)+parseFloat($("#shipping_cost").val(),2)+parseFloat($("#port_fees").val(),2)+parseFloat($("#custom_brokerage").val(),2)+parseFloat($("#custom_duty").val(),2)+parseFloat($("#inbound_shipping").val(),2)+fba_total;
-            $("#total_fbaforward").val(fba_total);
-            $("#total_cost").val(total_cost);
-            $("#today_total").val(total_cost);
+            total_cost=parseFloat($("#pre_ship_inspect").val(),2)+parseFloat($("#shipping_cost").val(),2)+parseFloat($("#port_fees").val(),2)+parseFloat($("#custom_brokerage").val(),2)+parseFloat($("#custom_duty").val(),2)+parseFloat($("#inbound_shipping").val(),2)+parseFloat(fba_total,2);
+            $("#total_fbaforward").val(fba_total.toFixed(2));
+            $("#total_cost").val(total_cost.toFixed(2));
+            $("#today_total").val(total_cost.toFixed(2));
 
         });
         $(document).ready(function () {
