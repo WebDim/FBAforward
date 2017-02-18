@@ -13,6 +13,7 @@ use App\Dev_account;
 use App\Inspection_report;
 use App\Listing_service;
 use App\Listing_service_detail;
+use App\Order_note;
 use App\Other_label_detail;
 use App\Outbound_method;
 use App\Payment_info;
@@ -1930,6 +1931,42 @@ class OrderController extends Controller
        }
         \Auth::loginUsingId($request->user_id);
         return view('member.home');
+    }
+    public function addnotes(Request $request)
+    {
+        $notes= array('order_id'=>$request->input('orderid'),
+                      'shipping_notes'=>$request->input('shipping_note'),
+                      'prep_notes'=>$request->input('prep_note')
+                );
+        Order_note::create($notes);
+        return redirect('order/orderlist');
+    }
+    public function viewnotes(Request $request)
+    {
+        if($request->ajax())
+        {
+            $post = $request->all();
+            $notes=Order_note::where('order_id',$post['order_id'])->get();
+            echo json_encode($notes);
+            exit;
+        }
+    }
+    public function deletenote(Request $request)
+    {
+        if($request->ajax())
+        {
+            $post = $request->all();
+            Order_note::where('id',$post['note_id'])->delete();
+        }
+    }
+    public function savenote(Request $request)
+    {
+        if($request->ajax()) {
+            $notes = array('shipping_notes' => $request->input('shipping_note'),
+                'prep_notes' => $request->input('prep_note')
+            );
+            Order_note::where('id',$request->input('note_id'))->update($notes);
+        }
     }
 
 

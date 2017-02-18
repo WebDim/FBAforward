@@ -151,5 +151,16 @@ use AuthenticatesAndRegistersUsers,
         ]);
         return $user;
     }
+    public function getLogout()
+    {
+        return $this->logout();
+    }
+    public function logout()
+    {
+        \Session::flush();
+        \Auth::guard($this->getGuard())->logout();
+
+        return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
+    }
 
 }

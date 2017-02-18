@@ -39,7 +39,11 @@
                             <td><b class="text-info">{{ $users->estimate_annual_amazon_revenue }}</b></td>
                             <td><b class="text-info">{{ $users->estimate_annual_fba_order }}</b></td>
                             <td><b class="text-info">{{ $users->reference_from  }}</b></td>
-                            <td><a href="switchuser/{{$users->user_id}}/0">Switch User</a></td>
+                            <td>
+                                @if($users->status=='1')
+                                <a href="switchuser/{{$users->user_id}}/0">Switch User</a>
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                     </tbody>

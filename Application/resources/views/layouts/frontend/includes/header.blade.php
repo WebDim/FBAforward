@@ -18,7 +18,9 @@
                 @if(session('old_user'))
                     <li><a href="/order/switchuser/{{$old_user}}/1">Switch user</a> </li>
                     @endif
+                    @if(!isset($old_user))
                     <li><a href="{{ url('/creditcard_detail') }}">Paypal Vault</a></li>
+                    @endif
                 @endif
                 @endif
                <!-- <li><a href="{{ url('/#feature') }}">Features</a></li>
@@ -54,21 +56,24 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu">
+                            @if(!isset($old_user))
                             <li><a class="external" href="{{ url('member/home') }}"><i class="fa fa-btn fa-home"></i>&nbsp;Dashboard</a>
                             </li>
                             <li><a class="external" href="{{ url('member/profile') }}"><i class="fa fa-btn fa-user"></i>&nbsp;Profile</a>
                             </li>
+                            @endif
                             @if('Customer' === \Auth::user()->role->name)
                             <li>
                                 <a class="external" href="{{ url('order/index') }}"><i class="fa fa-btn fa-user"></i> Order Management</a>
                             </li>
-                            <li>
-                                <a class="external" href="{{ url('order/orderhistory') }}"><i class="fa fa-btn fa-user"></i> Order History</a>
-                            </li>
-                            <li><a class="external" href="{{ url('/amazon_credential') }}"><i class="fa fa-cog"></i>&nbsp;Amazon Credential</a>
-                            </li>
-                            <li><a class="external" href="{{ url('member/amazoninventorylist') }}"><i class="fa fa-list"></i>&nbsp;Amazon Inventory List</a>
-                            </li>
+                                @if(!isset($old_user))
+                                <li><a class="external" href="{{ url('order/orderhistory') }}"><i class="fa fa-btn fa-user"></i> Order History</a>
+                                </li>
+                                <li><a class="external" href="{{ url('/amazon_credential') }}"><i class="fa fa-cog"></i>&nbsp;Amazon Credential</a>
+                                </li>
+                                <li><a class="external" href="{{ url('member/amazoninventorylist') }}"><i class="fa fa-list"></i>&nbsp;Amazon Inventory List</a>
+                                </li>
+                                @endif
                             @endif
                             @if('Inspector'===\Auth::user()->role->name)
                                 <li>
@@ -99,6 +104,12 @@
                                     <a class="external" href="{{ url('order/orderlist') }}"><i class="fa fa-btn fa-user"></i> Orders</a>
                                     <a class="external" href="{{ url('order/customers') }}"><i class="fa fa-btn fa-user"></i>Customers</a>
                                 </li>
+                            @endif
+                            @if('customer service'===\Auth::user()->role->name)
+                                <li>
+                                    <a class="external" href="{{ url('order/orderlist') }}"><i class="fa fa-btn fa-user"></i> Orders</a>
+                                    <a class="external" href="{{ url('order/customers') }}"><i class="fa fa-btn fa-user"></i>Customers</a>
+                                 </li>
                             @endif
                             @if('Admin' === \Auth::user()->role->name)
                                 <li><a class="external" href="{{ url('admin/dashboard') }}"><i

@@ -190,6 +190,10 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/orderlist','OrderController@orderlist');
         Route::get('/customers','OrderController@customers');
         Route::get('/switchuser/{user_id}/{status}','OrderController@switchuser');
+        Route::put('/addnotes','OrderController@addnotes');
+        Route::post('/viewnotes','OrderController@viewnotes');
+        Route::post('/deletenote','OrderController@deletenote');
+        Route::post('/savenote','OrderController@savenote');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);

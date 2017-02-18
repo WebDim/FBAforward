@@ -195,7 +195,7 @@
     }
     function openquote(order_id)
     {
-        $.noConflict();
+        jQuery.noConflict();
         $.ajax({
             headers: {
                 'X-CSRF-Token':  "{{ csrf_token() }}"

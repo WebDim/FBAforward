@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Customer_amazon_detail;
 use App\Http\Requests\AmazoncredentialRequest;
+use App\User_info;
 use Illuminate\Support\Facades\DB;
 use App\Libraries;
 use Carbon\Carbon;
@@ -52,6 +53,8 @@ class AmazonController extends Controller
                 'mws_authtoken'=>encrypt($request->input('mws_authtoken')),
             );
             Customer_amazon_detail::where("user_id", "=", $user->id)->update($credentail);
+            $status= array('status'=>'1');
+            User_info::where('user_id',$user->id)->update($status);
             return redirect('member/home')->with('success', 'Your Amazon Credential Updated Successfully, We are fetching your products, Please check after 5 minutes.');
         }
       else{
