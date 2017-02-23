@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Customer_quickbook_detail;
+use App\Invoice_detail;
+use App\Invoice_product_detail;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -138,8 +141,6 @@ class QuickbooksController extends Controller
     }
     public function addInvoice(){
         $this->qboConnect();
-
-
         $ItemService = new \QuickBooks_IPP_Service_Item();
         $items = $ItemService->query($this->context, $this->realm, "SELECT * FROM Item WHERE Name = 'hello' ORDER BY Metadata.LastUpdatedTime ");
         echo "<pre>";
@@ -207,6 +208,117 @@ class QuickbooksController extends Controller
             print('Could not delete invoice: ' . $InvoiceService->lastError());
         }
 
+    }
+    public function getcustomers()
+    {
+        $this->qboConnect();
+        $Context=$this->context;
+        $realm=$this->realm;
+        $CustomerService = new \QuickBooks_IPP_Service_Customer();
+        $customers = $CustomerService->query($Context, $realm, "SELECT * FROM Customer ");
+        foreach ($customers as $customer)
+        {
+            $customer_id=$this->getId($customer->getId());
+            $customer_data=array('balance'=>$customer->getBalance());
+            Customer_quickbook_detail::where('customer_id',$customer_id)->update($customer_data);
+        }
+    }
+    public function  getinvoices()
+    {
+        //$title="Invoices";
+        $this->qboConnect();
+        $Context=$this->context;
+        $realm=$this->realm;
+        $InvoiceService = new \QuickBooks_IPP_Service_Invoice();
+        $invoices = $InvoiceService->query($Context, $realm, "SELECT * FROM Invoice STARTPOSITION 1 ");
+        foreach ($invoices as $invoice) {
+            $get_invoice = Invoice_detail::where('invoice_id', $this->getId($invoice->getId()))->get();
+            if (count($get_invoice)==0) {
+                $invoice_data = array('invoice_id' => $this->getId($invoice->getId()),
+                    'synctoken' => $invoice->getSyncToken(),
+                    'created_time' => $invoice->getMetaData()->getCreateTime(),
+                    'updated_time' => $invoice->getMetaData()->getLastUpdatedTime(),
+                    'docnumber' => $invoice->getDocNumber(),
+                    'txndate' => $invoice->getTxnDate(),
+                    'customer_ref' => $this->getId($invoice->getCustomerRef()),
+                    'customer_ref_name' => $invoice->getCustomerRef_name(),
+                    'line1' => $invoice->getBillAddr()->getLine1(),
+                    'line2' => $invoice->getBillAddr()->getLine2(),
+                    'city' => $invoice->getBillAddr()->getCity(),
+                    'country' => $invoice->getBillAddr()->getCountrySubDivisionCode(),
+                    'postalcode' => $invoice->getBillAddr()->getPostalCode(),
+                    'lat' => $invoice->getBillAddr()->getLat(),
+                    'due_date' => $invoice->getDueDate(),
+                    'total_amt' => $invoice->getTotalAmt(),
+                    'currancy_ref' => $this->getId($invoice->getCurrencyRef()),
+                    'currancy_ref_name' => $invoice->getCurrencyRef_name(),
+                    'total_taxe' => $invoice->getTxnTaxDetail()->getTotalTax()
+                );
+                $invoice_detail = Invoice_detail::create($invoice_data);
+                $service = array('Sea Freight Shipping from China - Dog', 'Training Collars', 'Customs Brokerage Fees', 'U.S. Port Fees', 'Container Delivery Fee', 'Wire Transfer Fee');
+                for ($cnt = 0; $cnt < count($service); $cnt++) {
+                    if (!empty($invoice->getLine($cnt))) {
+                        if (!empty($invoice->getLine($cnt)->getSalesItemLineDetail())) {
+                            $invoice_product_data = array('invoice_product_detail_id' => $invoice_detail->id,
+                                'item_ref' => $this->getId($invoice->getLine($cnt)->getSalesItemLineDetail()->getItemRef()),
+                                'item_ref_name' => $invoice->getLine($cnt)->getSalesItemLineDetail()->getItemRef_name(),
+                                'qty' => $invoice->getLine($cnt)->getSalesItemLineDetail()->getQty(),
+                                'amount' => $invoice->getLine($cnt)->getAmount()
+                            );
+                        }
+                        Invoice_product_detail::create($invoice_product_data);
+                    }
+                }
+            }
+            else
+            {
+                $invoice_data = array('invoice_id' => $this->getId($invoice->getId()),
+                    'synctoken' => $invoice->getSyncToken(),
+                    'created_time' => $invoice->getMetaData()->getCreateTime(),
+                    'updated_time' => $invoice->getMetaData()->getLastUpdatedTime(),
+                    'docnumber' => $invoice->getDocNumber(),
+                    'txndate' => $invoice->getTxnDate(),
+                    'customer_ref' => $this->getId($invoice->getCustomerRef()),
+                    'customer_ref_name' => $invoice->getCustomerRef_name(),
+                    'line1' => $invoice->getBillAddr()->getLine1(),
+                    'line2' => $invoice->getBillAddr()->getLine2(),
+                    'city' => $invoice->getBillAddr()->getCity(),
+                    'country' => $invoice->getBillAddr()->getCountrySubDivisionCode(),
+                    'postalcode' => $invoice->getBillAddr()->getPostalCode(),
+                    'lat' => $invoice->getBillAddr()->getLat(),
+                    'due_date' => $invoice->getDueDate(),
+                    'total_amt' => $invoice->getTotalAmt(),
+                    'currancy_ref' => $this->getId($invoice->getCurrencyRef()),
+                    'currancy_ref_name' => $invoice->getCurrencyRef_name(),
+                    'total_taxe' => $invoice->getTxnTaxDetail()->getTotalTax()
+                );
+                Invoice_detail::where('invoice_id',$this->getId($invoice->getId()))->update($invoice_data);
+                $service = array('Sea Freight Shipping from China - Dog', 'Training Collars', 'Customs Brokerage Fees', 'U.S. Port Fees', 'Container Delivery Fee', 'Wire Transfer Fee');
+                for ($cnt = 0; $cnt < count($service); $cnt++) {
+                    if(!empty($invoice->getLine($cnt))) {
+                        if (!empty($invoice->getLine($cnt)->getSalesItemLineDetail())) {
+                            $get_invoice_product = Invoice_product_detail::where('invoice_product_detail_id', $get_invoice[0]->id)->where('item_ref', $this->getId($invoice->getLine($cnt)->getSalesItemLineDetail()->getItemRef()))->get();
+                            if (count($get_invoice_product) == 0) {
+                                $invoice_product_data = array('invoice_product_detail_id' => $get_invoice[0]->id,
+                                    'item_ref' => $this->getId($invoice->getLine($cnt)->getSalesItemLineDetail()->getItemRef()),
+                                    'item_ref_name' => $invoice->getLine($cnt)->getSalesItemLineDetail()->getItemRef_name(),
+                                    'qty' => $invoice->getLine($cnt)->getSalesItemLineDetail()->getQty(),
+                                    'amount' => $invoice->getLine($cnt)->getAmount()
+                                );
+                                Invoice_product_detail::create($invoice_product_data);
+                            } else {
+                                $invoice_product_data = array('item_ref' => $this->getId($invoice->getLine($cnt)->getSalesItemLineDetail()->getItemRef()),
+                                    'item_ref_name' => $invoice->getLine($cnt)->getSalesItemLineDetail()->getItemRef_name(),
+                                    'qty' => $invoice->getLine($cnt)->getSalesItemLineDetail()->getQty(),
+                                    'amount' => $invoice->getLine($cnt)->getAmount()
+                                );
+                                Invoice_product_detail::where('invoice_product_detail_id', $get_invoice[0]->id)->where('item_ref', $this->getId($invoice->getLine($cnt)->getSalesItemLineDetail()->getItemRef()))->update($invoice_product_data);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 

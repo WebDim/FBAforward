@@ -5,13 +5,9 @@
 @section('css')
         <!-- DataTables -->
 {!! Html::style('assets/dist/css/datatable/dataTables.bootstrap.min.css') !!}
-
 {!! Html::style('assets/dist/css/datatable/responsive.bootstrap.min.css') !!}
-
 {!! Html::style('assets/dist/css/datatable/dataTablesCustom.css') !!}
-
 @endsection
-
 @section('content')
         <!-- Content Header (Page header) -->
 <section class="content-header">

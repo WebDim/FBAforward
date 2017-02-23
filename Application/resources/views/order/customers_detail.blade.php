@@ -40,8 +40,10 @@
                             <td><b class="text-info">{{ $users->estimate_annual_fba_order }}</b></td>
                             <td><b class="text-info">{{ $users->reference_from  }}</b></td>
                             <td>
-                                @if($users->status=='1')
-                                <a href="switchuser/{{$users->user_id}}/0">Switch User</a>
+                                @if($user_role_id==4 || $user_role_id==9)
+                                    @if($users->status=='1')
+                                    <a href="switchuser/{{$users->user_id}}/0">Switch User</a>
+                                    @endif
                                 @endif
                             </td>
                         </tr>

@@ -8,9 +8,11 @@ use App\CFS_terminal;
 use App\Charges;
 use App\Custom_clearance;
 use App\Customer_amazon_detail;
+use App\Customer_quickbook_detail;
 use App\Delivery_booking;
 use App\Dev_account;
 use App\Inspection_report;
+use App\Invoice_detail;
 use App\Listing_service;
 use App\Listing_service_detail;
 use App\Order_note;
@@ -55,6 +57,7 @@ use PayPal\Api\Transaction;
 use App\Libraries;
 use Illuminate\Support\Facades\DB;
 use PDF;
+use Yajra\Datatables\Datatables;
 class OrderController extends Controller
 {
     private $IntuitAnywhere;
@@ -1188,45 +1191,58 @@ class OrderController extends Controller
             ->join('user_infos','user_infos.user_id','=','users.id')
             ->where('orders.order_id',$order_id)
             ->get();
+        $exist_user_detail= Customer_quickbook_detail::selectRaw('customer_quickbook_details.*')
+            ->join('orders','customer_quickbook_details.user_id','=','orders.user_id')
+            ->where('orders.order_id',$order_id)
+            ->get();
+
         $this->qboConnect();
         $CustomerService = new \QuickBooks_IPP_Service_Customer();
         $Customer = new \QuickBooks_IPP_Object_Customer();
-        $Customer->setDisplayName($user__detail[0]->company_name . mt_rand(0, 1000));
-        // Terms (e.g. Net 30, etc.)
-        //$Customer->setSalesTermRef(4);
-        // Phone #
-        $PrimaryPhone = new \QuickBooks_IPP_Object_PrimaryPhone();
-        $PrimaryPhone->setFreeFormNumber($user__detail[0]->company_phone);
-        $Customer->setPrimaryPhone($PrimaryPhone);
-        // Mobile #
-        $Mobile = new \QuickBooks_IPP_Object_Mobile();
-        $Mobile->setFreeFormNumber($user__detail[0]->company_phone);
-        $Customer->setMobile($Mobile);
-        // Fax #
-        $Fax = new \QuickBooks_IPP_Object_Fax();
-        $Fax->setFreeFormNumber($user__detail[0]->company_phone);
-        $Customer->setFax($Fax);
-        // Bill address
-        $BillAddr = new \QuickBooks_IPP_Object_BillAddr();
-        $BillAddr->setLine1($user__detail[0]->company_address);
-        $BillAddr->setLine2($user__detail[0]->company_address2);
-        $BillAddr->setCity($user__detail[0]->company_city);
-        $BillAddr->setCountrySubDivisionCode($user__detail[0]->company_country);
-        $BillAddr->setPostalCode($user__detail[0]->company_zipcode);
-        $Customer->setBillAddr($BillAddr);
-        // Email
-        $PrimaryEmailAddr = new \QuickBooks_IPP_Object_PrimaryEmailAddr();
-        $PrimaryEmailAddr->setAddress($user__detail[0]->contact_email);
-        $Customer->setPrimaryEmailAddr($PrimaryEmailAddr);
-        if ($resp = $CustomerService->add($this->context, $this->realm, $Customer))
-        {
-            $resp=$this->getId($resp);
-            $this->addInvoice($resp, $order_id);
+        if(count($exist_user_detail)==0) {
+            $Customer->setDisplayName($user__detail[0]->company_name . mt_rand(0, 1000));
+            // Terms (e.g. Net 30, etc.)
+            //$Customer->setSalesTermRef(4);
+            // Phone #
+            $PrimaryPhone = new \QuickBooks_IPP_Object_PrimaryPhone();
+            $PrimaryPhone->setFreeFormNumber($user__detail[0]->company_phone);
+            $Customer->setPrimaryPhone($PrimaryPhone);
+            // Mobile #
+            $Mobile = new \QuickBooks_IPP_Object_Mobile();
+            $Mobile->setFreeFormNumber($user__detail[0]->company_phone);
+            $Customer->setMobile($Mobile);
+            // Fax #
+            $Fax = new \QuickBooks_IPP_Object_Fax();
+            $Fax->setFreeFormNumber($user__detail[0]->company_phone);
+            $Customer->setFax($Fax);
+            // Bill address
+            $BillAddr = new \QuickBooks_IPP_Object_BillAddr();
+            $BillAddr->setLine1($user__detail[0]->company_address);
+            $BillAddr->setLine2($user__detail[0]->company_address2);
+            $BillAddr->setCity($user__detail[0]->company_city);
+            $BillAddr->setCountrySubDivisionCode($user__detail[0]->company_country);
+            $BillAddr->setPostalCode($user__detail[0]->company_zipcode);
+            $Customer->setBillAddr($BillAddr);
+            // Email
+            $PrimaryEmailAddr = new \QuickBooks_IPP_Object_PrimaryEmailAddr();
+            $PrimaryEmailAddr->setAddress($user__detail[0]->contact_email);
+            $Customer->setPrimaryEmailAddr($PrimaryEmailAddr);
+            if ($resp = $CustomerService->add($this->context, $this->realm, $Customer)) {
+                $resp = $this->getId($resp);
+                $user_data = array('user_id' => $user__detail[0]->user_id,
+                    'customer_id' => $resp
+                );
+                Customer_quickbook_detail::create($user_data);
+                $this->addInvoice($resp, $order_id);
+            } else {
+                //echo 'Not Added qbo';
+                print($CustomerService->lastError($this->context));
+            }
         }
         else
         {
-            //echo 'Not Added qbo';
-            print($CustomerService->lastError($this->context));
+            $resp=$exist_user_detail[0]->customer_id;
+            $this->addInvoice($resp, $order_id);
         }
     }
     public function addItem($cust_resp,$order_id){
@@ -1650,6 +1666,17 @@ class OrderController extends Controller
             $terminal->save();
         }
     }
+    //list of orders for warehouse checkin
+    public function warehousecheckin()
+    {
+        $title="Warehouse Check In";
+        $user= \Auth::user();
+        $user_role=$user->role_id;
+        $orders = Order::where('orders.is_activated','11')->orderBy('orders.created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
+    }
+
     // create shipment plan and shipments
     public function createshipments(Request $request)
     {
@@ -1912,12 +1939,14 @@ class OrderController extends Controller
     }
     public function customers()
     {
+        $user_role= \Auth::user();
+        $user_role_id=$user_role->role_id;
         $title="Customer List";
         $user= User::selectRaw('users.*, user_infos.*')
                       ->join('user_infos','users.id','=','user_infos.user_id')
                       ->where('role_id','3')
                       ->get();
-       return view('order.customers_detail')->with(compact('user','title'));
+       return view('order.customers_detail')->with(compact('user','title','user_role_id'));
     }
     public function switchuser(Request $request)
     {
@@ -1967,6 +1996,78 @@ class OrderController extends Controller
             );
             Order_note::where('id',$request->input('note_id'))->update($notes);
         }
+    }
+    public function getinvoice_detail()
+    {
+        $title="Invoice Report";
+        return view('order.getinvoices')->with(compact('title'));
+    }
+    public function get_ajax_invoice_detail(Request $request)
+    {
+        $post=$request->all();
+        $start_date=$post['start_date'];
+        $end_date=$post['end_date'];
+        $doc_number=$post['doc_number'];
+        $customer_name=$post['customer_name'];
+        if($start_date=='' && $end_date=='' && $doc_number=='' && $customer_name=='') {
+            $invoice_details=Invoice_detail::all();
+        }
+        else if($start_date!='' && $end_date!='' && $doc_number!='' && $customer_name!='')
+        {
+            $end_date=$end_date."T23:59:59";
+            $invoice_details = Invoice_detail::where('created_time', '>=', date('Y-m-d', strtotime($start_date)))->where('created_time', '<=', date('Y-m-dTh:i:s', strtotime($end_date)))->where('docnumber', '=', $doc_number)->Where('customer_ref_name', '=', $customer_name)->get();
+        }
+        else {
+                $end_date=$end_date."T23:59:59";
+            if ($start_date != '' && $end_date != '')
+                $invoice_details = Invoice_detail::where('created_time', '>=', date('Y-m-d', strtotime($start_date)))->where('created_time', '<=', date('Y-m-dTh:i:s', strtotime($end_date)))->get();
+            if ($doc_number != '')
+                $invoice_details = Invoice_detail::orWhere('docnumber', '=', $doc_number)->get();
+            if ($customer_name != '')
+                $invoice_details = Invoice_detail::orWhere('customer_ref_name', '=', $customer_name)->get();
+        }
+
+            return Datatables::of($invoice_details)
+                ->editColumn('invoice_id', function ($invoice_detail) {
+                    return $invoice_detail->invoice_id;
+                })
+                ->editColumn('synctoken', function ($invoice_detail) {
+                    return $invoice_detail->synctoken;
+                })
+                ->editColumn('created_time', function ($invoice_detail) {
+                    return $invoice_detail->created_time;
+                })
+                ->editColumn('updated_time', function ($invoice_detail) {
+                    return $invoice_detail->updated_time;
+                })
+                ->editColumn('docnumber', function ($invoice_detail) {
+                    return $invoice_detail->docnumber;
+                })
+                ->editColumn('txndate', function ($invoice_detail) {
+                    return $invoice_detail->txndate;
+                })
+                ->editColumn('customer_ref_name', function ($invoice_detail) {
+                    return $invoice_detail->customer_ref_name;
+                })
+                ->editColumn('line1', function ($invoice_detail) {
+                    return $invoice_detail->line1;//." ".$invoice_detail->line2." ".$invoice_detail->city." ".$invoice_detail->country." ".$invoice_detail->postalcode;
+                })
+                ->editColumn('lat', function ($invoice_detail) {
+                    return $invoice_detail->lat;
+                })
+                ->editColumn('due_date', function ($invoice_detail) {
+                    return $invoice_detail->due_date;
+                })
+                ->editColumn('total_amt', function ($invoice_detail) {
+                    return $invoice_detail->total_amt;
+                })
+                ->editColumn('currancy_ref_name', function ($invoice_detail) {
+                    return $invoice_detail->currancy_ref_name;
+                })
+                ->editColumn('total_taxe', function ($invoice_detail) {
+                    return $invoice_detail->total_taxe;
+                })
+                ->make(true);
     }
 
 

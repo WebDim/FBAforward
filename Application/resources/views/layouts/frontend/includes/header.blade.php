@@ -80,16 +80,22 @@
                                     <a class="external" href="{{ url('order/inspectionreport') }}"><i class="fa fa-btn fa-user"></i> Inspection Report</a>
                                 </li>
                             @endif
+                            @if('Accounting'===\Auth::user()->role->name)
+                                <li>
+                                    <a class="external" href="{{ url('order/getinvoice_detail') }}"><i class="fa fa-btn fa-user"></i> Invoice Report</a>
+                                </li>
+                            @endif
                             @if('Shipper'===\Auth::user()->role->name)
                                 <li>
+                                    <a class="external" href="{{ url('order/customers') }}"><i class="fa fa-btn fa-user"></i>Customers</a>
                                     <a class="external" href="{{ url('order/shippingquote') }}"><i class="fa fa-btn fa-user"></i> Shipping Quote</a>
                                     <a class="external" href="{{ url('order/billoflading') }}"><i class="fa fa-btn fa-user"></i> Bill Of Lading</a>
                                     <a class="external" href="{{ url('order/prealert') }}"><i class="fa fa-btn fa-user"></i> Shipment Pre Alert</a>
                                 </li>
                             @endif
-                            @if('Warehouse Manager'===\Auth::user()->role->name)
+                            @if('Warehouse Lead'===\Auth::user()->role->name)
                                 <li>
-                                    <a class="external" href="{{ url('order/ordershipping') }}"><i class="fa fa-btn fa-user"></i> Ship Order</a>
+                                    <a class="external" href="{{ url('order/warehousecheckin') }}"><i class="fa fa-btn fa-user"></i> Warehouse Check In Order</a>
                                 </li>
                             @endif
                             @if('Logistics'===\Auth::user()->role->name)
