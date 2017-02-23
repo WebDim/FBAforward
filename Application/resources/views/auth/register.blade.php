@@ -11,7 +11,7 @@
         <form class="form-horizontal" id="validate" role="form" method="POST" action="{{ url('/register') }}">
             {!! csrf_field() !!}
             <div class="col-md-12">
-            <h4> Register</h4>
+            <h4> Website Login Credentials Information</h4>
                 <hr>
             <br/>
                 <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
