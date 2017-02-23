@@ -9,7 +9,7 @@ class Invoice_product_detail extends Model
     //
     protected $primaryKey = 'id';
 
-    protected $table ='Invoice_product_details';
+    protected $table ='invoice_product_details';
     protected $fillable=['invoice_product_detail_id','item_ref','item_ref_name','qty','amount'];
 
     public function invoice_detail()
