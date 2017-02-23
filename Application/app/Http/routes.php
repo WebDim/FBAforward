@@ -199,6 +199,8 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/getinvoice_detail','OrderController@getinvoice_detail');
         Route::post('/getinvoice_ajax_detail','OrderController@get_ajax_invoice_detail');
         Route::get('/warehousecheckin', 'OrderController@warehousecheckin');
+        Route::get('/warehousecheckinform/{order_id}', 'OrderController@warehousecheckinform');
+        Route::put('/warehousecheckinform', 'OrderController@addwarehousecheckinform');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);

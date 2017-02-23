@@ -79,7 +79,7 @@
                                         @elseif($user_role==9)
                                             <a onclick="opennote({{$order->order_id}})">Add Notes</a>
                                         @elseif($user_role==10)
-                                            <a href="" class="btn btn-info">Warehouse Check In</a>
+                                            <a href="{{ url('order/warehousecheckinform/'.$order->order_id)}}" class="btn btn-info">Warehouse Check In</a>
                                         @endif
                                         {{--@if($order->is_activated == 3 && $order->shipmentplan==0)
                                             <a href="#" onclick="order_shipping({{$order->order_id}},{{$order->user_id}})" class="btn btn-info">Create Shipment</a>

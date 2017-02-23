@@ -44,6 +44,8 @@ use App\Http\Middleware\Amazoncredential;
 use App\Outbound_shipping_detail;
 use App\Payment_detail;
 use App\User_info;
+use App\Warehouse_checkin;
+use App\Warehouse_checkin_image;
 use Illuminate\Http\Request;
 use Symfony\Component\Yaml\Tests\A;
 use Webpatser\Uuid\Uuid;
@@ -1676,7 +1678,60 @@ class OrderController extends Controller
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
-
+    public function warehousecheckinform(Request $request)
+    {
+        $title="Warehouse Check In Form";
+        $order_id=$request->order_id;
+        $user=User_info::selectRaw('user_infos.company_name, user_infos.contact_email, orders.order_no')
+            ->join('orders','orders.user_id','=','user_infos.user_id')
+            ->where('orders.order_id',$order_id)
+            ->get();
+        $shipment=Shipments::where('order_id',$order_id)->get();
+        $charges=Charges::all();
+        $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
+            ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+            ->join('orders','orders.order_id','=','shipments.order_id','left')
+            ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
+            ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
+            ->where('orders.order_id',$order_id)
+            ->get();
+        return view('order.warehouse_checkin')->with(compact('order_id','shipment','shipment_detail','charges','user','title'));
+    }
+    public function addwarehousecheckinform(Request $request)
+    {
+        $count=$request->input('count');
+        for($cnt=1;$cnt<$count;$cnt++)
+        {
+            $warehouse_checkin=array('order_id'=>$request->input('order_id'),
+                'shipment_id'=>$request->input('shipment_id'.$cnt),
+                'cartoon_length'=>$request->input('cartoon_length'.$cnt),
+                'cartoon_width'=>$request->input('cartoon_width'.$cnt),
+                'cartoon_weight'=>$request->input('cartoon_weight'.$cnt),
+                'cartoon_height'=>$request->input('cartoon_height'.$cnt),
+                'no_of_cartoon'=>$request->input('no_of_cartoon'.$cnt),
+                'unit_per_cartoon'=>$request->input('unit_per_cartoon'.$cnt),
+                'cartoon_condition'=>$request->input('cartoon_condition'.$cnt),
+                'location'=>$request->input('location'.$cnt)
+            );
+           $warehouse_checkin_detail=Warehouse_checkin::create($warehouse_checkin);
+            if ($request->hasFile('images'.$cnt)) {
+                $destinationPath = public_path() . '/uploads/warehouse';
+                $images=$request->file('images'.$cnt);
+                foreach($images as $image)
+                {
+                    $file = $request->input('order_id') . '_' .$request->input('shipment_id'.$cnt) . '_' .$cnt.'_' . 'warehouse' . '.' . $image->getClientOriginalExtension();
+                    $image->move($destinationPath, $file);
+                    $warehouse_checkin_image=array('warehouse_checkin_id'=>$warehouse_checkin_detail->id,
+                                                    'images'=>$file
+                                                   );
+                    Warehouse_checkin_image::create($warehouse_checkin_image);
+                }
+            }
+        }
+        $order= array('is_activated'=>'12');
+        Order::where('order_id',$request->input('order_id'))->update($order);
+        return redirect('order/warehousecheckin')->with('success','Warehouse Checkin Form Submitted Successfully');
+    }
     // create shipment plan and shipments
     public function createshipments(Request $request)
     {
