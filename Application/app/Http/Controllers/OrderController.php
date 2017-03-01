@@ -60,6 +60,7 @@ use App\Libraries;
 use Illuminate\Support\Facades\DB;
 use PDF;
 use Yajra\Datatables\Datatables;
+use DNS1D;
 class OrderController extends Controller
 {
     private $IntuitAnywhere;
@@ -75,7 +76,7 @@ class OrderController extends Controller
         $title="Order Management";
         $user = \Auth::user();
         $orders = Order::where('user_id', $user->id)->whereIn('is_activated',array('0','1','2','4'))->orderBy('created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
         return view('order.index')->with(compact('orders','orderStatus','title'));
     }
     //list completed orders of perticular user
@@ -84,7 +85,7 @@ class OrderController extends Controller
         $title="Order History";
         $user = \Auth::user();
         $orders = Order::where('user_id', $user->id)->whereIn('is_activated',array('14'))->orderBy('created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
         return view('order.order_history')->with(compact('orders','orderStatus','title'));
     }
     // remove perticular order
@@ -960,7 +961,7 @@ class OrderController extends Controller
     {
         $title='Ship Order';
         $orders = Order::where('is_activated','3')->orderBy('created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','title'));
     }
     //list orders of All users which select inspections, uploading inspection report by inspector
@@ -976,7 +977,7 @@ class OrderController extends Controller
             ->orderBy('orders.created_at', 'desc')
             ->distinct('supplier_inspections.order_id')
             ->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     // to upload inspection report
@@ -1044,7 +1045,7 @@ class OrderController extends Controller
             $orders = Order::where('orders.is_activated','3')->orWhereIn('orders.order_id',$order_ids)->orderBy('orders.created_at', 'desc')->get();
         else
             $orders = Order::where('orders.is_activated','3')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
    // to display shippingquote form
@@ -1364,7 +1365,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','6')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     //to display bill of lading form
@@ -1416,7 +1417,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','7')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     //display detail of bill of lading to logistic
@@ -1471,7 +1472,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','8')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     //to display pre alert form
@@ -1534,7 +1535,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','9')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     //to display custom clearance form
@@ -1605,7 +1606,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','10')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     //to display delivery booking form
@@ -1675,7 +1676,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','11')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     public function warehousecheckinform(Request $request)
@@ -1732,23 +1733,62 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order);
         return redirect('order/warehousecheckin')->with('success','Warehouse Checkin Form Submitted Successfully');
     }
+    public function adminreview()
+    {
+        $title="Warehouse Check In Review";
+        $user= \Auth::user();
+        $user_role=$user->role_id;
+        $orders = Order::where('orders.is_activated','12')->orderBy('orders.created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
+    }
+    public function downloadwarehouseimages(Request $request)
+    {
+        $id=$request->id;
+        $image=Warehouse_checkin_image::where('id',$id)->get();
+        $images=isset($image[0]->images)?$image[0]->images:'';
+        $file= public_path(). "/uploads/warehouse/".$images;
+        $headers = array('Content-Type: application/pdf',
+        );
+        return response()->download($file,$images, $headers);
+    }
+    public function warehousecheckinreview(Request $request)
+    {
+        if($request->ajax())
+        {
+            $post=$request->all();
+            $order_id=$post['order_id'];
+            $shipment=Shipments::selectRaw('warehouse_checkins.*')
+                ->join('warehouse_checkins','warehouse_checkins.shipment_id','=','shipments.shipment_id')
+                ->where('shipments.order_id',$order_id)->get();
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name')
+                ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+                ->join('orders','orders.order_id','=','shipments.order_id','left')
+                ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
+                ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
+                ->where('orders.order_id',$order_id)
+                ->get();
+            $warehouse_images=Warehouse_checkin_image::where('status','0')->get();
+            return view('order/reviewarehousecheckin')->with(compact('shipment','shipment_detail','order_id','warehouse_images'));
+        }
+    }
     // create shipment plan and shipments
     public function createshipments(Request $request)
     {
-        if ($request->ajax()) {
-            $post = $request->all();
-            $order_id=$post['order_id'];
-            $user_id=$post['user_id'];
-            $shipment=Order::selectRaw('orders.order_id,shipments.*')
+            $order_id=$request->order_id;
+            $shipment=Order::selectRaw('orders.order_id,orders.user_id,shipments.*')
                 ->join('shipments','shipments.order_id','=','orders.order_id')
                 ->where('orders.order_id',$order_id)
                 ->get();
+            $user_id=isset($shipment)?$shipment[0]->user_id:'';
             $user_details = User_info::where('user_id',$user_id)->get();
             $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
                 ->where('user_id',$user_id)
                 ->get();
-            $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
-            $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+            //$UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
+            //$UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+            $UserCredentials['mws_authtoken']='test';
+            $UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
             $fromaddress= new \FBAInboundServiceMWS_Model_Address();
             $fromaddress->setName($user_details[0]->company_name);
             $fromaddress->setAddressLine1($user_details[0]->company_address);
@@ -1854,9 +1894,9 @@ class OrderController extends Controller
                     }
                 }
             }
-            $plan=array('shipmentplan'=>'1');
+            $plan=array('shipmentplan'=>'1','is_activated'=>'13');
             Order::where('order_id',$order_id)->update($plan);
-        }
+        return redirect('order/warehousecheckin')->with('success','Shipment Created Successfully');
     }
     protected function getReportsClient()
     {
@@ -1872,10 +1912,14 @@ class OrderController extends Controller
     private function getKeys()
     {
         add_to_path('Libraries');
-        $devAccount = Dev_account::first();
+        //$devAccount = Dev_account::first();
+        $accesskey='AKIAJSMUMYFXUPBXYQLA';
+        $secret_key='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';
         return [
-            $devAccount->access_key,
-            $devAccount->secret_key,
+            //$devAccount->access_key,
+            //$devAccount->secret_key,
+            $accesskey,
+            $secret_key,
             self::getMWSConfig()
         ];
     }
@@ -1982,6 +2026,227 @@ class OrderController extends Controller
             echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
         }
     }
+    public function orderlabor()
+    {
+        $title="Order Labor";
+        $user= \Auth::user();
+        $user_role=$user->role_id;
+        $orders = Order::where('orders.is_activated','13')->orderBy('orders.created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
+    }
+    public function viewchecklist(Request $request)
+    {
+        if($request->ajax())
+        {
+            $user= \Auth::user();
+            $user_role=$user->role_id;
+            $post=$request->all();
+            $order_id=$post['order_id'];
+            $shipment=Shipments::where('shipments.order_id',$order_id)->get();
+            $amazon_destination=Amazon_destination::all();
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
+                ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+                ->join('orders','orders.order_id','=','shipments.order_id','left')
+                ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
+                ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
+                ->join('prep_details','prep_details.shipment_detail_id','=','shipment_details.shipment_detail_id')
+                ->where('orders.order_id',$order_id)
+                ->get();
+            $order_note=Order_note::where('order_id',$order_id)->get();
+            $other_label_detail=Other_label_detail::all();
+            return view('order/viewchecklist')->with(compact('shipment','shipment_detail','order_id','amazon_destination','order_note','other_label_detail','user_role'));
+        }
+    }
+    public function getlabel(Request $request)
+    {
+           $fnsku=$request->fnsku;
+           echo $image='<img src="data:image/png;base64,' . DNS1D::getBarcodePNG($fnsku, "C39+",1,50) . '" alt="barcode"   />';
+    }
+    public function getotherlabel(Request $request)
+    {
+        echo "This is set";
+    }
+    public function managerreview()
+    {
+        $title="Manager Review";
+        $user= \Auth::user();
+        $user_role=$user->role_id;
+        $orders = Order::where('orders.is_activated','14')->orderBy('orders.created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
+    }
+    public function prepcomplete(Request $request)
+    {
+        if($request->ajax()) {
+            $post = $request->all();
+            $shipment_detail_id = $post['shipment_detail_id'];
+            $data=array('prep_complete'=>'1');
+            Shipment_detail::where('shipment_detail_id',$shipment_detail_id)->update($data);
+            return 1;
+        }
+    }
+    public function reviewwork(Request $request)
+    {
+        if($request->ajax()) {
+            $post = $request->all();
+            $order_id = $post['order_id'];
+            $shipment=Shipments::where('shipments.order_id',$order_id)->get();
+            $amazon_destination=Amazon_destination::all();
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
+                ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+                ->join('orders','orders.order_id','=','shipments.order_id','left')
+                ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
+                ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
+                ->join('prep_details','prep_details.shipment_detail_id','=','shipment_details.shipment_detail_id')
+                ->where('orders.order_id',$order_id)
+                ->get();
+            $order_note=Order_note::where('order_id',$order_id)->get();
+            $other_label_detail=Other_label_detail::all();
+            return view('order/review_work')->with(compact('shipment','shipment_detail','order_id','amazon_destination','order_note','other_label_detail'));
+        }
+    }
+    public function completeshipment()
+    {
+        $title="Complete Review";
+        $user= \Auth::user();
+        $user_role=$user->role_id;
+        $orders = Order::where('orders.is_activated','15')->orderBy('orders.created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
+    }
+    public function shippinglabel(Request $request)
+    {
+        $order_id=$request->order_id;
+        $shipment=Order::selectRaw('orders.order_id,orders.user_id,shipments.*')
+            ->join('shipments','shipments.order_id','=','orders.order_id')
+            ->where('orders.order_id',$order_id)
+            ->get();
+        $user_id=isset($shipment)?$shipment[0]->user_id:'';
+        $user_details = User_info::where('user_id',$user_id)->get();
+        $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
+            ->where('user_id',$user_id)
+            ->get();
+        //$UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
+        //$UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+        $UserCredentials['mws_authtoken']='test';
+        $UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
+        $service = $this->getReportsClient();
+        $shipping_request = new \FBAInboundServiceMWS_Model_GetUniquePackageLabelsRequest();
+        $shipping_request->setSellerId($UserCredentials['mws_seller_id']);
+        $shipping_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
+        $shipment_ids=Amazon_destination::selectRaw('amazon_destinations.api_shipment_id')
+                                          ->join('shipments','shipments.shipment_id','=','amazon_destinations.shipment_id')
+                                          ->where('shipments.order_id',$order_id)
+                                          ->distinct('shipments.api_shipment_id')
+                                          ->get();
+        foreach ($shipment_ids as $new_shipment_ids)
+        {
+            $shipping_request->setShipmentId($new_shipment_ids->api_shipment_id);
+            $shipping_request->setPageType('PackageLabel_Letter_2');
+            $feed_service=$this->getfeedReportsClient();
+            $feed_request= new \MarketplaceWebService_Model_SubmitFeedRequest();
+            $feed_request->setMerchant($UserCredentials['mws_seller_id']);
+            $feed_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
+            $feed_request->setFeedType('_POST_FBA_INBOUND_CARTON_CONTENTS_');
+            $this->invokesubmitfeed($feed_service,$feed_request);
+            exit;
+            $label_content=new \FBAInboundServiceMWS_Model_PackageIdentifiers();
+            $label_content->setmember('54828017225');
+            $shipping_request->setPackageLabelsToPrint($label_content);
+            $this->invokeGetUniquePackageLabels($service, $shipping_request);
+        }
+
+    }
+    protected function getfeedReportsClient()
+    {
+        list($access_key, $secret_key, $config) = $this->getfeedKeys();
+        return  new \MarketplaceWebService_Client(
+            $access_key,
+            $secret_key,
+            $config,
+            env('APPLICATION_NAME'),
+            env('APPLICATION_VERSION')
+        );
+    }
+    private function getfeedKeys()
+    {
+        add_to_path('Libraries');
+        //$devAccount = Dev_account::first();
+        $accesskey='AKIAJSMUMYFXUPBXYQLA';
+        $secret_key='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';
+        return [
+            //$devAccount->access_key,
+            //$devAccount->secret_key,
+            $accesskey,
+            $secret_key,
+            self::getfeedMWSConfig()
+        ];
+    }
+    public static function getfeedMWSConfig()
+    {
+        return [
+            'ServiceURL' =>"https://mws.amazonservices.com" ,
+            'ProxyHost' => null,
+            'ProxyPort' => -1,
+            'ProxyUsername' => null,
+            'ProxyPassword' => null,
+            'MaxErrorRetry' => 3,
+        ];
+    }
+    function invokesubmitfeed(\MarketplaceWebService_Interface $service, $request)
+    {
+        try {
+            echo "<pre>";
+            print_r($service);
+            print_r($request);
+            exit;
+            $response = $service->submitFeed($request);
+            echo ("Service Response\n");
+            echo ("=============================================================================\n");
+
+            $dom = new \DOMDocument();
+            $dom->loadXML($response->toXML());
+            $dom->preserveWhiteSpace = false;
+            $dom->formatOutput = true;
+            echo $dom->saveXML();
+            echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
+        } catch (\MarketplaceWebService_Exception $ex) {
+            echo("Caught Exception: " . $ex->getMessage() . "\n");
+            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
+            echo("Error Code: " . $ex->getErrorCode() . "\n");
+            echo("Error Type: " . $ex->getErrorType() . "\n");
+            echo("Request ID: " . $ex->getRequestId() . "\n");
+            echo("XML: " . $ex->getXML() . "\n");
+            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
+        }
+    }
+    function invokeGetUniquePackageLabels(\FBAInboundServiceMWS_Interface $service, $request)
+    {
+        try {
+
+            $response = $service->GetUniquePackageLabels($request);
+
+            echo ("Service Response\n");
+            echo ("=============================================================================\n");
+
+            $dom = new \DOMDocument();
+            $dom->loadXML($response->toXML());
+            $dom->preserveWhiteSpace = false;
+            $dom->formatOutput = true;
+            echo $dom->saveXML();
+            echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
+
+        } catch (\FBAInboundServiceMWS_Exception $ex) {
+            echo("Caught Exception: " . $ex->getMessage() . "\n");
+            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
+            echo("Error Code: " . $ex->getErrorCode() . "\n");
+            echo("Error Type: " . $ex->getErrorType() . "\n");
+            echo("Request ID: " . $ex->getRequestId() . "\n");
+            echo("XML: " . $ex->getXML() . "\n");
+            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
+        }
+    }
     //list orders for sales person
     public function orderlist()
     {
@@ -1989,7 +2254,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','<>','0')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Warehouse Complete','Warehouse Checkout');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     public function customers()
@@ -2018,11 +2283,16 @@ class OrderController extends Controller
     }
     public function addnotes(Request $request)
     {
+        $user= \Auth::user();
+        $user_role=$user->role_id;
         $notes= array('order_id'=>$request->input('orderid'),
                       'shipping_notes'=>$request->input('shipping_note'),
                       'prep_notes'=>$request->input('prep_note')
                 );
         Order_note::create($notes);
+        if($user_role==8)
+        return redirect('order/adminreview');
+        else
         return redirect('order/orderlist');
     }
     public function viewnotes(Request $request)

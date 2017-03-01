@@ -77,9 +77,31 @@
                                                 <a href="{{ url('order/deliverybookingform/'.$order->order_id)}}" class="btn btn-info">Delivery Booking</a>
                                             @endif
                                         @elseif($user_role==9)
-                                            <a onclick="opennote({{$order->order_id}})">Add Notes</a>
+                                            <a onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
                                         @elseif($user_role==10)
-                                            <a href="{{ url('order/warehousecheckinform/'.$order->order_id)}}" class="btn btn-info">Warehouse Check In</a>
+                                            @if($order->is_activated==11)
+                                                <a href="{{ url('order/warehousecheckinform/'.$order->order_id)}}" class="btn btn-info">Warehouse Check In</a>
+                                            @elseif($order->is_activated==13)
+                                                <a onclick="viewchecklist('{{$order->order_id}}','Check List')">View Check List</a>
+                                                <a onclick="order_status('{{$order->order_id}}','14')" class="btn btn-info">Submit</a>
+                                            @elseif($order->is_activated==15)
+                                                {{--<a href="{{ url('order/shippinglabel/'.$order->order_id)}}">Print Shipping Labels</a>--}}
+                                            @endif
+                                        @elseif($user_role==8)
+                                            <a onclick="openreview({{$order->order_id}})">Review Warehouse Check In</a>
+                                            <a onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
+                                            @if($order->shipmentplan==0)
+                                            <a href="{{ url('order/createshipments/'.$order->order_id)}}" class="btn btn-info">create shipment</a>
+                                            @elseif($order->shipmentplan==1)
+                                            <a onclick="order_status('{{$order->order_id}}','13')" class="btn btn-info">Review Complete</a>
+                                            @endif
+                                        @elseif($user_role==11)
+                                            @if($order->is_activated==14)
+                                             <a onclick="viewchecklist('{{$order->order_id}}','Review Order')">Review Order Requirement</a><br>
+                                             <a onclick="reviewwork('{{$order->order_id}}')">Review Work Completed List</a><br>
+                                             <a onclick="order_status('{{$order->order_id}}','15')" class="btn btn-info">Approve Work Completed</a>
+                                            @endif
+
                                         @endif
                                         {{--@if($order->is_activated == 3 && $order->shipmentplan==0)
                                             <a href="#" onclick="order_shipping({{$order->order_id}},{{$order->user_id}})" class="btn btn-info">Create Shipment</a>
@@ -201,6 +223,57 @@
 
                             </div>
                             {!! Form::close() !!}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="openreview" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Review Warehouse Check In</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12" id="review">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="checklistview" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myLabel"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12" id="checklist">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="review_work" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Review Work Completed List</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12" id="worklist">
+
                         </div>
                     </div>
                 </div>
@@ -374,6 +447,94 @@
                 success: function (response) { // What to do if we succeed
                     //console.log(response);
                     location.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
+        function openreview(order_id)
+        {
+            jQuery.noConflict();
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/warehousecheckinreview', // This is the url we gave in the route
+                data: {
+                    'order_id': order_id,
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    $('#review').html(response);
+                    $("#openreview").modal('show');
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
+        function order_status(order_id, status)
+        {
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/orderstatus', // This is the url we gave in the route
+                data: {
+                    'order_id': order_id,
+                    'status': status
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    location.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
+        function viewchecklist(order_id,title)
+        {
+            jQuery.noConflict();
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/viewchecklist', // This is the url we gave in the route
+                data: {
+                    'order_id': order_id,
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    $('#checklist').html(response);
+                    $('#myLabel').text(title);
+                    $("#checklistview").modal('show');
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
+        function reviewwork(order_id)
+        {
+            jQuery.noConflict();
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/reviewwork', // This is the url we gave in the route
+                data: {
+                    'order_id': order_id,
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    $('#worklist').html(response);
+                    $("#review_work").modal('show');
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
                     console.log(JSON.stringify(jqXHR));

@@ -151,7 +151,7 @@ return [
         Aws\Laravel\AwsServiceProvider::class,
         DougSisk\CountryState\CountryStateServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
-
+        Milon\Barcode\BarcodeServiceProvider::class,
 		
     ],
     /*
@@ -202,5 +202,7 @@ return [
         'Carbon' => Carbon\Carbon::class,
         'AWS' => Aws\Laravel\AwsFacade::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
+        'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
+        'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
     ],
 ];

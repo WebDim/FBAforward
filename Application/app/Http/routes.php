@@ -158,7 +158,6 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/addaddress','OrderController@addaddress');
         Route::post('/orderstatus', 'OrderController@orderstatus');
         Route::get('/ordershipping', 'OrderController@ordershipping');
-        Route::post('/createshipments', 'OrderController@createshipments');
         Route::post('/removeotherlabel', 'OrderController@removeotherlabel');
         Route::post('/removephotolabel', 'OrderController@removephotolabel');
         Route::get('/inspectionreport', 'OrderController@inspectionreport');
@@ -201,6 +200,20 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/warehousecheckin', 'OrderController@warehousecheckin');
         Route::get('/warehousecheckinform/{order_id}', 'OrderController@warehousecheckinform');
         Route::put('/warehousecheckinform', 'OrderController@addwarehousecheckinform');
+        Route::get('/adminreview', 'OrderController@adminreview');
+        Route::get('/createshipments/{order_id}', 'OrderController@createshipments');
+        Route::post('/warehousecheckinreview','OrderController@warehousecheckinreview');
+        Route::get('/downloadwarehouseimages/{id}','OrderController@downloadwarehouseimages');
+        Route::get('/orderlabor','OrderController@orderlabor');
+        Route::post('/viewchecklist','OrderController@viewchecklist');
+        Route::get('/getlabel/{fnsku}','OrderController@getlabel');
+        Route::get('/getotherlabel','OrderController@getotherlabel');
+        Route::post('/prepcomplete','OrderController@prepcomplete');
+        Route::get('/managerreview','OrderController@managerreview');
+        Route::post('/reviewwork','OrderController@reviewwork');
+        Route::get('/completeshipment','OrderController@completeshipment');
+        Route::get('/shippinglabel/{order_id}','OrderController@shippinglabel');
+
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);

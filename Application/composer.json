@@ -22,7 +22,8 @@
     "paypal/rest-api-sdk-php": "*",
     "webpatser/laravel-uuid": "2.*",
     "dougsisk/laravel-country-state": "^1.2",
-    "barryvdh/laravel-dompdf": "^0.7.1"
+    "barryvdh/laravel-dompdf": "^0.7.1",
+    "milon/barcode": "^5.3"
 
   },
   "require-dev": {
