@@ -1785,10 +1785,10 @@ class OrderController extends Controller
             $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
                 ->where('user_id',$user_id)
                 ->get();
-            //$UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
-            //$UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
-            $UserCredentials['mws_authtoken']='test';
-            $UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
+            $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
+            $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+            //$UserCredentials['mws_authtoken']='test';
+            //$UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
             $fromaddress= new \FBAInboundServiceMWS_Model_Address();
             $fromaddress->setName($user_details[0]->company_name);
             $fromaddress->setAddressLine1($user_details[0]->company_address);
@@ -1912,14 +1912,14 @@ class OrderController extends Controller
     private function getKeys()
     {
         add_to_path('Libraries');
-        //$devAccount = Dev_account::first();
-        $accesskey='AKIAJSMUMYFXUPBXYQLA';
-        $secret_key='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';
+        $devAccount = Dev_account::first();
+        //$accesskey='AKIAJSMUMYFXUPBXYQLA';
+        //$secret_key='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';
         return [
-            //$devAccount->access_key,
-            //$devAccount->secret_key,
-            $accesskey,
-            $secret_key,
+           $devAccount->access_key,
+           $devAccount->secret_key,
+            //$accesskey,
+            //$secret_key,
             self::getMWSConfig()
         ];
     }
@@ -2127,10 +2127,10 @@ class OrderController extends Controller
         $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
             ->where('user_id',$user_id)
             ->get();
-        //$UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
-        //$UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
-        $UserCredentials['mws_authtoken']='test';
-        $UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
+        $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
+        $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+        //$UserCredentials['mws_authtoken']='test';
+        //$UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
         $service = $this->getReportsClient();
         $shipping_request = new \FBAInboundServiceMWS_Model_GetUniquePackageLabelsRequest();
         $shipping_request->setSellerId($UserCredentials['mws_seller_id']);
@@ -2172,14 +2172,14 @@ class OrderController extends Controller
     private function getfeedKeys()
     {
         add_to_path('Libraries');
-        //$devAccount = Dev_account::first();
-        $accesskey='AKIAJSMUMYFXUPBXYQLA';
-        $secret_key='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';
+        $devAccount = Dev_account::first();
+        //$accesskey='AKIAJSMUMYFXUPBXYQLA';
+        //$secret_key='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';
         return [
-            //$devAccount->access_key,
-            //$devAccount->secret_key,
-            $accesskey,
-            $secret_key,
+            $devAccount->access_key,
+            $devAccount->secret_key,
+            //$accesskey,
+            //$secret_key,
             self::getfeedMWSConfig()
         ];
     }

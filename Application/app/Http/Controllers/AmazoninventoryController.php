@@ -31,7 +31,6 @@ class AmazoninventoryController extends Controller
         foreach ($results as $seller_detail)
         {
             $this->amazonAccountValidation($seller_detail);
-            exit;
         }
     }
 
@@ -39,10 +38,10 @@ class AmazoninventoryController extends Controller
     public function amazonAccountValidation($account)
     {
 
-        //$UserCredentials['mws_authtoken'] = !empty($account->mws_authtoken) ? decrypt($account->mws_authtoken) : '';
-        //$UserCredentials['mws_seller_id'] = !empty($account->mws_seller_id) ? decrypt($account->mws_seller_id) : '';
-        $UserCredentials['mws_authtoken']='test';
-        $UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
+        $UserCredentials['mws_authtoken'] = !empty($account->mws_authtoken) ? decrypt($account->mws_authtoken) : '';
+        $UserCredentials['mws_seller_id'] = !empty($account->mws_seller_id) ? decrypt($account->mws_seller_id) : '';
+       // $UserCredentials['mws_authtoken']='test';
+        //$UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
         //  Check User AWS Details
         $this->operation = 'ListInventorySupply';
         $this->from_date_time = "2016-12-01T07:43:29Z";
@@ -185,14 +184,14 @@ class AmazoninventoryController extends Controller
     private function getKeys($uri = '')
     {
         add_to_path('Libraries');
-        //$devAccount = DB::table('dev_accounts')->first();
-        $accesskey='AKIAJSMUMYFXUPBXYQLA';
-        $secret_key='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';
+        $devAccount = DB::table('dev_accounts')->first();
+        //$accesskey='AKIAJSMUMYFXUPBXYQLA';
+        //$secret_key='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';
         return [
-            //$devAccount->access_key,
-            //$devAccount->secret_key,
-            $accesskey,
-            $secret_key,
+            $devAccount->access_key,
+            $devAccount->secret_key,
+            //$accesskey,
+            //$secret_key,
             self::getMWSConfig()
         ];
     }
