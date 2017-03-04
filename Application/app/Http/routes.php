@@ -206,8 +206,8 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/downloadwarehouseimages/{id}','OrderController@downloadwarehouseimages');
         Route::get('/orderlabor','OrderController@orderlabor');
         Route::post('/viewchecklist','OrderController@viewchecklist');
-        Route::get('/getlabel/{fnsku}','OrderController@getlabel');
-        Route::get('/getotherlabel','OrderController@getotherlabel');
+        Route::post('/getlabel','OrderController@getlabel');
+        Route::post('/getotherlabel','OrderController@getotherlabel');
         Route::post('/prepcomplete','OrderController@prepcomplete');
         Route::get('/managerreview','OrderController@managerreview');
         Route::post('/reviewwork','OrderController@reviewwork');

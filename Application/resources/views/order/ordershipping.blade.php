@@ -327,6 +327,23 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="barcode" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Barcode</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12" id="barcode_div">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @section('js')
     <link href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.css" rel="stylesheet">
@@ -695,7 +712,28 @@
                     'fnsku': fnsku,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
-                    console.log(response);
+                    $('#barcode_div').html(response);
+                    $("#barcode").modal('show');
+                    $("#barcode").modal.print();
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
+        function getotherlabel()
+        {
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/getotherlabel', // This is the url we gave in the route
+                success: function (response) { // What to do if we succeed
+                    $('#barcode_div').html(response);
+                    $("#barcode").modal('show');
+                    $("#barcode").modal.print();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
                     console.log(JSON.stringify(jqXHR));

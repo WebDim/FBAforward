@@ -39,7 +39,7 @@
                 @foreach($shipment_detail as $shipment_details)
                     @if($shipment_details->shipment_id==$shipments->shipment_id)
                         <tr>
-                            <td>{{ $shipment_details->product_name }}@if($user_role==10)<a href="/order/getlabel/{{$shipment_details->fnsku}}">Print Label</a>@endif</td>
+                            <td>{{ $shipment_details->product_name }}@if($user_role==10)<a onclick="getlabel('{{$shipment_details->fnsku}}')" >Print Label</a>@endif</td>
                             <td>{{ $shipment_details->shipping_name }}</td>
                             <td>
                                 @foreach($other_label_detail as $other_label_details)
@@ -47,7 +47,7 @@
                                         @if($other_label_details->label_id=='1')
                                             Suffocation Warning
                                         @elseif($other_label_details->label_id=='2')
-                                            This is a Set @if($user_role==10)<a href="/order/getotherlabel">Print Label</a>@endif
+                                            This is a Set @if($user_role==10)<a onclick="getotherlabel()">Print Label</a>@endif
                                         @elseif($other_label_details->label_id=='3')
                                             Blank
                                         @elseif($other_label_details->label_id=='4')

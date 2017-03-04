@@ -1794,6 +1794,7 @@ class OrderController extends Controller
             $user_details = User_info::where('user_id',$user_id)->get();
         $results = Amazon_marketplace::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken, amazon_marketplaces.market_place_id")
             ->join('customer_amazon_details', 'customer_amazon_details.mws_market_place_id', '=', 'amazon_marketplaces.id')
+            ->where('customer_amazon_details.user_id',$shipment[0]->user_id)
             ->get();
             $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
             $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
@@ -2217,12 +2218,17 @@ class OrderController extends Controller
     }
     public function getlabel(Request $request)
     {
-           $fnsku=$request->fnsku;
-           echo $image='<img src="data:image/png;base64,' . DNS1D::getBarcodePNG($fnsku, "C39+",1,50) . '" alt="barcode"   /> <script>window.print()</script>';
+        if($request->ajax()) {
+            $post=$request->all();
+            $fnsku = $post['fnsku'];
+            $image = '<img src="data:image/png;base64,' . DNS1D::getBarcodePNG($fnsku, "C39+", 1, 50) . '" alt="barcode"   />';
+            return view('order/barcode')->with(compact('image'));
+        }
     }
     public function getotherlabel(Request $request)
     {
-        echo "This is set";
+        $image="This is set";
+        return view('order/barcode')->with(compact('image'));
     }
     public function managerreview()
     {
@@ -2296,8 +2302,16 @@ class OrderController extends Controller
     public function printshippinglabel(Request $request)
     {
         $shipment_id=$request->shipment_id;
-        $UserCredentials['mws_authtoken']='test';
-        $UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
+        $user_detail=Shipments::where('shipment_id',$shipment_id)->get();
+        $user_id= isset($user_detail[0]->user_id) ? $user_detail[0]->user_id :'';
+        $results = Amazon_marketplace::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken, amazon_marketplaces.market_place_id")
+            ->join('customer_amazon_details', 'customer_amazon_details.mws_market_place_id', '=', 'amazon_marketplaces.id')
+            ->where('customer_amazon_details.user_id',$user_id)
+            ->get();
+        $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
+        $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+        //$UserCredentials['mws_authtoken']='test';
+        //$UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
         $service = $this->getReportsClient();
         $shipping_request = new \FBAInboundServiceMWS_Model_GetUniquePackageLabelsRequest();
         $shipping_request->setSellerId($UserCredentials['mws_seller_id']);
@@ -2331,7 +2345,6 @@ class OrderController extends Controller
                 $out = base64_decode($pdf_file);
                 print($out);
                 exit;
-
         }
 
     }
