@@ -1499,6 +1499,9 @@ class OrderController extends Controller
         $count=$request->input('count');
         for($cnt=1;$cnt<$count;$cnt++)
         {
+            $isfimage='';
+            $hblimage='';
+            $mblimage='';
             if ($request->hasFile('ISF'.$cnt)) {
                 $destinationPath = public_path() . '/uploads/bills';
                 $isfimage = $request->input('order_id') . '_' . $request->input('shipment_id' . $cnt) . '_' . 'ISF' . '.' . $request->file('ISF' . $cnt)->getClientOriginalExtension();
@@ -1522,6 +1525,8 @@ class OrderController extends Controller
                 'ETD_china' => $request->input('ETD_china'.$cnt),
                 'ETA_US' => $request->input('ETA_US'.$cnt),
                 'delivery_port' => $request->input('delivery_port'.$cnt),
+                'vessel' => $request->input('vessel'.$cnt),
+                'container'=> $request->input('container'.$cnt),
                 'status' => '0'
             );
             Prealert_detail::create($prealert_detail);
@@ -1562,6 +1567,9 @@ class OrderController extends Controller
         $count=$request->input('count');
         for($cnt=1;$cnt<$count;$cnt++)
         {
+            $form_3461image='';
+            $form_7501image='';
+            $delivery_orderimage='';
             if ($request->hasFile('form_3461'.$cnt)) {
                 $destinationPath = public_path() . '/uploads/customclearance';
                 $form_3461image = $request->input('order_id') . '_' . $request->input('shipment_id' . $cnt) . '_' . 'form_3461' . '.' . $request->file('form_3461' . $cnt)->getClientOriginalExtension();
@@ -1777,7 +1785,6 @@ class OrderController extends Controller
     // create shipment plan and shipments
     public function createshipments(Request $request)
     {
-
             $order_id=$request->order_id;
             $shipment=Order::selectRaw('orders.order_id,orders.user_id,shipments.*')
                 ->join('shipments','shipments.order_id','=','orders.order_id')
@@ -1788,11 +1795,10 @@ class OrderController extends Controller
         $results = Amazon_marketplace::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken, amazon_marketplaces.market_place_id")
             ->join('customer_amazon_details', 'customer_amazon_details.mws_market_place_id', '=', 'amazon_marketplaces.id')
             ->get();
-
             $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
             $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
             $UserCredentials['marketplace'] = $results[0]->market_place_id ? $results[0]->market_place_id : '';
-                //$UserCredentials['mws_authtoken']='test';
+            //$UserCredentials['mws_authtoken']='test';
             //$UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
             $fromaddress= new \FBAInboundServiceMWS_Model_Address();
             $fromaddress->setName($user_details[0]->company_name);
@@ -1820,7 +1826,6 @@ class OrderController extends Controller
                 $itemlist = new \FBAInboundServiceMWS_Model_InboundShipmentPlanRequestItemList();
                 $itemlist->setmember($item);
                 $ship_request->setInboundShipmentPlanRequestItems($itemlist);
-
                 $arr_response =$this->invokeCreateInboundShipmentPlan($service, $ship_request);
                 $shipment_id=$shipments->shipment_id;
                 //create shipments api of perticular shipmentplan
@@ -1916,6 +1921,8 @@ class OrderController extends Controller
             ->get();
         $cartoon_id=1;
         $devAccount = Dev_account::first();
+        $access_key=$devAccount->access_key;
+        //$access_key='AKIAJSMUMYFXUPBXYQLA';
         foreach ($shipment_ids as $new_shipment_ids)
         {
             $feed = '<?xml version="1.0" encoding="UTF-8"?>'.
@@ -1947,7 +1954,7 @@ class OrderController extends Controller
                 '</AmazonEnvelope>';
 
             $param = array();
-            $param['AWSAccessKeyId'] = $devAccount->access_key;
+            $param['AWSAccessKeyId'] = $access_key;
             $param['MarketplaceId.Id.1'] =$UserCredentials['marketplace'];
             $param['MWSAuthToken'] = $UserCredentials['mws_authtoken']; //MWS Auth Token for this store
             $param['Merchant'] = $UserCredentials['mws_seller_id'];
@@ -1983,7 +1990,7 @@ class OrderController extends Controller
                 '</Message>'.
                 '</AmazonEnvelope>';
             $param = array();
-            $param['AWSAccessKeyId'] = $devAccount->access_key;
+            $param['AWSAccessKeyId'] = $access_key;
             $param['MarketplaceId.Id.1'] = $UserCredentials['marketplace'];
             $param['MWSAuthToken'] = $UserCredentials['mws_authtoken']; //MWS Auth Token for this store
             $param['Merchant'] = $UserCredentials['mws_seller_id'];
@@ -2146,13 +2153,15 @@ class OrderController extends Controller
     public function sendQuery($strUrl, $amazon_feed, $param)
     {
         $devAccount = Dev_account::first();
+        $secret_key=$devAccount->secret_key;
+        //$secret_key='Uo3EMqenqoLCyCnhVV7jvOeipJ2qECACcyWJWYzF';
         $strServieURL = preg_replace('#^https?://#', '', 'https://mws.amazonservices.com');
         $strServieURL = str_ireplace("/", "", $strServieURL);
         $sign = 'POST' . "\n";
         $sign .= $strServieURL . "\n";
         $sign .= '/Feeds/' . $param['Version'] . '' . "\n";
         $sign .= $strUrl;
-        $signature = hash_hmac("sha256", $sign, $devAccount->secret_key, true);
+        $signature = hash_hmac("sha256", $sign, $secret_key, true);
         $signature = urlencode(base64_encode($signature));
         $httpHeader = array();
         $httpHeader[] = 'Transfer-Encoding: chunked';
@@ -2209,7 +2218,7 @@ class OrderController extends Controller
     public function getlabel(Request $request)
     {
            $fnsku=$request->fnsku;
-           echo $image='<img src="data:image/png;base64,' . DNS1D::getBarcodePNG($fnsku, "C39+",1,50) . '" alt="barcode"   />';
+           echo $image='<img src="data:image/png;base64,' . DNS1D::getBarcodePNG($fnsku, "C39+",1,50) . '" alt="barcode"   /> <script>window.print()</script>';
     }
     public function getotherlabel(Request $request)
     {

@@ -57,21 +57,21 @@
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
-                                        <input type="text" name="cartoon_length{{$cnt}}" id="cartoon_length{{$cnt}}" class="form-control" placeholder="Cartoon Length">
+                                        <input type="text" name="cartoon_length{{$cnt}}" id="cartoon_length{{$cnt}}" class="form-control validate[required]" placeholder="Cartoon Length">
                                     </div>
                                 </div>
                                 {!! Form::label('cartoon_width', 'Cartoon Width *', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
-                                        <input type="text" name="cartoon_width{{$cnt}}" id="cartoon_width{{$cnt}}" class="form-control" placeholder="Cartoon Width">
+                                        <input type="text" name="cartoon_width{{$cnt}}" id="cartoon_width{{$cnt}}" class="form-control validate[required]" placeholder="Cartoon Width">
                                     </div>
                                 </div>
                                 {!! Form::label('cartoon_weight', 'Cartoon Weight *', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
-                                        <input type="text" name="cartoon_weight{{$cnt}}" id="cartoon_weight{{$cnt}}" class="form-control" placeholder="Cartoon Weight">
+                                        <input type="text" name="cartoon_weight{{$cnt}}" id="cartoon_weight{{$cnt}}" class="form-control validate[required]" placeholder="Cartoon Weight">
                                     </div>
                                 </div>
                             </div>
@@ -80,21 +80,21 @@
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
-                                        <input type="text" name="cartoon_height{{$cnt}}" id="cartoon_height{{$cnt}}" class="form-control" placeholder="Cartoon Height">
+                                        <input type="text" name="cartoon_height{{$cnt}}" id="cartoon_height{{$cnt}}" class="form-control validate[required]" placeholder="Cartoon Height">
                                     </div>
                                 </div>
                                 {!! Form::label('no_of_cartoon', '# Of Cartoon *', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
-                                        <input type="text" name="no_of_cartoon{{$cnt}}" id="no_of_cartoon{{$cnt}}" class="form-control" placeholder="# Of Cartoon">
+                                        <input type="text" name="no_of_cartoon{{$cnt}}" id="no_of_cartoon{{$cnt}}" class="form-control validate[required]" placeholder="# Of Cartoon">
                                     </div>
                                 </div>
                                 {!! Form::label('unit_per_cartoon', 'Unit Per Cartoon *', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
-                                        <input type="text" name="unit_per_cartoon{{$cnt}}" id="unit_per_cartoon{{$cnt}}" class="form-control" placeholder="Unit Per Cartoon">
+                                        <input type="text" name="unit_per_cartoon{{$cnt}}" id="unit_per_cartoon{{$cnt}}" class="form-control validate[required]" placeholder="Unit Per Cartoon">
                                     </div>
                                 </div>
                             </div>
@@ -103,10 +103,10 @@
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
-                                        <input type="text" name="cartoon_condition{{$cnt}}" id="cartoon_condition{{$cnt}}" class="form-control" placeholder="Cartoon Condition">
+                                        <input type="text" name="cartoon_condition{{$cnt}}" id="cartoon_condition{{$cnt}}" class="form-control validate[required]" placeholder="Cartoon Condition">
                                     </div>
                                 </div>
-                                {!! Form::label('images', 'Upload Image *', ['class' => 'control-label col-md-2']) !!}
+                                {!! Form::label('images', 'Upload Image ', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="file" name="images{{$cnt}}[]" id="images{{$cnt}}[]"  multiple placeholder="Upload Image">
@@ -115,7 +115,7 @@
                                 {!! Form::label('location', 'Warehouse Location *', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
-                                       <select name="location{{$cnt}}" id="location{{$cnt}}" class="form-control">
+                                       <select name="location{{$cnt}}" id="location{{$cnt}}" class="form-control validate[required]">
                                            <option value="">Select Warehouse Location</option>
                                            <option value="1">test</option>
                                        </select>

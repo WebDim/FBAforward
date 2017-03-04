@@ -57,14 +57,14 @@
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    <input type="text" name="shipping_port{{$cnt}}" id="shipping_port{{$cnt}}" class="form-control" placeholder="Shipping Port">
+                                    <input type="text" name="shipping_port{{$cnt}}" id="shipping_port{{$cnt}}" class="form-control validate[required]" placeholder="Shipping Port">
                                 </div>
                             </div>
                             {!! Form::label('shipping_term', 'Shipping Term *', ['class' => 'control-label col-md-2']) !!}
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    <select name="shipping_term{{$cnt}}" id="shipping_term{{$cnt}}" class="form-control">
+                                    <select name="shipping_term{{$cnt}}" id="shipping_term{{$cnt}}" class="form-control validate[required]">
                                         <option value="FOB">FOB</option>
                                         <option value="EXW">EXW</option>
                                     </select>
@@ -74,7 +74,7 @@
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    <input type="text" name="weight{{$cnt}}" id="weight{{$cnt}}" class="form-control" placeholder="Weight">
+                                    <input type="text" name="weight{{$cnt}}" id="weight{{$cnt}}" class="form-control validate[required]" placeholder="Weight">
                                 </div>
                             </div>
                         </div>
@@ -83,14 +83,14 @@
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    <input type="text" name="chargable_weight{{$cnt}}" id="chargable_weight{{$cnt}}" class="form-control" placeholder="chargable Weight">
+                                    <input type="text" name="chargable_weight{{$cnt}}" id="chargable_weight{{$cnt}}" class="form-control validate[required]" placeholder="chargable Weight">
                                 </div>
                             </div>
                             {!! Form::label('cubic_meter', 'Cubic Meter*', ['class' => 'control-label col-md-2']) !!}
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    <input type="text" name="cubic_meter{{$cnt}}" id="cubic_meter{{$cnt}}" class="form-control" placeholder="Cubic Meter">
+                                    <input type="text" name="cubic_meter{{$cnt}}" id="cubic_meter{{$cnt}}" class="form-control validate[required]" placeholder="Cubic Meter">
                                 </div>
                             </div>
                             {!! Form::label('charges', 'Charges*', ['class' => 'control-label col-md-2']) !!}
@@ -108,7 +108,7 @@
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    <input type="text" name="total_shipping_cost{{$cnt}}" id="total_shipping_cost{{$cnt}}" class="form-control" value="0" readonly>
+                                    <input type="text" name="total_shipping_cost{{$cnt}}" id="total_shipping_cost{{$cnt}}" class="form-control validate[required]" value="0" readonly>
                                 </div>
                             </div>
                         </div>

@@ -66,7 +66,21 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                {!! Form::label('vessel', 'Vessel ', ['class' => 'control-label col-md-2']) !!}
+                                <div class="col-md-2">
+                                    <div class="input-group">
+                                        <input type="text" name="vessel{{$cnt}}" id="vessel{{$cnt}}"  class="form-control" placeholder="Vessel ">
+                                    </div>
+                                </div>
+                                {!! Form::label('container', 'Container # ', ['class' => 'control-label col-md-2']) !!}
+                                <div class="col-md-2">
+                                    <div class="input-group">
+                                        <input type="text" name="container{{$cnt}}" id="container{{$cnt}}"  class="form-control" placeholder="Container # ">
+                                    </div>
+                                </div>
 
+                            </div>
                         </div>
                     </div>
                 </div>

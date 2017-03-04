@@ -46,13 +46,13 @@
                                 <div class="col-md-3">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
-                                        <input type="text" name="ref_number{{$cnt}}" id="ref_number{{$cnt}}" class="form-control" placeholder="Shipment Reference Number (SB Number)">
+                                        <input type="text" name="ref_number{{$cnt}}" id="ref_number{{$cnt}}" class="form-control validate[required]" placeholder="Shipment Reference Number (SB Number)">
                                     </div>
                                 </div>
                                 {!! Form::label('bill', 'Bill of Lading *', ['class' => 'control-label col-md-3']) !!}
                                 <div class="col-md-3">
                                     <div class="input-group">
-                                        <input type="file" name="bill{{$cnt}}" id="bill{{$cnt}}"  placeholder="Bill of Lading">
+                                        <input type="file" name="bill{{$cnt}}" id="bill{{$cnt}}"  placeholder="Bill of Lading" class="validate[required]">
                                     </div>
                                 </div>
                             </div>

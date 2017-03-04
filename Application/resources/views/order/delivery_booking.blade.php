@@ -23,10 +23,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                {!! Form::label('CFS_terminal', 'CFS Terminal ', ['class' => 'control-label col-md-2']) !!}
+                                {!! Form::label('CFS_terminal', 'CFS Terminal* ', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
-                                        <select name="CFS_terminal{{$cnt}}" id="CFS_terminal{{$cnt}}" class="form-control" onchange="show_terminal(this.value)">
+                                        <select name="CFS_terminal{{$cnt}}" id="CFS_terminal{{$cnt}}" class="form-control validate[required]" onchange="show_terminal(this.value)">
                                             <option value=" ">CFS Terminal</option>
                                             <option value="">Add New</option>
                                             @foreach($cfs_terminal as $cfs_terminals)
@@ -35,10 +35,10 @@
                                         </select>
                                     </div>
                                 </div>
-                                {!! Form::label('trucking_company', 'Trucking Company ', ['class' => 'control-label col-md-2']) !!}
+                                {!! Form::label('trucking_company', 'Trucking Company* ', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
-                                        <select name="trucking_company{{$cnt}}" id="trucking_company{{$cnt}}" class="form-control" onchange="show_trucking(this.value)">
+                                        <select name="trucking_company{{$cnt}}" id="trucking_company{{$cnt}}" class="form-control validate[required]" onchange="show_trucking(this.value)">
                                             <option value=" ">Trucking Company</option>
                                             <option value="">Add New</option>
                                             @foreach($trucking_company as $trucking_compnays)
@@ -47,18 +47,18 @@
                                         </select>
                                     </div>
                                 </div>
-                                {!! Form::label('warehouse_fee', 'Warehouse Fees ', ['class' => 'control-label col-md-2']) !!}
+                                {!! Form::label('warehouse_fee', 'Warehouse Fees* ', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
-                                        <input type="text" name="warehouse_fee{{$cnt}}" id="warehouse_fee{{$cnt}}" class="form-control" placeholder="Warehouse Fees">
+                                        <input type="text" name="warehouse_fee{{$cnt}}" id="warehouse_fee{{$cnt}}" class="form-control validate[required]" placeholder="Warehouse Fees">
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                {!! Form::label('fee_paid', 'Fees Paid ', ['class' => 'control-label col-md-2']) !!}
+                                {!! Form::label('fee_paid', 'Fees Paid* ', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
-                                        <select name="fee_paid{{$cnt}}" id="fee_paid{{$cnt}}" class="form-control">
+                                        <select name="fee_paid{{$cnt}}" id="fee_paid{{$cnt}}" class="form-control validate[required]">
                                             <option value="">Fees Paid</option>
                                             @foreach($payment_type as $payment_types)
                                             <option value="{{$payment_types->id}}">{{$payment_types->type_name}}</option>
@@ -66,10 +66,10 @@
                                         </select>
                                     </div>
                                 </div>
-                                {!! Form::label('ETA_warehouse', 'ETA Warehouse ', ['class' => 'control-label col-md-2']) !!}
+                                {!! Form::label('ETA_warehouse', 'ETA Warehouse* ', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
-                                        <input type="text" name="ETA_warehouse{{$cnt}}" id="ETA_warehouse{{$cnt}}" class="form-control datepicker" placeholder="ETA Warehouse ">
+                                        <input type="text" name="ETA_warehouse{{$cnt}}" id="ETA_warehouse{{$cnt}}" class="form-control datepicker validate[required]" placeholder="ETA Warehouse ">
                                     </div>
                                 </div>
 

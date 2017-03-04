@@ -610,7 +610,7 @@
                     }
                     else if (response == '3')
                     {
-                        $("#ship_load"+shipment_id).hide();
+                        $("#label_tr").hide();
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
@@ -676,6 +676,26 @@
                 success: function (response) { // What to do if we succeed
                     $('#label').html(response);
                     $("#shipment_label").modal('show');
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
+        function getlabel(fnsku)
+        {
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/getlabel', // This is the url we gave in the route
+                data: {
+                    'fnsku': fnsku,
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    console.log(response);
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
                     console.log(JSON.stringify(jqXHR));

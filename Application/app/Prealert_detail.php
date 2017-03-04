@@ -10,7 +10,7 @@ class Prealert_detail extends Model
     protected $primaryKey = 'id';
 
     protected $table ='prealert_details';
-    protected $fillable = ['order_id','shipment_id','ISF', 'HBL','MBL','ETD_china','ETA_US','delivery_port','status'];
+    protected $fillable = ['order_id','shipment_id','ISF', 'HBL','MBL','ETD_china','ETA_US','delivery_port','vessel','container','status'];
 
     public function order()
     {
