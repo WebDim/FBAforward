@@ -2372,7 +2372,7 @@ class OrderController extends Controller
             $order_id = $post['order_id'];
             $shipment=Shipments::where('shipments.order_id',$order_id)->get();
             $amazon_destination=Amazon_destination::all();
-            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, orders.shipping_label, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipping_label, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
                 ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
                 ->join('orders','orders.order_id','=','shipments.order_id','left')
                 ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')

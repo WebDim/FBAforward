@@ -603,13 +603,14 @@
                     'status':status
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
-                    if (response == 2) {
+
+                    if (response == '2') {
                         $("#label" + shipment_id).hide();
-                        $("#shipment" + shipment_id).show();
+                        $("#ship_load" + shipment_id).show();
                     }
-                    else if (response == 3)
+                    else if (response == '3')
                     {
-                        $("#shipment"+shipment_id).hide();
+                        $("#ship_load"+shipment_id).hide();
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
