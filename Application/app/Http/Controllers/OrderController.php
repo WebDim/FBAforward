@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Additional_service;
+use App\Amazon_marketplace;
 use App\Amazon_destination;
 use App\Amazon_inventory;
 use App\Bill_of_lading;
@@ -1776,6 +1777,7 @@ class OrderController extends Controller
     // create shipment plan and shipments
     public function createshipments(Request $request)
     {
+
             $order_id=$request->order_id;
             $shipment=Order::selectRaw('orders.order_id,orders.user_id,shipments.*')
                 ->join('shipments','shipments.order_id','=','orders.order_id')
@@ -1783,13 +1785,15 @@ class OrderController extends Controller
                 ->get();
             $user_id=isset($shipment)?$shipment[0]->user_id:'';
             $user_details = User_info::where('user_id',$user_id)->get();
-            $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
-                ->where('user_id',$user_id)
-                ->get();
-            //$UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
-            //$UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
-            $UserCredentials['mws_authtoken']='test';
-            $UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
+        $results = Amazon_marketplace::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken, amazon_marketplaces.market_place_id")
+            ->join('customer_amazon_details', 'customer_amazon_details.mws_market_place_id', '=', 'amazon_marketplaces.id')
+            ->get();
+
+            $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
+            $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+            $UserCredentials['marketplace'] = $results[0]->market_place_id ? $results[0]->market_place_id : '';
+                //$UserCredentials['mws_authtoken']='test';
+            //$UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
             $fromaddress= new \FBAInboundServiceMWS_Model_Address();
             $fromaddress->setName($user_details[0]->company_name);
             $fromaddress->setAddressLine1($user_details[0]->company_address);
@@ -1911,6 +1915,7 @@ class OrderController extends Controller
             ->distinct('amazon_destinations.api_shipment_id')
             ->get();
         $cartoon_id=1;
+        $devAccount = Dev_account::first();
         foreach ($shipment_ids as $new_shipment_ids)
         {
             $feed = '<?xml version="1.0" encoding="UTF-8"?>'.
@@ -1940,9 +1945,10 @@ class OrderController extends Controller
                 '</CartonContentsRequest>'.
                 '</Message>'.
                 '</AmazonEnvelope>';
+
             $param = array();
-            $param['AWSAccessKeyId'] = 'AKIAJSMUMYFXUPBXYQLA';
-            $param['MarketplaceId.Id.1'] = 'ATVPDKIKX0DER';
+            $param['AWSAccessKeyId'] = $devAccount->access_key;
+            $param['MarketplaceId.Id.1'] =$UserCredentials['marketplace'];
             $param['MWSAuthToken'] = $UserCredentials['mws_authtoken']; //MWS Auth Token for this store
             $param['Merchant'] = $UserCredentials['mws_seller_id'];
             $param['Action'] = 'SubmitFeed';
@@ -1977,8 +1983,8 @@ class OrderController extends Controller
                 '</Message>'.
                 '</AmazonEnvelope>';
             $param = array();
-            $param['AWSAccessKeyId'] = 'AKIAJSMUMYFXUPBXYQLA';
-            $param['MarketplaceId.Id.1'] = 'ATVPDKIKX0DER';
+            $param['AWSAccessKeyId'] = $devAccount->access_key;
+            $param['MarketplaceId.Id.1'] = $UserCredentials['marketplace'];
             $param['MWSAuthToken'] = $UserCredentials['mws_authtoken']; //MWS Auth Token for this store
             $param['Merchant'] = $UserCredentials['mws_seller_id'];
             $param['Action'] = 'GetFeedSubmissionResult';
@@ -2010,14 +2016,14 @@ class OrderController extends Controller
     private function getKeys()
     {
         add_to_path('Libraries');
-        //$devAccount = Dev_account::first();
-        $accesskey='AKIAJSMUMYFXUPBXYQLA';
-        $secret_key='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';
+        $devAccount = Dev_account::first();
+        //$accesskey='AKIAJSMUMYFXUPBXYQLA';
+        //$secret_key='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';
         return [
-           //$devAccount->access_key,
-           //$devAccount->secret_key,
-            $accesskey,
-            $secret_key,
+           $devAccount->access_key,
+           $devAccount->secret_key,
+           // $accesskey,
+           // $secret_key,
             self::getMWSConfig()
         ];
     }
@@ -2123,6 +2129,50 @@ class OrderController extends Controller
             echo("XML: " . $ex->getXML() . "\n");
             echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
         }
+    }
+    public function arrToQueryString($param)
+    {
+        $strURL = "";
+        $url = array();
+        foreach ($param as $key => $val) {
+            $key = str_replace("%7E", "~", rawurlencode($key));
+            $val = str_replace("%7E", "~", rawurlencode($val));
+            $url[] = "{$key}={$val}";
+        }
+        sort($url);
+        $strURL = implode('&', $url);
+        return $strURL;
+    }
+    public function sendQuery($strUrl, $amazon_feed, $param)
+    {
+        $devAccount = Dev_account::first();
+        $strServieURL = preg_replace('#^https?://#', '', 'https://mws.amazonservices.com');
+        $strServieURL = str_ireplace("/", "", $strServieURL);
+        $sign = 'POST' . "\n";
+        $sign .= $strServieURL . "\n";
+        $sign .= '/Feeds/' . $param['Version'] . '' . "\n";
+        $sign .= $strUrl;
+        $signature = hash_hmac("sha256", $sign, $devAccount->secret_key, true);
+        $signature = urlencode(base64_encode($signature));
+        $httpHeader = array();
+        $httpHeader[] = 'Transfer-Encoding: chunked';
+        $httpHeader[] = 'Content-Type: application/xml';
+        $httpHeader[] = 'Content-MD5: ' . base64_encode(md5($amazon_feed, true));
+        $httpHeader[] = 'Expect:';
+        $httpHeader[] = 'Accept:';
+        $link =  "https://mws.amazonservices.com/Feeds/" . $param['Version'] . "?";
+        $link .= $strUrl . "&Signature=" . $signature;
+        //  echo $link;
+        $ch = curl_init($link);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $amazon_feed);
+        $response = curl_exec($ch);
+        $info = curl_getinfo($ch);
+        curl_close($ch);
+        return $response;
     }
     public function orderlabor()
     {
@@ -2275,49 +2325,6 @@ class OrderController extends Controller
 
         }
 
-    }
-    public function arrToQueryString($param)
-    {
-        $strURL = "";
-        $url = array();
-        foreach ($param as $key => $val) {
-            $key = str_replace("%7E", "~", rawurlencode($key));
-            $val = str_replace("%7E", "~", rawurlencode($val));
-            $url[] = "{$key}={$val}";
-        }
-        sort($url);
-        $strURL = implode('&', $url);
-        return $strURL;
-    }
-    public function sendQuery($strUrl, $amazon_feed, $param)
-    {
-        $strServieURL = preg_replace('#^https?://#', '', 'https://mws.amazonservices.com');
-        $strServieURL = str_ireplace("/", "", $strServieURL);
-        $sign = 'POST' . "\n";
-        $sign .= $strServieURL . "\n";
-        $sign .= '/Feeds/' . $param['Version'] . '' . "\n";
-        $sign .= $strUrl;
-        $signature = hash_hmac("sha256", $sign, 'Uo3EMqenqoLCyCnhVV7jvOeipJ2qECACcyWJWYzF', true);
-        $signature = urlencode(base64_encode($signature));
-        $httpHeader = array();
-        $httpHeader[] = 'Transfer-Encoding: chunked';
-        $httpHeader[] = 'Content-Type: application/xml';
-        $httpHeader[] = 'Content-MD5: ' . base64_encode(md5($amazon_feed, true));
-        $httpHeader[] = 'Expect:';
-        $httpHeader[] = 'Accept:';
-        $link =  "https://mws.amazonservices.com/Feeds/" . $param['Version'] . "?";
-        $link .= $strUrl . "&Signature=" . $signature;
-        //  echo $link;
-        $ch = curl_init($link);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $amazon_feed);
-        $response = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
-        return $response;
     }
     function invokeGetUniquePackageLabels(\FBAInboundServiceMWS_Interface $service, $request)
     {
