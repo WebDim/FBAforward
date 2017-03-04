@@ -61,6 +61,7 @@ use Illuminate\Support\Facades\DB;
 use PDF;
 use Yajra\Datatables\Datatables;
 use DNS1D;
+use ZipArchive;
 class OrderController extends Controller
 {
     private $IntuitAnywhere;
@@ -835,8 +836,6 @@ class OrderController extends Controller
             'inbound_shipping_charge'=>$request->input('inbound_shipping'),
             'total_cost'=>$request->input('total_cost')
         );
-        $payment_detail_id=Payment_detail::create($payment_detail);
-        $last_id=$payment_detail_id->payment_detail_id;
         $apiContext = new \PayPal\Rest\ApiContext(
             new \PayPal\Auth\OAuthTokenCredential(
                 env('CLIENT_ID'),
@@ -874,6 +873,8 @@ class OrderController extends Controller
             ResultPrinter::printError("Create Payment using Saved Card", "Payment", null, $request, $ex);
             exit(1);
         }
+        $payment_detail_id=Payment_detail::create($payment_detail);
+        $last_id=$payment_detail_id->payment_detail_id;
         $payment_info=array('payment_detail_id'=>$last_id,
             'transaction'=>$payment
         );
@@ -1785,10 +1786,10 @@ class OrderController extends Controller
             $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
                 ->where('user_id',$user_id)
                 ->get();
-            $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
-            $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
-            //$UserCredentials['mws_authtoken']='test';
-            //$UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
+            //$UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
+            //$UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+            $UserCredentials['mws_authtoken']='test';
+            $UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
             $fromaddress= new \FBAInboundServiceMWS_Model_Address();
             $fromaddress->setName($user_details[0]->company_name);
             $fromaddress->setAddressLine1($user_details[0]->company_address);
@@ -1815,6 +1816,7 @@ class OrderController extends Controller
                 $itemlist = new \FBAInboundServiceMWS_Model_InboundShipmentPlanRequestItemList();
                 $itemlist->setmember($item);
                 $ship_request->setInboundShipmentPlanRequestItems($itemlist);
+
                 $arr_response =$this->invokeCreateInboundShipmentPlan($service, $ship_request);
                 $shipment_id=$shipments->shipment_id;
                 //create shipments api of perticular shipmentplan
@@ -1896,6 +1898,102 @@ class OrderController extends Controller
             }
             $plan=array('shipmentplan'=>'1','is_activated'=>'13');
             Order::where('order_id',$order_id)->update($plan);
+        $shipment_ids=Amazon_destination::selectRaw('amazon_destinations.api_shipment_id, warehouse_checkins.no_of_cartoon')
+            ->join('shipments','shipments.shipment_id','=','amazon_destinations.shipment_id')
+            ->join('warehouse_checkins','warehouse_checkins.shipment_id','=','shipments.shipment_id')
+            ->where('shipments.order_id',$order_id)
+            ->groupby('amazon_destinations.api_shipment_id')
+            ->get();
+        $product_ids=Amazon_destination::selectRaw('amazon_destinations.*, warehouse_checkins.no_of_cartoon')
+            ->join('shipments','shipments.shipment_id','=','amazon_destinations.shipment_id')
+            ->join('warehouse_checkins','warehouse_checkins.shipment_id','=','shipments.shipment_id')
+            ->where('shipments.order_id',$order_id)
+            ->distinct('amazon_destinations.api_shipment_id')
+            ->get();
+        $cartoon_id=1;
+        foreach ($shipment_ids as $new_shipment_ids)
+        {
+            $feed = '<?xml version="1.0" encoding="UTF-8"?>'.
+                '<AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd">'.
+                '<Header>'.
+                '<DocumentVersion>1.01</DocumentVersion>'.
+                '<MerchantIdentifier>'.$UserCredentials["mws_seller_id"].'</MerchantIdentifier>'.
+                '</Header>'.
+                '<MessageType>CartonContentsRequest</MessageType>'.
+                '<Message>'.
+                '<MessageID>1</MessageID>'.
+                '<CartonContentsRequest>'.
+                '<ShipmentId>'.$new_shipment_ids->api_shipment_id.'</ShipmentId>'.
+                '<NumCartons>'.$new_shipment_ids->no_of_cartoon.'</NumCartons>'.
+                '<Carton>'.
+                '<CartonId>'.$cartoon_id.'</CartonId>';
+            foreach ($product_ids as $new_product_ids) {
+                if ($new_shipment_ids->api_shipment_id == $new_product_ids->api_shipment_id) {
+                    $feed .= '<Item>' .
+                        '<SKU>' . $new_product_ids->sellerSKU . '</SKU>' .
+                        '<QuantityShipped>' . $new_product_ids->qty . '</QuantityShipped>' .
+                        '<QuantityInCase>' . $new_product_ids->qty . '</QuantityInCase>' .
+                        '</Item>';
+                }
+            }
+            $feed.='</Carton>'.
+                '</CartonContentsRequest>'.
+                '</Message>'.
+                '</AmazonEnvelope>';
+            $param = array();
+            $param['AWSAccessKeyId'] = 'AKIAJSMUMYFXUPBXYQLA';
+            $param['MarketplaceId.Id.1'] = 'ATVPDKIKX0DER';
+            $param['MWSAuthToken'] = $UserCredentials['mws_authtoken']; //MWS Auth Token for this store
+            $param['Merchant'] = $UserCredentials['mws_seller_id'];
+            $param['Action'] = 'SubmitFeed';
+            $param['FeedType'] = '_POST_FBA_INBOUND_CARTON_CONTENTS_';
+            $param['SignatureMethod'] = 'HmacSHA256';
+            $param['SignatureVersion'] = '2';
+            $param['Timestamp'] = gmdate("Y-m-d\TH:i:s.\\0\\0\\0\\Z", time());
+            $param['Version'] = '2009-01-01';
+            $param['PurgeAndReplace'] = 'false';
+            $strUrl = $this->arrToQueryString($param);
+            $result = $this->sendQuery($strUrl, $feed, $param);
+            $arr = simplexml_load_string($result);
+            foreach ($arr as $new_arr)
+            {
+                foreach ($new_arr->FeedSubmissionInfo as $feedsubmit)
+                {
+                    $feed_id=$feedsubmit->FeedSubmissionId;
+                }
+            }
+            $feed_list = '<?xml version="1.0" encoding="UTF-8"?>'.
+                '<AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd">'.
+                '<Header>'.
+                '<DocumentVersion>1.02</DocumentVersion>'.
+                '<MerchantIdentifier>'.$UserCredentials["mws_seller_id"].'</MerchantIdentifier>'.
+                '</Header>'.
+                '<MessageType>ProcessingReport</MessageType>'.
+                '<Message>'.
+                '<MessageID>1</MessageID>'.
+                '<ProcessingReport>'.
+                '<DocumentTransactionID>'.$feed_id.'</DocumentTransactionID>'.
+                '</ProcessingReport>'.
+                '</Message>'.
+                '</AmazonEnvelope>';
+            $param = array();
+            $param['AWSAccessKeyId'] = 'AKIAJSMUMYFXUPBXYQLA';
+            $param['MarketplaceId.Id.1'] = 'ATVPDKIKX0DER';
+            $param['MWSAuthToken'] = $UserCredentials['mws_authtoken']; //MWS Auth Token for this store
+            $param['Merchant'] = $UserCredentials['mws_seller_id'];
+            $param['Action'] = 'GetFeedSubmissionResult';
+            $param['SignatureMethod'] = 'HmacSHA256';
+            $param['SignatureVersion'] = '2';
+            $param['Timestamp'] = gmdate("Y-m-d\TH:i:s.\\0\\0\\0\\Z", time());
+            $param['Version'] = '2009-01-01';
+            $param['PurgeAndReplace'] = 'false';
+            $param['FeedSubmissionId'] = $feed_id;
+            $strUrl = $this->arrToQueryString($param);
+            $feed_result = $this->sendQuery($strUrl, $feed_list, $param);
+            $data= array('cartoon_id'=>$cartoon_id, 'feed_submition_id'=>$feed_id);
+            Amazon_destination::where('api_shipment_id',$new_shipment_ids->api_shipment_id)->update($data);
+            $cartoon_id++;
+        }
         return redirect('order/warehousecheckin')->with('success','Shipment Created Successfully');
     }
     protected function getReportsClient()
@@ -1912,14 +2010,14 @@ class OrderController extends Controller
     private function getKeys()
     {
         add_to_path('Libraries');
-        $devAccount = Dev_account::first();
-        //$accesskey='AKIAJSMUMYFXUPBXYQLA';
-        //$secret_key='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';
+        //$devAccount = Dev_account::first();
+        $accesskey='AKIAJSMUMYFXUPBXYQLA';
+        $secret_key='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';
         return [
-           $devAccount->access_key,
-           $devAccount->secret_key,
-            //$accesskey,
-            //$secret_key,
+           //$devAccount->access_key,
+           //$devAccount->secret_key,
+            $accesskey,
+            $secret_key,
             self::getMWSConfig()
         ];
     }
@@ -2117,125 +2215,124 @@ class OrderController extends Controller
     }
     public function shippinglabel(Request $request)
     {
-        $order_id=$request->order_id;
-        $shipment=Order::selectRaw('orders.order_id,orders.user_id,shipments.*')
-            ->join('shipments','shipments.order_id','=','orders.order_id')
-            ->where('orders.order_id',$order_id)
-            ->get();
-        $user_id=isset($shipment)?$shipment[0]->user_id:'';
-        $user_details = User_info::where('user_id',$user_id)->get();
-        $results = Customer_amazon_detail::selectRaw("customer_amazon_details.mws_seller_id, customer_amazon_details.user_id, customer_amazon_details.mws_authtoken")
-            ->where('user_id',$user_id)
-            ->get();
-        $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
-        $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
-        //$UserCredentials['mws_authtoken']='test';
-        //$UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
+        if($request->ajax())
+        {
+            $post=$request->all();
+            $order_id=$post['order_id'];
+            $shipment=Shipments::where('shipments.order_id',$order_id)->get();
+            $amazon_destination=Amazon_destination::all();
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipments.shipping_label, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
+                ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+                ->join('orders','orders.order_id','=','shipments.order_id','left')
+                ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
+                ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
+                ->join('prep_details','prep_details.shipment_detail_id','=','shipment_details.shipment_detail_id')
+                ->where('orders.order_id',$order_id)
+                ->get();
+            $order_note=Order_note::where('order_id',$order_id)->get();
+            $other_label_detail=Other_label_detail::all();
+            return view('order/shipping_label')->with(compact('shipment','shipment_detail','order_id','amazon_destination','order_note','other_label_detail'));
+        }
+    }
+    public function printshippinglabel(Request $request)
+    {
+        $shipment_id=$request->shipment_id;
+        $UserCredentials['mws_authtoken']='test';
+        $UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
         $service = $this->getReportsClient();
         $shipping_request = new \FBAInboundServiceMWS_Model_GetUniquePackageLabelsRequest();
         $shipping_request->setSellerId($UserCredentials['mws_seller_id']);
         $shipping_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
-        $shipment_ids=Amazon_destination::selectRaw('amazon_destinations.api_shipment_id')
+        $shipment_ids=Amazon_destination::selectRaw('amazon_destinations.api_shipment_id, amazon_destinations.feed_submition_id, amazon_destinations.cartoon_id, warehouse_checkins.no_of_cartoon')
                                           ->join('shipments','shipments.shipment_id','=','amazon_destinations.shipment_id')
-                                          ->where('shipments.order_id',$order_id)
-                                          ->distinct('shipments.api_shipment_id')
+                                          ->join('warehouse_checkins','warehouse_checkins.shipment_id','=','shipments.shipment_id')
+                                          ->where('shipments.shipment_id',$shipment_id)
+                                          ->groupby('amazon_destinations.api_shipment_id')
                                           ->get();
         foreach ($shipment_ids as $new_shipment_ids)
         {
             $shipping_request->setShipmentId($new_shipment_ids->api_shipment_id);
             $shipping_request->setPageType('PackageLabel_Letter_2');
-            $feed_service=$this->getfeedReportsClient();
-            $feed_request= new \MarketplaceWebService_Model_SubmitFeedRequest();
-            $feed_request->setMerchant($UserCredentials['mws_seller_id']);
-            $feed_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
-            $feed_request->setFeedType('_POST_FBA_INBOUND_CARTON_CONTENTS_');
-            $this->invokesubmitfeed($feed_service,$feed_request);
-            exit;
-            $label_content=new \FBAInboundServiceMWS_Model_PackageIdentifiers();
-            $label_content->setmember('54828017225');
-            $shipping_request->setPackageLabelsToPrint($label_content);
-            $this->invokeGetUniquePackageLabels($service, $shipping_request);
+                $label_content=new \FBAInboundServiceMWS_Model_PackageIdentifiers();
+                $label_content->setmember($new_shipment_ids->cartoon_id);
+                $shipping_request->setPackageLabelsToPrint($label_content);
+                $response=$this->invokeGetUniquePackageLabels($service, $shipping_request);
+                foreach ($response->GetUniquePackageLabelsResult as $packagelabel)
+                {
+                    foreach ($packagelabel->TransportDocument as $trasport_document)
+                    {
+                        $pdf_file=$trasport_document->PdfDocument;
+                    }
+                }
+            $data= array("shipping_label"=>"1");
+            Shipments::where('shipment_id',$shipment_id)->update($data);
+                $zipStr = $pdf_file;
+                header('Content-Type: application/zip');
+                header('Content-disposition: filename="shipping_label.zip"');
+                $out = base64_decode($pdf_file);
+                print($out);
+                exit;
+
         }
 
     }
-    protected function getfeedReportsClient()
+    public function arrToQueryString($param)
     {
-        list($access_key, $secret_key, $config) = $this->getfeedKeys();
-        return  new \MarketplaceWebService_Client(
-            $access_key,
-            $secret_key,
-            $config,
-            env('APPLICATION_NAME'),
-            env('APPLICATION_VERSION')
-        );
-    }
-    private function getfeedKeys()
-    {
-        add_to_path('Libraries');
-        $devAccount = Dev_account::first();
-        //$accesskey='AKIAJSMUMYFXUPBXYQLA';
-        //$secret_key='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';
-        return [
-            $devAccount->access_key,
-            $devAccount->secret_key,
-            //$accesskey,
-            //$secret_key,
-            self::getfeedMWSConfig()
-        ];
-    }
-    public static function getfeedMWSConfig()
-    {
-        return [
-            'ServiceURL' =>"https://mws.amazonservices.com" ,
-            'ProxyHost' => null,
-            'ProxyPort' => -1,
-            'ProxyUsername' => null,
-            'ProxyPassword' => null,
-            'MaxErrorRetry' => 3,
-        ];
-    }
-    function invokesubmitfeed(\MarketplaceWebService_Interface $service, $request)
-    {
-        try {
-            echo "<pre>";
-            print_r($service);
-            print_r($request);
-            exit;
-            $response = $service->submitFeed($request);
-            echo ("Service Response\n");
-            echo ("=============================================================================\n");
-
-            $dom = new \DOMDocument();
-            $dom->loadXML($response->toXML());
-            $dom->preserveWhiteSpace = false;
-            $dom->formatOutput = true;
-            echo $dom->saveXML();
-            echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
-        } catch (\MarketplaceWebService_Exception $ex) {
-            echo("Caught Exception: " . $ex->getMessage() . "\n");
-            echo("Response Status Code: " . $ex->getStatusCode() . "\n");
-            echo("Error Code: " . $ex->getErrorCode() . "\n");
-            echo("Error Type: " . $ex->getErrorType() . "\n");
-            echo("Request ID: " . $ex->getRequestId() . "\n");
-            echo("XML: " . $ex->getXML() . "\n");
-            echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
+        $strURL = "";
+        $url = array();
+        foreach ($param as $key => $val) {
+            $key = str_replace("%7E", "~", rawurlencode($key));
+            $val = str_replace("%7E", "~", rawurlencode($val));
+            $url[] = "{$key}={$val}";
         }
+        sort($url);
+        $strURL = implode('&', $url);
+        return $strURL;
+    }
+    public function sendQuery($strUrl, $amazon_feed, $param)
+    {
+        $strServieURL = preg_replace('#^https?://#', '', 'https://mws.amazonservices.com');
+        $strServieURL = str_ireplace("/", "", $strServieURL);
+        $sign = 'POST' . "\n";
+        $sign .= $strServieURL . "\n";
+        $sign .= '/Feeds/' . $param['Version'] . '' . "\n";
+        $sign .= $strUrl;
+        $signature = hash_hmac("sha256", $sign, 'Uo3EMqenqoLCyCnhVV7jvOeipJ2qECACcyWJWYzF', true);
+        $signature = urlencode(base64_encode($signature));
+        $httpHeader = array();
+        $httpHeader[] = 'Transfer-Encoding: chunked';
+        $httpHeader[] = 'Content-Type: application/xml';
+        $httpHeader[] = 'Content-MD5: ' . base64_encode(md5($amazon_feed, true));
+        $httpHeader[] = 'Expect:';
+        $httpHeader[] = 'Accept:';
+        $link =  "https://mws.amazonservices.com/Feeds/" . $param['Version'] . "?";
+        $link .= $strUrl . "&Signature=" . $signature;
+        //  echo $link;
+        $ch = curl_init($link);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $amazon_feed);
+        $response = curl_exec($ch);
+        $info = curl_getinfo($ch);
+        curl_close($ch);
+        return $response;
     }
     function invokeGetUniquePackageLabels(\FBAInboundServiceMWS_Interface $service, $request)
     {
         try {
 
             $response = $service->GetUniquePackageLabels($request);
-
-            echo ("Service Response\n");
-            echo ("=============================================================================\n");
-
+           // echo ("Service Response\n");
+            //echo ("=============================================================================\n");
             $dom = new \DOMDocument();
             $dom->loadXML($response->toXML());
             $dom->preserveWhiteSpace = false;
             $dom->formatOutput = true;
-            echo $dom->saveXML();
-            echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
+            $dom->saveXML();
+            //echo("ResponseHeaderMetadata: " . $response->getResponseHeaderMetadata() . "\n");
+            return $arr_response = new \SimpleXMLElement($dom->saveXML());
 
         } catch (\FBAInboundServiceMWS_Exception $ex) {
             echo("Caught Exception: " . $ex->getMessage() . "\n");
@@ -2246,6 +2343,58 @@ class OrderController extends Controller
             echo("XML: " . $ex->getXML() . "\n");
             echo("ResponseHeaderMetadata: " . $ex->getResponseHeaderMetadata() . "\n");
         }
+    }
+    public function verifylabel(Request $request)
+    {
+        if($request->ajax())
+        {
+            $post = $request->all();
+            $shipment_id=$post['shipment_id'];
+            $status=$post['status'];
+            $data=array('shipping_label'=>$status);
+            Shipments::where('shipment_id',$shipment_id)->update($data);
+            return $status;
+        }
+    }
+    public function adminshipmentreview()
+    {
+        $title="Shipment Review";
+        $user= \Auth::user();
+        $user_role=$user->role_id;
+        $orders = Order::where('orders.is_activated','16')->orderBy('orders.created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
+    }
+    public function shipmentreview(Request $request)
+    {
+        if($request->ajax()) {
+            $post = $request->all();
+            $order_id = $post['order_id'];
+            $shipment=Shipments::where('shipments.order_id',$order_id)->get();
+            $amazon_destination=Amazon_destination::all();
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, orders.shipping_label, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
+                ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
+                ->join('orders','orders.order_id','=','shipments.order_id','left')
+                ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
+                ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
+                ->join('prep_details','prep_details.shipment_detail_id','=','shipment_details.shipment_detail_id')
+                ->where('orders.order_id',$order_id)
+                ->get();
+            $order_note=Order_note::where('order_id',$order_id)->get();
+            $other_label_detail=Other_label_detail::all();
+            return view('order/admin_shipment_review')->with(compact('shipment','shipment_detail','order_id','amazon_destination','order_note','other_label_detail'));
+        }
+    }
+    public function verifystatus(Request $request)
+    {
+        if($request->ajax())
+        {
+            $post=$request->all();
+            $order_id=$post['order_id'];
+            $data=array('verify_status'=>'1');
+            Order::where('order_id',$order_id)->update($data);
+        }
+
     }
     //list orders for sales person
     public function orderlist()

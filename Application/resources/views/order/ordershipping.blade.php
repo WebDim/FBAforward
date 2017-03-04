@@ -85,16 +85,29 @@
                                                 <a onclick="viewchecklist('{{$order->order_id}}','Check List')">View Check List</a>
                                                 <a onclick="order_status('{{$order->order_id}}','14')" class="btn btn-info">Submit</a>
                                             @elseif($order->is_activated==15)
-                                                {{--<a href="{{ url('order/shippinglabel/'.$order->order_id)}}">Print Shipping Labels</a>--}}
+                                                <a onclick="shippinglabel('{{$order->order_id}}')">Print Shipping Labels</a>
+                                                <a onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Submit</a>
+                                               {{-- <a onclick="verifylabel({{$order->order_id}})" class="btn btn-info">Verify Label Complete</a>
+                                                <a onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Verify Shipment Load On Truck</a>
+                                                --}}
                                             @endif
                                         @elseif($user_role==8)
-                                            <a onclick="openreview({{$order->order_id}})">Review Warehouse Check In</a>
-                                            <a onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
-                                            @if($order->shipmentplan==0)
-                                            <a href="{{ url('order/createshipments/'.$order->order_id)}}" class="btn btn-info">create shipment</a>
-                                            @elseif($order->shipmentplan==1)
-                                            <a onclick="order_status('{{$order->order_id}}','13')" class="btn btn-info">Review Complete</a>
+                                            @if($order->is_activated==12)
+                                                <a onclick="openreview({{$order->order_id}})">Review Warehouse Check In</a>
+                                                <a onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
+                                                @if($order->shipmentplan==0)
+                                                <a href="{{ url('order/createshipments/'.$order->order_id)}}" class="btn btn-info">create shipment</a>
+                                                @elseif($order->shipmentplan==1)
+                                                <a onclick="order_status('{{$order->order_id}}','13')" class="btn btn-info">Review Complete</a>
+                                                @endif
+                                            @elseif($order->is_activated==16)
+                                                <a onclick="shipmentreview('{{$order->order_id}}')">Review Shipment</a>
+                                               @if($order->verify_status==0)
+                                                <a onclick="verifystatus('{{$order->order_id}}')" class="btn btn-info">Verify Changes</a>
+                                                @endif
+                                                <a onclick="order_status('{{$order->order_id}}','17')" class="btn btn-info">Complete</a>
                                             @endif
+
                                         @elseif($user_role==11)
                                             @if($order->is_activated==14)
                                              <a onclick="viewchecklist('{{$order->order_id}}','Review Order')">Review Order Requirement</a><br>
@@ -273,6 +286,40 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12" id="worklist">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="shipment_review" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Shipment Review</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12" id="shipment">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="shipment_label" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Shipping Label</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12" id="label">
 
                         </div>
                     </div>
@@ -535,6 +582,99 @@
                 success: function (response) { // What to do if we succeed
                     $('#worklist').html(response);
                     $("#review_work").modal('show');
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
+        function verifyshipment(shipment_id,status)
+        {
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/verifylabel', // This is the url we gave in the route
+                data: {
+                    'shipment_id': shipment_id,
+                    'status':status
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    if (response == 2) {
+                        $("#label" + shipment_id).hide();
+                        $("#shipment" + shipment_id).show();
+                    }
+                    else if (response == 3)
+                    {
+                        $("#shipment"+shipment_id).hide();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
+        function shipmentreview(order_id)
+        {
+            jQuery.noConflict();
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/shipmentreview', // This is the url we gave in the route
+                data: {
+                    'order_id': order_id,
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    $('#shipment').html(response);
+                    $("#shipment_review").modal('show');
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
+        function verifystatus(order_id)
+        {
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/verifystatus', // This is the url we gave in the route
+                data: {
+                    'order_id': order_id,
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    location.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
+        function shippinglabel(order_id)
+        {
+            jQuery.noConflict();
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/shippinglabel', // This is the url we gave in the route
+                data: {
+                    'order_id': order_id,
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    $('#label').html(response);
+                    $("#shipment_label").modal('show');
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
                     console.log(JSON.stringify(jqXHR));

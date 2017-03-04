@@ -212,7 +212,12 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/managerreview','OrderController@managerreview');
         Route::post('/reviewwork','OrderController@reviewwork');
         Route::get('/completeshipment','OrderController@completeshipment');
-        Route::get('/shippinglabel/{order_id}','OrderController@shippinglabel');
+        Route::post('/shippinglabel','OrderController@shippinglabel');
+        Route::post('/verifylabel','OrderController@verifylabel');
+        Route::get('/adminshipmentreview','OrderController@adminshipmentreview');
+        Route::post('/shipmentreview','OrderController@shipmentreview');
+        Route::post('/verifystatus','OrderController@verifystatus');
+        Route::get('/printshippinglabel/{shipment_id}','OrderController@printshippinglabel');
 
     });
 

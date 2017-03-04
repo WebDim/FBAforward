@@ -103,6 +103,7 @@
                             @if('Warehouse Admin'===\Auth::user()->role->name)
                                 <li>
                                     <a class="external" href="{{ url('order/adminreview') }}"><i class="fa fa-btn fa-user"></i> Warehouse Check In Review</a>
+                                    <a class="external" href="{{ url('order/adminshipmentreview') }}"><i class="fa fa-btn fa-user"></i> Shipment Review</a>
                                 </li>
                             @endif
                             @if('Warehouse Manager'===\Auth::user()->role->name)
