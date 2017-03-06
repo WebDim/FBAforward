@@ -153,17 +153,17 @@ phone=$('#phone').val();
         },
         messages:{
             "company_name": {
-                    required:"Company name is required",
+                    required:"<span class='required'>Company name is required</span>",
                 },
             "email": {
-                required:"Email address is required",
-                email:"Enter valid email address",
+                required:"<span class='required'>Email address is required</span>",
+                email:"<span class='required'>Enter valid email address</span>",
             },
             "contact_name": {
-                required:"Contact name is required",
+                required:"<span class='required'>Contact name is required</span>",
             },
             "phone": {
-                required:"Phone # is required",
+                required:"<span class='required'>Phone # is required</span>",
             },
         }
     });

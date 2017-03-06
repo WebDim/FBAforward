@@ -179,7 +179,7 @@
                 },
                 messages:{
                     "company_name": {
-                        required:"Company name is required",
+                        required:"<span class='required'>Company name is required</span>",
                     },
                 }
             });
@@ -216,7 +216,7 @@
                 },
                 messages:{
                     "terminal_name": {
-                        required:"Terminal name is required",
+                        required:"<span class='required'>Terminal name is required</span>",
                     },
                 }
             });
