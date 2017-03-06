@@ -41,7 +41,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            {!! Form::label('name', 'Name *', ['class' => 'control-label col-md-3']) !!}
+                            {!! htmlspecialchars_decode(Form::label('name', 'Name <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-star"></i></span>
@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('port_fee', 'Port Fee *', ['class' => 'control-label col-md-3']) !!}
+                            {!! htmlspecialchars_decode(Form::label('port_fee', 'Port Fee <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-star"></i></span>
@@ -59,7 +59,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('custom_brokrage', 'Custom Brokrage *', ['class' => 'control-label col-md-3']) !!}
+                            {!! htmlspecialchars_decode(Form::label('custom_brokrage', 'Custom Brokrage <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-star"></i></span>
@@ -68,7 +68,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('consulting_fee', 'Consulting Fee *', ['class' => 'control-label col-md-3']) !!}
+                            {!! htmlspecialchars_decode(Form::label('consulting_fee', 'Consulting Fee <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-star"></i></span>

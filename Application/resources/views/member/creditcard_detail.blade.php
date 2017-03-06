@@ -18,7 +18,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        {!! Form::label('credit_card_number', 'Credit Card Number *', ['class' => 'control-label col-md-4']) !!}
+                        {!! htmlspecialchars_decode(Form::label('credit_card_number', 'Credit Card Number <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                         <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
@@ -27,7 +27,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('credit_card_type', 'Credit Card Type *', ['class' => 'control-label col-md-4']) !!}
+                        {!! htmlspecialchars_decode(Form::label('credit_card_type', 'Credit Card Type <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                         <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
@@ -36,7 +36,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('expire_card', 'Expire Card *', ['class' => 'control-label col-md-4']) !!}
+                        {!! htmlspecialchars_decode(Form::label('expire_card', 'Expire Card <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                         <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
@@ -45,7 +45,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('cvv', 'CVV *', ['class' => 'control-label col-md-4']) !!}
+                        {!! htmlspecialchars_decode(Form::label('cvv', 'CVV <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                         <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
@@ -54,7 +54,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('first_name', 'First Name *', ['class' => 'control-label col-md-4']) !!}
+                        {!! htmlspecialchars_decode(Form::label('first_name', 'First Name <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                         <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
@@ -63,7 +63,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('last_name', 'Last Name *', ['class' => 'control-label col-md-4']) !!}
+                        {!! htmlspecialchars_decode(Form::label('last_name', 'Last Name <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                         <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>

@@ -15,7 +15,7 @@
                 {!! csrf_field() !!}
 
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                    <label class="col-md-3 control-label">E-Mail Address *</label>
+                    <label class="col-md-3 control-label">E-Mail Address <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                    <label class="col-md-3 control-label">Password *</label>
+                    <label class="col-md-3 control-label">Password <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">

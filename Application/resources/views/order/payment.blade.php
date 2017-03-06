@@ -125,7 +125,7 @@
             </div><!-- .col-md-6 -->
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('credit_card_detail', 'Credit Card Detail *', ['class' => 'control-label col-md-4']) !!}
+                    {!! htmlspecialchars_decode(Form::label('credit_card_detail', 'Credit Card Detail <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                     <div class="col-md-8">
                         <div class="input-group">
                             <select name="credit_card_detail" class="form-control select2 validate[required]" onchange="creditcard_detail(this.value)">
@@ -141,7 +141,7 @@
                 <div id="creditcard_div" hidden>
                 <div class="col-md-12">
                     <div class="form-group">
-                        {!! Form::label('credit_card_type', 'Payment Method *', ['class' => 'control-label col-md-4']) !!}
+                        {!! htmlspecialchars_decode(Form::label('credit_card_type', 'Payment Method <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                         <div class="col-md-8">
                             <div class="input-group">
                                 {!! Form::select('credit_card_type', array_add($card_type, '','Select Payment Method'), old('credit_card_type'), ['class' => 'form-control select2 validate[required]']) !!}
@@ -149,7 +149,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('credit_card_number', 'Card Number *', ['class' => 'control-label col-md-4']) !!}
+                        {!! htmlspecialchars_decode(Form::label('credit_card_number', 'Card Number <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                         <div class="col-md-8">
                             <div class="input-group">
                                 {!! Form::text('credit_card_number', old('credit_card_number'), ['class' => 'form-control validate[required, custom[creditCard]]', 'placeholder'=>'Credit Card Number']) !!}
@@ -157,7 +157,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('expire_card', 'Expire *', ['class' => 'control-label col-md-4']) !!}
+                        {!! htmlspecialchars_decode(Form::label('expire_card', 'Expire <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                         <div class="col-md-8">
                             <div class="input-group">
                                 {!! Form::text('expire_card', old('expire_card'), ['id' => 'expire_card', 'class' => 'datepicker form-control validate[required]', 'placeholder'=>'Expire Card']) !!}
@@ -165,7 +165,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('cvv', 'CVV *', ['class' => 'control-label col-md-4']) !!}
+                        {!! htmlspecialchars_decode(Form::label('cvv', 'CVV <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                         <div class="col-md-8">
                             <div class="input-group">
                                 {!! Form::text('cvv', old('cvv'), ['class' => 'form-control validate[required, custom[maxSize[3]]]', 'placeholder'=>'CVV']) !!}
@@ -173,7 +173,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('first_name', 'First Name *', ['class' => 'control-label col-md-4']) !!}
+                        {!! htmlspecialchars_decode(Form::label('first_name', 'First Name <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                         <div class="col-md-8">
                             <div class="input-group">
                                 {!! Form::text('first_name', old('first_name'), ['class' => 'form-control validate[required]', 'placeholder'=>'First Name']) !!}
@@ -181,7 +181,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('last_name', 'Last Name *', ['class' => 'control-label col-md-4']) !!}
+                        {!! htmlspecialchars_decode(Form::label('last_name', 'Last Name <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                         <div class="col-md-8">
                             <div class="input-group">
                                 {!! Form::text('last_name', old('last_name'), ['class' => 'form-control validate[required]', 'placeholder'=>'Last Name']) !!}
@@ -196,7 +196,7 @@
                 </div>
             </div>
                 <div class="form-group">
-                    {!! Form::label('lbl_billing_address', 'Billing Address *', ['class' => 'control-label col-md-4']) !!}
+                    {!! htmlspecialchars_decode(Form::label('lbl_billing_address', 'Billing Address <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                     <div class="col-md-8">
                         <div class="input-group">
                             <select name="address" class="form-control select2 validate[required]" onchange="billing_detail(this.value)">
@@ -212,7 +212,7 @@
                 <div id="billing_div" hidden>
                     <div class="col-md-12">
                         <div class="form-group">
-                            {!! Form::label('address_line_1', 'Address Line 1 *', ['class' => 'control-label col-md-4']) !!}
+                            {!! htmlspecialchars_decode(Form::label('address_line_1', 'Address Line 1 <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                             <div class="col-md-8">
                                 <div class="input-group">
                                     {!! Form::text('address_line_1', old('address_line_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'Address Line 1']) !!}
@@ -228,7 +228,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('city', 'City *', ['class' => 'control-label col-md-4']) !!}
+                            {!! htmlspecialchars_decode(Form::label('city', 'City <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                             <div class="col-md-8">
                                 <div class="input-group">
                                     {!! Form::text('city', old('city'), ['id' => 'city', 'class' => 'form-control validate[required]', 'placeholder'=>'City']) !!}
@@ -236,14 +236,14 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('state', 'State/Province *', ['class' => 'control-label col-md-4']) !!}
+                            {!! htmlspecialchars_decode(Form::label('state', 'State/Province <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                             <div class="col-md-8">
                                 <div class="input-group">
                                     {!! Form::text('state', old('state'), ['class' => 'form-control validate[required]', 'placeholder'=>'State/Province']) !!}                                </div>
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('postal_code', 'Postal Code *', ['class' => 'control-label col-md-4']) !!}
+                            {!! htmlspecialchars_decode(Form::label('postal_code', 'Postal Code <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                             <div class="col-md-8">
                                 <div class="input-group">
                                     {!! Form::text('postal_code', old('postal_code'), ['class' => 'form-control validate[required]', 'placeholder'=>'Postal Code']) !!}
@@ -251,7 +251,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('country', 'Country *', ['class' => 'control-label col-md-4']) !!}
+                            {!! htmlspecialchars_decode(Form::label('country', 'Country <span class="required">*</span>', ['class' => 'control-label col-md-4'])) !!}
                             <div class="col-md-8">
                                 <div class="input-group">
                                     {!! Form::text('country', old('country'), ['class' => 'form-control validate[required]', 'placeholder'=>'Country']) !!}

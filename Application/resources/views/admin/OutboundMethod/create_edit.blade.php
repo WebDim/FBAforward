@@ -41,7 +41,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            {!! Form::label('outbound_name', 'Outbound Name *', ['class' => 'control-label col-md-3']) !!}
+                            {!! htmlspecialchars_decode(Form::label('outbound_name', 'Outbound Name <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-star"></i></span>

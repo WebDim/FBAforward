@@ -395,14 +395,14 @@ img
     {
         height: 50px;
     }
-#contact input[type="submit"]
+#contact input[type="button"]
     {
         background: #28a7e9;
         color: #fff;
         font-weight: bold;
         transition: all 0.3s ease;
     }
-#contact input[type="submit"]:hover {
+#contact input[type="button"]:hover {
     background: #107DB6;
 }
 /* end contact */
@@ -606,5 +606,8 @@ body.rtl .formError .formErrorArrow {
 .formError .formErrorArrow .line1 {
     width: 0px;
     border: none;
+}
+.required{
+    color: #ff0000;
 }
 /* EOF Validation Engine */

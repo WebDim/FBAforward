@@ -13,7 +13,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        {!! Form::label('split_shipment', 'Split Shipment *', ['class' => 'control-label col-md-3']) !!}
+                        {!! htmlspecialchars_decode(Form::label('split_shipment', 'Split Shipment <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
@@ -27,7 +27,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        {!! Form::label('date', 'Goods Ready Date *', ['class' => 'control-label col-md-3']) !!}
+                        {!! htmlspecialchars_decode(Form::label('date', 'Goods Ready Date <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
@@ -45,7 +45,7 @@
                                 <span class="input-group-addon">Shipment 1</span>
                             </div>
                         </div>
-                        {!! Form::label('shipping_method1', 'Shipping Method *', ['class' => 'control-label col-md-2']) !!}
+                        {!! htmlspecialchars_decode(Form::label('shipping_method1', 'Shipping Method <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                         <div class="col-md-3">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
@@ -65,11 +65,11 @@
                         @foreach($shipment_detail as $shipment_details)
                             @if($shipment[0]->shipment_id==$shipment_details->shipment_id)
                                 <div class="form-group" id="label1_{{$cnt}}">
-                                    {!! Form::label('product_desc1_1', 'Product Description *', ['class' => 'control-label col-md-2']) !!}
-                                    {!! Form::label('upc_fnsku1_1', 'UPC/FNSKU *', ['class' => 'control-label col-md-2']) !!}
-                                    {!! Form::label('qty_per_case1_1', 'Qty Per Case *', ['class' => 'control-label col-md-2']) !!}
-                                    {!! Form::label('no_of_case1_1', '# Of Case *', ['class' => 'control-label col-md-2']) !!}
-                                    {!! Form::label('total1_1', 'Total *', ['class' => 'control-label col-md-2']) !!}
+                                    {!! htmlspecialchars_decode(Form::label('product_desc1_1', 'Product Description <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                                    {!! htmlspecialchars_decode(Form::label('upc_fnsku1_1', 'UPC/FNSKU <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                                    {!! htmlspecialchars_decode(Form::label('qty_per_case1_1', 'Qty Per Case <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                                    {!! htmlspecialchars_decode(Form::label('no_of_case1_1', '# Of Case <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                                    {!! htmlspecialchars_decode(Form::label('total1_1', 'Total <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                                 </div>
                                 <div class="form-group" id="input1_{{$cnt}}">
                                     <div class="col-md-2">
@@ -126,11 +126,11 @@
                         {!! Form::hidden('original_count1', old('original_count1',$cnt), ['class' => 'form-control', 'id' => 'original_count1']) !!}
                     @else
                         <div class="form-group" id="label1_1">
-                            {!! Form::label('product_desc1_1', 'Product Description *', ['class' => 'control-label col-md-2']) !!}
-                            {!! Form::label('upc_fnsku1_1', 'UPC/FNSKU *', ['class' => 'control-label col-md-2']) !!}
-                            {!! Form::label('qty_per_case1_1', 'Qty Per Case *', ['class' => 'control-label col-md-2']) !!}
-                            {!! Form::label('no_of_case1_1', '# Of Case *', ['class' => 'control-label col-md-2']) !!}
-                            {!! Form::label('total1_1', 'Total *', ['class' => 'control-label col-md-2']) !!}
+                            {!! htmlspecialchars_decode(Form::label('product_desc1_1', 'Product Description <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                            {!! htmlspecialchars_decode(Form::label('upc_fnsku1_1', 'UPC/FNSKU <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                            {!! htmlspecialchars_decode(Form::label('qty_per_case1_1', 'Qty Per Case <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                            {!! htmlspecialchars_decode(Form::label('no_of_case1_1', '# Of Case <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                            {!! htmlspecialchars_decode(Form::label('total1_1', 'Total <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                         </div>
                         <div class="form-group" id="input1_1">
                             <div class="col-md-2">
@@ -186,7 +186,7 @@
                                 <span class="input-group-addon">Shipment 2</span>
                             </div>
                         </div>
-                        {!! Form::label('shipping_method2', 'Shipping Method *', ['class' => 'control-label col-md-2']) !!}
+                        {!! htmlspecialchars_decode(Form::label('shipping_method2', 'Shipping Method <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                         <div class="col-md-3">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
@@ -205,11 +205,11 @@
                         @foreach($shipment_detail as $shipment_details)
                             @if($shipment[1]->shipment_id==$shipment_details->shipment_id)
                                 <div class="form-group" id="label2_{{$cnt}}">
-                                    {!! Form::label('product_desc2_1', 'Product Description *', ['class' => 'control-label col-md-2']) !!}
-                                    {!! Form::label('upc_fnsku2_1', 'UPC/FNSKU *', ['class' => 'control-label col-md-2']) !!}
-                                    {!! Form::label('qty_per_case2_1', 'Qty Per Case *', ['class' => 'control-label col-md-2']) !!}
-                                    {!! Form::label('no_of_case2_1', '# Of Case *', ['class' => 'control-label col-md-2']) !!}
-                                    {!! Form::label('total2_1', 'Total *', ['class' => 'control-label col-md-2']) !!}
+                                    {!! htmlspecialchars_decode(Form::label('product_desc2_1', 'Product Description <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                                    {!! htmlspecialchars_decode(Form::label('upc_fnsku2_1', 'UPC/FNSKU <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                                    {!! htmlspecialchars_decode(Form::label('qty_per_case2_1', 'Qty Per Case <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                                    {!! htmlspecialchars_decode(Form::label('no_of_case2_1', '# Of Case <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                                    {!! htmlspecialchars_decode(Form::label('total2_1', 'Total <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                                 </div>
                                 <div class="form-group" id="input2_{{$cnt}}">
                                     <div class="col-md-2">
@@ -266,11 +266,11 @@
                         {!! Form::hidden('original_count2', old('original_count2',$cnt), ['class' => 'form-control', 'id' => 'original_count2']) !!}
                     @else
                         <div class="form-group" id="label2_1">
-                            {!! Form::label('product_desc2_1', 'Product Description *', ['class' => 'control-label col-md-2']) !!}
-                            {!! Form::label('upc_fnsku2_1', 'UPC/FNSKU *', ['class' => 'control-label col-md-2']) !!}
-                            {!! Form::label('qty_per_case2_1', 'Qty Per Case *', ['class' => 'control-label col-md-2']) !!}
-                            {!! Form::label('no_of_case2_1', '# Of Case *', ['class' => 'control-label col-md-2']) !!}
-                            {!! Form::label('total2_1', 'Total *', ['class' => 'control-label col-md-2']) !!}
+                            {!! htmlspecialchars_decode(Form::label('product_desc2_1', 'Product Description <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                            {!! htmlspecialchars_decode(Form::label('upc_fnsku2_1', 'UPC/FNSKU <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                            {!! htmlspecialchars_decode(Form::label('qty_per_case2_1', 'Qty Per Case <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                            {!! htmlspecialchars_decode(Form::label('no_of_case2_1', '# Of Case <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                            {!! htmlspecialchars_decode(Form::label('total2_1', 'Total <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                         </div>
                         <div class="form-group" id="input2_1">
                             <div class="col-md-2">
@@ -367,7 +367,7 @@
         {
             sub_cnt=$("#count"+no).val();
             cnt=parseInt(sub_cnt)+1;
-            $('#main'+no).append('<div class="form-group" id="label'+no+'_'+cnt+'">{!! Form::label("product_desc'+no+'_'+cnt+'", "Product Description *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("upc_fnsku'+no+'_'+cnt+'", "UPC/FNSKU *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("qty_per_case'+no+'_'+cnt+'", "Qty Per Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("no_of_case'+no+'_'+cnt+'", "# Of Case *", ["class" => "control-label col-md-2"]) !!}{!! Form::label("total'+no+'_'+cnt+'", "Total *", ["class" => "control-label col-md-2"]) !!}</div><div class="form-group" id="input'+no+'_'+cnt+'"><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><select name="product_desc'+no+'_'+cnt+'" id="product_desc'+no+'_'+cnt+'" class="form-control select2 validate[required]" onchange="getFnsku('+no+','+cnt+',this.value)"><option value="">Product Description</option>@foreach($product as $products)<option value=" {{ $products->id." ".$products->FNSKU." ".$products->sellerSKU }}"> @if($products->product_nick_name==''){{ $products->product_name}} @else {{$products->product_nick_name}} @endif</option>@endforeach</select></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="hidden" name="sellersku'+no+'_'+cnt+'" id="sellersku'+no+'_'+cnt+'"><input type="text" name="upc_fnsku'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="UPC/FNSKU" id="upc_fnsku'+no+'_'+cnt+'" readonly></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="qty_per_case'+no+'_'+cnt+'" class = "form-control validate[required, custom[integer]]" placeholder="Qty Per Case" id="qty_per_case'+no+'_'+cnt+'" onblur="get_total('+no+','+cnt+')" ></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="no_of_case'+no+'_'+cnt+'" class = "form-control validate[required, custom[integer]]" placeholder="# Of Case" id="no_of_case'+no+'_'+cnt+'" onblur="get_total('+no+','+cnt+')"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="total'+no+'_'+cnt+'" class = "form-control validate[required, custom[integer]]" placeholder="Total" id="total'+no+'_'+cnt+'" onfocus="get_total('+no+','+cnt+')" readonly></div></div><div class="col-md-2"><input type="button" class="btn btn-primary" id="remove'+no+'_'+cnt+'" onclick="remove_shipment('+no+','+cnt+')" value="-"></div></div>');
+            $('#main'+no).append('<div class="form-group" id="label'+no+'_'+cnt+'">{!! htmlspecialchars_decode(Form::label("product_desc'+no+'_'+cnt+'", "Product Description <span class='required'>*</span>", ["class" => "control-label col-md-2"])) !!}{!! htmlspecialchars_decode(Form::label("upc_fnsku'+no+'_'+cnt+'", "UPC/FNSKU <span class='required'>*</span>", ["class" => "control-label col-md-2"])) !!}{!! htmlspecialchars_decode(Form::label("qty_per_case'+no+'_'+cnt+'", "Qty Per Case <span class='required'>*</span>", ["class" => "control-label col-md-2"])) !!}{!! htmlspecialchars_decode(Form::label("no_of_case'+no+'_'+cnt+'", "# Of Case <span class='required'>*</span>", ["class" => "control-label col-md-2"])) !!}{!! htmlspecialchars_decode(Form::label("total'+no+'_'+cnt+'", "Total <span class='required'>*</span>", ["class" => "control-label col-md-2"])) !!}</div><div class="form-group" id="input'+no+'_'+cnt+'"><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><select name="product_desc'+no+'_'+cnt+'" id="product_desc'+no+'_'+cnt+'" class="form-control select2 validate[required]" onchange="getFnsku('+no+','+cnt+',this.value)"><option value="">Product Description</option>@foreach($product as $products)<option value=" {{ $products->id." ".$products->FNSKU." ".$products->sellerSKU }}"> @if($products->product_nick_name==''){{ $products->product_name}} @else {{$products->product_nick_name}} @endif</option>@endforeach</select></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="hidden" name="sellersku'+no+'_'+cnt+'" id="sellersku'+no+'_'+cnt+'"><input type="text" name="upc_fnsku'+no+'_'+cnt+'" class = "form-control validate[required]" placeholder="UPC/FNSKU" id="upc_fnsku'+no+'_'+cnt+'" readonly></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="qty_per_case'+no+'_'+cnt+'" class = "form-control validate[required, custom[integer]]" placeholder="Qty Per Case" id="qty_per_case'+no+'_'+cnt+'" onblur="get_total('+no+','+cnt+')" ></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="no_of_case'+no+'_'+cnt+'" class = "form-control validate[required, custom[integer]]" placeholder="# Of Case" id="no_of_case'+no+'_'+cnt+'" onblur="get_total('+no+','+cnt+')"></div></div><div class="col-md-2"><div class="input-group"><span class="input-group-addon"></span><input type="text" name="total'+no+'_'+cnt+'" class = "form-control validate[required, custom[integer]]" placeholder="Total" id="total'+no+'_'+cnt+'" onfocus="get_total('+no+','+cnt+')" readonly></div></div><div class="col-md-2"><input type="button" class="btn btn-primary" id="remove'+no+'_'+cnt+'" onclick="remove_shipment('+no+','+cnt+')" value="-"></div></div>');
             $('#count'+no).val(cnt);
             tmp=parseInt($('#original_count'+no).val())+1;
             $('#original_count'+no).val(tmp);

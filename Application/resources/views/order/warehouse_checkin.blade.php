@@ -53,21 +53,21 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                {!! Form::label('cartoon_length', 'Cartoon Length *', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('cartoon_length', 'Cartoon Length <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
                                         <input type="text" name="cartoon_length{{$cnt}}" id="cartoon_length{{$cnt}}" class="form-control validate[required]" placeholder="Cartoon Length">
                                     </div>
                                 </div>
-                                {!! Form::label('cartoon_width', 'Cartoon Width *', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('cartoon_width', 'Cartoon Width <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
                                         <input type="text" name="cartoon_width{{$cnt}}" id="cartoon_width{{$cnt}}" class="form-control validate[required]" placeholder="Cartoon Width">
                                     </div>
                                 </div>
-                                {!! Form::label('cartoon_weight', 'Cartoon Weight *', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('cartoon_weight', 'Cartoon Weight <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
@@ -76,21 +76,21 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                {!! Form::label('cartoon_height', 'Cartoon Height *', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('cartoon_height', 'Cartoon Height <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
                                         <input type="text" name="cartoon_height{{$cnt}}" id="cartoon_height{{$cnt}}" class="form-control validate[required]" placeholder="Cartoon Height">
                                     </div>
                                 </div>
-                                {!! Form::label('no_of_cartoon', '# Of Cartoon *', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('no_of_cartoon', '# Of Cartoon <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
                                         <input type="text" name="no_of_cartoon{{$cnt}}" id="no_of_cartoon{{$cnt}}" class="form-control validate[required]" placeholder="# Of Cartoon">
                                     </div>
                                 </div>
-                                {!! Form::label('unit_per_cartoon', 'Unit Per Cartoon *', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('unit_per_cartoon', 'Unit Per Cartoon <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
@@ -99,20 +99,20 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                {!! Form::label('cartoon_condition', 'Cartoon Condition *', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('cartoon_condition', 'Cartoon Condition <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
                                         <input type="text" name="cartoon_condition{{$cnt}}" id="cartoon_condition{{$cnt}}" class="form-control validate[required]" placeholder="Cartoon Condition">
                                     </div>
                                 </div>
-                                {!! Form::label('images', 'Upload Image ', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('images', 'Upload Image ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="file" name="images{{$cnt}}[]" id="images{{$cnt}}[]"  multiple placeholder="Upload Image">
                                     </div>
                                 </div>
-                                {!! Form::label('location', 'Warehouse Location *', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('location', 'Warehouse Location <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                        <select name="location{{$cnt}}" id="location{{$cnt}}" class="form-control validate[required]">

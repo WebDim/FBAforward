@@ -151,19 +151,19 @@
                         <div class="contact-form">
                             {!! Form::open(['url' =>  '/contact-us', 'method' => 'post', 'class' => 'form-horizontal', 'id'=>'validate']) !!}
                             <div class="col-md-6">
-                                {!! Form::text('name', old('name'), ['class' => 'form-control validate[required]', 'placeholder'=>'Name']) !!}
+                                {!! Form::text('name', old('name'), ['class' => 'form-control validate[required]', 'placeholder'=>'Name', 'id'=>'name']) !!}
                             </div>
                             <div class="col-md-6">
-                                {!! Form::email('email', old('email'), ['class' => 'form-control  validate[required,custom[email]]', 'placeholder'=>'Email']) !!}
+                                {!! Form::email('email', old('email'), ['class' => 'form-control  validate[required,custom[email]]', 'placeholder'=>'Email','id'=>'email']) !!}
                             </div>
                             <div class="col-md-12">
-                                {!! Form::text('subject', old('subject'), ['class' => 'form-control  validate[required]', 'placeholder'=>'Subject']) !!}
+                                {!! Form::text('subject', old('subject'), ['class' => 'form-control  validate[required]', 'placeholder'=>'Subject','id'=>'subject']) !!}
                             </div>
                             <div class="col-md-12">
-                                {!! Form::textarea('message', old('message'), ['class' => 'form-control  validate[required]', 'rows'=> 4]) !!}
+                                {!! Form::textarea('message', old('message'), ['class' => 'form-control  validate[required]', 'rows'=> 4, 'id'=>'message']) !!}
                             </div>
                             <div class="col-md-8">
-                                <input type="submit" class="form-control text-uppercase" value="Send">
+                                <input type="button" onclick="contactus()" class="form-control text-uppercase" value="Send">
                             </div>
                             {!! Form::close() !!}
                         </div>
@@ -208,5 +208,35 @@
                 });
             })
         })
+        function contactus() {
+            name=$("#name").val();
+            email=$("#email").val();
+            subject=$("#subject").val();
+            message=$("#message").val();
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/contact-us', // This is the url we gave in the route
+                data: {
+                    'name': name,
+                    'email': email,
+                    'subject': subject,
+                    'message': message
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                   alert(response);
+                    $("#name").val('');
+                    $("#email").val('');
+                    $("#subject").val('');
+                    $("#message").val('');
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
     </script>
 @endsection

@@ -36,7 +36,7 @@
             {!! Form::hidden('role_id', isset($role) ? $role->id: null) !!}
             <div class="col-md-12">
                 <div class="form-group">
-                    {!! Form::label('name', 'Role Name *', ['class' => 'control-label col-md-2']) !!}
+                    {!! htmlspecialchars_decode(Form::label('name', 'Role Name <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                     <div class="col-md-8">
                         {!! Form::text('name', old('name', isset($role) ? $role->name : null), ['class' => 'form-control validate[required]', 'placeholder'=>'Role Name']) !!}
                     </div>

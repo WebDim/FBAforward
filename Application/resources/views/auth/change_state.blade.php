@@ -1,5 +1,5 @@
 <div class="form-group{{ $errors->has('company_state') ? ' has-error' : '' }}">
-    <label class="col-md-2 control-label">State *</label>
+    <label class="col-md-2 control-label">State <span class="required">*</span></label>
     <div class="col-md-7">
         <div class="input-group">
             <span class="input-group-addon"></span>

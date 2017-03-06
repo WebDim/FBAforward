@@ -53,14 +53,14 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            {!! Form::label('shipping_port', 'Shipping Port *', ['class' => 'control-label col-md-2']) !!}
+                            {!! htmlspecialchars_decode(Form::label('shipping_port', 'Shipping Port <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
                                     <input type="text" name="shipping_port{{$cnt}}" id="shipping_port{{$cnt}}" class="form-control validate[required]" placeholder="Shipping Port">
                                 </div>
                             </div>
-                            {!! Form::label('shipping_term', 'Shipping Term *', ['class' => 'control-label col-md-2']) !!}
+                            {!! htmlspecialchars_decode(Form::label('shipping_term', 'Shipping Term <span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
@@ -70,7 +70,7 @@
                                     </select>
                                 </div>
                             </div>
-                            {!! Form::label('weight', 'Weight (Kgs)*', ['class' => 'control-label col-md-2']) !!}
+                            {!! htmlspecialchars_decode(Form::label('weight', 'Weight (Kgs)<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
@@ -79,21 +79,21 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('chargable_weight', 'chargable Weight (Kgs)*', ['class' => 'control-label col-md-2']) !!}
+                            {!! htmlspecialchars_decode(Form::label('chargable_weight', 'chargable Weight (Kgs)<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
                                     <input type="text" name="chargable_weight{{$cnt}}" id="chargable_weight{{$cnt}}" class="form-control validate[required]" placeholder="chargable Weight">
                                 </div>
                             </div>
-                            {!! Form::label('cubic_meter', 'Cubic Meter*', ['class' => 'control-label col-md-2']) !!}
+                            {!! htmlspecialchars_decode(Form::label('cubic_meter', 'Cubic Meter<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
                                     <input type="text" name="cubic_meter{{$cnt}}" id="cubic_meter{{$cnt}}" class="form-control validate[required]" placeholder="Cubic Meter">
                                 </div>
                             </div>
-                            {!! Form::label('charges', 'Charges*', ['class' => 'control-label col-md-2']) !!}
+                            {!! htmlspecialchars_decode(Form::label('charges', 'Charges<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                             <div class="col-md-2">
                                 <div class="input-group">
                                     @foreach($charges as $charge)
@@ -104,7 +104,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('total_shipping_cost', 'Total Shipping Cost*', ['class' => 'control-label col-md-2']) !!}
+                            {!! htmlspecialchars_decode(Form::label('total_shipping_cost', 'Total Shipping Cost<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>

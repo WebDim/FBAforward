@@ -41,7 +41,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            {!! Form::label('label_name', 'Label Name *', ['class' => 'control-label col-md-3']) !!}
+                            {!! htmlspecialchars_decode(Form::label('label_name', 'Label Name <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-star"></i></span>
@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('price', 'Price *', ['class' => 'control-label col-md-3']) !!}
+                            {!! htmlspecialchars_decode(Form::label('price', 'Price <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-star"></i></span>

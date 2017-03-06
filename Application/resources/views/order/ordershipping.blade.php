@@ -147,7 +147,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         {!! Form::hidden('order_id',old('order_id'), ['id'=>'order_id']) !!}
-                                        {!! Form::label('report', 'Upload Report *',['class' => 'control-label col-md-5']) !!}
+                                        {!! htmlspecialchars_decode(Form::label('report', 'Upload Report<span class="required">*</span> ',['class' => 'control-label col-md-5'])) !!}
                                         <div class="col-md-7">
                                         <div class="input-group">
                                             {!! Form::file('report', old('report'), ['class' => 'validate[required]']) !!}

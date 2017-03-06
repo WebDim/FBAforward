@@ -17,7 +17,7 @@
                 <input type="hidden" name="token" value="{{ $token }}">
 
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                    <label class="col-md-3 control-label">E-Mail Address *</label>
+                    <label class="col-md-3 control-label">E-Mail Address <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -34,7 +34,7 @@
                 </div>
 
                 <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                    <label class="col-md-3 control-label">Password *</label>
+                    <label class="col-md-3 control-label">Password <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-                    <label class="col-md-3 control-label">Confirmation *</label>
+                    <label class="col-md-3 control-label">Confirmation <span class="required">*</span></label>
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-lock"></i></span>

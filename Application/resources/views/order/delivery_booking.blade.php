@@ -23,7 +23,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                {!! Form::label('CFS_terminal', 'CFS Terminal* ', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('CFS_terminal', 'CFS Terminal<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <select name="CFS_terminal{{$cnt}}" id="CFS_terminal{{$cnt}}" class="form-control validate[required]" onchange="show_terminal(this.value)">
@@ -35,7 +35,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                {!! Form::label('trucking_company', 'Trucking Company* ', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('trucking_company', 'Trucking Company<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <select name="trucking_company{{$cnt}}" id="trucking_company{{$cnt}}" class="form-control validate[required]" onchange="show_trucking(this.value)">
@@ -47,7 +47,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                {!! Form::label('warehouse_fee', 'Warehouse Fees* ', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('warehouse_fee', 'Warehouse Fees<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="text" name="warehouse_fee{{$cnt}}" id="warehouse_fee{{$cnt}}" class="form-control validate[required]" placeholder="Warehouse Fees">
@@ -55,7 +55,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                {!! Form::label('fee_paid', 'Fees Paid* ', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('fee_paid', 'Fees Paid<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <select name="fee_paid{{$cnt}}" id="fee_paid{{$cnt}}" class="form-control validate[required]">
@@ -66,7 +66,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                {!! Form::label('ETA_warehouse', 'ETA Warehouse* ', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('ETA_warehouse', 'ETA Warehouse<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="text" name="ETA_warehouse{{$cnt}}" id="ETA_warehouse{{$cnt}}" class="form-control datepicker validate[required]" placeholder="ETA Warehouse ">
@@ -86,7 +86,7 @@
                 <h4>Add New CFS Terminal</h4>
                 <div class="col-md-12">
                     <div class="form-group">
-                        {!! Form::label('terminal_name', 'Terminal Name*', ['class' => 'control-label col-md-2']) !!}
+                        {!! htmlspecialchars_decode(Form::label('terminal_name', 'Terminal Name<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                         <div class="col-md-4">
                             <div class="">
                                 <span class=""></span>
@@ -104,7 +104,7 @@
                 <h4>Add New Trucking Company</h4>
                 <div class="col-md-12">
                     <div class="form-group">
-                        {!! Form::label('company_name', 'Company Name*', ['class' => 'control-label col-md-2']) !!}
+                        {!! htmlspecialchars_decode(Form::label('company_name', 'Company Name<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                         <div class="col-md-4">
                             <div class="">
                                 <span class=""></span>

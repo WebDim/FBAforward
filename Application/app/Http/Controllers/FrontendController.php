@@ -37,29 +37,39 @@ class FrontendController extends Controller
 
     public function contactUsSubmit(Request $request)
     {
-        $name = $request->input('name');
-        $email = $request->input('email');
-        $subject = $request->input('subject');
-        $form_message = $request->input('message');
-        $to_email = \Config::get('app.contact_email');
-        $data = array("name"=>$name,
-                        "email"=>$email,
-                        "subject"=>$subject,
-                        "form_message"=>$form_message,
-                        "to_email"=>$to_email
+        if($request->ajax()) {
+            $post=$request->all();
+            $name = $post['name'];
+            $email = $post['email'];
+            $subject = $post['subject'];
+            $form_message = $post['message'];
+            $to_email = \Config::get('app.contact_email');
+            $data = array("name" => $name,
+                "email" => $email,
+                "subject" => $subject,
+                "form_message" => $form_message,
+                "to_email" => $to_email
             );
-        \Mail::send('emails.contact',$data, function ($message) use ($data)
-        {
-              $message->to(\Config::get('app.contact_email'), $data['name'])
-                      ->subject('Contact Form Message');
-        });
-
+            \Mail::send('emails.contact', $data, function ($message) use ($data) {
+                $message->to(\Config::get('app.contact_email'), $data['name'])
+                    ->subject('Contact Form Message');
+            });
             if(count(\Mail::failures()) > 0)
+            {
+                echo 'Mail could not send';
+            }
+            else
+            {
+                echo 'Thanks for contacting us!';
+            }
+
+        }
+            /*if(count(\Mail::failures()) > 0)
             {
                 return redirect('/login')->with(['error' => 'Mail could not send']);
             }
 
-            return redirect('/login')->with(['success' => 'Thanks for contacting us!']);
+            return redirect('/login')->with(['success' => 'Thanks for contacting us!']);*/
     }
 
     public function blog()

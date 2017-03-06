@@ -260,3 +260,7 @@ body.rtl .formError .formErrorArrow {
 label.check{
 		padding-top:7px;
 }
+
+.required{
+    color : #ff0000;
+}

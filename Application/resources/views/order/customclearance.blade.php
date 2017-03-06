@@ -23,19 +23,19 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                {!! Form::label('form_3461', 'Form 3461* ', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('form_3461', 'Form 3461<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="file" name="form_3461{{$cnt}}" id="form_3461{{$cnt}}"  placeholder="Form 3461 " class="validate[required]">
                                     </div>
                                 </div>
-                                {!! Form::label('form_7501', 'Form 7501* ', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('form_7501', 'Form 7501<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="file" name="form_7501{{$cnt}}" id="form_7501{{$cnt}}"  placeholder="Form 7501 " class="validate[required]">
                                     </div>
                                 </div>
-                                {!! Form::label('delivery_order', 'Delivery Order* ', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('delivery_order', 'Delivery Order<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="file" name="delivery_order{{$cnt}}" id="delivery_order{{$cnt}}"  placeholder="Delivery Order" class="validate[required]">
@@ -43,13 +43,13 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                {!! Form::label('custom_duty', 'Custom Duties* ', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('custom_duty', 'Custom Duties<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="text" name="custom_duty{{$cnt}}" id="custom_duty{{$cnt}}"  class="form-control validate[required]" placeholder="Custom Duties ">
                                     </div>
                                 </div>
-                                {!! Form::label('addition_service', 'Addition Services* ', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('addition_service', 'Addition Services<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="checkbox" name="addition_service{{$cnt}}_1" id="addition_service{{$cnt}}_1" value="1">FDA Clearance<br>
@@ -57,7 +57,7 @@
                                         <input type="checkbox" name="addition_service{{$cnt}}_3" id="addition_service{{$cnt}}_3" value="3">OGA/PGA
                                     </div>
                                 </div>
-                                {!! Form::label('terminal_fee', 'Terminal Fees* ', ['class' => 'control-label col-md-2']) !!}
+                                {!! htmlspecialchars_decode(Form::label('terminal_fee', 'Terminal Fees<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="text" name="terminal_fee{{$cnt}}" id="terminal_fee{{$cnt}}"  class="form-control validate[required]" placeholder="Terminal Fees " >

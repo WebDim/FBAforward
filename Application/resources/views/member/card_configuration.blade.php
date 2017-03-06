@@ -26,21 +26,21 @@
                 </div>
                 <div class="form-group">
                     <div class="col-md-12">
-                        <label class='control-label'>Card Number *</label>
+                        <label class='control-label'>Card Number <span class="required">*</span></label>
                         {!! Form::text('', null,['class' => 'form-control validate[required]', 'placeholder'=>'Card Number', 'id'=> 'card_number', 'autocomplete' =>'off']) !!}
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-md-4">
-                        <label class='control-label'>CVC *</label>
+                        <label class='control-label'>CVC <span class="required">*</span></label>
                         {!! Form::text('', null,['class' => 'form-control validate[required]', 'placeholder'=>'ex. 311', 'id'=> 'card_cvc', 'autocomplete' =>'off']) !!}
                     </div>
                     <div class="col-md-4">
-                        <label class='control-label'>Exp. Month *</label>
+                        <label class='control-label'>Exp. Month <span class="required">*</span></label>
                         {!! Form::text('', null,['class' => 'form-control validate[required]', 'placeholder'=>'MM', 'id'=> 'card_mm', 'autocomplete' =>'off']) !!}
                     </div>
                     <div class="col-md-4">
-                        <label class='control-label'>Exp. Year*</label>
+                        <label class='control-label'>Exp. Year<span class="required">*</span></label>
                         {!! Form::text('', null,['class' => 'form-control validate[required]', 'placeholder'=>'YYYY', 'id'=> 'card_yy', 'autocomplete' =>'off']) !!}
                     </div>
                 </div>

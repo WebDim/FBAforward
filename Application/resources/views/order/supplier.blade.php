@@ -51,14 +51,14 @@
 <h4>Add New Supplier</h4>
 <div class="col-md-12">
 <div class="form-group">
-    {!! Form::label('company_name', 'Company Name*', ['class' => 'control-label col-md-2']) !!}
+    {!! htmlspecialchars_decode(Form::label('company_name', 'Company Name<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
     <div class="col-md-4">
         <div class="">
             <span class=""></span>
             {!! Form::text('company_name', old('company_name'), ['class' => 'form-control validate[required]', 'placeholder'=>'Company Name']) !!}
         </div>
     </div>
-    {!! Form::label('contact_name', 'Contact Name*', ['class' => 'control-label col-md-2']) !!}
+    {!! htmlspecialchars_decode(Form::label('contact_name', 'Contact Name<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
     <div class="col-md-4">
         <div class="">
             <span class=""></span>
@@ -67,14 +67,14 @@
     </div>
 </div>
 <div class="form-group">
-    {!! Form::label('email', 'Email Address*', ['class' => 'control-label col-md-2']) !!}
+    {!! htmlspecialchars_decode(Form::label('email', 'Email Address<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
     <div class="col-md-4">
         <div class="">
             <span class=""></span>
             {!! Form::email('email', old('email'), ['class' => 'form-control validate[required]', 'placeholder'=>'Email Address']) !!}
         </div>
     </div>
-    {!! Form::label('phone', 'Phone #*', ['class' => 'control-label col-md-2']) !!}
+    {!! htmlspecialchars_decode(Form::label('phone', 'Phone #<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
     <div class="col-md-4">
         <div class="">
             <span class=""></span>

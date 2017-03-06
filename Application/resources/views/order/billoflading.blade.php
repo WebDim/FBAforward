@@ -42,14 +42,14 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                {!! Form::label('ref_number', 'Shipment Reference Number (SB Number) *', ['class' => 'control-label col-md-3']) !!}
+                                {!! htmlspecialchars_decode(Form::label('ref_number', 'Shipment Reference Number (SB Number) <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                                 <div class="col-md-3">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
                                         <input type="text" name="ref_number{{$cnt}}" id="ref_number{{$cnt}}" class="form-control validate[required]" placeholder="Shipment Reference Number (SB Number)">
                                     </div>
                                 </div>
-                                {!! Form::label('bill', 'Bill of Lading *', ['class' => 'control-label col-md-3']) !!}
+                                {!! htmlspecialchars_decode(Form::label('bill', 'Bill of Lading <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                                 <div class="col-md-3">
                                     <div class="input-group">
                                         <input type="file" name="bill{{$cnt}}" id="bill{{$cnt}}"  placeholder="Bill of Lading" class="validate[required]">

@@ -18,7 +18,7 @@
             </div>
             {!! Form::open(['url' =>  'amazon_credential', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
                    <div class="form-group">
-                        {!! Form::label('mws_seller_id', 'Seller ID *') !!}
+                        {!! htmlspecialchars_decode(Form::label('mws_seller_id', 'Seller ID <span class="required">*</span>')) !!}
                           <div class="input-group">
                                 <span class="input-group-addon"></span>
                                 {!! Form::text('mws_seller_id', old('mws_seller_id', !empty($customer_amazon_detail[0]->mws_seller_id) ? decrypt($customer_amazon_detail[0]->mws_seller_id): null), ['class' => 'form-control validate[required]', 'placeholder'=>'MWS Seller Id']) !!}
@@ -26,7 +26,7 @@
 
                     </div>
                     <div class="form-group">
-                        {!! Form::label('mws_authtoken', 'MWS Authtoken *') !!}
+                        {!! htmlspecialchars_decode(Form::label('mws_authtoken', 'MWS Authtoken <span class="required">*</span>')) !!}
 
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
@@ -35,7 +35,7 @@
 
                     </div>
                     <div class="form-group">
-                        {!! Form::label('mws_market_place_id', 'Marketplace ID *') !!}
+                        {!! htmlspecialchars_decode(Form::label('mws_market_place_id', 'Marketplace ID <span class="required">*</span>')) !!}
 
                             <div class="input-group">
                                 <span class="input-group-addon"></span>

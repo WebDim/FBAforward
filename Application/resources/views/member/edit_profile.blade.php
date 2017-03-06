@@ -18,7 +18,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        {!! Form::label('name', 'Name *', ['class' => 'control-label col-md-3']) !!}
+                        {!! htmlspecialchars_decode(Form::label('name', 'Name <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
@@ -27,7 +27,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('email', 'Email', ['class' => 'control-label col-md-3']) !!}
+                        {!! htmlspecialchars_decode(Form::label('email', 'Email', ['class' => 'control-label col-md-3'])) !!}
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
@@ -96,14 +96,14 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('address', 'Address *', ['class' => 'control-label col-md-3']) !!}
+                        {!! Form::label('address', 'Address <span class="required">*</span>', ['class' => 'control-label col-md-3']) !!}
                         <div class="col-md-9">
                             {!! Form::text('address', old('address', $user->address), ['class' => 'form-control validate[required]', 'placeholder'=>'Address']) !!}
                         </div>
                     </div>--}}
                     @if($user->role_id==3)
                     <div class="form-group">
-                        {!! Form::label('company_name', 'Company Name *', ['class' => 'control-label col-md-3']) !!}
+                        {!! htmlspecialchars_decode(Form::label('company_name', 'Company Name <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                         <div class="col-md-9">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
@@ -112,7 +112,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('contact_fname', 'Contact First Name *', ['class' => 'control-label col-md-3']) !!}
+                        {!! htmlspecialchars_decode(Form::label('contact_fname', 'Contact First Name <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                         <div class="col-md-9">
                             <div class="input-group">
                                <span class="input-group-addon"></span>
@@ -121,7 +121,7 @@
                         </div>
                     </div>
                         <div class="form-group">
-                            {!! Form::label('contact_lname', 'Contact Last Name *', ['class' => 'control-label col-md-3']) !!}
+                            {!! htmlspecialchars_decode(Form::label('contact_lname', 'Contact Last Name <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
@@ -130,7 +130,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('company_address', 'Street Address *', ['class' => 'control-label col-md-3']) !!}
+                            {!! htmlspecialchars_decode(Form::label('company_address', 'Street Address <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
@@ -148,7 +148,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('company_phone', 'Phone *', ['class' => 'control-label col-md-3']) !!}
+                            {!! htmlspecialchars_decode(Form::label('company_phone', 'Phone <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
@@ -157,7 +157,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('business_type', 'Primary Business Type *', ['class' => 'control-label col-md-3']) !!}
+                            {!! htmlspecialchars_decode(Form::label('business_type', 'Primary Business Type <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                             <div class="col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>

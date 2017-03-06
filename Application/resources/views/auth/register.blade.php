@@ -11,11 +11,11 @@
         <form class="form-horizontal" id="validate" role="form" method="POST" action="{{ url('/register') }}">
             {!! csrf_field() !!}
             <div class="col-md-12">
-            <h4> Website Login Credentials Information</h4>
+            <h4>Login Information</h4>
                 <hr>
             <br/>
                 <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Name *</label>
+                    <label class="col-md-2 control-label">Name <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">E-Mail Address *</label>
+                    <label class="col-md-2 control-label">E-Mail Address <span class="required">*</span></label>
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Password *</label>
+                    <label class="col-md-2 control-label">Password <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -62,7 +62,7 @@
                 </div>
 
                 <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Confirmation *</label>
+                    <label class="col-md-2 control-label">Confirmation <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -83,7 +83,7 @@
                 <hr>
                 <br/>
                 <div class="form-group{{ $errors->has('company_name') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Company Name *</label>
+                    <label class="col-md-2 control-label">Company Name <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -99,7 +99,7 @@
                 </div>
 
                 <div class="form-group{{ $errors->has('company_phone') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Phone *</label>
+                    <label class="col-md-2 control-label">Phone <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -115,7 +115,7 @@
                 </div>
 
                 <div class="form-group{{ $errors->has('company_address') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Address *</label>
+                    <label class="col-md-2 control-label">Address <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -140,7 +140,7 @@
                     </div>
                 </div>
                 <div class="form-group{{ $errors->has('company_country') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Country *</label>
+                    <label class="col-md-2 control-label">Country <span class="required">*</span></label>
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
@@ -161,7 +161,7 @@
                 </div>
                 <div id="select_state">
                     <div class="form-group{{ $errors->has('company_state') ? ' has-error' : '' }}">
-                        <label class="col-md-2 control-label">State *</label>
+                        <label class="col-md-2 control-label">State <span class="required">*</span></label>
                         <div class="col-md-7">
                             <div class="input-group">
                                 <span class="input-group-addon"></span>
@@ -181,7 +181,7 @@
                     </div>
                 </div>
                 <div class="form-group{{ $errors->has('company_city') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">City *</label>
+                    <label class="col-md-2 control-label">City <span class="required">*</span></label>
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-addon"></span>
@@ -195,7 +195,7 @@
                     </div>
                 </div>
                 <div class="form-group{{ $errors->has('company_zipcode') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Zipcode *</label>
+                    <label class="col-md-2 control-label">Zipcode <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -210,7 +210,7 @@
                     </div>
                 </div>
                 <div class="form-group{{ $errors->has('tax_id_number') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Tax ID Number *</label>
+                    <label class="col-md-2 control-label">Tax ID Number <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -225,7 +225,7 @@
                     </div>
                 </div>
                 <div class="form-group{{ $errors->has('business_type') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Primary Amazon Business Type *</label>
+                    <label class="col-md-2 control-label">Primary Amazon Business Type <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -240,7 +240,7 @@
                     </div>
                 </div>
                 <div class="form-group{{ $errors->has('annual_amazon_revenue') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Estimated Annual Amazon Revenue *</label>
+                    <label class="col-md-2 control-label">Estimated Annual Amazon Revenue <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -255,7 +255,7 @@
                     </div>
                 </div>
                 <div class="form-group{{ $errors->has('annual_order') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Estimated Annual FBAforward Orders *</label>
+                    <label class="col-md-2 control-label">Estimated Annual FBAforward Orders <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -270,7 +270,7 @@
                     </div>
                 </div>
                 <div class="form-group{{ $errors->has('reference') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">How did you hear about us? *</label>
+                    <label class="col-md-2 control-label">How did you hear about us? <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -290,7 +290,7 @@
                 <hr>
                 <br/>
                 <div class="form-group{{ $errors->has('contact_fname') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Contact First Name *</label>
+                    <label class="col-md-2 control-label">Contact First Name <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -305,7 +305,7 @@
                     </div>
                 </div>
                 <div class="form-group{{ $errors->has('contact_lname') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Contact Last Name *</label>
+                    <label class="col-md-2 control-label">Contact Last Name <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -320,7 +320,7 @@
                     </div>
                 </div>
                 <div class="form-group{{ $errors->has('contact_email') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Email *</label>
+                    <label class="col-md-2 control-label">Email <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -335,7 +335,7 @@
                     </div>
                 </div>
                 <div class="form-group{{ $errors->has('contact_phone') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Phone *</label>
+                    <label class="col-md-2 control-label">Phone <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -378,7 +378,7 @@
                 <hr>
                 <br/>
                 <div class="form-group{{ $errors->has('accounts_payable') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Accounts Payable Contact *</label>
+                    <label class="col-md-2 control-label">Accounts Payable Contact <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -394,7 +394,7 @@
                 </div>
 
                 <div class="form-group{{ $errors->has('accounts_email') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">E-Mail *</label>
+                    <label class="col-md-2 control-label">E-Mail <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
@@ -410,7 +410,7 @@
                 </div>
 
                 <div class="form-group{{ $errors->has('accounts_phone') ? ' has-error' : '' }}">
-                    <label class="col-md-2 control-label">Phone *</label>
+                    <label class="col-md-2 control-label">Phone <span class="required">*</span></label>
 
                     <div class="col-md-7">
                         <div class="input-group">
