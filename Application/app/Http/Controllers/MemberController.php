@@ -10,6 +10,7 @@ use App\User_info;
 use PayPal\Api\CreditCard;
 use App\User_credit_cardinfo;
 use App\Http\Middleware\Amazoncredential;
+use Illuminate\Http\Request;
 class MemberController extends Controller
 {
     /**
@@ -88,6 +89,23 @@ class MemberController extends Controller
 
         $inventory_list = Amazon_inventory::where('user_id', $user->id)->get();
         return view('member.amazon_inventory_list')->with(compact('user', 'inventory_list'));
+    }
+    public function addnickname(Request $request)
+    {
+        $id=$request->input('id');
+        $nickname=$request->input('nickname');
+        $list =Amazon_inventory::where('id','<>',$id)->where('product_nick_name',$nickname)->get();
+       if(count($list)>0)
+       {
+           return redirect('member/amazoninventorylist')->with('warning','Product Nick Name Already Assign To Another Product');
+       }
+       else
+       {
+           $data=array('product_nick_name'=>$nickname);
+           Amazon_inventory::where('id',$id)->update($data);
+           return redirect('member/amazoninventorylist')->with('success','Product Nick Name successfully changed');
+       }
+
     }
     public function creditcarddetail()
     {

@@ -48,7 +48,7 @@
                             <tbody>
                             @foreach($outbound_detail as $outbound_details)
                                 <tr>
-                                    <td class="col-md-5"><span>{{ $outbound_details->product_name }}</span></td>
+                                    <td class="col-md-5"><span>@if($outbound_details->product_nick_name==''){{ $outbound_details->product_name}} @else {{$outbound_details->product_nick_name}} @endif</span></td>
                                     <td class="col-md-2"><span>{{ $outbound_details->qty }}</span></td>
                                     <td class="col-md-2"><span>{{ $outbound_details->outbound_name }}</span></td>
                                 </tr>
@@ -74,7 +74,7 @@
                             @foreach($product_detail as $product_details)
 
                                 <tr>
-                                    <td>{{ $product_details->product_name }}</td>
+                                    <td>@if($product_details->product_nick_name==''){{ $product_details->product_name}} @else {{$product_details->product_nick_name}} @endif</td>
                                     <td>{{ $product_details->total }}</td>
                                     <td>
                                         {{--*/$prep_ids=array()/*--}}

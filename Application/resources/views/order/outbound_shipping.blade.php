@@ -32,7 +32,7 @@
                                     <input type="hidden" name="outbound_shipping_detail_id{{$ship_count."_".$count}}" id="outbound_shipping_detail_id{{$ship_count."_".$count}}" value="{{$products->outbound_shipping_detail_id}}">
                                     <input type="hidden" name="shipment_detail_id{{$ship_count."_".$count}}" id="shipment_detail_id{{$ship_count."_".$count}}" value="{{ $products->shipment_detail_id }}">
                             <tr>
-                                <td><input type="hidden" name="product_id{{$ship_count."_".$count}}" id="product_id{{$ship_count."_".$count}}" value="{{ $products->product_id }}"> {{ $products->product_name }}</td>
+                                <td><input type="hidden" name="product_id{{$ship_count."_".$count}}" id="product_id{{$ship_count."_".$count}}" value="{{ $products->product_id }}"> @if($products->product_nick_name==''){{ $products->product_name}} @else {{$products->product_nick_name}} @endif</td>
                                 <td><input type="hidden" name="total_unit{{$ship_count."_".$count}}" id="total_unit{{$ship_count."_".$count}}" value="{{ $products->total }}">{{ $products->total }}</td>
                                 <td>
                                     <select name="outbound_method{{$ship_count."_".$count}}" class="form-control select2 validate[required]">

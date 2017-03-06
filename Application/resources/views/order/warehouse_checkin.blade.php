@@ -38,7 +38,7 @@
                             @foreach($shipment_detail as $shipment_details)
                                 @if($shipment_details->shipment_id==$shipments->shipment_id)
                                     <tr>
-                                        <td>{{ $shipment_details->product_name }}</td>
+                                        <td>@if($shipment_details->product_nick_name==''){{ $shipment_details->product_name}} @else {{$shipment_details->product_nick_name}} @endif</td>
                                         <td>{{ $shipment_details->qty_per_box}}</td>
                                         <td>{{ $shipment_details->no_boxs}}</td>
                                         <td>{{ $shipment_details->total}}</td>

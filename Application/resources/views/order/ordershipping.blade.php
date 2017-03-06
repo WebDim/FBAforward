@@ -714,7 +714,13 @@
                 success: function (response) { // What to do if we succeed
                     $('#barcode_div').html(response);
                     $("#barcode").modal('show');
-                    $("#barcode").modal.print();
+                    var prtContent = document.getElementById("barcode_div");
+                    var WinPrint = window.open('', '', 'left=0,top=0,width=500,height=200,toolbar=0,scrollbars=0,status=0');
+                    WinPrint.document.write(prtContent.innerHTML);
+                    WinPrint.document.close();
+                    WinPrint.focus();
+                    WinPrint.print();
+                    WinPrint.close();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
                     console.log(JSON.stringify(jqXHR));

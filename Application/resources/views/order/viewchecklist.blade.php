@@ -39,7 +39,7 @@
                 @foreach($shipment_detail as $shipment_details)
                     @if($shipment_details->shipment_id==$shipments->shipment_id)
                         <tr>
-                            <td>{{ $shipment_details->product_name }}@if($user_role==10)<a onclick="getlabel('{{$shipment_details->fnsku}}')" >Print Label</a>@endif</td>
+                            <td>@if($shipment_details->product_nick_name==''){{ $shipment_details->product_name}} @else {{$shipment_details->product_nick_name}} @endif @if($user_role==10)<a onclick="getlabel('{{$shipment_details->fnsku}}')" >Print Label</a>@endif</td>
                             <td>{{ $shipment_details->shipping_name }}</td>
                             <td>
                                 @foreach($other_label_detail as $other_label_details)

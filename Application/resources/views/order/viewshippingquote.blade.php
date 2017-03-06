@@ -19,7 +19,7 @@
             <tbody>
             <tr>
                 <td width="20%">{{$shipment_details->shipping_name}}</td>
-                <td width="50%">{{$shipment_details->product_name }}</td>
+                <td width="50%">@if($shipment_details->product_nick_name==''){{ $shipment_details->product_name}} @else {{$shipment_details->product_nick_name}} @endif</td>
                 <td width="10%">{{$shipment_details->total}}</td>
                 <td width="20%"></td>
             </tr>

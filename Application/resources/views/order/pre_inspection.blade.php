@@ -40,7 +40,7 @@
                             <td class="col-md-4"><b class="text-info">
                                 @foreach($product as $products)
                                     @if($products->supplier_id==$suppliers->supplier_id)
-                                        {{ $products->product_name }}<br>
+                                            @if($products->product_nick_name==''){{ $products->product_name}} @else {{$products->product_nick_name}} @endif<br>
                                     @endif
                                 @endforeach
                                 </b></td>

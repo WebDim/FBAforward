@@ -32,7 +32,7 @@
                         <input type="hidden" name="other_label_detail_id{{$cnt}}" id="other_label_detail_id{{$cnt}}" value="{{ $products->other_label_detail_id }}">
                         {{--*/ $prep_service_ids=explode(',', $products->prep_service_ids) /*--}}
                         <tr>
-                            <td class="col-md-6"><b class="text-info">{{ $products->product_name }}</b></td>
+                            <td class="col-md-6"><b class="text-info">@if($products->product_nick_name==''){{ $products->product_name}} @else {{$products->product_nick_name}} @endif</b></td>
                             <td class="col-md-2"><b class="text-info">{{ $products->total }}</b></td>
                             <td class="col-md-2"><b class="text-info">
                             @foreach ($prep_service as $prep_services)

@@ -61,7 +61,7 @@
                     </a>
                     <div class="col-md-2">
                         <div class="input-group">
-                            {{$shipment_details['product_name']}}
+                            @if($shipment_details['product_nick_name']==''){{ $shipment_details['product_name']}} @else {{$shipment_details['product_nick_name']}} @endif
                         </div>
                     </div>
                 </div>

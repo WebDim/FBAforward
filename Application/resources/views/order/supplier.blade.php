@@ -28,7 +28,7 @@
             <td class="col-md-6"><input type="hidden" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id }}">
                 <input type="hidden" name="supplier_detail_id{{ $cnt }}" value="{{ $products->supplier_detail_id }}">
                 <input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
-                <b class="text-info">{{ $products->product_name }}</b></td>
+                <b class="text-info">@if($products->product_nick_name==''){{ $products->product_name}} @else {{$products->product_nick_name}} @endif</b></td>
             <td class="col-md-3"><input type="hidden" name="total{{ $cnt }}" value="{{ $products->total }}"><b class="text-info">{{ $products->total }}</b></td>
             <td class="col-md-3"><b class="text-info">
                     <select name="supplier{{ $cnt }}" class="form-control select2 validate[required]" onchange="add_Supplier(this.value)">

@@ -78,7 +78,7 @@ class OrderController extends Controller
         $title="Order Management";
         $user = \Auth::user();
         $orders = Order::where('user_id', $user->id)->whereIn('is_activated',array('0','1','2','4'))->orderBy('created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.index')->with(compact('orders','orderStatus','title'));
     }
     //list completed orders of perticular user
@@ -87,7 +87,7 @@ class OrderController extends Controller
         $title="Order History";
         $user = \Auth::user();
         $orders = Order::where('user_id', $user->id)->whereIn('is_activated',array('14'))->orderBy('created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.order_history')->with(compact('orders','orderStatus','title'));
     }
     // remove perticular order
@@ -280,7 +280,7 @@ class OrderController extends Controller
     {
         $user = \Auth::user();
         $order_id = $request->session()->get('order_id');
-        $product = Shipment_detail::selectRaw("shipments.order_id, shipment_details.shipment_detail_id,supplier_details.supplier_id,  supplier_details.supplier_detail_id,  shipment_details.product_id, shipment_details.total,  amazon_inventories.product_name  ")
+        $product = Shipment_detail::selectRaw("shipments.order_id, shipment_details.shipment_detail_id,supplier_details.supplier_id,  supplier_details.supplier_detail_id,  shipment_details.product_id, shipment_details.total,  amazon_inventories.product_name, amazon_inventories.product_nick_name, amazon_inventories.product_nick_name  ")
             ->join('supplier_details','shipment_details.shipment_detail_id','=','supplier_details.shipment_detail_id','left')
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
@@ -346,7 +346,7 @@ class OrderController extends Controller
             ->where('supplier_details.order_id', $order_id)
             ->groupby('suppliers.supplier_id')
             ->get();
-        $product = Supplier_detail::selectRaw("supplier_details.order_id, supplier_inspections.supplier_inspection_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, supplier_details.product_id, supplier_details.total_unit, amazon_inventories.product_name")
+        $product = Supplier_detail::selectRaw("supplier_details.order_id, supplier_inspections.supplier_inspection_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, supplier_details.product_id, supplier_details.total_unit, amazon_inventories.product_name, amazon_inventories.product_nick_name, amazon_inventories.product_nick_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'supplier_details.product_id')
             ->join('supplier_inspections','supplier_inspections.supplier_detail_id','=','supplier_details.supplier_detail_id','left')
             ->where('supplier_details.order_id', $order_id)
@@ -394,7 +394,7 @@ class OrderController extends Controller
     {
         $order_id = $request->session()->get('order_id');
         $product_label= Product_labels::all();
-        $product = Shipment_detail::selectRaw(" shipments.order_id, product_labels_details.price, product_labels_details.product_label_detail_id, product_labels_details.product_label_id, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
+        $product = Shipment_detail::selectRaw(" shipments.order_id, product_labels_details.price, product_labels_details.product_label_detail_id, product_labels_details.product_label_id, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.product_nick_name, amazon_inventories.product_nick_name, amazon_inventories.sellerSKU")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
             ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id','left')
             ->join('product_labels_details','shipment_details.shipment_detail_id','=','product_labels_details.shipment_detail_id','left')
@@ -444,7 +444,7 @@ class OrderController extends Controller
     {
         $order_id = $request->session()->get('order_id');
         $prep_service= Prep_service::all();
-        $product = Shipment_detail::selectRaw("other_label_details.other_label_detail_id, other_label_details.label_id, shipments.order_id, prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.grand_total, prep_details.prep_service_ids, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.sellerSKU")
+        $product = Shipment_detail::selectRaw("other_label_details.other_label_detail_id, other_label_details.label_id, shipments.order_id, prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.grand_total, prep_details.prep_service_ids, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.product_nick_name, amazon_inventories.product_nick_name, amazon_inventories.sellerSKU")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
             ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id','left')
             ->join('prep_details','prep_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
@@ -540,7 +540,7 @@ class OrderController extends Controller
     {
         $order_id = $request->session()->get('order_id');
         $list_service= Listing_service::all();
-        $product = Shipment_detail::selectRaw("photo_list_details.photo_list_detail_id, photo_list_details.standard_photo, photo_list_details.prop_photo, shipments.order_id, listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.grand_total, listing_service_details.listing_service_ids,shipment_details.product_id, shipment_details.shipment_detail_id, shipment_details.total, amazon_inventories.product_name")
+        $product = Shipment_detail::selectRaw("photo_list_details.photo_list_detail_id, photo_list_details.standard_photo, photo_list_details.prop_photo, shipments.order_id, listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.grand_total, listing_service_details.listing_service_ids,shipment_details.product_id, shipment_details.shipment_detail_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.product_nick_name, amazon_inventories.product_nick_name")
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
             ->join('shipments','shipment_details.shipment_id','=','shipments.shipment_id')
             ->join('listing_service_details','listing_service_details.shipment_detail_id','=','shipment_details.shipment_detail_id','left')
@@ -642,7 +642,7 @@ class OrderController extends Controller
             ->where('shipments.order_id',$order_id)
             ->groupby('shipments.shipment_id')
             ->get();
-        $product = Shipment_detail::selectRaw("shipment_details.shipment_id, outbound_shipping_details.outbound_shipping_detail_id,outbound_shipping_details.outbound_method_id, shipment_details.shipment_detail_id, shipments.order_id, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total,  amazon_inventories.product_name  ")
+        $product = Shipment_detail::selectRaw("shipment_details.shipment_id, outbound_shipping_details.outbound_shipping_detail_id,outbound_shipping_details.outbound_method_id, shipment_details.shipment_detail_id, shipments.order_id, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total,  amazon_inventories.product_name, amazon_inventories.product_nick_name  ")
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
             ->join('outbound_shipping_details','shipment_details.shipment_detail_id','=','outbound_shipping_details.shipment_detail_id','left')
@@ -693,12 +693,12 @@ class OrderController extends Controller
             ->where('shipments.order_id',$order_id)
             ->groupby('shipment_details.shipment_id')
             ->get();
-        $outbound_detail=Outbound_shipping_detail::selectRaw('outbound_shipping_details.qty, amazon_inventories.product_name, outbound_methods.outbound_name')
+        $outbound_detail=Outbound_shipping_detail::selectRaw('outbound_shipping_details.qty, amazon_inventories.product_name, amazon_inventories.product_nick_name, outbound_methods.outbound_name')
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'outbound_shipping_details.product_ids','left')
             ->join('outbound_methods','outbound_shipping_details.outbound_method_id','=','outbound_methods.outbound_method_id','left')
             ->where('outbound_shipping_details.order_id',$order_id)
             ->get();
-        $product_detail= Shipment_detail::selectRaw('shipments.order_id, amazon_inventories.product_name, shipment_details.total, prep_details.prep_service_ids')
+        $product_detail= Shipment_detail::selectRaw('shipments.order_id, amazon_inventories.product_name, amazon_inventories.product_nick_name, shipment_details.total, prep_details.prep_service_ids')
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id')
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id','left')
             ->join('prep_details','prep_details.shipment_detail_id','=','shipment_details.shipment_detail_id')
@@ -899,7 +899,7 @@ class OrderController extends Controller
                 $id=$request->id;
             }
             DB::enableQueryLog();
-            $shipment_detail = Shipments::selectRaw("shipments.shipment_id,shipments.shipping_method_id,shipping_methods.shipping_name,shipment_details.product_id, shipment_details.fnsku, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total,amazon_inventories.product_name,supplier_details.supplier_detail_id,supplier_details.supplier_id,suppliers.company_name,supplier_inspections.inspection_decription,product_labels_details.product_label_id,product_labels.label_name,prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.prep_service_ids,listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.listing_service_ids,outbound_shipping_details.amazon_destination_id, outbound_shipping_details.outbound_method_id,outbound_methods.outbound_name,amazon_destinations.destination_name")
+            $shipment_detail = Shipments::selectRaw("shipments.shipment_id,shipments.shipping_method_id,shipping_methods.shipping_name,shipment_details.product_id, shipment_details.fnsku, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total,amazon_inventories.product_name, amazon_inventories.product_nick_name, supplier_details.supplier_detail_id,supplier_details.supplier_id,suppliers.company_name,supplier_inspections.inspection_decription,product_labels_details.product_label_id,product_labels.label_name,prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.prep_service_ids,listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.listing_service_ids,outbound_shipping_details.amazon_destination_id, outbound_shipping_details.outbound_method_id,outbound_methods.outbound_name,amazon_destinations.destination_name")
                 ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id','left')
                 ->join('shipment_details','shipment_details.shipment_id','=','shipments.shipment_id','left')
                 ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
@@ -963,7 +963,7 @@ class OrderController extends Controller
     {
         $title='Ship Order';
         $orders = Order::where('is_activated','3')->orderBy('created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','title'));
     }
     //list orders of All users which select inspections, uploading inspection report by inspector
@@ -979,7 +979,7 @@ class OrderController extends Controller
             ->orderBy('orders.created_at', 'desc')
             ->distinct('supplier_inspections.order_id')
             ->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     // to upload inspection report
@@ -1047,7 +1047,7 @@ class OrderController extends Controller
             $orders = Order::where('orders.is_activated','3')->orWhereIn('orders.order_id',$order_ids)->orderBy('orders.created_at', 'desc')->get();
         else
             $orders = Order::where('orders.is_activated','3')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
    // to display shippingquote form
@@ -1061,7 +1061,7 @@ class OrderController extends Controller
             ->get();
         $shipment=Shipments::where('order_id',$order_id)->get();
         $charges=Charges::all();
-        $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
+        $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
             ->join('orders','orders.order_id','=','shipments.order_id','left')
             ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
@@ -1109,7 +1109,7 @@ class OrderController extends Controller
         $shipment=Shipments::selectRaw('shipping_quotes.*')
             ->join('shipping_quotes','shipping_quotes.shipment_id','=','shipments.shipment_id')
             ->where('shipments.order_id',$order_id)->get();
-        $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
+        $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
             ->join('orders','orders.order_id','=','shipments.order_id','left')
             ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
@@ -1134,7 +1134,7 @@ class OrderController extends Controller
             $shipment=Shipments::selectRaw('shipping_quotes.*')
                 ->join('shipping_quotes','shipping_quotes.shipment_id','=','shipments.shipment_id')
                 ->where('shipments.order_id',$order_id)->get();
-            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
                 ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
                 ->join('orders','orders.order_id','=','shipments.order_id','left')
                 ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
@@ -1367,7 +1367,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','6')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     //to display bill of lading form
@@ -1380,7 +1380,7 @@ class OrderController extends Controller
             ->where('orders.order_id',$order_id)
             ->get();
         $shipment=Shipments::where('order_id',$order_id)->get();
-        $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name')
+        $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name')
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
             ->join('orders','orders.order_id','=','shipments.order_id','left')
             ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
@@ -1419,7 +1419,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','7')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     //display detail of bill of lading to logistic
@@ -1432,7 +1432,7 @@ class OrderController extends Controller
             $shipment=Shipments::selectRaw('bill_of_ladings.*')
                 ->join('bill_of_ladings','bill_of_ladings.shipment_id','=','shipments.shipment_id')
                 ->where('shipments.order_id',$order_id)->get();
-            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name')
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name')
                 ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
                 ->join('orders','orders.order_id','=','shipments.order_id','left')
                 ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
@@ -1474,7 +1474,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','8')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     //to display pre alert form
@@ -1542,7 +1542,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','9')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     //to display custom clearance form
@@ -1616,7 +1616,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','10')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     //to display delivery booking form
@@ -1686,7 +1686,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','11')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     public function warehousecheckinform(Request $request)
@@ -1699,7 +1699,7 @@ class OrderController extends Controller
             ->get();
         $shipment=Shipments::where('order_id',$order_id)->get();
         $charges=Charges::all();
-        $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
+        $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
             ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
             ->join('orders','orders.order_id','=','shipments.order_id','left')
             ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
@@ -1749,7 +1749,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','12')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     public function downloadwarehouseimages(Request $request)
@@ -1771,7 +1771,7 @@ class OrderController extends Controller
             $shipment=Shipments::selectRaw('warehouse_checkins.*')
                 ->join('warehouse_checkins','warehouse_checkins.shipment_id','=','shipments.shipment_id')
                 ->where('shipments.order_id',$order_id)->get();
-            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name')
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name')
                 ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
                 ->join('orders','orders.order_id','=','shipments.order_id','left')
                 ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
@@ -2190,7 +2190,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','13')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     public function viewchecklist(Request $request)
@@ -2203,7 +2203,7 @@ class OrderController extends Controller
             $order_id=$post['order_id'];
             $shipment=Shipments::where('shipments.order_id',$order_id)->get();
             $amazon_destination=Amazon_destination::all();
-            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
                 ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
                 ->join('orders','orders.order_id','=','shipments.order_id','left')
                 ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
@@ -2236,7 +2236,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','14')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     public function prepcomplete(Request $request)
@@ -2256,7 +2256,7 @@ class OrderController extends Controller
             $order_id = $post['order_id'];
             $shipment=Shipments::where('shipments.order_id',$order_id)->get();
             $amazon_destination=Amazon_destination::all();
-            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
                 ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
                 ->join('orders','orders.order_id','=','shipments.order_id','left')
                 ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
@@ -2275,7 +2275,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','15')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     public function shippinglabel(Request $request)
@@ -2286,7 +2286,7 @@ class OrderController extends Controller
             $order_id=$post['order_id'];
             $shipment=Shipments::where('shipments.order_id',$order_id)->get();
             $amazon_destination=Amazon_destination::all();
-            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipments.shipping_label, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipments.shipping_label, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
                 ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
                 ->join('orders','orders.order_id','=','shipments.order_id','left')
                 ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
@@ -2391,7 +2391,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','16')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     public function shipmentreview(Request $request)
@@ -2401,7 +2401,7 @@ class OrderController extends Controller
             $order_id = $post['order_id'];
             $shipment=Shipments::where('shipments.order_id',$order_id)->get();
             $amazon_destination=Amazon_destination::all();
-            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipping_label, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
+            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipping_label, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name, shipment_details.fnsku, prep_details.prep_detail_id, shipment_details.shipment_detail_id, shipment_details.prep_complete')
                 ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
                 ->join('orders','orders.order_id','=','shipments.order_id','left')
                 ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
@@ -2432,7 +2432,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','<>','0')->orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Order Complete','Warehouse Complete');
+         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     public function customers()

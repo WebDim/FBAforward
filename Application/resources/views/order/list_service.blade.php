@@ -31,7 +31,7 @@
                                 <input type="hidden" name="shipment_detail_id{{ $cnt }}" value="{{ $products->shipment_detail_id }}">
                                 <input type="hidden" name="product_id{{ $cnt }}" value="{{ $products->product_id }}">
                                 <input type="hidden" name="photo_list_detail_id{{$cnt}}" id="photo_list_detail_id{{$cnt}}" value="{{$products->photo_list_detail_id}}">
-                                <b class="text-info">{{ $products->product_name }}</b></td>
+                                <b class="text-info">@if($products->product_nick_name==''){{ $products->product_name}} @else {{$products->product_nick_name}} @endif</b></td>
                             <td class="col-md-3"><b class="text-info">
                                     {{--*/$listing_standard=env('LIST_STANDARD')/*--}}
                                     {{--*/$listing_standard_price=env('LIST_STANDARD_PRICE')/*--}}
