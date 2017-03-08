@@ -52,6 +52,7 @@
                         <div class="form-group">
                             <div class="col-md-9 col-md-offset-3">
                                 {!! Form::submit((isset($outbound_method) ? 'Update' : 'Add'). ' Outbound Method', ['class'=>'btn btn-primary']) !!}
+                                <a class="btn btn-default btn-close" href="{{ '../' }}">Cancel</a>
                             </div>
                         </div>
                     </div><!-- .col-md-6 -->

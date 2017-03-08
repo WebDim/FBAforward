@@ -89,6 +89,7 @@
                         <div class="form-group">
                             <div class="col-md-9 col-md-offset-3">
                                 {!! Form::submit((isset($list_service)?'Update': 'Add'). ' Listing service', ['class'=>'btn btn-primary']) !!}
+                                <a class="btn btn-default btn-close" href="{{ '../' }}">Cancel</a>
                             </div>
                         </div>
                     </div><!-- .col-md-6 -->

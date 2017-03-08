@@ -88,15 +88,15 @@ class DatatablesController extends Controller
         return Datatables::of($roles)
             ->editColumn('routes', function ($role) {
                 return htmlentities(strlen($role->getOriginal('routes')) > 50 ? substr($role->getOriginal('routes'), 0, 50) : $role->getOriginal('routes'));
-            })
-            ->addColumn('actions', function ($role) {
-                $editBtn = '<a style="margin-right: 0.2em;" href="' . url('admin/roles/' . $role->id . '/edit/') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
-                $deleteBtn = '';
-                if ($role->name != 'Admin') {
-                    $deleteBtn = '&nbsp;<a href="' . url('admin/roles/' . $role->id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Permanent Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
-                }
-                return $editBtn . $deleteBtn;
             })->make(true);
+//            ->addColumn('actions', function ($role) {
+//                $editBtn = '<a style="margin-right: 0.2em;" href="' . url('admin/roles/' . $role->id . '/edit/') . '"  title="Edit"><i class="fa fa-2 fa-pencil"></i></a>';
+//                $deleteBtn = '';
+//                if ($role->name != 'Admin') {
+//                    $deleteBtn = '&nbsp;<a href="' . url('admin/roles/' . $role->id) . '" class="message_box text-danger" data-box="#message-box-delete" data-action="DELETE" title="Permanent Delete"><i class="fa fa-2 fa-remove"></i></i></a>';
+//                }
+//                return $editBtn . $deleteBtn;
+//            })->make(true);
     }
 
     public function getMenus()
