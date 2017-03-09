@@ -136,7 +136,12 @@ class UsersController extends Controller
         $roles = Role::lists('name', 'id');
         $user_info = DB::table('user_infos')->where('user_id', $user->id)->get();
         $country = CountryState::getCountries();
-        $states = CountryState::getStates($user_info[0]->company_country);
+        $state='';
+        if(!empty($user_info))
+        {
+            $state=$user_info[0]->company_country;
+        }
+        $states = CountryState::getStates($state);
         /*$packages = Package::active()->lists('name', 'id');
 
         $job_titles = getSetting('JOB_TITLES');*/

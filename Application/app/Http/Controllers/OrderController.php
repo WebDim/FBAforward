@@ -16,6 +16,7 @@ use App\Inspection_report;
 use App\Invoice_detail;
 use App\Listing_service;
 use App\Listing_service_detail;
+use App\Notifications\Usernotification;
 use App\Order_note;
 use App\Other_label_detail;
 use App\Outbound_method;
@@ -37,6 +38,7 @@ use App\Supplier_inspection;
 use App\Product_labels_detail;
 use App\Shipments;
 use App\Order;
+use App\Role;
 use App\Trucking_company;
 use App\User;
 use App\User_credit_cardinfo;
@@ -72,7 +74,7 @@ class OrderController extends Controller
     {
         $this->middleware(['auth',Amazoncredential::class]);
     }
-    //list Inprogress, Order Placed or Pending For Approval orders of perticular user
+    //list Inprogress, Order Placed or Pending For Approval orders of particular user
     public function index()
     {
         $title="Order Management";
@@ -81,16 +83,16 @@ class OrderController extends Controller
         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.index')->with(compact('orders','orderStatus','title'));
     }
-    //list completed orders of perticular user
+    //list completed orders of particular user
     public function orderhistory()
     {
         $title="Order History";
         $user = \Auth::user();
-        $orders = Order::where('user_id', $user->id)->whereIn('is_activated',array('16'))->orderBy('created_at', 'desc')->get();
+        $orders = Order::where('user_id', $user->id)->whereIn('is_activated',array('17'))->orderBy('created_at', 'desc')->get();
          $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.order_history')->with(compact('orders','orderStatus','title'));
     }
-    // remove perticular order
+    // remove particular order
     public function removeorder(Request $request)
     {
         if ($request->ajax()) {
@@ -263,7 +265,7 @@ class OrderController extends Controller
         Order::where('order_id',$order_id)->update($order_detail);
         return redirect('order/supplierdetail')->with('Success', 'Shipment Information Added Successfully');
     }
-    //remove perticular product from shipment
+    //remove particular product from shipment
     public function removeproduct(Request $request)
     {
         if ($request->ajax()) {
@@ -275,7 +277,7 @@ class OrderController extends Controller
             Shipment_detail::where('shipment_detail_id',$post['shipment_detail_id'])->delete();
         }
     }
-    //For display supplier information of perticular order
+    //For display supplier information of particular order
     public function supplierdetail(Request $request)
     {
         $user = \Auth::user();
@@ -289,7 +291,7 @@ class OrderController extends Controller
         $supplier = Supplier::where('user_id',$user->id)->get();
         return view('order.supplier')->with(compact('product', 'supplier'));
     }
-    //add suplier for perticular order
+    //add suplier for particular order
     public function addsupplierdetail(Request $request)
     {
         $user = \Auth::user();
@@ -321,7 +323,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/preinspection')->with('Success', 'Supplier Information Added Successfully');
     }
-    //add supplier for perticular user
+    //add supplier for particular user
     public function addsupplier(Request $request)
     {
         if ($request->ajax()) {
@@ -336,7 +338,7 @@ class OrderController extends Controller
             $supplier->save();
         }
     }
-    //For display pre inspection information of perticular order
+    //For display pre inspection information of particular order
     public function preinspection(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -354,7 +356,7 @@ class OrderController extends Controller
             ->get();
         return view('order.pre_inspection')->with(compact('product', 'supplier'));
     }
-    //add pre inspection information for perticular order
+    //add pre inspection information for particular order
     public function addpreinspection(Request $request)
     {
         $user = \Auth::user();
@@ -389,7 +391,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/productlabels')->with('Success', 'Pre inspection Information Added Successfully');
     }
-    //For display Label of perticular order
+    //For display Label of particular order
     public function labels(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -403,7 +405,7 @@ class OrderController extends Controller
             ->get();
         return view('order.product_labels')->with(compact('product', 'product_label'));
     }
-    //add labels for perticular order
+    //add labels for particular order
     public function addlabels(Request $request)
     {
         $count = $request->input('count');
@@ -439,7 +441,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/prepservice')->with('Success', 'Product Label Information Added Successfully');
     }
-    //For display prep service information of perticular order
+    //For display prep service information of particular order
     public function prepservice(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -453,7 +455,7 @@ class OrderController extends Controller
             ->get();
         return view('order.prep_service')->with(compact('prep_service', 'product'));
     }
-    //add prep service for perticular order
+    //add prep service for particular order
     public function addprepservice(Request $request)
     {
         $user = \Auth::user();
@@ -527,7 +529,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/listservice')->with('Success', 'Prep Service Information Added Successfully');
     }
-    //to remove perticular other label detail from order
+    //to remove particular other label detail from order
     public function removeotherlabel(Request $request)
     {
         if ($request->ajax()) {
@@ -535,7 +537,7 @@ class OrderController extends Controller
             Other_label_detail::where('other_label_detail_id',$post['label_detail_id'])->delete();
         }
     }
-    //For display list service information of perticular order
+    //For display list service information of particular order
     public function listservice(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -549,7 +551,7 @@ class OrderController extends Controller
             ->get();
         return view('order.list_service')->with(compact('list_service', 'product'));
     }
-    //add list services for perticular order
+    //add list services for particular order
     public function addlistservice(Request $request)
     {
         $count = $request->input('count');
@@ -622,7 +624,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/outbondshipping')->with('Success', 'Listing service Information Added Successfully');
     }
-    //remove perticular photo details of perticular order
+    //remove particular photo details of particular order
     public function removephotolabel(Request $request)
     {
         if ($request->ajax()) {
@@ -630,7 +632,7 @@ class OrderController extends Controller
             Photo_list_detail::where('photo_list_detail_id',$post['photo_list_detail_id'])->delete();
         }
     }
-    //For display outbound shipping information of perticular order
+    //For display outbound shipping information of particular order
     public function outbondshipping(Request $request)
     {
         $user = \Auth::user();
@@ -650,7 +652,7 @@ class OrderController extends Controller
             ->get();
         return view('order.outbound_shipping')->with(compact('outbound_method','product','shipment'));
     }
-    // add outbound shipping details of perticular order
+    // add outbound shipping details of particular order
     public function addoutbondshipping(Request $request)
     {
         $ship_count = $request->input('ship_count');
@@ -683,7 +685,7 @@ class OrderController extends Controller
         Order::where('order_id',$request->input('order_id'))->update($order_detail);
         return redirect('order/reviewshipment')->with('Success', 'Outbound Shipping Information Added Successfully');
     }
-    //For display review information of perticular order
+    //For display review information of particular order
     public function reviewshipment(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -707,7 +709,7 @@ class OrderController extends Controller
         $prep_service= Prep_service::all();
         return view('order.review_shipment')->with(compact('shipment','outbound_detail','product_detail','prep_service'));
     }
-    //For display payment information of perticular order
+    //For display payment information of particular order
     public function orderpayment(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -760,7 +762,7 @@ class OrderController extends Controller
         $credit_card= User_credit_cardinfo::where('user_id',$user->id)->get();
         return view('order.payment')->with(compact('price','card_type','addresses','credit_card'));
     }
-    //add credit card information for perticular user
+    //add credit card information for particular user
     public function addcreditcard(Request $request)
     {
         if ($request->ajax()) {
@@ -799,7 +801,7 @@ class OrderController extends Controller
             User_credit_cardinfo::create($card_detail);
         }
     }
-    //add billing address for perticular user
+    //add billing address for particular user
     public function addaddress(Request $request)
     {
         if ($request->ajax()) {
@@ -816,7 +818,7 @@ class OrderController extends Controller
             Addresses::create($address_detail);
         }
     }
-    //add payment detail of perticular order
+    //add payment detail of particular order
     public function addorderpayment(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -882,9 +884,36 @@ class OrderController extends Controller
         Payment_info::create($payment_info);
         $order_detail=array('is_activated'=>'1','steps'=>'9');
         Order::where('order_id',$order_id)->update($order_detail);
+        $details=Order::selectRaw('orders.order_id')
+            ->join('supplier_inspections','supplier_inspections.order_id','=','orders.order_id')
+            ->where('orders.is_activated','1')
+            ->where('supplier_inspections.is_inspection','0')
+            ->orderBy('orders.created_at', 'desc')
+            ->distinct('supplier_inspections.order_id')
+            ->where('orders.order_id',$order_id)
+            ->get();
+        if(count($details)>0) {
+            $role = Role::find(5);
+            $role->newNotification()
+                ->withType('shipping quote')
+                ->withSubject('You have shipping quote for upload')
+                ->withBody('You have shipping quote for upload')
+                ->regarding($payment_detail)
+                ->deliver();
+        }
+        else
+        {
+            $role = Role::find(12);
+            $role->newNotification()
+                ->withType('report')
+                ->withSubject('You have inspection report for upload')
+                ->withBody('You have inspection report for upload')
+                ->regarding($payment_detail)
+                ->deliver();
+        }
         return redirect('order/index')->with('success','Your order Successfully Placed');
     }
-    //to display whole information of perticular order
+    //to display whole information of particular order
     public function orderDetails(Request $request){
         $title="Order Detail";
         if($request->order_id) {
@@ -949,13 +978,49 @@ class OrderController extends Controller
             return view('order.detail_list')->with(compact('shipment_detail','payment_detail','user_role','id','title'));
         }
     }
-    //change order status of perticular order
+    //change order status of particular order
     public function orderstatus(Request $request)
     {
         if ($request->ajax()) {
             $post = $request->all();
             $status=array('is_activated'=>$post['status']);
             Order::where('order_id',$post['order_id'])->update($status);
+            if($post['status']=='13') {
+                $role = Role::find(10);
+                $role->newNotification()
+                    ->withType('order labor')
+                    ->withSubject('You have work order labor for check')
+                    ->withBody('You have work order labor for check')
+                    ->regarding($status)
+                    ->deliver();
+            }
+            else if($post['status']=='14') {
+                $role = Role::find(11);
+                $role->newNotification()
+                    ->withType('manager review')
+                    ->withSubject('You have order review for check')
+                    ->withBody('You have order review for check')
+                    ->regarding($status)
+                    ->deliver();
+            }
+            else if($post['status']=='15') {
+                $role = Role::find(10);
+                $role->newNotification()
+                    ->withType('complete shipment')
+                    ->withSubject('You have order shipments for complete')
+                    ->withBody('You have order shipments for complete')
+                    ->regarding($status)
+                    ->deliver();
+            }
+            else if($post['status']=='16') {
+                $role = Role::find(8);
+                $role->newNotification()
+                    ->withType('order complete')
+                    ->withSubject('You have order for complete')
+                    ->withBody('You have order  for complete')
+                    ->regarding($status)
+                    ->deliver();
+            }
         }
     }
     //list Approved orders of All users for warhouse manager
@@ -986,6 +1051,7 @@ class OrderController extends Controller
     public function uploadinspectionreport(Request $request)
     {
         $order_id=$request->input('order_id');
+
         if ($request->hasFile('report')) {
             $destinationPath = public_path() . '/uploads/reports';
             $image =  $order_id.'_'.'inspectionreport'.'.' . $request->file('report')->getClientOriginalExtension();
@@ -994,9 +1060,23 @@ class OrderController extends Controller
                 'uploaded_file'=>$image,
                 'status'=>'0'
             );
-            Inspection_report::create($inpection_data);
+            $report=Inspection_report::create($inpection_data);
             $data= array('is_activated'=>'2');
             Order::where('order_id',$order_id)->update($data);
+            $user_detail= User::selectRaw('users.*')
+                ->join('orders','orders.user_id','=','users.id')
+                ->where('orders.order_id',$order_id)
+                ->get();
+            if(count($user_detail)>0)
+            $user = User::find($user_detail[0]->id);
+            else
+            $user='';
+            $user->newNotification()
+                ->withType('report')
+                ->withSubject('You have inspection report for approvel')
+                ->withBody('You have inspection report for approvel')
+                ->regarding($report)
+                ->deliver();
             return redirect('order/inspectionreport')->with('success','Report successfully uploaded');
         }
     }
@@ -1023,6 +1103,13 @@ class OrderController extends Controller
             Inspection_report::where('order_id', $order_id)->update($inpection_data);
             $data = array('is_activated' => '3');
             Order::where('order_id', $order_id)->update($data);
+            $role = Role::find(5);
+            $role->newNotification()
+                ->withType('shipping quote')
+                ->withSubject('You have shipping quote for upload')
+                ->withBody('You have shipping quote for upload')
+                ->regarding($inpection_data)
+                ->deliver();
         }
     }
     //list of all orders which needs upload shipping quote by shipper
@@ -1100,6 +1187,20 @@ class OrderController extends Controller
         }
         $order= array('is_activated'=>'4');
         Order::where('order_id',$request->input('order_id'))->update($order);
+        $user_detail= User::selectRaw('users.*')
+            ->join('orders','orders.user_id','=','users.id')
+            ->where('orders.order_id',$request->input('order_id'))
+            ->get();
+        if(count($user_detail)>0)
+            $user = User::find($user_detail[0]->id);
+        else
+            $user='';
+        $user->newNotification()
+            ->withType('shipping quote')
+            ->withSubject('You have shipping quote for approvel')
+            ->withBody('You have shipping quote for approvel')
+            ->regarding($shipping_quote_detail)
+            ->deliver();
         return redirect('order/shippingquote')->with('success','Shipping Quote Submitted Successfully');
     }
     //to download shipping quote
@@ -1349,6 +1450,13 @@ class OrderController extends Controller
         $id = substr($invoice->getId(), 2, -1);
         $data = array('is_activated' => '6');
         Order::where('order_id', $order_id)->update($data);
+        $role = Role::find(5);
+        $role->newNotification()
+            ->withType('bill lading')
+            ->withSubject('You have bill of lading for upload')
+            ->withBody('You have bill of lading for upload')
+            ->regarding($data)
+            ->deliver();
         header("Content-Disposition: attachment; filename=".$order_id."_invoice.pdf");
         header("Content-type: application/x-pdf");
         $dir=public_path() ."/uploads/bills/";
@@ -1410,6 +1518,13 @@ class OrderController extends Controller
         }
         $order= array('is_activated'=>'7');
         Order::where('order_id',$request->input('order_id'))->update($order);
+        $role = Role::find(6);
+        $role->newNotification()
+            ->withType('bill lading')
+            ->withSubject('You have bill of lading for Approval')
+            ->withBody('You have bill of lading for Approval')
+            ->regarding($order)
+            ->deliver();
         return redirect('order/billoflading')->with('success','Bill of Lading Uploaded Successfully');
     }
     // display list of order which need approve for bill of lading by logistics
@@ -1464,6 +1579,13 @@ class OrderController extends Controller
             Bill_of_lading::where('order_id', $order_id)->update($ladingbill);
             $data = array('is_activated' => '8');
             Order::where('order_id', $order_id)->update($data);
+            $role = Role::find(5);
+            $role->newNotification()
+                ->withType('shipment pre alert')
+                ->withSubject('You have shipment pre alert for upload')
+                ->withBody('You have shipment pre alert for upload')
+                ->regarding($ladingbill)
+                ->deliver();
             //$this->createCustomer($order_id);
         }
     }
@@ -1533,6 +1655,13 @@ class OrderController extends Controller
         }
         $order= array('is_activated'=>'9');
         Order::where('order_id',$request->input('order_id'))->update($order);
+        $role = Role::find(6);
+        $role->newNotification()
+            ->withType('custom clearance')
+            ->withSubject('You have custom clearance for upload')
+            ->withBody('You have custom clearance for upload')
+            ->regarding($prealert_detail)
+            ->deliver();
         return redirect('order/prealert')->with('success','Shipment Pre Alert Submitted Successfully');
     }
     //display list of orders which need custom clearnce by logistics
@@ -1607,6 +1736,13 @@ class OrderController extends Controller
         }
         $order= array('is_activated'=>'10');
         Order::where('order_id',$request->input('order_id'))->update($order);
+        $role = Role::find(6);
+        $role->newNotification()
+            ->withType('delivery booking')
+            ->withSubject('You have delivery booking for upload')
+            ->withBody('You have delivery booking for upload')
+            ->regarding($custom_clearance_detail)
+            ->deliver();
         return redirect('order/customclearance')->with('success','Custom Clearance Submitted Successfully');
     }
     //list of order which need delivery booking
@@ -1657,6 +1793,13 @@ class OrderController extends Controller
         }
         $order= array('is_activated'=>'11');
         Order::where('order_id',$request->input('order_id'))->update($order);
+        $role = Role::find(10);
+        $role->newNotification()
+            ->withType('Warehouse check in')
+            ->withSubject('You have warehouse check in for upload')
+            ->withBody('You have warehouse check in for upload')
+            ->regarding($delivery_booking_detail)
+            ->deliver();
         return redirect('order/deliverybooking')->with('success','Delivery Booking Submitted Successfully');
     }
     //add trucking company
@@ -1741,6 +1884,13 @@ class OrderController extends Controller
         }
         $order= array('is_activated'=>'12');
         Order::where('order_id',$request->input('order_id'))->update($order);
+        $role = Role::find(8);
+        $role->newNotification()
+            ->withType('Warehouse check in')
+            ->withSubject('You have warehouse check in for review')
+            ->withBody('You have warehouse check in for review')
+            ->regarding($warehouse_checkin_detail)
+            ->deliver();
         return redirect('order/warehousecheckin')->with('success','Warehouse Checkin Form Submitted Successfully');
     }
     public function adminreview()
@@ -1829,7 +1979,7 @@ class OrderController extends Controller
                 $ship_request->setInboundShipmentPlanRequestItems($itemlist);
                 $arr_response =$this->invokeCreateInboundShipmentPlan($service, $ship_request);
                 $shipment_id=$shipments->shipment_id;
-                //create shipments api of perticular shipmentplan
+                //create shipments api of particular shipmentplan
                 $shipment_service = $this->getReportsClient();
                 $shipment_request = new \FBAInboundServiceMWS_Model_CreateInboundShipmentRequest();
                 $shipment_request->setSellerId($UserCredentials['mws_seller_id']);

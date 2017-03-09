@@ -375,6 +375,7 @@
                     <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
                             {!! Form::submit((!empty($user)?'Update': 'Add'). ' User', ['class'=>'btn btn-primary']) !!}
+                            {!! Form::Reset(('Cancel'), ['class'=>'btn btn-warning']) !!}
                         </div>
                     </div>
                 </div>

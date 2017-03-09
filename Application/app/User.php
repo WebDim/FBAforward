@@ -2,13 +2,13 @@
 
 namespace App;
 
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
 use Laravel\Cashier\Billable;
-
 class User extends Authenticatable
 {
     use Billable;
+    use Notifiable;
     
     protected $dates = ['trial_ends_at', 'subscription_ends_at', 'deleted_at'];
     /**
@@ -27,6 +27,7 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public  $user =['Users'];
     /**
      * Get the role record associated with the user.
      */
@@ -63,5 +64,16 @@ class User extends Authenticatable
     public function supplier_detail()
     {
         return $this->hasMany(Supplier_detail::class);
+    }
+    public function notification()
+    {
+        return $this->hasMany(Notification::class);
+    }
+    public function newNotification()
+    {
+        $notification = new Notification;
+        $notification->user()->associate($this);
+
+        return $notification;
     }
 }

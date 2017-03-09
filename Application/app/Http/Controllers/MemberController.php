@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreditcardRequest;
 use App\Http\Requests\ProfileRequest;
 use App\Amazon_inventory;
+use App\Notification;
+use App\Role;
 use Illuminate\Support\Facades\DB;
 use App\User_info;
 use PayPal\Api\CreditCard;
@@ -156,6 +158,47 @@ class MemberController extends Controller
          User_credit_cardinfo::create($card_detail);
         return redirect('creditcard_detail')->with('success', 'Your credit card information successfully store on paypal vault');
     }
+    public function getnotification(Request $request)
+    {
+        if($request->ajax()) {
+            $post = $request->all();
+            $role=$post['role'];
+            $user = \Auth::user();
+            if($role=='0') {
+               $notifications = $user->notification()->unread()->get();
+            }
+            else
+            {
+                $role_detail = Role::find($user->role_id);
+                $notifications = $role_detail->notification()->unread()->get();
+            }
+            $result= array('notification'=>$notifications,'role'=>$role);
+            echo json_encode($result);
+            exit;
+        }
+    }
+    public function checkread(Request $request)
+    {
+        if($request->ajax())
+            $post=$request->all();
+        $role=$post['role'];
+        $user = \Auth::user();
+        if($role=='0') {
+           $notifications = $user->notification()->unread()->get();
+        }
+        else
+        {
+            $role_detail = Role::find($user->role_id);
+            $notifications = $role_detail->notification()->unread()->get();
+        }
+            $status=array();
+            foreach ($notifications as $notification)
+            {
+                $status[]=$notification->id;
+            }
+            $data=array('is_read'=>'1');
+            Notification::whereIn('id',$status)->update($data);
 
+    }
 
 }

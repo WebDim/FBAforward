@@ -407,7 +407,6 @@
                         trHTML += '<tr><td><input type="hidden" name="id'+i+'" id="id'+i+'" value="'+item.id+'"><input type="text" name="shipping_note'+i+'" id="shipping_note'+i+'" value="'+item.shipping_notes+'" hidden>' + item.shipping_notes + '</td><td><input type="text" name="prep_note'+i+'" id="prep_note'+i+'" value="'+item.prep_notes+'" hidden>' + item.prep_notes + '</td><td><i class="fa fa-floppy-o" id="save'+i+'" style="display: none" onclick="savenote('+i+')"></i>&nbsp; <i class="fa fa-pencil" id="edit'+i+'" onclick="editnote('+i+')"></i>&nbsp; <i class="fa fa-trash" onclick="deletenote('+i+')"></i></td></tr>';
                     });
                     trHTML+="</tbody>";
-
                     $('#note_list').html(trHTML);
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail

@@ -1,4 +1,20 @@
 <!-- start navigation -->
+<style>
+    .circle {
+        display: inline-block;
+        height: 10px;
+        width: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 5px;
+        background-color: #363;
+    }
+    #notification_modal {
+        left: 25%;
+        right: auto;
+        width: 624px;
+        height: 700px;
+    }
+</style>
 <nav class="navbar navbar-default navbar-fixed-top laraship-nav" role="navigation">
     <div class="container">
         <div class="navbar-header">
@@ -13,20 +29,27 @@
             <ul class="nav navbar-nav navbar-right text-uppercase">
                 <li><a href="{{ url('/#home') }}">Home</a></li>
                 @if (!Auth::guest())
-            @if('Customer' === \Auth::user()->role->name)
-                {{--*/ $old_user= session('old_user')/*--}}
-                @if(session('old_user'))
-                    <li><a href="/order/switchuser/{{$old_user}}/1">Switch user</a> </li>
+                    {{--*/$user = \Auth::user();/*--}}
+                    @if('Customer' === \Auth::user()->role->name)
+                                <li><a onclick="getnotification('0')"><i class="fa fa-bell"></i>@if($user->notification()->unread()->count()>0)<span class="circle" id="count"></span>@else<span id="count"></span>@endif</a> </li>
+                                {{--*/ $old_user= session('old_user')/*--}}
+                            @if(session('old_user'))
+                            <li><a href="/order/switchuser/{{$old_user}}/1">Switch Back</a> </li>
+                            @endif
+                            @if(!isset($old_user))
+                            <li><a href="{{ url('/creditcard_detail') }}">Paypal Vault</a></li>
+                            @endif
+                    @else
+                            {{--*/ $role= \App\Role::find($user->role_id) /*--}}
+                        <li><a onclick="getnotification('1')"><i class="fa fa-bell"></i>@if($role->notification()->unread()->count()>0)<span class="circle" id="count"></span>@else<span id="count"></span>@endif</a> </li>
                     @endif
-                    @if(!isset($old_user))
-                    <li><a href="{{ url('/creditcard_detail') }}">Paypal Vault</a></li>
-                    @endif
-                @endif
                 @endif
                <!-- <li><a href="{{ url('/#feature') }}">Features</a></li>
                 <li><a class="{{ Auth::guest() ? '':'external' }}"
                        href="{{ Auth::guest() ? url('/#pricing') : url('member/pricing') }}"><b>Pricing</b></a></li> -->
                 <li><a href="{{ url('/#contact') }}">Contact Us</a></li>
+
+
               {{--  @foreach(getMenuItems('HEADER') as $item)
                     <li><a class="external" href="{{ url($item->url) }}"><b>{{ $item->title }}</b></a></li>
                 @endforeach --}}
@@ -146,3 +169,81 @@
         </div>
     </div>
 </nav>
+<div class="modal fade" id="notification_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                {{--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>--}}
+                <h4 class="modal-title" id="myModalLabel">Notifications</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" id="noti_div">
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="checkread()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function getnotification(role)
+    {
+
+        $.ajax({
+            headers: {
+                'X-CSRF-Token':  "{{ csrf_token() }}"
+            },
+            method: 'POST', // Type of response and matches what we said in the route
+            url: '/member/getnotification', // This is the url we gave in the route
+            data: {
+                role : role,
+            }, // a JSON object to send back
+            success: function (response) { // What to do if we succeed
+                console.log(response);
+                response = $.parseJSON(response);
+                var trHTML = '';
+                trHTML+='<thead><tr><th></th></tr></thead><tbody>';
+
+                $.each(response.notification, function (i, item) {
+
+                     trHTML += '<tr><td id="id' + item.id + '"><input type="hidden" id="role" value="'+response.role+'">' + item.subject + '</td></tr>';
+                });
+
+                trHTML+="</tbody>";
+
+                $('#noti_div').html(trHTML);
+                $("#notification_modal").modal("show");
+            },
+            error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                console.log(JSON.stringify(jqXHR));
+                console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+            }
+        });
+    }
+    function checkread() {
+        role=$("#role").val();
+        $.ajax({
+            headers: {
+                'X-CSRF-Token':  "{{ csrf_token() }}"
+            },
+            method: 'POST', // Type of response and matches what we said in the route
+            url: '/member/checkread', // This is the url we gave in the route
+            data: {
+                role:role,
+            }, // a JSON object to send back
+            success: function (response) { // What to do if we succeed
+                $("#notification_modal").modal("hide");
+                $("#count").hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                console.log(JSON.stringify(jqXHR));
+                console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+            }
+        });
+    }
+</script>

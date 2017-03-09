@@ -124,6 +124,8 @@ Route::group(['middleware' => 'web'], function () {
         Route::put('/profile/edit', ['as' => 'member.profile.update', 'uses' => 'MemberController@updateProfile']);
         Route::get('/amazoninventorylist', ['as' => 'member.amazoninventorylist', 'uses' => 'MemberController@amazoninventorylist']);
         Route::put('/addnickname', 'MemberController@addnickname');
+        Route::post('/getnotification', 'MemberController@getnotification');
+        Route::post('/checkread', 'MemberController@checkread');
     });
 
     /**
