@@ -126,6 +126,8 @@ Route::group(['middleware' => 'web'], function () {
         Route::put('/addnickname', 'MemberController@addnickname');
         Route::post('/getnotification', 'MemberController@getnotification');
         Route::post('/checkread', 'MemberController@checkread');
+        Route::get('/switchuser','MemberController@switchuser');
+        Route::post('/storeuser','MemberController@storeuser');
     });
 
     /**
@@ -193,7 +195,6 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/addterminal','OrderController@addterminal');
         Route::get('/orderlist','OrderController@orderlist');
         Route::get('/customers','OrderController@customers');
-        Route::get('/switchuser/{user_id}/{status}','OrderController@switchuser');
         Route::put('/addnotes','OrderController@addnotes');
         Route::post('/viewnotes','OrderController@viewnotes');
         Route::post('/deletenote','OrderController@deletenote');

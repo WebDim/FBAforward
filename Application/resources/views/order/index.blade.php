@@ -34,9 +34,9 @@
         </div>
         <div class="row">
             <div class="col-md-12">
+                <h4>In Progress Orders</h4>
                 <div class="table-responsive no-padding">
-                    @if(!$orders->isEmpty())
-                    <table id="data_table" class="table">
+                    <table id="inprogress_data" class="table" >
                         <thead>
                         <tr>
                             <th>Order No</th>
@@ -47,10 +47,11 @@
                         </thead>
                         <tbody>
                             @foreach($orders as $order)
+                                @if($order->is_activated==0)
                                 <tr id="tr_{{$order->order_id}}">
                                     <td>
                                         <a href="{{ url('order/details/'.$order->order_id).'/0' }}">
-                                            <b class="text-info">{{ $order->order_no }}</b>
+                                            <b class="text-info">ORD_{{ $order->order_id }}</b>
                                         </a>
                                     </td>
                                     <td>
@@ -60,38 +61,124 @@
                                         <b class="text-info">{{ $order->created_at }}</b>
                                     </td>
                                     <td>
-                                        @if($order->is_activated == 0)
                                             <a href="{{ url('order/updateshipment/'.$order->order_id) }}" class="btn btn-info">Edit</a>
                                             <a href="#" onclick="remove_order({{$order->order_id}})" class="btn btn-danger">Delete</a>
-                                        @elseif($order->is_activated == 2)
-                                            <a href="{{ url('order/downloadreport/'.$order->order_id) }}">Download Report</a>
-                                            <a onclick="approvereport({{$order->order_id}})" class="btn btn-info">Approve Inspection Report</a>
-                                        @elseif($order->is_activated==4)
-                                            {{--<a onclick="openquote({{$order->order_id}})">View Shipping Quote</a>--}}
-                                            <a href="{{ url('order/downloadquote/'.$order->order_id) }}">Download Quote</a>
 
-                                            <a onclick="approveshippingquote({{$order->order_id}})" class="btn btn-info">Approve Shipping Quote</a>
-                                        @endif
-
-                                        {{--@if($order->is_activated==1)
-                                                <a href="#" onclick="order_status({{$order->order_id}},3)" class="btn btn-info">Approve</a>
-                                                <a href="#" onclick="order_status({{$order->order_id}},4)" class="btn btn-danger">Reject</a>
-                                        @endif--}}
                                     </td>
                                 </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>
-                @else
-                    <table id="data_table" class="table">
+                </div>
+                <h4>Order Placed</h4>
+                <div class="table-responsive no-padding">
+                    <table id="place_data" class="table">
                         <thead>
-                            <tr>
-                                <th colspan="4">No Order Data Found !!</th>
-                            </tr>
+                        <tr>
+                            <th>Order No</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                        @foreach($orders as $order)
+                            @if($order->is_activated==1)
+                                <tr id="tr_{{$order->order_id}}">
+                                    <td>
+                                        <a href="{{ url('order/details/'.$order->order_id).'/0' }}">
+                                            <b class="text-info">ORD_{{ $order->order_id }}</b>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <b class="text-info">{{ $orderStatus[$order->is_activated] }}</b>
+                                    </td>
+                                    <td>
+                                        <b class="text-info">{{ $order->created_at }}</b>
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                </tr>
+                            @endif
+                        @endforeach
+                        </tbody>
                     </table>
-                @endif
+                </div>
+                <h4>Inspection Report</h4>
+                <div class="table-responsive no-padding">
+                    <table id="inspection_data" class="table">
+                        <thead>
+                        <tr>
+                            <th>Order No</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($orders as $order)
+                            @if($order->is_activated==2)
+                                <tr id="tr_{{$order->order_id}}">
+                                    <td>
+                                        <a href="{{ url('order/details/'.$order->order_id).'/0' }}">
+                                            <b class="text-info">ORD_{{ $order->order_id }}</b>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <b class="text-info">{{ $orderStatus[$order->is_activated] }}</b>
+                                    </td>
+                                    <td>
+                                        <b class="text-info">{{ $order->created_at }}</b>
+                                    </td>
+                                    <td>
+                                            <a href="{{ url('order/downloadreport/'.$order->order_id) }}">Download Report</a>
+                                            <a onclick="approvereport({{$order->order_id}})" class="btn btn-info">Approve Inspection Report</a>
+
+                                    </td>
+                                </tr>
+                            @endif
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <h4>Shipping Quote</h4>
+                <div class="table-responsive no-padding">
+                    <table id="shipping_data" class="table">
+                        <thead>
+                        <tr>
+                            <th>Order No</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($orders as $order)
+                            @if($order->is_activated==4)
+                                <tr id="tr_{{$order->order_id}}">
+                                    <td>
+                                        <a href="{{ url('order/details/'.$order->order_id).'/0' }}">
+                                            <b class="text-info">ORD_{{ $order->order_id }}</b>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <b class="text-info">{{ $orderStatus[$order->is_activated] }}</b>
+                                    </td>
+                                    <td>
+                                        <b class="text-info">{{ $order->created_at }}</b>
+                                    </td>
+                                    <td>
+                                           {{--<a onclick="openquote({{$order->order_id}})">View Shipping Quote</a>--}}
+                                            <a href="{{ url('order/downloadquote/'.$order->order_id) }}">Download Quote</a>
+                                            <a onclick="approveshippingquote({{$order->order_id}})" class="btn btn-info">Approve Shipping Quote</a>
+                                    </td>
+                                </tr>
+                            @endif
+                        @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -122,7 +209,22 @@
     {!! Html::script('assets/dist/js/datatable/responsive.bootstrap.min.js') !!}
     <script type="text/javascript">
     $(document).ready(function() {
-        $('#data_table').DataTable({});
+        $('#inprogress_data').DataTable({
+            "pageLength": 5,
+            "order": [[ 2, "desc" ]]
+        });
+        $('#place_data').DataTable({
+            "pageLength": 5,
+            "order": [[ 2, "desc" ]]
+        });
+        $('#inspection_data').DataTable({
+            "pageLength": 5,
+            "order": [[ 2, "desc" ]]
+        });
+        $('#shipping_data').DataTable({
+            "pageLength": 5,
+            "order": [[ 2, "desc" ]]
+        });
     });
     function remove_order(order_id){
         if(confirm('Are you sure you want to delete this order!')){

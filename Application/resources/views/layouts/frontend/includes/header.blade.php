@@ -33,8 +33,10 @@
                     @if('Customer' === \Auth::user()->role->name)
                                 <li><a onclick="getnotification('0')"><i class="fa fa-bell"></i>@if($user->notification()->unread()->count()>0)<span class="circle" id="count"></span>@else<span id="count"></span>@endif</a> </li>
                                 {{--*/ $old_user= session('old_user')/*--}}
+                                {{--*/$new_user=session('new_user')/*--}}
+                                {{--*/session()->forget('new_user');/*--}}
                             @if(session('old_user'))
-                            <li><a href="/order/switchuser/{{$old_user}}/1">Switch Back</a> </li>
+                            <li><a href="/member/switchuser">Switch Back</a> </li>
                             @endif
                             {{--@if(!isset($old_user))
                             <li><a href="{{ url('/creditcard_detail') }}">Paypal Vault</a></li>

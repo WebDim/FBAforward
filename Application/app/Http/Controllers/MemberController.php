@@ -200,5 +200,31 @@ class MemberController extends Controller
             Notification::whereIn('id',$status)->update($data);
 
     }
+    public function switchuser(Request $request)
+    {
+
+            $user = \Auth::user();
+            if($request->session()->get('new_user')) {
+                $request->session()->put('old_user', $user->id);
+                \Auth::loginUsingId($request->session()->get('new_user'));
+            }
+            else
+            {
+                \Auth::loginUsingId($request->session()->get('old_user'));
+                $request->session()->forget('old_user');
+                $request->session()->forget('new_user');
+            }
+            return view('member.home');
+    }
+    public function storeuser(Request $request)
+    {
+        if($request->ajax())
+        {
+            $post=$request->all();
+            $user_id=$post['user_id'];
+            $request->session()->put('new_user',$user_id);
+        }
+
+    }
 
 }

@@ -57,15 +57,15 @@
                                         <option value="1" @if($suppliers->is_inspection=='1') {{ "selected" }} @endif>Yes</option>
                                     </select>
                                     <br>
-                            <div class="form-group" @if($suppliers->is_inspection=='0' || $suppliers->is_inspection=='')  {{ "hidden" }} @endif  id="desc_div{{ $cnt }}">
-                                {!! Form::label('inspection_desc{{ $cnt }}', 'Inspection Instruction*', ['class' => 'control-label']) !!}
+                            <div  @if($suppliers->is_inspection=='0' || $suppliers->is_inspection=='')  {{ "hidden" }} @endif  id="desc_div{{ $cnt }}">
+                               {!! htmlspecialchars_decode(Form::label('inspection_desc{{ $cnt }}', 'Inspection Instruction <span class="required">*</span> ', ['class' => 'control-label'])) !!}
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>
-                                        <textarea name="inspection_desc{{ $cnt }}" id="inspection_desc{{ $cnt }}" cols="20" rows="3" class="validate[required]">{{ $suppliers->inspection_decription }}</textarea>
+                                        <textarea name="inspection_desc{{ $cnt }}" id="inspection_desc{{ $cnt }}" cols="20" rows="3" class=" form-control validate[required]">{{ $suppliers->inspection_decription }}</textarea>
                                     </div>
-                            </div>
-                                </b>
-                            </td>
+                                </div>
+
+                                </b></td>
                         </tr>
                         <input type="hidden" name="product_count{{$cnt}}" id="product_count{{$cnt}}" value="{{$product_cnt}}">
                        {{--*/ $cnt++ /*--}}

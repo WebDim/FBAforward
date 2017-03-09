@@ -45,7 +45,7 @@
                             <td>
                                 @if($user_role_id==4 || $user_role_id==9)
                                     @if($users->status=='1')
-                                    <a href="switchuser/{{$users->user_id}}/0">Switch User</a>
+                                        <a  onclick="storeuser('{{$users->user_id}}')">Switch User</a>
                                     @endif
                                 @endif
                             </td>
@@ -66,5 +66,26 @@
         $(document).ready(function() {
             $('#list').DataTable({});
         });
+        function storeuser(user_id) {
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token': "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/member/storeuser', // This is the url we gave in the route
+                data: {
+                    'user_id': user_id
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
+                    window.location.assign('{{url("/member/switchuser")}}');
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
     </script>
 @endsection

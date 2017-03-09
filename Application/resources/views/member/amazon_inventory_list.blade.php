@@ -106,7 +106,7 @@
         $('#list').DataTable({});
         });
         function getnickname(id, name) {
-            jQuery.noConflict();
+
             $("#id").val(id);
             $("#nickname").val(name);
             $("#product_nickname").modal('show');

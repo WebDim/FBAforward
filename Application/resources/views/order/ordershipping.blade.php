@@ -48,7 +48,7 @@
                             <tr id="tr_{{$order->order_id}}">
                                 <td>
                                     <a href="{{ url('order/details/'.$order->order_id.'/0/'.$order->user_id) }}">
-                                        <b class="text-info">{{ $order->order_no }}</b>
+                                        <b class="text-info">ORD_{{ $order->order_id }}</b>
                                     </a>
                                 </td>
                                 <td>
@@ -419,13 +419,13 @@
             });
         }
         function openform(order_id) {
-            jQuery.noConflict();
+
             $("#order_id").val(order_id);
             $("#openformmodal").modal('show');
 
         }
         function opennote(order_id) {
-            jQuery.noConflict();
+
             $("#orderid").val(order_id);
             $('.preloader').css("display", "block");
             $.ajax({
@@ -458,7 +458,7 @@
 
         }
         function openbill(order_id) {
-            jQuery.noConflict();
+
             $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
@@ -565,7 +565,7 @@
             });
         }
         function openreview(order_id) {
-            jQuery.noConflict();
+
             $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
@@ -612,7 +612,7 @@
             });
         }
         function viewchecklist(order_id, title) {
-            jQuery.noConflict();
+
             $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
@@ -637,7 +637,7 @@
             });
         }
         function reviewwork(order_id) {
-            jQuery.noConflict();
+
             $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
@@ -690,7 +690,7 @@
             });
         }
         function shipmentreview(order_id) {
-            jQuery.noConflict();
+
             $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
@@ -736,7 +736,7 @@
             });
         }
         function shippinglabel(order_id) {
-            jQuery.noConflict();
+
             $('.preloader').css("display", "block");
             $.ajax({
                 headers: {

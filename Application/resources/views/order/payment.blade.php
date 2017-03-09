@@ -13,7 +13,7 @@
                     {!! Form::label('pre_ship_inspect', 'Pre Shipment Inspection', ['class' => 'control-label col-md-5']) !!}
                     <div class="col-md-7">
                         <div class="input-group">
-                            {!! Form::text('pre_ship_inspect', old('pre_ship_inspect',$price['pre_shipment_inspection']), ['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Pre Shipment Inspection','onblur'=>'gettotal()']) !!}
+                            {!! Form::text('pre_ship_inspect', old('pre_ship_inspect',$price['pre_shipment_inspection']), ['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Pre Shipment Inspection','onblur'=>'gettotal()','readonly'=>true]) !!}
                         </div>
                     </div>
                 </div>
@@ -21,7 +21,7 @@
                     {!! Form::label('shipping_cost', 'Shipping Cost', ['class' => 'control-label col-md-5']) !!}
                     <div class="col-md-7">
                         <div class="input-group">
-                            {!! Form::text('shipping_cost', old('shipping_cost',$price['shipping_cost']), ['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Shipping Cost','onblur'=>'gettotal()']) !!}
+                            {!! Form::text('shipping_cost', old('shipping_cost',$price['shipping_cost']), ['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Shipping Cost','onblur'=>'gettotal()','readonly'=>true]) !!}
                         </div>
                     </div>
                 </div>
@@ -29,7 +29,7 @@
                     {!! Form::label('port_fees', 'Port Fees', ['class' => 'control-label col-md-5']) !!}
                     <div class="col-md-7">
                         <div class="input-group">
-                            {!! Form::text('port_fees', old('port_fees',$price['port_fee']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Port Fees','onblur'=>'gettotal()']) !!}
+                            {!! Form::text('port_fees', old('port_fees',$price['port_fee']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Port Fees','onblur'=>'gettotal()','readonly'=>true]) !!}
                         </div>
                     </div>
                 </div>
@@ -37,7 +37,7 @@
                     {!! Form::label('custom_brokerage', 'Custom Brokerage', ['class' => 'control-label col-md-5']) !!}
                     <div class="col-md-7">
                         <div class="input-group">
-                            {!! Form::text('custom_brokerage', old('custom_brokerage',$price['custom_brokerage']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Custom Brokerage','onblur'=>'gettotal()']) !!}
+                            {!! Form::text('custom_brokerage', old('custom_brokerage',$price['custom_brokerage']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Custom Brokerage','onblur'=>'gettotal()','readonly'=>true]) !!}
                         </div>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
                     {!! Form::label('custom_duty', 'Custom Duty', ['class' => 'control-label col-md-5']) !!}
                     <div class="col-md-7">
                         <div class="input-group">
-                            {!! Form::text('custom_duty', old('custom_duty',$price['custom_duty']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Custom Duty','onblur'=>'gettotal()']) !!}
+                            {!! Form::text('custom_duty', old('custom_duty',$price['custom_duty']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Custom Duty','onblur'=>'gettotal()','readonly'=>true]) !!}
                         </div>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                         {!! Form::label('consulting', 'Consulting Charge', ['class' => 'control-label col-md-5']) !!}
                         <div class="col-md-7">
                             <div class="input-group">
-                                {!! Form::text('consulting', old('consulting',$price['consult_charge']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Consulting Charge','onblur'=>'gettotal()']) !!}
+                                {!! Form::text('consulting', old('consulting',$price['consult_charge']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Consulting Charge','onblur'=>'gettotal()','readonly'=>true]) !!}
                             </div>
                         </div>
                     </div>
@@ -63,7 +63,7 @@
                         {!! Form::label('label_charge', 'Label Charge', ['class' => 'control-label col-md-5']) !!}
                         <div class="col-md-7">
                             <div class="input-group">
-                                {!! Form::text('label_charge', old('label_charge',$price['label_charge']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Label Charge','onblur'=>'gettotal()']) !!}
+                                {!! Form::text('label_charge', old('label_charge',$price['label_charge']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Label Charge','onblur'=>'gettotal()','readonly'=>true]) !!}
                             </div>
                         </div>
                     </div>
@@ -71,7 +71,7 @@
                         {!! Form::label('prep_forward', 'Prep Forwarding', ['class' => 'control-label col-md-5']) !!}
                         <div class="col-md-7">
                             <div class="input-group">
-                                {!! Form::text('prep_forward', old('prep_forward',$price['prep_forwarding']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Prep Forwarding','onblur'=>'gettotal()']) !!}
+                                {!! Form::text('prep_forward', old('prep_forward',$price['prep_forwarding']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Prep Forwarding','onblur'=>'gettotal()','readonly'=>true]) !!}
                             </div>
                         </div>
                     </div>
@@ -79,7 +79,7 @@
                         {!! Form::label('listing_service', 'Listing Services', ['class' => 'control-label col-md-5']) !!}
                         <div class="col-md-7">
                             <div class="input-group">
-                                {!! Form::text('listing_service', old('listing_service',$price['listing_service']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Listing Services','onblur'=>'gettotal()']) !!}
+                                {!! Form::text('listing_service', old('listing_service',$price['listing_service']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Listing Services','onblur'=>'gettotal()','readonly'=>true]) !!}
                             </div>
                         </div>
                     </div>
@@ -95,7 +95,7 @@
                         {!! Form::label('inbound_shipping', 'Inbound Shipping', ['class' => 'control-label col-md-5']) !!}
                         <div class="col-md-7">
                             <div class="input-group">
-                                {!! Form::text('inbound_shipping', old('inbound_shipping',$price['inbound_shipping']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Inbound Shipping','onblur'=>'gettotal()']) !!}
+                                {!! Form::text('inbound_shipping', old('inbound_shipping',$price['inbound_shipping']),['class' => 'form-control validate[required, custom[number]]', 'placeholder'=>'Inbound Shipping','onblur'=>'gettotal()','readonly'=>true]) !!}
                             </div>
                         </div>
                     </div>

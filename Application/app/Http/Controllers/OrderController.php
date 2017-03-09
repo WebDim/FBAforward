@@ -2596,19 +2596,7 @@ class OrderController extends Controller
                       ->get();
        return view('order.customers_detail')->with(compact('user','title','user_role_id'));
     }
-    public function switchuser(Request $request)
-    {
-       $user= \Auth::user();
-       if($request->status=='0') {
-           $request->session()->put('old_user', $user->id);
-       }
-       else
-       {
-           $request->session()->forget('old_user');
-       }
-        \Auth::loginUsingId($request->user_id);
-        return view('member.home');
-    }
+
     public function addnotes(Request $request)
     {
         $user= \Auth::user();
