@@ -62,7 +62,7 @@
                                     </td>
                                     <td>
                                             <a href="{{ url('order/updateshipment/'.$order->order_id) }}" class="btn btn-info">Edit</a>
-                                            <a href="#" onclick="remove_order({{$order->order_id}})" class="btn btn-danger">Delete</a>
+                                            <a href="javascript:void(0)" onclick="remove_order({{$order->order_id}})" class="btn btn-danger">Delete</a>
 
                                     </td>
                                 </tr>
@@ -134,7 +134,7 @@
                                     </td>
                                     <td>
                                             <a href="{{ url('order/downloadreport/'.$order->order_id) }}">Download Report</a>
-                                            <a onclick="approvereport({{$order->order_id}})" class="btn btn-info">Approve Inspection Report</a>
+                                            <a href="javascript:void(0)" onclick="approvereport({{$order->order_id}})" class="btn btn-info">Approve Inspection Report</a>
 
                                     </td>
                                 </tr>
@@ -172,7 +172,7 @@
                                     <td>
                                            {{--<a onclick="openquote({{$order->order_id}})">View Shipping Quote</a>--}}
                                             <a href="{{ url('order/downloadquote/'.$order->order_id) }}">Download Quote</a>
-                                            <a onclick="approveshippingquote({{$order->order_id}})" class="btn btn-info">Approve Shipping Quote</a>
+                                            <a href="javascript:void(0)" onclick="approveshippingquote({{$order->order_id}})" class="btn btn-info">Approve Shipping Quote</a>
                                     </td>
                                 </tr>
                             @endif

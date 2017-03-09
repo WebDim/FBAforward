@@ -31,7 +31,7 @@
                 @if (!Auth::guest())
                     {{--*/$user = \Auth::user();/*--}}
                     @if('Customer' === \Auth::user()->role->name)
-                                <li><a onclick="getnotification('0')"><i class="fa fa-bell"></i>@if($user->notification()->unread()->count()>0)<span class="circle" id="count"></span>@else<span id="count"></span>@endif</a> </li>
+                                <li><a href="javascript:void(0)" onclick="getnotification('0')"><i class="fa fa-bell"></i>@if($user->notification()->unread()->count()>0)<span class="circle" id="count"></span>@else<span id="count"></span>@endif</a> </li>
                                 {{--*/ $old_user= session('old_user')/*--}}
                                 {{--*/$new_user=session('new_user')/*--}}
                                 {{--*/session()->forget('new_user');/*--}}
@@ -43,7 +43,7 @@
                             @endif--}}
                     @else
                             {{--*/ $role= \App\Role::find($user->role_id) /*--}}
-                        <li><a onclick="getnotification('1')"><i class="fa fa-bell"></i>@if($role->notification()->unread()->count()>0)<span class="circle" id="count"></span>@else<span id="count"></span>@endif</a> </li>
+                        <li><a  href="javascript:void(0)" onclick="getnotification('1')"><i class="fa fa-bell"></i>@if($role->notification()->unread()->count()>0)<span class="circle" id="count"></span>@else<span id="count"></span>@endif</a> </li>
                     @endif
                 @endif
 

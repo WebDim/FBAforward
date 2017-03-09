@@ -53,7 +53,7 @@
                 </td>
                 <td>
                     @if($shipment_details->prep_complete=='0')
-                    <a onclick="prepcomplete({{$shipment_details->shipment_detail_id}})">Prep Complete</a>
+                    <a href="javascript:void(0)" onclick="prepcomplete({{$shipment_details->shipment_detail_id}})">Prep Complete</a>
                     @endif
                 </td>
             </tr>

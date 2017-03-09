@@ -60,7 +60,7 @@
                                 <td>
                                     @if($user_role==12)
                                         @if($order->is_activated == 1)
-                                            <a onclick="openform({{$order->order_id}})">Upload Report</a>
+                                            <a href="javascript:void(0)" onclick="openform({{$order->order_id}})">Upload Report</a>
                                         @endif
                                     @elseif($user_role==5)
                                         @if($order->is_activated==3 || $order->is_activated == 1)
@@ -77,8 +77,8 @@
                                         @endif
                                     @elseif($user_role==6)
                                         @if($order->is_activated==7)
-                                            <a onclick="openbill({{$order->order_id}})">View Lading Bill</a>
-                                            <a onclick="approvebilloflading({{$order->order_id}})" class="btn btn-info">Approve
+                                            <a href="javascript:void(0)" onclick="openbill({{$order->order_id}})">View Lading Bill</a>
+                                            <a href="javascript:void(0)" onclick="approvebilloflading({{$order->order_id}})" class="btn btn-info">Approve
                                                 Lading Bill</a>
                                         @elseif($order->is_activated==9)
                                             <a href="{{ url('order/customclearanceform/'.$order->order_id)}}"
@@ -88,50 +88,50 @@
                                                class="btn btn-info">Delivery Booking</a>
                                         @endif
                                     @elseif($user_role==9)
-                                        <a onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
+                                        <a href="javascript:void(0)" onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
                                     @elseif($user_role==10)
                                         @if($order->is_activated==11)
                                             <a href="{{ url('order/warehousecheckinform/'.$order->order_id)}}"
                                                class="btn btn-info">Warehouse Check In</a>
                                         @elseif($order->is_activated==13)
-                                            <a onclick="viewchecklist('{{$order->order_id}}','Check List')">View Check
+                                            <a href="javascript:void(0)" onclick="viewchecklist('{{$order->order_id}}','Check List')">View Check
                                                 List</a>
-                                            <a onclick="order_status('{{$order->order_id}}','14')" class="btn btn-info">Submit</a>
+                                            <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','14')" class="btn btn-info">Submit</a>
                                         @elseif($order->is_activated==15)
-                                            <a onclick="shippinglabel('{{$order->order_id}}')">Print Shipping Labels</a>
-                                            <a onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Submit</a>
+                                            <a href="javascript:void(0)" onclick="shippinglabel('{{$order->order_id}}')">Print Shipping Labels</a>
+                                            <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Submit</a>
                                             {{-- <a onclick="verifylabel({{$order->order_id}})" class="btn btn-info">Verify Label Complete</a>
                                              <a onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Verify Shipment Load On Truck</a>
                                              --}}
                                         @endif
                                     @elseif($user_role==8)
                                         @if($order->is_activated==12)
-                                            <a onclick="openreview({{$order->order_id}})">Review Warehouse Check In</a>
-                                            <a onclick="opennote({{$order->order_id}})" class="btn btn-info">Add
+                                            <a href="javascript:void(0)" onclick="openreview({{$order->order_id}})">Review Warehouse Check In</a>
+                                            <a href="javascript:void(0)" onclick="opennote({{$order->order_id}})" class="btn btn-info">Add
                                                 Notes</a>
                                             @if($order->shipmentplan==0)
                                                 <a href="{{ url('order/createshipments/'.$order->order_id)}}"
                                                    class="btn btn-info">create shipment</a>
                                             @elseif($order->shipmentplan==1)
-                                                <a onclick="order_status('{{$order->order_id}}','13')"
+                                                <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','13')"
                                                    class="btn btn-info">Review Complete</a>
                                             @endif
                                         @elseif($order->is_activated==16)
-                                            <a onclick="shipmentreview('{{$order->order_id}}')">Review Shipment</a>
+                                            <a href="javascript:void(0)" onclick="shipmentreview('{{$order->order_id}}')">Review Shipment</a>
                                             @if($order->verify_status==0)
-                                                <a onclick="verifystatus('{{$order->order_id}}')" class="btn btn-info">Verify
+                                                <a href="javascript:void(0)" onclick="verifystatus('{{$order->order_id}}')" class="btn btn-info">Verify
                                                     Changes</a>
                                             @endif
-                                            <a onclick="order_status('{{$order->order_id}}','17')" class="btn btn-info">Complete</a>
+                                            <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','17')" class="btn btn-info">Complete</a>
                                         @endif
 
                                     @elseif($user_role==11)
                                         @if($order->is_activated==14)
-                                            <a onclick="viewchecklist('{{$order->order_id}}','Review Order')">Review
+                                            <a href="javascript:void(0)" onclick="viewchecklist('{{$order->order_id}}','Review Order')">Review
                                                 Order Requirement</a><br>
-                                            <a onclick="reviewwork('{{$order->order_id}}')">Review Work Completed
+                                            <a href="javascript:void(0)" onclick="reviewwork('{{$order->order_id}}')">Review Work Completed
                                                 List</a><br>
-                                            <a onclick="order_status('{{$order->order_id}}','15')" class="btn btn-info">Approve
+                                            <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','15')" class="btn btn-info">Approve
                                                 Work Completed</a>
                                         @endif
 

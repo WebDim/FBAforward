@@ -27,6 +27,7 @@
                 <thead>
                 <tr>
                     <th class="col-md-6"><span>Product</span></th>
+                    <th><span></span></th>
                     <th><span>Shipping Method Name</span></th>
                     <th><span>Other Label</span></th>
                     <th><span>Amazon Destination</span></th>
@@ -39,8 +40,8 @@
                 @foreach($shipment_detail as $shipment_details)
                     @if($shipment_details->shipment_id==$shipments->shipment_id)
                         <tr>
-                            <td>@if($shipment_details->product_nick_name==''){{ $shipment_details->product_name}} @else {{$shipment_details->product_nick_name}} @endif @if($user_role==10)
-                                    <a onclick="getlabel('{{$shipment_details->fnsku}}')">Print Label</a>@endif</td>
+                            <td>@if($shipment_details->product_nick_name==''){{ $shipment_details->product_name}} @else {{$shipment_details->product_nick_name}} @endif </td>
+                            <td>@if($user_role==10) <a href="javascript:void(0)" onclick="getlabel('{{$shipment_details->fnsku}}')">Print Label</a>@endif</td>
                             <td>{{ $shipment_details->shipping_name }}</td>
                             <td>
                                 @foreach($other_label_detail as $other_label_details)
@@ -48,7 +49,7 @@
                                         @if($other_label_details->label_id=='1')
                                             Suffocation Warning
                                         @elseif($other_label_details->label_id=='2')
-                                            This is a Set @if($user_role==10)<a onclick="getotherlabel()">Print
+                                            This is a Set @if($user_role==10)<a href="javascript:void(0)" onclick="getotherlabel()">Print
                                                 Label</a>@endif
                                         @elseif($other_label_details->label_id=='3')
                                             Blank
@@ -74,7 +75,7 @@
                             </td>
                             <td id="prep{{$shipment_details->shipment_detail_id}}">
                                 @if($shipment_details->prep_complete=='0')
-                                    <a onclick="prepcomplete({{$shipment_details->shipment_detail_id}})">Prep
+                                    <a href="javascript:void(0)" onclick="prepcomplete({{$shipment_details->shipment_detail_id}})">Prep
                                         Complete</a>
                                 @endif
                             </td>

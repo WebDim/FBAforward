@@ -45,7 +45,7 @@
                             <td>
                                 @if($user_role_id==4 || $user_role_id==9)
                                     @if($users->status=='1')
-                                        <a  onclick="storeuser('{{$users->user_id}}')">Switch User</a>
+                                        <a  href="javascript:void(0)" onclick="storeuser('{{$users->user_id}}')">Switch User</a>
                                     @endif
                                 @endif
                             </td>
