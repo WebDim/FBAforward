@@ -308,6 +308,7 @@
             cvv=$("#cvv").val();
             first_name=$("#first_name").val();
             last_name=$("#last_name").val();
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
                     'X-CSRF-Token': $('input[name="_token"]').val()
@@ -324,11 +325,13 @@
 
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     console.log(response);
                     alert(" Your credit card information successfully store on paypal vault Successfully");
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
@@ -358,6 +361,7 @@
                 flag=false;
             }
             if(flag==true) {
+                $('.preloader').css("display", "block");
                 $.ajax({
                     headers: {
                         'X-CSRF-Token': $('input[name="_token"]').val()
@@ -374,11 +378,13 @@
 
                     }, // a JSON object to send back
                     success: function (response) { // What to do if we succeed
+                        $('.preloader').css("display", "none");
                         console.log(response);
                         alert("Billing Address added Successfully");
                         location.reload();
                     },
                     error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                        $('.preloader').css("display", "none");
                         console.log(JSON.stringify(jqXHR));
                         console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                     }

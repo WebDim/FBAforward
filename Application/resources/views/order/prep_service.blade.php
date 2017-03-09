@@ -129,6 +129,7 @@
                 if($('#service'+no+'_'+sub_no).val()==2) {
                     $("#other_label_div" + no).hide();
                     label_detail_id = $("#other_label_detail_id" + no).val();
+                    $('.preloader').css("display", "block");
                     $.ajax({
                         headers: {
                             'X-CSRF-Token': $('input[name="_token"]').val()
@@ -140,11 +141,13 @@
 
                         }, // a JSON object to send back
                         success: function (response) { // What to do if we succeed
+                            $('.preloader').css("display", "none");
                             console.log(response);
                             //alert("product deleted Successfully");
 
                         },
                         error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                            $('.preloader').css("display", "none");
                             console.log(JSON.stringify(jqXHR));
                             console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                         }
