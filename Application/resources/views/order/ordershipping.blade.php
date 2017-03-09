@@ -5,18 +5,23 @@
         .margin-bottom {
             margin-bottom: 5px;
         }
+
         .modal-dialog {
             width: 80%;
             height: 80%;
             margin: 3;
             padding: 0;
         }
+
         .modal-content {
             height: auto;
             min-height: 80%;
             border-radius: 0;
         }
     </style>
+    {!! Html::style('assets/dist/css/datatable/dataTables.bootstrap.min.css') !!}
+    {!! Html::style('assets/dist/css/datatable/responsive.bootstrap.min.css') !!}
+    {!! Html::style('assets/dist/css/datatable/dataTablesCustom.css') !!}
 @endsection
 @section('content')
     <!-- Main content -->
@@ -29,114 +34,131 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="table-responsive no-padding">
-                        <table id="data_table" class="table">
-                            <thead>
-                            <tr>
-                                <th>Order No</th>
-                                <th>Status</th>
-                                <th>Created At</th>
-                                <th>Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($orders as $order)
-                                <tr id="tr_{{$order->order_id}}">
-                                    <td>
-                                        <a href="{{ url('order/details/'.$order->order_id.'/0/'.$order->user_id) }}">
-                                            <b class="text-info">{{ $order->order_no }}</b>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <b class="text-info">{{ $orderStatus[$order->is_activated] }}</b>
-                                    </td>
-                                    <td>
-                                        <b class="text-info">{{ $order->created_at }}</b>
-                                    </td>
-                                    <td>
-                                        @if($user_role==12)
-                                            @if($order->is_activated == 1)
+                    <table id="data_table" class="table">
+                        <thead>
+                        <tr>
+                            <th>Order No</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($orders as $order)
+                            <tr id="tr_{{$order->order_id}}">
+                                <td>
+                                    <a href="{{ url('order/details/'.$order->order_id.'/0/'.$order->user_id) }}">
+                                        <b class="text-info">{{ $order->order_no }}</b>
+                                    </a>
+                                </td>
+                                <td>
+                                    <b class="text-info">{{ $orderStatus[$order->is_activated] }}</b>
+                                </td>
+                                <td>
+                                    <b class="text-info">{{ $order->created_at }}</b>
+                                </td>
+                                <td>
+                                    @if($user_role==12)
+                                        @if($order->is_activated == 1)
                                             <a onclick="openform({{$order->order_id}})">Upload Report</a>
-                                            @endif
-                                        @elseif($user_role==5)
-                                            @if($order->is_activated==3 || $order->is_activated == 1)
-                                            <a href="{{ url('order/shippingquoteform/'.$order->order_id)}}" class="btn btn-info">Shipping Quote</a>
-                                            @endif
-                                            @if($order->is_activated==6)
-                                            <a href="{{ url('order/billofladingform/'.$order->order_id)}}" class="btn btn-info">Bill Of Lading</a>
-                                            @endif
-                                            @if($order->is_activated==8)
-                                            <a href="{{ url('order/prealertform/'.$order->order_id)}}" class="btn btn-info">Shipment Pre-Alert</a>
-                                            @endif
-                                        @elseif($user_role==6)
-                                            @if($order->is_activated==7)
-                                            <a onclick="openbill({{$order->order_id}})">View Lading Bill</a>
-                                            <a onclick="approvebilloflading({{$order->order_id}})" class="btn btn-info">Approve Lading Bill</a>
-                                            @elseif($order->is_activated==9)
-                                            <a href="{{ url('order/customclearanceform/'.$order->order_id)}}" class="btn btn-info">Customs Clearance</a>
-                                            @elseif($order->is_activated==10)
-                                                <a href="{{ url('order/deliverybookingform/'.$order->order_id)}}" class="btn btn-info">Delivery Booking</a>
-                                            @endif
-                                        @elseif($user_role==9)
-                                            <a onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
-                                        @elseif($user_role==10)
-                                            @if($order->is_activated==11)
-                                                <a href="{{ url('order/warehousecheckinform/'.$order->order_id)}}" class="btn btn-info">Warehouse Check In</a>
-                                            @elseif($order->is_activated==13)
-                                                <a onclick="viewchecklist('{{$order->order_id}}','Check List')">View Check List</a>
-                                                <a onclick="order_status('{{$order->order_id}}','14')" class="btn btn-info">Submit</a>
-                                            @elseif($order->is_activated==15)
-                                                <a onclick="shippinglabel('{{$order->order_id}}')">Print Shipping Labels</a>
-                                                <a onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Submit</a>
-                                               {{-- <a onclick="verifylabel({{$order->order_id}})" class="btn btn-info">Verify Label Complete</a>
-                                                <a onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Verify Shipment Load On Truck</a>
-                                                --}}
-                                            @endif
-                                        @elseif($user_role==8)
-                                            @if($order->is_activated==12)
-                                                <a onclick="openreview({{$order->order_id}})">Review Warehouse Check In</a>
-                                                <a onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
-                                                @if($order->shipmentplan==0)
-                                                <a href="{{ url('order/createshipments/'.$order->order_id)}}" class="btn btn-info">create shipment</a>
-                                                @elseif($order->shipmentplan==1)
-                                                <a onclick="order_status('{{$order->order_id}}','13')" class="btn btn-info">Review Complete</a>
-                                                @endif
-                                            @elseif($order->is_activated==16)
-                                                <a onclick="shipmentreview('{{$order->order_id}}')">Review Shipment</a>
-                                               @if($order->verify_status==0)
-                                                <a onclick="verifystatus('{{$order->order_id}}')" class="btn btn-info">Verify Changes</a>
-                                                @endif
-                                                <a onclick="order_status('{{$order->order_id}}','17')" class="btn btn-info">Complete</a>
-                                            @endif
-
-                                        @elseif($user_role==11)
-                                            @if($order->is_activated==14)
-                                             <a onclick="viewchecklist('{{$order->order_id}}','Review Order')">Review Order Requirement</a><br>
-                                             <a onclick="reviewwork('{{$order->order_id}}')">Review Work Completed List</a><br>
-                                             <a onclick="order_status('{{$order->order_id}}','15')" class="btn btn-info">Approve Work Completed</a>
-                                            @endif
-
                                         @endif
-                                        {{--@if($order->is_activated == 3 && $order->shipmentplan==0)
-                                            <a href="#" onclick="order_shipping({{$order->order_id}},{{$order->user_id}})" class="btn btn-info">Create Shipment</a>
+                                    @elseif($user_role==5)
+                                        @if($order->is_activated==3 || $order->is_activated == 1)
+                                            <a href="{{ url('order/shippingquoteform/'.$order->order_id)}}"
+                                               class="btn btn-info">Shipping Quote</a>
+                                        @endif
+                                        @if($order->is_activated==6)
+                                            <a href="{{ url('order/billofladingform/'.$order->order_id)}}"
+                                               class="btn btn-info">Bill Of Lading</a>
+                                        @endif
+                                        @if($order->is_activated==8)
+                                            <a href="{{ url('order/prealertform/'.$order->order_id)}}"
+                                               class="btn btn-info">Shipment Pre-Alert</a>
+                                        @endif
+                                    @elseif($user_role==6)
+                                        @if($order->is_activated==7)
+                                            <a onclick="openbill({{$order->order_id}})">View Lading Bill</a>
+                                            <a onclick="approvebilloflading({{$order->order_id}})" class="btn btn-info">Approve
+                                                Lading Bill</a>
+                                        @elseif($order->is_activated==9)
+                                            <a href="{{ url('order/customclearanceform/'.$order->order_id)}}"
+                                               class="btn btn-info">Customs Clearance</a>
+                                        @elseif($order->is_activated==10)
+                                            <a href="{{ url('order/deliverybookingform/'.$order->order_id)}}"
+                                               class="btn btn-info">Delivery Booking</a>
+                                        @endif
+                                    @elseif($user_role==9)
+                                        <a onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
+                                    @elseif($user_role==10)
+                                        @if($order->is_activated==11)
+                                            <a href="{{ url('order/warehousecheckinform/'.$order->order_id)}}"
+                                               class="btn btn-info">Warehouse Check In</a>
+                                        @elseif($order->is_activated==13)
+                                            <a onclick="viewchecklist('{{$order->order_id}}','Check List')">View Check
+                                                List</a>
+                                            <a onclick="order_status('{{$order->order_id}}','14')" class="btn btn-info">Submit</a>
+                                        @elseif($order->is_activated==15)
+                                            <a onclick="shippinglabel('{{$order->order_id}}')">Print Shipping Labels</a>
+                                            <a onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Submit</a>
+                                            {{-- <a onclick="verifylabel({{$order->order_id}})" class="btn btn-info">Verify Label Complete</a>
+                                             <a onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Verify Shipment Load On Truck</a>
+                                             --}}
+                                        @endif
+                                    @elseif($user_role==8)
+                                        @if($order->is_activated==12)
+                                            <a onclick="openreview({{$order->order_id}})">Review Warehouse Check In</a>
+                                            <a onclick="opennote({{$order->order_id}})" class="btn btn-info">Add
+                                                Notes</a>
+                                            @if($order->shipmentplan==0)
+                                                <a href="{{ url('order/createshipments/'.$order->order_id)}}"
+                                                   class="btn btn-info">create shipment</a>
+                                            @elseif($order->shipmentplan==1)
+                                                <a onclick="order_status('{{$order->order_id}}','13')"
+                                                   class="btn btn-info">Review Complete</a>
+                                            @endif
+                                        @elseif($order->is_activated==16)
+                                            <a onclick="shipmentreview('{{$order->order_id}}')">Review Shipment</a>
+                                            @if($order->verify_status==0)
+                                                <a onclick="verifystatus('{{$order->order_id}}')" class="btn btn-info">Verify
+                                                    Changes</a>
+                                            @endif
+                                            <a onclick="order_status('{{$order->order_id}}','17')" class="btn btn-info">Complete</a>
+                                        @endif
 
-                                        @endif--}}
-                                    </td>
-                                </tr>
-                            @endforeach
+                                    @elseif($user_role==11)
+                                        @if($order->is_activated==14)
+                                            <a onclick="viewchecklist('{{$order->order_id}}','Review Order')">Review
+                                                Order Requirement</a><br>
+                                            <a onclick="reviewwork('{{$order->order_id}}')">Review Work Completed
+                                                List</a><br>
+                                            <a onclick="order_status('{{$order->order_id}}','15')" class="btn btn-info">Approve
+                                                Work Completed</a>
+                                        @endif
 
-                            </tbody>
-                        </table>
+                                    @endif
+                                    {{--@if($order->is_activated == 3 && $order->shipmentplan==0)
+                                        <a href="#" onclick="order_shipping({{$order->order_id}},{{$order->user_id}})" class="btn btn-info">Create Shipment</a>
+
+                                    @endif--}}
+                                </td>
+                            </tr>
+                        @endforeach
+
+                        </tbody>
+                    </table>
 
                 </div>
             </div>
         </div>
     </section>
     <!-- /.content -->
-    <div class="modal fade" id="openformmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal fade" id="openformmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true" style="display: none;">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
                     <h4 class="modal-title" id="myModalLabel">Upload Inspection Report</h4>
                 </div>
                 <div class="modal-body">
@@ -149,17 +171,17 @@
                                         {!! Form::hidden('order_id',old('order_id'), ['id'=>'order_id']) !!}
                                         {!! htmlspecialchars_decode(Form::label('report', 'Upload Report<span class="required">*</span> ',['class' => 'control-label col-md-5'])) !!}
                                         <div class="col-md-7">
-                                        <div class="input-group">
-                                            {!! Form::file('report', old('report'), ['class' => 'validate[required]']) !!}
-                                        </div>
+                                            <div class="input-group">
+                                                {!! Form::file('report', old('report'), ['class' => 'validate[required]']) !!}
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         {!! Form::label('', '',['class' => 'control-label col-md-5']) !!}
                                         <div class="col-md-7">
-                                        <div class="input-group">
-                                            {!! Form::submit('  Next  ', ['class'=>'btn btn-primary',  'id'=>'add']) !!}
-                                        </div>
+                                            <div class="input-group">
+                                                {!! Form::submit('  Next  ', ['class'=>'btn btn-primary',  'id'=>'add']) !!}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -172,11 +194,13 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="openbill" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal fade" id="openbill" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+         style="display: none;">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
                     <h4 class="modal-title" id="myModalLabel">View Lading Bill</h4>
                 </div>
                 <div class="modal-body">
@@ -189,11 +213,13 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="opennote" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal fade" id="opennote" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+         style="display: none;">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
                     <h4 class="modal-title" id="myModalLabel">Add Notes</h4>
                 </div>
                 <div class="modal-body">
@@ -242,11 +268,13 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="openreview" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal fade" id="openreview" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true" style="display: none;">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
                     <h4 class="modal-title" id="myModalLabel">Review Warehouse Check In</h4>
                 </div>
                 <div class="modal-body">
@@ -259,11 +287,13 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="checklistview" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal fade" id="checklistview" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true" style="display: none;">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
                     <h4 class="modal-title" id="myLabel"></h4>
                 </div>
                 <div class="modal-body">
@@ -276,11 +306,13 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="review_work" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal fade" id="review_work" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true" style="display: none;">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
                     <h4 class="modal-title" id="myModalLabel">Review Work Completed List</h4>
                 </div>
                 <div class="modal-body">
@@ -293,11 +325,13 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="shipment_review" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal fade" id="shipment_review" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true" style="display: none;">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
                     <h4 class="modal-title" id="myModalLabel">Shipment Review</h4>
                 </div>
                 <div class="modal-body">
@@ -310,11 +344,13 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="shipment_label" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal fade" id="shipment_label" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true" style="display: none;">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
                     <h4 class="modal-title" id="myModalLabel">Shipping Label</h4>
                 </div>
                 <div class="modal-body">
@@ -327,11 +363,13 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="barcode" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal fade" id="barcode" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+         style="display: none;">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
                     <h4 class="modal-title" id="myModalLabel">Barcode</h4>
                 </div>
                 <div class="modal-body">
@@ -346,53 +384,53 @@
     </div>
 @endsection
 @section('js')
-    <link href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.css" rel="stylesheet">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
+    {!! Html::script('assets/dist/js/datatable/jquery.dataTables.min.js') !!}
+    {!! Html::script('assets/dist/js/datatable/dataTables.bootstrap.min.js') !!}
+    {!! Html::script('assets/dist/js/datatable/dataTables.responsive.min.js') !!}
+    {!! Html::script('assets/dist/js/datatable/responsive.bootstrap.min.js') !!}
     <script type="text/javascript">
-        $(document).ready(function() {
-            $('#data_table').DataTable({
-            });
+        $(document).ready(function () {
+            $('#data_table').DataTable({});
         });
-        function order_shipping(order_id,user_id){
-
-                $.ajax({
-                    headers: {
-                        'X-CSRF-Token':  "{{ csrf_token() }}"
-                    },
-                    method: 'POST', // Type of response and matches what we said in the route
-                    url: '/order/createshipments', // This is the url we gave in the route
-                    data: {
-                        'order_id': order_id,
-                        'user_id': user_id
-                    }, // a JSON object to send back
-                    success: function (response) { // What to do if we succeed
-                        console.log(response);
-                        alert('Shipment created');
-
-
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
-                        console.log(JSON.stringify(jqXHR));
-                        console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
-                    }
-                });
-        }
-        function openform(order_id)
-        {
-            jQuery.noConflict();
-            $("#order_id").val(order_id);
-         $("#openformmodal").modal('show');
-
-        }
-        function opennote(order_id)
-        {
-            jQuery.noConflict();
-            $("#orderid").val(order_id);
-
+        function order_shipping(order_id, user_id) {
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
+                },
+                method: 'POST', // Type of response and matches what we said in the route
+                url: '/order/createshipments', // This is the url we gave in the route
+                data: {
+                    'order_id': order_id,
+                    'user_id': user_id
+                }, // a JSON object to send back
+                success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
+                    $('.preloader').css("display", "none");
+                    console.log(response);
+                    alert('Shipment created');
+                },
+                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
+                    $('.preloader').css("display", "none");
+                    console.log(JSON.stringify(jqXHR));
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                }
+            });
+        }
+        function openform(order_id) {
+            jQuery.noConflict();
+            $("#order_id").val(order_id);
+            $("#openformmodal").modal('show');
+
+        }
+        function opennote(order_id) {
+            jQuery.noConflict();
+            $("#orderid").val(order_id);
+            $('.preloader').css("display", "block");
+            $.ajax({
+                headers: {
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/viewnotes', // This is the url we gave in the route
@@ -400,16 +438,18 @@
                     'order_id': order_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     response = $.parseJSON(response);
                     var trHTML = '';
-                    trHTML+='<thead><tr><th>Shiping Notes</th><th>Prep Notes</th><th>Action</th></tr></thead><tbody>';
+                    trHTML += '<thead><tr><th>Shiping Notes</th><th>Prep Notes</th><th>Action</th></tr></thead><tbody>';
                     $.each(response, function (i, item) {
-                        trHTML += '<tr><td><input type="hidden" name="id'+i+'" id="id'+i+'" value="'+item.id+'"><input type="text" name="shipping_note'+i+'" id="shipping_note'+i+'" value="'+item.shipping_notes+'" hidden>' + item.shipping_notes + '</td><td><input type="text" name="prep_note'+i+'" id="prep_note'+i+'" value="'+item.prep_notes+'" hidden>' + item.prep_notes + '</td><td><i class="fa fa-floppy-o" id="save'+i+'" style="display: none" onclick="savenote('+i+')"></i>&nbsp; <i class="fa fa-pencil" id="edit'+i+'" onclick="editnote('+i+')"></i>&nbsp; <i class="fa fa-trash" onclick="deletenote('+i+')"></i></td></tr>';
+                        trHTML += '<tr><td><input type="hidden" name="id' + i + '" id="id' + i + '" value="' + item.id + '"><input type="text" name="shipping_note' + i + '" id="shipping_note' + i + '" value="' + item.shipping_notes + '" hidden>' + item.shipping_notes + '</td><td><input type="text" name="prep_note' + i + '" id="prep_note' + i + '" value="' + item.prep_notes + '" hidden>' + item.prep_notes + '</td><td><i class="fa fa-floppy-o" id="save' + i + '" style="display: none" onclick="savenote(' + i + ')"></i>&nbsp; <i class="fa fa-pencil" id="edit' + i + '" onclick="editnote(' + i + ')"></i>&nbsp; <i class="fa fa-trash" onclick="deletenote(' + i + ')"></i></td></tr>';
                     });
-                    trHTML+="</tbody>";
+                    trHTML += "</tbody>";
                     $('#note_list').html(trHTML);
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
@@ -417,12 +457,12 @@
             $("#opennote").modal('show');
 
         }
-        function openbill(order_id)
-        {
+        function openbill(order_id) {
             jQuery.noConflict();
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/viewbilloflading', // This is the url we gave in the route
@@ -430,20 +470,22 @@
                     'order_id': order_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     $('#main').html(response);
                     $("#openbill").modal('show');
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
         }
-        function approvebilloflading(order_id)
-        {
+        function approvebilloflading(order_id) {
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/approvebilloflading', // This is the url we gave in the route
@@ -451,22 +493,24 @@
                     'order_id': order_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     console.log(response);
                     //alert("Report Approved");
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
         }
-        function deletenote(no)
-        {
-            note_id=$("#id"+no).val();
+        function deletenote(no) {
+            note_id = $("#id" + no).val();
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/deletenote', // This is the url we gave in the route
@@ -474,55 +518,58 @@
                     'note_id': note_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     //console.log(response);
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
         }
-        function editnote(no)
-        {
-            note_id=$("#id"+no).val();
-            $("#shipping_note"+no).show();
-            $("#prep_note"+no).show();
-            $("#save"+no).show();
-            $("#edit"+no).hide();
+        function editnote(no) {
+            note_id = $("#id" + no).val();
+            $("#shipping_note" + no).show();
+            $("#prep_note" + no).show();
+            $("#save" + no).show();
+            $("#edit" + no).hide();
         }
-        function savenote(no)
-        {
-            note_id=$("#id"+no).val();
-            shipping_note=$("#shipping_note"+no).val();
-            prep_note=$("#prep_note"+no).val();
+        function savenote(no) {
+            note_id = $("#id" + no).val();
+            shipping_note = $("#shipping_note" + no).val();
+            prep_note = $("#prep_note" + no).val();
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/savenote', // This is the url we gave in the route
                 data: {
                     'note_id': note_id,
-                    'shipping_note':shipping_note,
-                    'prep_note' : prep_note
+                    'shipping_note': shipping_note,
+                    'prep_note': prep_note
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     //console.log(response);
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
         }
-        function openreview(order_id)
-        {
+        function openreview(order_id) {
             jQuery.noConflict();
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/warehousecheckinreview', // This is the url we gave in the route
@@ -530,20 +577,22 @@
                     'order_id': order_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     $('#review').html(response);
                     $("#openreview").modal('show');
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
         }
-        function order_status(order_id, status)
-        {
+        function order_status(order_id, status) {
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/orderstatus', // This is the url we gave in the route
@@ -552,20 +601,22 @@
                     'status': status
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
         }
-        function viewchecklist(order_id,title)
-        {
+        function viewchecklist(order_id, title) {
             jQuery.noConflict();
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/viewchecklist', // This is the url we gave in the route
@@ -573,22 +624,24 @@
                     'order_id': order_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     $('#checklist').html(response);
                     $('#myLabel').text(title);
                     $("#checklistview").modal('show');
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
         }
-        function reviewwork(order_id)
-        {
+        function reviewwork(order_id) {
             jQuery.noConflict();
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/reviewwork', // This is the url we gave in the route
@@ -596,51 +649,52 @@
                     'order_id': order_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     $('#worklist').html(response);
                     $("#review_work").modal('show');
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
         }
-        function verifyshipment(shipment_id,status)
-        {
-
+        function verifyshipment(shipment_id, status) {
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/verifylabel', // This is the url we gave in the route
                 data: {
                     'shipment_id': shipment_id,
-                    'status':status
+                    'status': status
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
-
+                    $('.preloader').css("display", "none");
                     if (response == '2') {
                         $("#label" + shipment_id).hide();
                         $("#ship_load" + shipment_id).show();
                     }
-                    else if (response == '3')
-                    {
+                    else if (response == '3') {
                         $("#label_tr").hide();
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
         }
-        function shipmentreview(order_id)
-        {
+        function shipmentreview(order_id) {
             jQuery.noConflict();
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/shipmentreview', // This is the url we gave in the route
@@ -648,20 +702,22 @@
                     'order_id': order_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     $('#shipment').html(response);
                     $("#shipment_review").modal('show');
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
         }
-        function verifystatus(order_id)
-        {
+        function verifystatus(order_id) {
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/verifystatus', // This is the url we gave in the route
@@ -669,20 +725,22 @@
                     'order_id': order_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
         }
-        function shippinglabel(order_id)
-        {
+        function shippinglabel(order_id) {
             jQuery.noConflict();
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/shippinglabel', // This is the url we gave in the route
@@ -690,20 +748,22 @@
                     'order_id': order_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     $('#label').html(response);
                     $("#shipment_label").modal('show');
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
         }
-        function getlabel(fnsku)
-        {
+        function getlabel(fnsku) {
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/getlabel', // This is the url we gave in the route
@@ -711,6 +771,7 @@
                     'fnsku': fnsku,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     $('#barcode_div').html(response);
                     $("#barcode").modal('show');
                     var prtContent = document.getElementById("barcode_div");
@@ -722,25 +783,28 @@
                     WinPrint.close();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
         }
-        function getotherlabel()
-        {
+        function getotherlabel() {
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
-                    'X-CSRF-Token':  "{{ csrf_token() }}"
+                    'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/order/getotherlabel', // This is the url we gave in the route
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     $('#barcode_div').html(response);
                     $("#barcode").modal('show');
                     $("#barcode").modal.print();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }

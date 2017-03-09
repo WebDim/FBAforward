@@ -8,6 +8,9 @@
             margin-bottom: 5px;
         }
     </style>
+    {!! Html::style('assets/dist/css/datatable/dataTables.bootstrap.min.css') !!}
+    {!! Html::style('assets/dist/css/datatable/responsive.bootstrap.min.css') !!}
+    {!! Html::style('assets/dist/css/datatable/dataTablesCustom.css') !!}
 @endsection
 @section('content')
     <div class="row">
@@ -24,27 +27,27 @@
                             <th><span>&nbsp;</span></th>
                             <th><span>Product Name</span></th>
                             <th><span>Nick Name</span></th>
-                            <th><span>Condition</span></th>
+                            {{--<th><span>Condition</span></th>--}}
                             <th><span>Total Supply Quantity</span></th>
-                            <th><span>FNSKU</span></th>
+                            {{--<th><span>FNSKU</span></th>--}}
                             <th><span>In Stock Supply Quantity</span></th>
                             <th><span>ASIN</span></th>
-                            <th><span>SellerSKU</span></th>
+                            {{--<th><span>SellerSKU</span></th>--}}
                             <th>Action</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach($inventory_list as $list)
                         <tr>
-                            <td><img src={{ $list->image_path }} style="width:500px;height:100px" ></td>
+                            <td><img src="{{ ($list->image_path ? $list->image_path : url('/').'/uploads/avatars/avatar.png' ) }}" style="width:500px;height:100px" ></td>
                             <td><b class="text-info">{{ $list->product_name }}</b></td>
                             <td><b class="text-info">{{ $list->product_nick_name }}</b></td>
-                            <td><b class="text-info">{{ $list->condition }}</b></td>
+                            {{--<td><b class="text-info">{{ $list->condition }}</b></td>--}}
                             <td><b class="text-info">{{ $list->total_supply_quantity  }}</b></td>
-                            <td><b class="text-info">{{ $list->FNSKU }}</b></td>
+                            {{--<td><b class="text-info">{{ $list->FNSKU }}</b></td>--}}
                             <td><b class="text-info">{{ $list->instock_supply_quantity }}</b></td>
-                            <td><b class="text-info">{{ $list->ASIN  }}</b></td>
-                            <td><b class="text-info">{{ $list->sellerSKU  }}</b></td>
+                            <td><b class="text-info"><a href="https://www.amazon.com/dp/{{ $list->ASIN  }}" target="_blank">{{ $list->ASIN  }}</a></b></td>
+                            {{--<td><b class="text-info">{{ $list->sellerSKU  }}</b></td>--}}
                             <td><a onclick="getnickname('{{$list->id}}','{{$list->product_nick_name}}')" class="btn btn-info">@if($list->product_nick_name == '')Create @else Update @endif nick name</a></td>
                         </tr>
                         @endforeach
@@ -94,9 +97,10 @@
     </div>
 @endsection
 @section('js')
-    <link href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.css" rel="stylesheet">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
+    {!! Html::script('assets/dist/js/datatable/jquery.dataTables.min.js') !!}
+    {!! Html::script('assets/dist/js/datatable/dataTables.bootstrap.min.js') !!}
+    {!! Html::script('assets/dist/js/datatable/dataTables.responsive.min.js') !!}
+    {!! Html::script('assets/dist/js/datatable/responsive.bootstrap.min.js') !!}
     <script type="text/javascript">
         $(document).ready(function() {
         $('#list').DataTable({});

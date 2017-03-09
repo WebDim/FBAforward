@@ -78,48 +78,48 @@
                 </div><!-- .col-md-6 -->
             </div><!-- .row -->
 
-            <div class="row" >
+            <div class="row">
                 <div class="col-md-6">
-                   {{-- <div class="form-group">
-                        {!! Form::label('mobile', 'Mobile', ['class' => 'control-label col-md-3']) !!}
-                        <div class="col-md-9">
-                            <div class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-mobile"></i></span>
-                                {!! Form::text('mobile', old('mobile', $user->mobile), ['class' => 'form-control', 'placeholder'=>'Mobile']) !!}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('job_title', 'Job Title', ['class' => 'control-label col-md-3']) !!}
-                        <div class="col-md-9">
-                            {!! Form::select('job_title', $job_titles, old('job_title', $user->job_title), ['class' => 'form-control select2']) !!}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('address', 'Address <span class="required">*</span>', ['class' => 'control-label col-md-3']) !!}
-                        <div class="col-md-9">
-                            {!! Form::text('address', old('address', $user->address), ['class' => 'form-control validate[required]', 'placeholder'=>'Address']) !!}
-                        </div>
-                    </div>--}}
+                    {{-- <div class="form-group">
+                         {!! Form::label('mobile', 'Mobile', ['class' => 'control-label col-md-3']) !!}
+                         <div class="col-md-9">
+                             <div class="input-group">
+                                 <span class="input-group-addon"><i class="fa fa-mobile"></i></span>
+                                 {!! Form::text('mobile', old('mobile', $user->mobile), ['class' => 'form-control', 'placeholder'=>'Mobile']) !!}
+                             </div>
+                         </div>
+                     </div>
+                     <div class="form-group">
+                         {!! Form::label('job_title', 'Job Title', ['class' => 'control-label col-md-3']) !!}
+                         <div class="col-md-9">
+                             {!! Form::select('job_title', $job_titles, old('job_title', $user->job_title), ['class' => 'form-control select2']) !!}
+                         </div>
+                     </div>
+                     <div class="form-group">
+                         {!! Form::label('address', 'Address <span class="required">*</span>', ['class' => 'control-label col-md-3']) !!}
+                         <div class="col-md-9">
+                             {!! Form::text('address', old('address', $user->address), ['class' => 'form-control validate[required]', 'placeholder'=>'Address']) !!}
+                         </div>
+                     </div>--}}
                     @if($user->role_id==3)
-                    <div class="form-group">
-                        {!! htmlspecialchars_decode(Form::label('company_name', 'Company Name <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
-                        <div class="col-md-9">
-                            <div class="input-group">
-                                <span class="input-group-addon"></span>
-                                {!! Form::text('company_name', old('company_name', !empty($user_info) ? $user_info[0]->company_name : null), ['class' => 'form-control validate[required]', 'placeholder'=>'Company Name']) !!}
+                        <div class="form-group">
+                            {!! htmlspecialchars_decode(Form::label('company_name', 'Company Name <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
+                            <div class="col-md-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"></span>
+                                    {!! Form::text('company_name', old('company_name', !empty($user_info) ? $user_info[0]->company_name : null), ['class' => 'form-control validate[required]', 'placeholder'=>'Company Name']) !!}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        {!! htmlspecialchars_decode(Form::label('contact_fname', 'Contact First Name <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
-                        <div class="col-md-9">
-                            <div class="input-group">
-                               <span class="input-group-addon"></span>
-                               {!! Form::text('contact_fname', old('contact_fname', !empty($user_info) ? $user_info[0]->contact_fname: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Contact First Name']) !!}
+                        <div class="form-group">
+                            {!! htmlspecialchars_decode(Form::label('contact_fname', 'Contact First Name <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
+                            <div class="col-md-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"></span>
+                                    {!! Form::text('contact_fname', old('contact_fname', !empty($user_info) ? $user_info[0]->contact_fname: null), ['class' => 'form-control validate[required]', 'placeholder'=>'Contact First Name']) !!}
+                                </div>
                             </div>
                         </div>
-                    </div>
                         <div class="form-group">
                             {!! htmlspecialchars_decode(Form::label('contact_lname', 'Contact Last Name <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                             <div class="col-md-9">
@@ -188,11 +188,11 @@
             // Validation Engine init
             var prefix = 's2id_';
             $("form[id^='validate']").validationEngine('attach',
-                    {
-                        promptPosition: "bottomRight", scroll: false,
-                        prettySelect: true,
-                        usePrefix: prefix
-                    });
+                {
+                    promptPosition: "bottomRight", scroll: false,
+                    prettySelect: true,
+                    usePrefix: prefix
+                });
         });
     </script>
 @endsection

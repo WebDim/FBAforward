@@ -36,14 +36,16 @@
                             @if(session('old_user'))
                             <li><a href="/order/switchuser/{{$old_user}}/1">Switch Back</a> </li>
                             @endif
-                            @if(!isset($old_user))
+                            {{--@if(!isset($old_user))
                             <li><a href="{{ url('/creditcard_detail') }}">Paypal Vault</a></li>
-                            @endif
+                            @endif--}}
                     @else
                             {{--*/ $role= \App\Role::find($user->role_id) /*--}}
                         <li><a onclick="getnotification('1')"><i class="fa fa-bell"></i>@if($role->notification()->unread()->count()>0)<span class="circle" id="count"></span>@else<span id="count"></span>@endif</a> </li>
                     @endif
                 @endif
+
+
                <!-- <li><a href="{{ url('/#feature') }}">Features</a></li>
                 <li><a class="{{ Auth::guest() ? '':'external' }}"
                        href="{{ Auth::guest() ? url('/#pricing') : url('member/pricing') }}"><b>Pricing</b></a></li> -->
@@ -90,8 +92,8 @@
                                 <a class="external" href="{{ url('order/index') }}"><i class="fa fa-btn fa-user"></i> Order Management</a>
                             </li>
                                 @if(!isset($old_user))
-                                <li><a class="external" href="{{ url('order/orderhistory') }}"><i class="fa fa-btn fa-user"></i> Order History</a>
-                                </li>
+                                {{--<li><a class="external" href="{{ url('order/orderhistory') }}"><i class="fa fa-btn fa-user"></i> Order History</a>--}}
+                                {{--</li>--}}
                                 <li><a class="external" href="{{ url('/amazon_credential') }}"><i class="fa fa-cog"></i>&nbsp;Amazon Credential</a>
                                 </li>
                                 <li><a class="external" href="{{ url('member/amazoninventorylist') }}"><i class="fa fa-list"></i>&nbsp;Amazon Inventory List</a>

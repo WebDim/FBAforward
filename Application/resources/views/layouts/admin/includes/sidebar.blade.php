@@ -48,43 +48,43 @@
                     </li>
                 </ul>
             </li>
-            <li class="treeview {{  Request::is('admin/SippingMethod*') ? 'active': '' }}">
+            <li class="treeview {{ Request::is('admin/shippingmethod*')? 'active': '' }}">
                 <a href="#">
-                    <i class="fa fa-briefcase"></i> <span>Shipping Methods</span> <i class="fa fa-angle-left pull-right"></i>
+                    <i class="fa fa-ship"></i> <span>Shipping Methods</span> <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <li class="{{ Request::is('admin/ShippingMethod')? 'active': '' }}">
+                    <li class="{{ Request::is('admin/shippingmethod')? 'active': '' }}">
                         <a href="{{ url('admin/shippingmethod') }}">
                             <i class="fa fa-list"></i> <span>Manage Shipping Method</span>
                         </a>
                     </li>
-                    <li class="{{ Request::is('admin/ShippingMethod/create')? 'active': '' }}">
+                    <li class="{{ Request::is('admin/shippingmethod/create')? 'active': '' }}">
                         <a href="{{ url('admin/shippingmethod/create') }}">
                             <i class="fa fa-plus"></i> <span>Add Shipping Method</span>
                         </a>
                     </li>
                 </ul>
             </li>
-            <li class="treeview {{  Request::is('admin/OutboundMethod*') ? 'active': '' }}">
+            <li class="treeview {{ Request::is('admin/outboundmethod*')? 'active': '' }}">
                 <a href="#">
-                    <i class="fa fa-briefcase"></i> <span>Outbound Methods</span> <i class="fa fa-angle-left pull-right"></i>
+                    <i class="fa fa-sign-out"></i> <span>Outbound Methods</span> <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <li class="{{ Request::is('admin/OutboundMethod')? 'active': '' }}">
+                    <li class="{{ Request::is('admin/outboundmethod')? 'active': '' }}">
                         <a href="{{ url('admin/outboundmethod') }}">
                             <i class="fa fa-list"></i> <span>Manage Outbound Method</span>
                         </a>
                     </li>
-                    <li class="{{ Request::is('admin/OutboundMethod/create')? 'active': '' }}">
+                    <li class="{{ Request::is('admin/outboundmethod/create')? 'active': '' }}">
                         <a href="{{ url('admin/outboundmethod/create') }}">
                             <i class="fa fa-plus"></i> <span>Add Outbound Method</span>
                         </a>
                     </li>
                 </ul>
             </li>
-            <li class="treeview {{  Request::is('admin/Productlabel*') ? 'active': '' }}">
+            <li class="treeview {{  Request::is('admin/productlabel*') ? 'active': '' }}">
                 <a href="#">
-                    <i class="fa fa-briefcase"></i> <span>Product Labels</span> <i class="fa fa-angle-left pull-right"></i>
+                    <i class="fa fa-product-hunt"></i> <span>Product Labels</span> <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
                     <li class="{{ Request::is('admin/productlabel')? 'active': '' }}">
@@ -118,7 +118,7 @@
             </li>--}}
             <li class="treeview {{  Request::is('admin/prepservices*') ? 'active': '' }}">
                 <a href="#">
-                    <i class="fa fa-briefcase"></i> <span>Prep Services</span> <i class="fa fa-angle-left pull-right"></i>
+                    <i class="fa fa-cog"></i> <span>Prep Services</span> <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
                     <li class="{{ Request::is('admin/prepservices')? 'active': '' }}">
@@ -135,7 +135,7 @@
             </li>
             <li class="treeview {{  Request::is('admin/listingservices*') ? 'active': '' }}">
                 <a href="#">
-                    <i class="fa fa-briefcase"></i> <span>Listing Services</span> <i class="fa fa-angle-left pull-right"></i>
+                    <i class="fa fa-list-alt"></i> <span>Listing Services</span> <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
                     <li class="{{ Request::is('admin/listingservices')? 'active': '' }}">
@@ -167,9 +167,9 @@
                     </li>
                 </ul>
             </li>--}}
-            <li class="treeview {{  Request::is('admin/Charges*') ? 'active': '' }}">
+            <li class="treeview {{  Request::is('admin/charges*') ? 'active': '' }}">
                 <a href="#">
-                    <i class="fa fa-briefcase"></i> <span>Charges</span> <i class="fa fa-angle-left pull-right"></i>
+                    <i class="fa fa-dollar"></i> <span>Charges</span> <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
                     <li class="{{ Request::is('admin/charges')? 'active': '' }}">
@@ -184,6 +184,7 @@
                     </li>
                 </ul>
             </li>
+
            <!-- <li class="treeview {{ Request::is('admin/package*') || Request::is('admin/feature*') ? 'active': '' }}">
                 <a href="#">
                     <i class="fa fa-briefcase"></i> <span>Packages</span> <i class="fa fa-angle-left pull-right"></i>

@@ -436,6 +436,7 @@
             shipment_id=$("#shipment_id"+no).val();
             $("#label"+no+"_"+sub_no).remove();
             $("#input"+no+"_"+sub_no).remove();
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
                     'X-CSRF-Token': $('input[name="_token"]').val()
@@ -448,11 +449,13 @@
                     'shipment_id':shipment_id
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     console.log(response);
                     alert("product deleted Successfully");
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }

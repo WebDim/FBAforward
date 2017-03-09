@@ -50,6 +50,7 @@
                 <div class="form-group">
                     <div class="col-md-8 col-md-offset-2">
                         {!! Form::submit( (isset($role) ? 'Update': 'Add') . ' Role', ['class'=>'btn btn-primary']) !!}
+                        <a class="btn btn-default btn-close" href="{{ '../' }}">Cancel</a>
                     </div>
                 </div>
             </div><!-- .col-md-12 -->

@@ -184,6 +184,7 @@
                 }
             });
             if($('#validate').valid()) {
+                $('.preloader').css("display", "block");
                 $.ajax({
                     headers: {
                         'X-CSRF-Token': $('input[name="_token"]').val()
@@ -194,11 +195,13 @@
                         'company_name': company_name,
                     }, // a JSON object to send back
                     success: function (response) { // What to do if we succeed
+                        $('.preloader').css("display", "none");
                         console.log(response);
                         alert("Company added Successfully");
                         location.reload();
                     },
                     error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                        $('.preloader').css("display", "none");
                         console.log(JSON.stringify(jqXHR));
                         console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                     }
@@ -221,6 +224,7 @@
                 }
             });
             if($('#validate').valid()) {
+                $('.preloader').css("display", "block");
                 $.ajax({
                     headers: {
                         'X-CSRF-Token': $('input[name="_token"]').val()
@@ -231,11 +235,13 @@
                         'terminal_name': terminal_name,
                     }, // a JSON object to send back
                     success: function (response) { // What to do if we succeed
+                        $('.preloader').css("display", "none");
                         console.log(response);
                         alert("CFS Terminal added Successfully");
                         location.reload();
                     },
                     error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                        $('.preloader').css("display", "none");
                         console.log(JSON.stringify(jqXHR));
                         console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                     }

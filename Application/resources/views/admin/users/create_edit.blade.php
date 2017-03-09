@@ -375,7 +375,9 @@
                     <div class="form-group">
                         <div class="col-md-9 col-md-offset-3">
                             {!! Form::submit((!empty($user)?'Update': 'Add'). ' User', ['class'=>'btn btn-primary']) !!}
-                            {!! Form::Reset(('Cancel'), ['class'=>'btn btn-warning']) !!}
+
+                            <a class="btn btn-default btn-close" href="{{ '../' }}">Cancel</a>
+
                         </div>
                     </div>
                 </div>
@@ -402,7 +404,8 @@
         //Initialize Select2 Elements
         $(".select2").select2({
             placeholder: "Please Select",
-            allowClear: true
+            allowClear: true,
+            width: '100%'
         });
 
         // Validation Engine init

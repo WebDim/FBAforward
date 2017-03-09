@@ -43,7 +43,7 @@
                         <th>Name</th>
                        {{-- <th>Routes</th> --}}
                         <th>Created At</th>
-                        <th>Actions</th>
+                        {{--<th>Actions</th>--}}
                     </tr>
                 </thead>
                 <tbody>
@@ -86,10 +86,10 @@
                 {data: 'name', name: 'name'},
                // {data: 'routes', name: 'routes'},
                 {data: 'created_at', name: 'created_at'},
-                {data: 'actions', name: 'actions', orderable: false, searchable: false}
+//                {data: 'actions', name: 'actions', orderable: false, searchable: false}
             ]
         });
-        table.column('3:visible').order('desc').draw();
+        table.column('0:visible').order('asc').draw();
     });
 </script>
 @endsection

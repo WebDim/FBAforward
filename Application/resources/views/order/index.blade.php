@@ -17,6 +17,9 @@
             border-radius: 0;
         }
     </style>
+    {!! Html::style('assets/dist/css/datatable/dataTables.bootstrap.min.css') !!}
+    {!! Html::style('assets/dist/css/datatable/responsive.bootstrap.min.css') !!}
+    {!! Html::style('assets/dist/css/datatable/dataTablesCustom.css') !!}
 @endsection
 @section('content')
 <!-- Main content -->
@@ -113,15 +116,17 @@
 </div>
 @endsection
 @section('js')
-    <link href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.css" rel="stylesheet">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
+    {!! Html::script('assets/dist/js/datatable/jquery.dataTables.min.js') !!}
+    {!! Html::script('assets/dist/js/datatable/dataTables.bootstrap.min.js') !!}
+    {!! Html::script('assets/dist/js/datatable/dataTables.responsive.min.js') !!}
+    {!! Html::script('assets/dist/js/datatable/responsive.bootstrap.min.js') !!}
     <script type="text/javascript">
     $(document).ready(function() {
         $('#data_table').DataTable({});
     });
     function remove_order(order_id){
         if(confirm('Are you sure you want to delete this order!')){
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
                     'X-CSRF-Token':  "{{ csrf_token() }}"
@@ -132,6 +137,7 @@
                     'order_id': order_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     console.log(response);
                     if(response == 0){
                         alert('Sorry! Somthing went wrong please delete leter');
@@ -141,6 +147,7 @@
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
@@ -148,6 +155,7 @@
         }
     }
     function order_status(order_id,status){
+            $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
                     'X-CSRF-Token':  "{{ csrf_token() }}"
@@ -159,12 +167,14 @@
                     'status':status
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
+                    $('.preloader').css("display", "none");
                     console.log(response);
                     alert('Order status successfully changed');
 
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                    $('.preloader').css("display", "none");
                     console.log(JSON.stringify(jqXHR));
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
@@ -173,6 +183,7 @@
     }
     function approvereport(order_id)
     {
+        $('.preloader').css("display", "block");
         $.ajax({
             headers: {
                 'X-CSRF-Token':  "{{ csrf_token() }}"
@@ -183,11 +194,13 @@
                 'order_id': order_id,
             }, // a JSON object to send back
             success: function (response) { // What to do if we succeed
+                $('.preloader').css("display", "none");
                 console.log(response);
                 alert("Report Approved");
                 location.reload();
             },
             error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                $('.preloader').css("display", "none");
                 console.log(JSON.stringify(jqXHR));
                 console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
             }
@@ -195,6 +208,7 @@
     }
     function openquote(order_id)
     {
+        $('.preloader').css("display", "block");
         jQuery.noConflict();
         $.ajax({
             headers: {
@@ -206,10 +220,12 @@
                 'order_id': order_id,
             }, // a JSON object to send back
             success: function (response) { // What to do if we succeed
-             $('#main').html(response);
+                $('.preloader').css("display", "none");
+                $('#main').html(response);
                 $("#openquote").modal('show');
             },
             error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                $('.preloader').css("display", "none");
                 console.log(JSON.stringify(jqXHR));
                 console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
             }
@@ -217,6 +233,7 @@
     }
     function approveshippingquote(order_id)
     {
+        $('.preloader').css("display", "block");
         $.ajax({
             headers: {
                 'X-CSRF-Token':  "{{ csrf_token() }}"
@@ -227,6 +244,7 @@
                 'order_id': order_id,
             }, // a JSON object to send back
             success: function (response) { // What to do if we succeed
+                $('.preloader').css("display", "none");
                 console.log(response);
                 //alert("Report Approved");
                 if(response==1) {
@@ -235,6 +253,7 @@
                 //location.reload();
             },
             error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                $('.preloader').css("display", "none");
                 console.log(JSON.stringify(jqXHR));
                 console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
             }

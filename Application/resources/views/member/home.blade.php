@@ -7,9 +7,10 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <h2 class="page-head-line">Dashboard</h2>
+            <h2 class="page-head-line">FBAFORWARD - Dashboard</h2>
         </div>
     </div>
+    <h4>Welcome To FBAFORWARD!</h4>
     {{--<div class="row">
         <div class="col-md-12">
             <div class="alert alert-success">
