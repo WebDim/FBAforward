@@ -8,6 +8,9 @@
             margin-bottom: 5px;
         }
     </style>
+    {!! Html::style('assets/dist/css/datatable/dataTables.bootstrap.min.css') !!}
+    {!! Html::style('assets/dist/css/datatable/responsive.bootstrap.min.css') !!}
+    {!! Html::style('assets/dist/css/datatable/dataTablesCustom.css') !!}
 @endsection
 @section('content')
     <div class="row">
@@ -94,9 +97,10 @@
     </div>
 @endsection
 @section('js')
-    <link href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.css" rel="stylesheet">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
+    {!! Html::script('assets/dist/js/datatable/jquery.dataTables.min.js') !!}
+    {!! Html::script('assets/dist/js/datatable/dataTables.bootstrap.min.js') !!}
+    {!! Html::script('assets/dist/js/datatable/dataTables.responsive.min.js') !!}
+    {!! Html::script('assets/dist/js/datatable/responsive.bootstrap.min.js') !!}
     <script type="text/javascript">
         $(document).ready(function() {
         $('#list').DataTable({});
