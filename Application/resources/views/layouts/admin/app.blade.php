@@ -10,6 +10,8 @@
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <!-- Bootstrap 3.3.5 -->
         {!! Html::style('assets/bootstrap/css/bootstrap.min.css') !!}
+
+        {!! Html::style('assets/bootstrap/css/sweetalert.css') !!}
         <!-- Font Awesome -->
         {!! Html::style('assets/dist/css/font-awesome.min.css') !!}
         <!-- Select2 -->
@@ -76,6 +78,8 @@
         {!! Html::script('assets/plugins/jQuery/jQuery-2.1.4.min.js') !!}
         <!-- Bootstrap 3.3.5 -->
         {!! Html::script('assets/bootstrap/js/bootstrap.min.js') !!}
+
+        {!! Html::script('assets/bootstrap/js/sweetalert.min.js') !!}
         <!-- Select2 -->
         {!! Html::script('assets/plugins/select2/select2.full.min.js') !!}
         <!-- SlimScroll -->

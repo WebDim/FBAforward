@@ -197,7 +197,7 @@
                     success: function (response) { // What to do if we succeed
                         $('.preloader').css("display", "none");
                         console.log(response);
-                        alert("Company added Successfully");
+                        swal("Company added Successfully");
                         location.reload();
                     },
                     error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
@@ -237,7 +237,7 @@
                     success: function (response) { // What to do if we succeed
                         $('.preloader').css("display", "none");
                         console.log(response);
-                        alert("CFS Terminal added Successfully");
+                        swal("CFS Terminal added Successfully");
                         location.reload();
                     },
                     error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail

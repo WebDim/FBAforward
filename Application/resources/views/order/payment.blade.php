@@ -327,7 +327,7 @@
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
                     console.log(response);
-                    alert(" Your credit card information successfully store on paypal vault Successfully");
+                    swal(" Your credit card information successfully store on paypal vault Successfully");
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
@@ -380,7 +380,7 @@
                     success: function (response) { // What to do if we succeed
                         $('.preloader').css("display", "none");
                         console.log(response);
-                        alert("Billing Address added Successfully");
+                        swal("Billing Address added Successfully");
                         location.reload();
                     },
                     error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail

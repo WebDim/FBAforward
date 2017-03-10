@@ -23,12 +23,11 @@
     "webpatser/laravel-uuid": "2.*",
     "dougsisk/laravel-country-state": "*",
     "barryvdh/laravel-dompdf": "*",
-    "uxweb/sweet-alert": "*",
     "dompdf/dompdf": "0.7.0 as 0.6.2",
     "milon/barcode": "^5.3",
     "laravel-notification-channels/backport": "^1.0",
-    "yajra/laravel-datatables-oracle": "*"
-  },
+	"uxweb/sweet-alert": "^1.4",
+	"yajra/laravel-datatables-oracle": "*"  },
   "require-dev": {
     "fzaninotto/faker": "~1.4",
     "mockery/mockery": "0.9.*",

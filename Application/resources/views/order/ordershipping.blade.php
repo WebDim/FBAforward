@@ -408,7 +408,7 @@
                     $('.preloader').css("display", "none");
                     $('.preloader').css("display", "none");
                     console.log(response);
-                    alert('Shipment created');
+                    swal('Shipment created');
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
                     $('.preloader').css("display", "none");
@@ -495,7 +495,7 @@
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
                     console.log(response);
-                    //alert("Report Approved");
+                    //swal("Report Approved");
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
