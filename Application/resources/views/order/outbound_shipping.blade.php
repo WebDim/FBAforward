@@ -20,9 +20,9 @@
                     <table class="table" id="list">
                         <thead>
                         <tr>
-                            <th class="col-md-5"><span>Product</span></th>
-                            <th class="col-md-2"><span>Qty</span></th>
-                            <th class="col-md-2"><span>Outbound Method</span></th>
+                            <th class="col-md-5"><b class="text-info">Product</b></th>
+                            <th class="col-md-2"><b class="text-info">Qty</b></th>
+                            <th class="col-md-2"><b class="text-info">Outbound Method</b></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -32,8 +32,8 @@
                                     <input type="hidden" name="outbound_shipping_detail_id{{$ship_count."_".$count}}" id="outbound_shipping_detail_id{{$ship_count."_".$count}}" value="{{$products->outbound_shipping_detail_id}}">
                                     <input type="hidden" name="shipment_detail_id{{$ship_count."_".$count}}" id="shipment_detail_id{{$ship_count."_".$count}}" value="{{ $products->shipment_detail_id }}">
                             <tr>
-                                <td><input type="hidden" name="product_id{{$ship_count."_".$count}}" id="product_id{{$ship_count."_".$count}}" value="{{ $products->product_id }}"> @if($products->product_nick_name==''){{ $products->product_name}} @else {{$products->product_nick_name}} @endif</td>
-                                <td><input type="hidden" name="total_unit{{$ship_count."_".$count}}" id="total_unit{{$ship_count."_".$count}}" value="{{ $products->total }}">{{ $products->total }}</td>
+                                <td><input type="hidden" name="product_id{{$ship_count."_".$count}}" id="product_id{{$ship_count."_".$count}}" value="{{ $products->product_id }}"><b class="text-info"> @if($products->product_nick_name==''){{ $products->product_name}} @else {{$products->product_nick_name}} @endif</b></td>
+                                <td><input type="hidden" name="total_unit{{$ship_count."_".$count}}" id="total_unit{{$ship_count."_".$count}}" value="{{ $products->total }}"><b class="text-info">{{ $products->total }}</b></td>
                                 <td>
                                     <select name="outbound_method{{$ship_count."_".$count}}" class="form-control select2 validate[required]">
                                         <option value="">Select Outbound Methods</option>
@@ -41,7 +41,6 @@
                                             <option value="{{ $outbound_methods->outbound_method_id }}" @if($products->outbound_method_id==$outbound_methods->outbound_method_id){{ "selected" }} @endif>  {{ $outbound_methods->outbound_name }}</option>
                                         @endforeach
                                     </select>
-
                                 </td>
                             </tr>
                             {{--*/$count++/*--}}
