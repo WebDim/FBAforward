@@ -144,7 +144,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
-        Yajra\Datatables\DatatablesServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Laravel\Cashier\CashierServiceProvider::class,
 		Roumen\Sitemap\SitemapServiceProvider::class,
@@ -154,6 +153,7 @@ return [
         Milon\Barcode\BarcodeServiceProvider::class,
         Illuminate\Notifications\NotificationServiceProvider::class,
         //Fenos\Notifynder\NotifynderServiceProvider::class,
+		UxWeb\SweetAlert\SweetAlertServiceProvider::class,
     ],
     /*
       |--------------------------------------------------------------------------
@@ -205,6 +205,6 @@ return [
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
         'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
-        //'Notifynder' => Fenos\Notifynder\Facades\Notifynder::class,
+        'Alert' => UxWeb\SweetAlert\SweetAlert::class,
     ],
 ];
