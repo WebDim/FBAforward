@@ -189,7 +189,7 @@
                     success: function (response) { // What to do if we succeed
                         $('.preloader').css("display", "none");
                         console.log(response);
-                        alert("Supplier added Successfully");
+                        swal("Supplier added Successfully");
                         location.reload();
                     },
                     error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
