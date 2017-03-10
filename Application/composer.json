@@ -11,7 +11,7 @@
     "php": ">=5.5.9",
     "laravel/framework": "5.2.*",
     "laravelcollective/html": "5.2.*",
-    "yajra/laravel-datatables-oracle": "~6.0",
+
     "laravel/cashier": "~6.0",
 	"roumen/sitemap": "^2.6",  
     "intervention/image": "2.3.*",
@@ -21,12 +21,12 @@
     "consolibyte/quickbooks": "^3.2",
     "paypal/rest-api-sdk-php": "*",
     "webpatser/laravel-uuid": "2.*",
-    "dougsisk/laravel-country-state": "^1.2",
-    "barryvdh/laravel-dompdf": "^0.7.1",
+    "dougsisk/laravel-country-state": "*",
+    "barryvdh/laravel-dompdf": "*",
+    "uxweb/sweet-alert": "*",
     "dompdf/dompdf": "0.7.0 as 0.6.2",
     "milon/barcode": "^5.3",
     "laravel-notification-channels/backport": "^1.0"
-
   },
   "require-dev": {
     "fzaninotto/faker": "~1.4",

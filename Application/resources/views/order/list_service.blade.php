@@ -59,7 +59,7 @@
                                     @endif
 
                                     @foreach ($list_service as $list_services)
-                                        <input type="checkbox" name="service{{$cnt}}_{{ $list_services->listing_service_id }}" id="service{{$cnt}}_{{$list_services->listing_service_id}}" value="{{ $list_services->listing_service_id }}" onchange="get_total({{$list_services->price}},{{$cnt}},{{$list_services->listing_service_id}})" @if(in_array($list_services->listing_service_id,$list_service_ids)) {{ "checked" }} @endif>{{ $list_services->service_name }}<br>
+                                        <input type="checkbox" name="service{{$cnt}}_{{ $list_services->listing_service_id }}" id="service{{$cnt}}_{{$list_services->listing_service_id}}" value="{{ $list_services->listing_service_id }}" onchange="get_total({{$list_services->price}},{{$cnt}},{{$list_services->listing_service_id}})" @if(in_array($list_services->listing_service_id,$list_service_ids)) {{ "checked" }} @endif> {{ $list_services->service_name }}<br>
                                     @endforeach
                                         <input type="hidden" name="sub_count{{$cnt}}" id="sub_count{{$cnt}}" value="{{ $list_services->listing_service_id }}">
                                 </b></td>
@@ -71,7 +71,7 @@
                     @endforeach
                     <tr>
                         <td></td>
-                        <td>Total</td>
+                        <td><strong>Total</strong></td>
                         <td><input type="hidden" id="order_id" name="order_id" value="{{ $products->order_id}}"><input type="hidden" id="grand_total" name="grand_total" value="{{ isset($products->grand_total) ? $products->grand_total : $grand_total}}" readonly><span id="grand_total_span">{{ isset($products->grand_total) ? $products->grand_total : $grand_total}}</span></td>
                     </tr>
                     </tbody>

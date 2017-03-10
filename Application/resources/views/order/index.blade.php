@@ -242,7 +242,7 @@
                     $('.preloader').css("display", "none");
                     console.log(response);
                     if(response == 0){
-                        alert('Sorry! Somthing went wrong please delete leter');
+                        swal('Sorry! Somthing went wrong please delete leter');
                     }else {
                         $('#tr_'+order_id).remove();
                     }
@@ -271,7 +271,7 @@
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
                     console.log(response);
-                    alert('Order status successfully changed');
+                    swal('Order status successfully changed');
 
 
                 },
@@ -298,7 +298,7 @@
             success: function (response) { // What to do if we succeed
                 $('.preloader').css("display", "none");
                 console.log(response);
-                alert("Report Approved");
+                swal("Report Approved");
                 location.reload();
             },
             error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
@@ -348,7 +348,7 @@
             success: function (response) { // What to do if we succeed
                 $('.preloader').css("display", "none");
                 console.log(response);
-                //alert("Report Approved");
+                //swal("Report Approved");
                 if(response==1) {
                     location.reload();
                 }
