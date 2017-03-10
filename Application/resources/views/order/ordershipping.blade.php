@@ -513,32 +513,48 @@
         }
         function deletenote(no) {
             note_id = $("#id" + no).val();
-            conf=confirm("Are you sure want to delete note");
-            if(conf==true) {
-                $('.preloader').css("display", "block");
-                $.ajax({
-                    headers: {
-                        'X-CSRF-Token': "{{ csrf_token() }}"
-                    },
-                    method: 'POST', // Type of response and matches what we said in the route
-                    url: '/order/deletenote', // This is the url we gave in the route
-                    data: {
-                        'note_id': note_id,
-                    }, // a JSON object to send back
-                    success: function (response) { // What to do if we succeed
-                        $('.preloader').css("display", "none");
-                        //console.log(response);
-                        //location.reload();
-                        $("#note" + no).hide();
+            swal({
+                    title: "Are you sure?",
+                    text: "You will not be able to recover this note!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "No, cancel plx!",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function(isConfirm){
+                    if (isConfirm) {
+                        $('.preloader').css("display", "block");
+                        $.ajax({
+                            headers: {
+                                'X-CSRF-Token': "{{ csrf_token() }}"
+                            },
+                            method: 'POST', // Type of response and matches what we said in the route
+                            url: '/order/deletenote', // This is the url we gave in the route
+                            data: {
+                                'note_id': note_id,
+                            }, // a JSON object to send back
+                            success: function (response) { // What to do if we succeed
+                                $('.preloader').css("display", "none");
+                                //console.log(response);
+                                //location.reload();
+                                $("#note" + no).hide();
 
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
-                        $('.preloader').css("display", "none");
-                        console.log(JSON.stringify(jqXHR));
-                        console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                                $('.preloader').css("display", "none");
+                                console.log(JSON.stringify(jqXHR));
+                                console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                            }
+                        });
+                        swal("Deleted!", "Your note has been deleted.", "success");
+                    } else {
+                        swal("Cancelled", "Your note is safe :)", "error");
                     }
                 });
-            }
+
         }
         function editnote(no) {
             note_id = $("#id" + no).val();
