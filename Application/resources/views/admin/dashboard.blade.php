@@ -48,17 +48,17 @@
                                             class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         </div><!-- ./col -->
-                      {{--  <div class="col-lg-3 col-xs-6">
+                       <div class="col-lg-3 col-xs-6">
                             <!-- small box -->
                             <div class="small-box bg-green">
                                 <div class="inner">
-                                    <h3>{{ $subscriptions }}</h3>
-                                    <p>Subscriptions</p>
+                                    <h3>{{ $total_order }}</h3>
+                                    <p>Orders</p>
                                 </div>
                                 <div class="icon">
-                                    <i class="ion ion-stats-bars"></i>
+                                    <i class="ion-android-cart"></i>
                                 </div>
-                                <a href="{{ url('admin/users') }}" class="small-box-footer">More info <i
+                                <a href="javascript:void(0)" class="small-box-footer">More info <i
                                             class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         </div><!-- ./col -->
@@ -66,13 +66,13 @@
                             <!-- small box -->
                             <div class="small-box bg-yellow">
                                 <div class="inner">
-                                    <h3>{{ $packages }}</h3>
-                                    <p>Packages</p>
+                                    <h3>{{ $total_in_order }}</h3>
+                                    <p>Inprogress Orders</p>
                                 </div>
                                 <div class="icon">
-                                    <i class="ion ion-briefcase"></i>
+                                    <i class="ion-android-cart"></i>
                                 </div>
-                                <a href="{{ url('admin/packages') }}" class="small-box-footer">More info <i
+                                <a href="javascript:void(0)" class="small-box-footer">More info <i
                                             class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         </div><!-- ./col -->
@@ -80,44 +80,33 @@
                             <!-- small box -->
                             <div class="small-box bg-red">
                                 <div class="inner">
-                                    <h3>{{ $features }}</h3>
-                                    <p>Features</p>
+                                    <h3>{{ $total_place_order }}</h3>
+                                    <p>Placed Orders</p>
                                 </div>
                                 <div class="icon">
-                                    <i class="ion ion-star"></i>
+                                    <i class="ion-android-cart"></i>
                                 </div>
-                                <a href="{{ url('admin/features') }}" class="small-box-footer">More info <i
+                                <a href="javascript:void(0)" class="small-box-footer">More info <i
                                             class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         </div><!-- ./col -->
-                        <div class="col-lg-3 col-xs-6">
+                        <div class="col-lg-6 col-xs-6">
                             <!-- small box -->
                             <div class="small-box bg-gray">
                                 <div class="inner">
-                                    <h3>{{ $pages }}</h3>
-                                    <p>Pages</p>
+                                    <h3> @if(isset($total_payment))
+                                            $ {{ $total_payment[0]->payment_count  }}
+                                        @endif</h3>
+                                    <p>Payments</p>
                                 </div>
                                 <div class="icon">
-                                    <i class="fa fa-files-o"></i>
+                                    <i class="ion-social-usd-outline"></i>
                                 </div>
-                                <a href="{{ url('admin/pages') }}" class="small-box-footer">More info <i
+                                <a href="javascript:void(0)" class="small-box-footer">More info <i
                                             class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         </div><!-- ./col -->
-                        <div class="col-lg-3 col-xs-6">
-                            <!-- small box -->
-                            <div class="small-box bg-blue">
-                                <div class="inner">
-                                    <h3>{{ $posts }}</h3>
-                                    <p>Posts</p>
-                                </div>
-                                <div class="icon">
-                                    <i class="fa fa-paperclip"></i>
-                                </div>
-                                <a href="{{ url('admin/pages') }}" class="small-box-footer">More info <i
-                                            class="fa fa-arrow-circle-right"></i></a>
-                            </div>
-                        </div><!-- ./col --> --}}
+
                     </div><!-- /.row -->
                 </div><!-- /.box-body -->
                 <div class="box-footer">

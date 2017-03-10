@@ -17,6 +17,11 @@
             <!-- Font Awesome -->
     {!! Html::style('assets/dist/css/font-awesome.min.css') !!}
 
+<!-- Theme style -->
+    {!! Html::style('assets/dist/css/AdminLTE.min.css') !!}
+    <!-- Icon -->
+    {!! Html::style('assets/dist/css/ionicons.min.css') !!}
+
     {!! Html::style('assets/dist/css/animate.min.css') !!}
 
     {!! Html::style('assets/bootstrap/css/datepicker.css') !!}

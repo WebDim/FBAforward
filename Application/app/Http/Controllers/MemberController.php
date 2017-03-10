@@ -6,6 +6,8 @@ use App\Http\Requests\CreditcardRequest;
 use App\Http\Requests\ProfileRequest;
 use App\Amazon_inventory;
 use App\Notification;
+use App\Order;
+use App\Payment_detail;
 use App\Role;
 use Illuminate\Support\Facades\DB;
 use App\User_info;
@@ -33,7 +35,21 @@ class MemberController extends Controller
         if (\Auth::user()->role->name == 'Admin') {
             return redirect('admin/dashboard');
         }
-        return view('member.home');
+        $user=\Auth::user();
+        if($user->role->name=='Customer') {
+            $total_order = Order::where('user_id', $user->id)->count();
+            $total_payment = Payment_detail::selectRaw('sum(total_cost) as payment_count')
+                             ->join('orders','orders.order_id','=','payment_details.order_id')
+                             ->where('orders.user_id',$user->id)
+                             ->get();
+            $total_in_order= Order::where('is_activated','0')->where('user_id', $user->id)->count();
+            $total_place_order= Order::where('is_activated','1')->where('user_id', $user->id)->count();
+            $total_inspect_order= Order::where('is_activated','2')->where('user_id', $user->id)->count();
+            $total_shipping_order= Order::where('is_activated','4')->where('user_id', $user->id)->count();
+            $total_inventory=Amazon_inventory::where('user_id',$user->id)->count();
+            return view('member.home')->with(compact('total_order','total_payment','total_in_order','total_place_order','total_inspect_order','total_shipping_order','total_inventory','user'));
+        }
+        return view('member.home')->with(compact('user'));
     }
     public function profile()
     {
