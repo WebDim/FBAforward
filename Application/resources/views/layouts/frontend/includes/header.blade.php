@@ -231,23 +231,30 @@
     }
     function checkread() {
         role=$("#role").val();
-        $.ajax({
-            headers: {
-                'X-CSRF-Token':  "{{ csrf_token() }}"
-            },
-            method: 'POST', // Type of response and matches what we said in the route
-            url: '/member/checkread', // This is the url we gave in the route
-            data: {
-                role:role,
-            }, // a JSON object to send back
-            success: function (response) { // What to do if we succeed
-                $("#notification_modal").modal("hide");
-                $("#count").hide();
-            },
-            error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
-                console.log(JSON.stringify(jqXHR));
-                console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
-            }
-        });
+       if(role==null)
+       {
+           $("#notification_modal").modal("hide");
+           $("#count").hide();
+       }
+       else {
+           $.ajax({
+               headers: {
+                   'X-CSRF-Token': "{{ csrf_token() }}"
+               },
+               method: 'POST', // Type of response and matches what we said in the route
+               url: '/member/checkread', // This is the url we gave in the route
+               data: {
+                   role: role,
+               }, // a JSON object to send back
+               success: function (response) { // What to do if we succeed
+                   $("#notification_modal").modal("hide");
+                   $("#count").hide();
+               },
+               error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                   console.log(JSON.stringify(jqXHR));
+                   console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+               }
+           });
+       }
     }
 </script>
