@@ -29,7 +29,9 @@
                         <th><span>Amazon Revenue<br>(Estimate Annual)</span></th>
                         <th><span>FBA Order<br>(Estimate Annual)</span></th>
                         <th><span>Reference From</span></th>
+                        @if($user_role_id==4 || $user_role_id==9)
                         <th><span>Action</span></th>
+                        @endif
                     </tr>
                     </thead>
                     <tbody>
@@ -42,13 +44,15 @@
                             <td><b class="text-info">{{ $users->estimate_annual_amazon_revenue }}</b></td>
                             <td><b class="text-info">{{ $users->estimate_annual_fba_order }}</b></td>
                             <td><b class="text-info">{{ $users->reference_from  }}</b></td>
+                            @if($user_role_id==4 || $user_role_id==9)
                             <td>
-                                @if($user_role_id==4 || $user_role_id==9)
+
                                     @if($users->status=='1')
                                         <a  href="javascript:void(0)" onclick="storeuser('{{$users->user_id}}')">Switch User</a>
                                     @endif
-                                @endif
+
                             </td>
+                            @endif
                         </tr>
                     @endforeach
                     </tbody>

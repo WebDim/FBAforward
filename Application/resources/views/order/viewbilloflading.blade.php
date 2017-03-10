@@ -30,14 +30,14 @@
                 <thead>
                 <tr>
                     <th ><span>Shipment Refrence Number(SB Number)</span></th>
-                    <th><span><a href="{{ url('order/downloadladingbill/'.$order_id.'/'.$shipments->shipment_id) }}">Download Lading Bill</a></span></th>
+                    <th><span>Download Lading Bill</span></th>
 
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>{{ $shipments->sbnumber}}</td>
-                    <td></td>
+                    <td><a href="{{ url('order/downloadladingbill/'.$order_id.'/'.$shipments->shipment_id) }}">{{ $shipments->bill }}</a></td>
                 </tr>
                 </tbody>
             </table>

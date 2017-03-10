@@ -99,8 +99,12 @@
                                             <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','14')" class="btn btn-info">Submit</a>
                                         @elseif($order->is_activated==15)
                                             <a href="javascript:void(0)" onclick="shippinglabel('{{$order->order_id}}')">Print Shipping Labels</a>
-                                            <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Submit</a>
-                                            {{-- <a onclick="verifylabel({{$order->order_id}})" class="btn btn-info">Verify Label Complete</a>
+                                            @foreach($label_count as $label_counts)
+                                                @if(($order->order_id==$label_counts->order_id) && ($order->shipment_count==$label_counts->shipment_count))
+                                                <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Submit</a>
+                                                @endif
+                                            @endforeach
+                                                {{-- <a onclick="verifylabel({{$order->order_id}})" class="btn btn-info">Verify Label Complete</a>
                                              <a onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Verify Shipment Load On Truck</a>
                                              --}}
                                         @endif
@@ -230,7 +234,7 @@
 
                                 </table>
                             </div>
-                            {!! Form::open(['url' =>  'order/addnotes', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
+                            {!! Form::open(['url' =>  'order/addnotes', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate', 'onsubmit'=>'return checknote()']) !!}
                             <div class="row">
                                 <div class="col-md-10">
                                     <div class="form-group" id="shipping_div">
@@ -390,7 +394,10 @@
     {!! Html::script('assets/dist/js/datatable/responsive.bootstrap.min.js') !!}
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#data_table').DataTable({});
+            $('#data_table').DataTable({
+                "order": [[ 1, "asc" ]],
+
+            });
         });
         function order_shipping(order_id, user_id) {
             $('.preloader').css("display", "block");
@@ -425,7 +432,6 @@
 
         }
         function opennote(order_id) {
-
             $("#orderid").val(order_id);
             $('.preloader').css("display", "block");
             $.ajax({
@@ -443,7 +449,7 @@
                     var trHTML = '';
                     trHTML += '<thead><tr><th>Shiping Notes</th><th>Prep Notes</th><th>Action</th></tr></thead><tbody>';
                     $.each(response, function (i, item) {
-                        trHTML += '<tr><td><input type="hidden" name="id' + i + '" id="id' + i + '" value="' + item.id + '"><input type="text" name="shipping_note' + i + '" id="shipping_note' + i + '" value="' + item.shipping_notes + '" hidden>' + item.shipping_notes + '</td><td><input type="text" name="prep_note' + i + '" id="prep_note' + i + '" value="' + item.prep_notes + '" hidden>' + item.prep_notes + '</td><td><i class="fa fa-floppy-o" id="save' + i + '" style="display: none" onclick="savenote(' + i + ')"></i>&nbsp; <i class="fa fa-pencil" id="edit' + i + '" onclick="editnote(' + i + ')"></i>&nbsp; <i class="fa fa-trash" onclick="deletenote(' + i + ')"></i></td></tr>';
+                        trHTML += '<tr id="note'+i+'"><td><input type="hidden" name="id' + i + '" id="id' + i + '" value="' + item.id + '"><input type="text" name="shipping_note' + i + '" id="shipping_note' + i + '" value="' + item.shipping_notes + '" hidden><span id="shipping_span'+i+'">' + item.shipping_notes + '</span></td><td><input type="text" name="prep_note' + i + '" id="prep_note' + i + '" value="' + item.prep_notes + '" hidden><span id="prep_span'+i+'">' + item.prep_notes + '</span></td><td><a href="javascript:void(0)" class="fa fa-floppy-o" id="save' + i + '" style="display: none" onclick="savenote(' + i + ')"></a>&nbsp; <a href="javascript:void(0)" class="fa fa-pencil" id="edit' + i + '" onclick="editnote(' + i + ')"></a>&nbsp; <a href="javascript:void(0)" class="fa fa-trash" onclick="deletenote(' + i + ')"></a></td></tr>';
                     });
                     trHTML += "</tbody>";
                     $('#note_list').html(trHTML);
@@ -495,7 +501,7 @@
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
                     console.log(response);
-                    //alert("Report Approved");
+                    alert("Bill of lading Approved");
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
@@ -507,27 +513,32 @@
         }
         function deletenote(no) {
             note_id = $("#id" + no).val();
-            $('.preloader').css("display", "block");
-            $.ajax({
-                headers: {
-                    'X-CSRF-Token': "{{ csrf_token() }}"
-                },
-                method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/deletenote', // This is the url we gave in the route
-                data: {
-                    'note_id': note_id,
-                }, // a JSON object to send back
-                success: function (response) { // What to do if we succeed
-                    $('.preloader').css("display", "none");
-                    //console.log(response);
-                    location.reload();
-                },
-                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
-                    $('.preloader').css("display", "none");
-                    console.log(JSON.stringify(jqXHR));
-                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
-                }
-            });
+            conf=confirm("Are you sure want to delete note");
+            if(conf==true) {
+                $('.preloader').css("display", "block");
+                $.ajax({
+                    headers: {
+                        'X-CSRF-Token': "{{ csrf_token() }}"
+                    },
+                    method: 'POST', // Type of response and matches what we said in the route
+                    url: '/order/deletenote', // This is the url we gave in the route
+                    data: {
+                        'note_id': note_id,
+                    }, // a JSON object to send back
+                    success: function (response) { // What to do if we succeed
+                        $('.preloader').css("display", "none");
+                        //console.log(response);
+                        //location.reload();
+                        $("#note" + no).hide();
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                        $('.preloader').css("display", "none");
+                        console.log(JSON.stringify(jqXHR));
+                        console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                    }
+                });
+            }
         }
         function editnote(no) {
             note_id = $("#id" + no).val();
@@ -535,34 +546,42 @@
             $("#prep_note" + no).show();
             $("#save" + no).show();
             $("#edit" + no).hide();
+            $("#shipping_span"+no).hide();
+            $("#prep_span"+no).hide();
+
         }
         function savenote(no) {
             note_id = $("#id" + no).val();
             shipping_note = $("#shipping_note" + no).val();
             prep_note = $("#prep_note" + no).val();
-            $('.preloader').css("display", "block");
-            $.ajax({
-                headers: {
-                    'X-CSRF-Token': "{{ csrf_token() }}"
-                },
-                method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/savenote', // This is the url we gave in the route
-                data: {
-                    'note_id': note_id,
-                    'shipping_note': shipping_note,
-                    'prep_note': prep_note
-                }, // a JSON object to send back
-                success: function (response) { // What to do if we succeed
-                    $('.preloader').css("display", "none");
-                    //console.log(response);
-                    location.reload();
-                },
-                error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
-                    $('.preloader').css("display", "none");
-                    console.log(JSON.stringify(jqXHR));
-                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
-                }
-            });
+            if(shipping_note=='' && prep_note=='')
+            {
+                alert('Any one note compulsary');
+            }
+            else {
+                $('.preloader').css("display", "block");
+                $.ajax({
+                    headers: {
+                        'X-CSRF-Token': "{{ csrf_token() }}"
+                    },
+                    method: 'POST', // Type of response and matches what we said in the route
+                    url: '/order/savenote', // This is the url we gave in the route
+                    data: {
+                        'note_id': note_id,
+                        'shipping_note': shipping_note,
+                        'prep_note': prep_note
+                    }, // a JSON object to send back
+                    success: function (response) { // What to do if we succeed
+                        $('.preloader').css("display", "none");
+                        opennote($('#orderid').val());
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                        $('.preloader').css("display", "none");
+                        console.log(JSON.stringify(jqXHR));
+                        console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                    }
+                });
+            }
         }
         function openreview(order_id) {
 
@@ -809,6 +828,15 @@
                     console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
             });
+        }
+        function checknote() {
+            shipping_note=$("#shipping_note").val();
+            prep_note=$("#prep_note").val();
+            if(shipping_note=='' && prep_note=='')
+            {
+                alert("Any one note compulsary");
+                return false;
+            }
         }
     </script>
 @endsection

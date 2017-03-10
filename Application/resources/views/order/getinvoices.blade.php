@@ -75,6 +75,7 @@
                 <thead>
                 <tr>
                     <th><span>Invoice Id</span></th>
+                    <th><span>Order No</span></th>
                     <th><span>SyncToken</span></th>
                     <th><span>Create Time</span></th>
                     <th><span>Last Update Time</span></th>
@@ -128,6 +129,7 @@
                 }),
                 columns: [
                     { data: "invoice_id" },
+                    { data: "order_no"},
                     { data: "synctoken" },
                     { data: "created_time" },
                     { data: "updated_time" },
@@ -173,6 +175,7 @@
                 }),
                 columns: [
                     { data: "invoice_id" },
+                    { data: "order_no" },
                     { data: "synctoken" },
                     { data: "created_time" },
                     { data: "updated_time" },

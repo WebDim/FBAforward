@@ -1432,6 +1432,8 @@ class OrderController extends Controller
         if ($resp = $InvoiceService->add($this->context, $this->realm, $Invoice))
         {
             $resp=$this->getId($resp);
+            $invoice=array('invoice_id'=>$resp);
+            Order::where('order_id',$order_id)->update($invoice);
             $this->invoice_pdf($order_id);
         }
         else
@@ -2424,9 +2426,19 @@ class OrderController extends Controller
         $title="Complete Review";
         $user= \Auth::user();
         $user_role=$user->role_id;
-        $orders = Order::where('orders.is_activated','15')->orderBy('orders.created_at', 'desc')->get();
+        $orders = Order::selectRaw('orders.*, count(shipments.shipment_id) as shipment_count')
+                ->join('shipments','shipments.order_id','=','orders.order_id')
+                ->where('orders.is_activated','15')
+                ->orderBy('orders.created_at', 'desc')
+                ->groupby('orders.order_id')
+                ->get();
+        $label_count=Shipments::selectRaw('count(shipment_id) as shipment_count, orders.order_id')
+                    ->join('orders','orders.order_id','=','shipments.order_id')
+                    ->where('shipments.shipping_label','3')
+                    ->groupby('orders.order_id')
+                    ->get();
          $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
-        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
+        return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title','label_count'));
     }
     public function shippinglabel(Request $request)
     {
@@ -2582,7 +2594,7 @@ class OrderController extends Controller
         $user= \Auth::user();
         $user_role=$user->role_id;
         $orders = Order::where('orders.is_activated','<>','0')->orderBy('orders.created_at', 'desc')->get();
-         $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
+        $orderStatus = array('In Progress', 'Order Placed','Pending For Approval','Approve Inspection Report','Shipping Quote','Approve shipping Quote','Shipping Invoice','Upload Shipper Bill','Approve Bill By Logistic','Shipper Pre Alert','Customer Clearance','Delivery Booking','Warehouse Check In','Review Warehouse','Work Order Labor Complete','Approve Completed Work','Shipment Complete','Order Complete','Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders','orderStatus','user_role','title'));
     }
     public function customers()
@@ -2651,26 +2663,51 @@ class OrderController extends Controller
         $doc_number=$post['doc_number'];
         $customer_name=$post['customer_name'];
         if($start_date=='' && $end_date=='' && $doc_number=='' && $customer_name=='') {
-            $invoice_details=Invoice_detail::all();
+            $invoice_details=Invoice_detail::selectRaw('orders.order_id,invoice_details.*')
+                             ->join('orders','orders.invoice_id','=','invoice_details.invoice_id','left')
+                             ->get();
+
         }
         else if($start_date!='' && $end_date!='' && $doc_number!='' && $customer_name!='')
         {
             $end_date=$end_date."T23:59:59";
-            $invoice_details = Invoice_detail::where('created_time', '>=', date('Y-m-d', strtotime($start_date)))->where('created_time', '<=', date('Y-m-dTh:i:s', strtotime($end_date)))->where('docnumber', '=', $doc_number)->Where('customer_ref_name', '=', $customer_name)->get();
+            $invoice_details = Invoice_detail::selectRaw('orders.order_id,invoice_details.*')
+                ->join('orders','orders.invoice_id','=','invoice_details.invoice_id','left')
+                ->where('invoice_details.created_time', '>=', date('Y-m-d', strtotime($start_date)))
+                ->where('invoice_details.created_time', '<=', date('Y-m-dTh:i:s', strtotime($end_date)))
+                ->where('invoice_details.docnumber', '=', $doc_number)
+                ->Where('invoice_details.customer_ref_name', '=', $customer_name)
+                ->get();
         }
         else {
                 $end_date=$end_date."T23:59:59";
             if ($start_date != '' && $end_date != '')
-                $invoice_details = Invoice_detail::where('created_time', '>=', date('Y-m-d', strtotime($start_date)))->where('created_time', '<=', date('Y-m-dTh:i:s', strtotime($end_date)))->get();
+                $invoice_details = Invoice_detail::selectRaw('orders.order_id,invoice_details.*')
+                    ->join('orders','orders.invoice_id','=','invoice_details.invoice_id','left')
+                    ->where('invoice_details.created_time', '>=', date('Y-m-d', strtotime($start_date)))
+                    ->where('invoice_details.created_time', '<=', date('Y-m-dTh:i:s', strtotime($end_date)))
+                    ->get();
             if ($doc_number != '')
-                $invoice_details = Invoice_detail::orWhere('docnumber', '=', $doc_number)->get();
+                $invoice_details = Invoice_detail::selectRaw('orders.order_id,invoice_details.*')
+                    ->join('orders','orders.invoice_id','=','invoice_details.invoice_id','left')
+                    ->orWhere('invoice_details.docnumber', '=', $doc_number)
+                    ->get();
             if ($customer_name != '')
-                $invoice_details = Invoice_detail::orWhere('customer_ref_name', '=', $customer_name)->get();
+                $invoice_details = Invoice_detail::selectRaw('orders.order_id,invoice_details.*')
+                    ->join('orders','orders.invoice_id','=','invoice_details.invoice_id','left')
+                    ->orWhere('invoice_details.customer_ref_name', '=', $customer_name)
+                    ->get();
         }
 
             return Datatables::of($invoice_details)
                 ->editColumn('invoice_id', function ($invoice_detail) {
                     return $invoice_detail->invoice_id;
+                })
+                ->editColumn('order_no', function ($invoice_detail) {
+                    if($invoice_detail->order_id!='')
+                    return "ORD_".$invoice_detail->order_id;
+                    else
+                        return "";
                 })
                 ->editColumn('synctoken', function ($invoice_detail) {
                     return $invoice_detail->synctoken;
