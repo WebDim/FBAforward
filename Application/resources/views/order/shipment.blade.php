@@ -352,7 +352,7 @@
             {
                 if($('#product_desc'+no+'_'+sub_no).val()==$('#product_desc'+no+'_'+cnt).val())
                 {
-                    alert("Please select another product");
+                    swal("Please select another product");
                     $('#product_desc'+no+'_'+sub_no).val('');
                     break;
                 }
@@ -447,7 +447,7 @@
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
                     console.log(response);
-                    alert("product deleted Successfully");
+                    swal("product deleted Successfully");
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail

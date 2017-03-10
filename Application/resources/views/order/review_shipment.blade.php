@@ -17,17 +17,17 @@
                         <table class="table" id="list">
                             <thead>
                             <tr>
-                                <th class="col-md-3"><span>Shipment</span></th>
-                                <th class="col-md-5"><span>Total Units</span></th>
-                                <th class="col-md-2"><span>Methods</span></th>
+                                <th class="col-md-3"><b class="text-info">Shipment</b></th>
+                                <th class="col-md-5"><b class="text-info">Total Units</b></th>
+                                <th class="col-md-2"><b class="text-info">Methods</b></th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach($shipment as $key=>$shipments)
                                 <tr>
-                                <td>Shipment #{{$key+1}}</td>
-                                    <td>{{ $shipments->total }}</td>
-                                    <td>{{ $shipments->shipping_name }}</td>
+                                    <td><b class="text-info">Shipment #{{$key+1}}</b></td>
+                                    <td><b class="text-info">{{ $shipments->total }}</b></td>
+                                    <td><b class="text-info">{{ $shipments->shipping_name }}</b></td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -40,17 +40,17 @@
                         <table class="table" id="list">
                             <thead>
                             <tr>
-                                <th class="col-md-5"><span>Product</span></th>
-                                <th class="col-md-2"><span>Units</span></th>
-                                <th class="col-md-2"><span>Outbound Method</span></th>
+                                <th class="col-md-5"><b class="text-info">Product</b></th>
+                                <th class="col-md-2"><b class="text-info">Units</b></th>
+                                <th class="col-md-2"><b class="text-info">Outbound Method</b></th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach($outbound_detail as $outbound_details)
                                 <tr>
-                                    <td class="col-md-5"><span>@if($outbound_details->product_nick_name==''){{ $outbound_details->product_name}} @else {{$outbound_details->product_nick_name}} @endif</span></td>
-                                    <td class="col-md-2"><span>{{ $outbound_details->qty }}</span></td>
-                                    <td class="col-md-2"><span>{{ $outbound_details->outbound_name }}</span></td>
+                                    <td class="col-md-5"><b class="text-info">@if($outbound_details->product_nick_name==''){{ $outbound_details->product_name}} @else {{$outbound_details->product_nick_name}} @endif</b></td>
+                                    <td class="col-md-2"><b class="text-info">{{ $outbound_details->qty }}</b></td>
+                                    <td class="col-md-2"><b class="text-info">{{ $outbound_details->outbound_name }}</b></td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -65,18 +65,18 @@
                         <table class="table" id="list">
                             <thead>
                             <tr>
-                                <th class="col-md-5"><span>Product</span></th>
-                                <th class="col-md-2"><span>Qty</span></th>
-                                <th class="col-md-2"><span>Services</span></th>
+                                <th class="col-md-5"><b class="text-info">Product</b></th>
+                                <th class="col-md-2"><b class="text-info">Qty</b></th>
+                                <th class="col-md-2"><b class="text-info">Services</b></th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach($product_detail as $product_details)
 
                                 <tr>
-                                    <td>@if($product_details->product_nick_name==''){{ $product_details->product_name}} @else {{$product_details->product_nick_name}} @endif</td>
-                                    <td>{{ $product_details->total }}</td>
-                                    <td>
+                                    <td><b class="text-info">@if($product_details->product_nick_name==''){{ $product_details->product_name}} @else {{$product_details->product_nick_name}} @endif</b></td>
+                                    <td><b class="text-info">{{ $product_details->total }}</b></td>
+                                    <td><b class="text-info">
                                         {{--*/$prep_ids=array()/*--}}
                                         {{--*/$prep_ids=explode(',',$product_details->prep_service_ids)/*--}}
                                         @foreach($prep_ids as $ids)
@@ -86,6 +86,7 @@
                                             @endif
                                         @endforeach
                                         @endforeach
+                                        </b>
                                     </td>
                                 </tr>
                             @endforeach

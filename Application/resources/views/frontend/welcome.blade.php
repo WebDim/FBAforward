@@ -218,7 +218,7 @@
             if(name!= '' && email!='' && message!='')
                 valid = 'true'
             else
-                alert('Please provide required fields to contact us.');
+                swal('Please provide required fields to contact us.');
             if (valid == 'true') {
                 $.ajax({
                     headers: {
@@ -233,7 +233,7 @@
                         'message': message
                     }, // a JSON object to send back
                     success: function (response) { // What to do if we succeed
-                        alert(response);
+                        swal(response);
                         $("#name").val('');
                         $("#email").val('');
                         $("#subject").val('');

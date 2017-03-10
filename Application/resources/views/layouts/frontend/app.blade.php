@@ -12,6 +12,8 @@
     <title> {{ getSetting('SITE_TITLE') }} | @yield('title') </title>
     <!-- Bootstrap 3.3.5 -->
     {!! Html::style('assets/bootstrap/css/bootstrap.min.css') !!}
+
+    {!! Html::style('assets/bootstrap/css/sweetalert.css') !!}
             <!-- Font Awesome -->
     {!! Html::style('assets/dist/css/font-awesome.min.css') !!}
 
@@ -55,6 +57,8 @@
 {!! Html::script('assets/dist/js/wow.min.js') !!}
 
 {!! Html::script('assets/bootstrap/js/datePicker.js') !!}
+
+{!! Html::script('assets/bootstrap/js/sweetalert.min.js') !!}
 
 <script type="text/javascript">
     $(document).ready(function () {

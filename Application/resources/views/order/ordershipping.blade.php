@@ -415,7 +415,7 @@
                     $('.preloader').css("display", "none");
                     $('.preloader').css("display", "none");
                     console.log(response);
-                    alert('Shipment created');
+                    swal('Shipment created');
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
                     $('.preloader').css("display", "none");
@@ -501,7 +501,7 @@
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
                     console.log(response);
-                    alert("Bill of lading Approved");
+                    swal("Bill of lading Approved");
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
@@ -556,7 +556,7 @@
             prep_note = $("#prep_note" + no).val();
             if(shipping_note=='' && prep_note=='')
             {
-                alert('Any one note compulsary');
+                swal('Any one note compulsary');
             }
             else {
                 $('.preloader').css("display", "block");
@@ -834,7 +834,7 @@
             prep_note=$("#prep_note").val();
             if(shipping_note=='' && prep_note=='')
             {
-                alert("Any one note compulsary");
+                swal("Any one note compulsary");
                 return false;
             }
         }
