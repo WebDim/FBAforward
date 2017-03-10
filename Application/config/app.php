@@ -154,6 +154,7 @@ return [
         Illuminate\Notifications\NotificationServiceProvider::class,
         //Fenos\Notifynder\NotifynderServiceProvider::class,
 		UxWeb\SweetAlert\SweetAlertServiceProvider::class,
+        Yajra\Datatables\DatatablesServiceProvider::class,
     ],
     /*
       |--------------------------------------------------------------------------
