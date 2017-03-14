@@ -28,13 +28,14 @@
             <div class="col-md-12">
                 <h3 class="page-head-line col-md-10">{{$title}}</h3>
                 <div class="col-md-2">
-                    <a href="{{ url('order/shipment') }}" class="btn btn-primary">Create New Order</a>
+                    <a href="{{ url('/shipment') }}" class="btn btn-primary">Create New Order</a>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <h4>In Progress Orders</h4>
+                <h4 style="text-align: center;text-transform: uppercase">In Progress Orders</h4>
+                <hr>
                 <div class="table-responsive no-padding">
                     <table id="inprogress_data" class="table" >
                         <thead>
@@ -61,7 +62,7 @@
                                         <b class="text-info">{{ $order->created_at }}</b>
                                     </td>
                                     <td>
-                                            <a href="{{ url('order/updateshipment/'.$order->order_id) }}" class="btn btn-info">Edit</a>
+                                            <a href="{{ url('/shipment/'.$order->order_id) .'/edit' }}" class="btn btn-info">Edit</a>
                                             <a href="javascript:void(0)" onclick="remove_order({{$order->order_id}})" class="btn btn-danger">Delete</a>
 
                                     </td>
@@ -71,7 +72,8 @@
                         </tbody>
                     </table>
                 </div>
-                <h4>Order Placed</h4>
+                <h4 style="text-align: center;text-transform: uppercase">Order Placed</h4>
+                <hr>
                 <div class="table-responsive no-padding">
                     <table id="place_data" class="table">
                         <thead>
@@ -106,7 +108,8 @@
                         </tbody>
                     </table>
                 </div>
-                <h4>Inspection Report</h4>
+                <h4 style="text-align: center;text-transform: uppercase">Inspection Report</h4>
+                <hr>
                 <div class="table-responsive no-padding">
                     <table id="inspection_data" class="table">
                         <thead>
@@ -143,7 +146,8 @@
                         </tbody>
                     </table>
                 </div>
-                <h4>Shipping Quote</h4>
+                <h4 style="text-align: center;text-transform: uppercase">Shipping Quote</h4>
+                <hr>
                 <div class="table-responsive no-padding">
                     <table id="shipping_data" class="table">
                         <thead>

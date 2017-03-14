@@ -234,7 +234,7 @@
 
                                 </table>
                             </div>
-                            {!! Form::open(['url' =>  'order/addnotes', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate', 'onsubmit'=>'return checknote()']) !!}
+                            {!! Form::open(['url' =>  '/note', 'method' => 'POST', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate', 'onsubmit'=>'return checknote()']) !!}
                             <div class="row">
                                 <div class="col-md-10">
                                     <div class="form-group" id="shipping_div">
@@ -438,8 +438,8 @@
                 headers: {
                     'X-CSRF-Token': "{{ csrf_token() }}"
                 },
-                method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/viewnotes', // This is the url we gave in the route
+                method: 'GET', // Type of response and matches what we said in the route
+                url: '/note', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
                 }, // a JSON object to send back
@@ -520,9 +520,9 @@
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",
                     confirmButtonText: "Yes, delete it!",
-                    cancelButtonText: "No, cancel plx!",
+                    cancelButtonText: "No!",
                     closeOnConfirm: false,
-                    closeOnCancel: false
+                    closeOnCancel: true
                 },
                 function(isConfirm){
                     if (isConfirm) {
@@ -531,17 +531,12 @@
                             headers: {
                                 'X-CSRF-Token': "{{ csrf_token() }}"
                             },
-                            method: 'POST', // Type of response and matches what we said in the route
-                            url: '/order/deletenote', // This is the url we gave in the route
-                            data: {
-                                'note_id': note_id,
-                            }, // a JSON object to send back
+                            method: 'DELETE', // Type of response and matches what we said in the route
+                            url: '/note/' + note_id, // This is the url we gave in the route
                             success: function (response) { // What to do if we succeed
                                 $('.preloader').css("display", "none");
-                                //console.log(response);
-                                //location.reload();
+                                swal("Deleted!", "Your note has been deleted.", "success");
                                 $("#note" + no).hide();
-
                             },
                             error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
                                 $('.preloader').css("display", "none");
@@ -549,9 +544,7 @@
                                 console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                             }
                         });
-                        swal("Deleted!", "Your note has been deleted.", "success");
-                    } else {
-                        swal("Cancelled", "Your note is safe :)", "error");
+
                     }
                 });
 
@@ -572,7 +565,7 @@
             prep_note = $("#prep_note" + no).val();
             if(shipping_note=='' && prep_note=='')
             {
-                swal('Any one note compulsary');
+                swal('Any one note compulsory');
             }
             else {
                 $('.preloader').css("display", "block");
@@ -581,12 +574,14 @@
                         'X-CSRF-Token': "{{ csrf_token() }}"
                     },
                     method: 'POST', // Type of response and matches what we said in the route
-                    url: '/order/savenote', // This is the url we gave in the route
                     data: {
                         'note_id': note_id,
                         'shipping_note': shipping_note,
-                        'prep_note': prep_note
+                        'prep_note': prep_note,
+                        '_method': 'PUT'
                     }, // a JSON object to send back
+
+                    url: '/note/save', // This is the url we gave in the route
                     success: function (response) { // What to do if we succeed
                         $('.preloader').css("display", "none");
                         opennote($('#orderid').val());

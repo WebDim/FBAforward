@@ -110,6 +110,14 @@ Route::group(['middleware' => 'web'], function () {
         Route::resource('charges', 'Admin\ChargesController');
 
     });
+
+    Route::post('note/save','NotesController@update');
+    Route::resource('note', 'NotesController');
+
+    Route::resource('payment', 'PaymentsController');
+
+    Route::resource('shipment', 'ShipmentController');
+
     /**
      * Member routes
      */
@@ -136,11 +144,8 @@ Route::group(['middleware' => 'web'], function () {
     Route::group(['prefix' => 'order'], function () {
         Route::get('/index', 'OrderController@index');
         Route::get('/orderhistory', 'OrderController@orderhistory');
-        Route::get('/shipment', 'OrderController@shipment');
-        Route::get('/updateshipment/{order_id?}', ['uses'=>'OrderController@updateshipment','as' =>'shipment']);
         Route::get('/details/{order_id}/{id}', 'OrderController@orderDetails');
         Route::get('/details/{order_id}/{id}/{user_id}', 'OrderController@orderDetails');
-        Route::put('/shipment', 'OrderController@addshipment');
         Route::post('/removeorder', 'OrderController@removeorder');
         Route::post('/removeproduct','OrderController@removeproduct');
         Route::get('/supplierdetail',['uses'=>'OrderController@supplierdetail','as'=>'supplierdetail']);
@@ -157,9 +162,6 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/outbondshipping',['uses'=>'OrderController@outbondshipping','as'=>'outbondshipping']);
         Route::put('/outbondshipping','OrderController@addoutbondshipping');
         Route::get('/reviewshipment',['uses'=>'OrderController@reviewshipment','as'=>'reviewshipment']);
-        Route::get('/payment',['uses'=>'OrderController@orderpayment','as'=>'payment']);
-        Route::put('/payment','OrderController@addorderpayment');
-        Route::post('/addcreditcard','OrderController@addcreditcard');
         Route::post('/addaddress','OrderController@addaddress');
         Route::post('/orderstatus', 'OrderController@orderstatus');
         Route::get('/ordershipping', 'OrderController@ordershipping');
@@ -195,10 +197,6 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/addterminal','OrderController@addterminal');
         Route::get('/orderlist','OrderController@orderlist');
         Route::get('/customers','OrderController@customers');
-        Route::put('/addnotes','OrderController@addnotes');
-        Route::post('/viewnotes','OrderController@viewnotes');
-        Route::post('/deletenote','OrderController@deletenote');
-        Route::post('/savenote','OrderController@savenote');
         Route::get('/getinvoice_detail','OrderController@getinvoice_detail');
         Route::post('/getinvoice_ajax_detail','OrderController@get_ajax_invoice_detail');
         Route::get('/warehousecheckin', 'OrderController@warehousecheckin');

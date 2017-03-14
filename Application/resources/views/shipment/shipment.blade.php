@@ -7,7 +7,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            {!! Form::open(['url' => 'order/shipment', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
+            {!! Form::open(['url' => 'shipment/updateshipment', 'method' => 'PUT', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
             {!! Form::hidden('ship_count', old('ship_count',1), ['class' => 'form-control', 'id'=>'ship_count']) !!}
             {!! Form::hidden('order_id', old('order_id', count($shipment)>0 ? $shipment[0]->order_id  : null), ['class' => 'form-control']) !!}
             <div class="row">

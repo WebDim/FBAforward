@@ -100,7 +100,7 @@
             <div class="form-group">
                 <div class="col-md-9 col-md-offset-9">
                     <a href="{{ URL::route('outbondshipping') }}" class="btn btn-primary">Previous</a>
-                    <a href="{{ URL::route('payment') }}" class="btn btn-primary">Next</a>
+                    <a href="{{ '/payment' }}" class="btn btn-primary">Next</a>
 
                 </div>
             </div>
