@@ -9,7 +9,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            {!! Form::open(['url' =>  'order/supplierdetail', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
+            {!! Form::open(['url' =>  'supplierdetail/update', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
             <div class="table-responsive no-padding">
                 <table class="table" id="list">
                     <thead>
@@ -178,7 +178,7 @@
                         'X-CSRF-Token': $('input[name="_token"]').val()
                     },
                     method: 'POST', // Type of response and matches what we said in the route
-                    url: '/order/addsupplier', // This is the url we gave in the route
+                    url: '/supplierdetail', // This is the url we gave in the route
                     data: {
                         'company_name': company_name,
                         'contact_name': contact_name,

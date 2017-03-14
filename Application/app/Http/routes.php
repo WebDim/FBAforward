@@ -118,6 +118,8 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::resource('shipment', 'ShipmentController');
 
+    Route::resource('supplierdetail', 'SupplierController');
+
     /**
      * Member routes
      */
@@ -148,9 +150,6 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/details/{order_id}/{id}/{user_id}', 'OrderController@orderDetails');
         Route::post('/removeorder', 'OrderController@removeorder');
         Route::post('/removeproduct','OrderController@removeproduct');
-        Route::get('/supplierdetail',['uses'=>'OrderController@supplierdetail','as'=>'supplierdetail']);
-        Route::put('/supplierdetail','OrderController@addsupplierdetail');
-        Route::post('/addsupplier','OrderController@addsupplier');
         Route::get('/preinspection',['uses'=>'OrderController@preinspection','as'=>'preinspection']);
         Route::put('/preinspection','OrderController@addpreinspection');
         Route::get('/productlabels',['uses'=>'OrderController@labels','as'=>'productlabels']);

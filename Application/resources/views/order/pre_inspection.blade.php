@@ -77,7 +77,7 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <div class="col-md-9 col-md-offset-9">
-                        <a href="{{ URL::route('supplierdetail') }}" class="btn btn-primary">Previous</a>
+                        <a href="{{ 'supplierdetail' }}" class="btn btn-primary">Previous</a>
                         {!! Form::submit('  Next  ', ['class'=>'btn btn-primary']) !!}
                     </div>
                 </div>
