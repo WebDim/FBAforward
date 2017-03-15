@@ -186,7 +186,7 @@ class ShipmentController extends Controller
             $request->session()->put('order_id', $id);
             $steps = Order::where('order_id', $id)->get();
             if ($steps[0]->steps == 2)
-                return redirect('order/supplierdetail');
+                return redirect('supplierdetail');
             else if ($steps[0]->steps == 3)
                 return redirect('order/preinspection');
             else if ($steps[0]->steps == 4)

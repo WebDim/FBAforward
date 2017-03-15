@@ -27,7 +27,7 @@
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <select name="CFS_terminal{{$cnt}}" id="CFS_terminal{{$cnt}}" class="form-control validate[required]" onchange="show_terminal(this.value)">
-                                            <option value=" ">CFS Terminal</option>
+                                            <option value="">Select CFS Terminal</option>
                                             <option value="">Add New</option>
                                             @foreach($cfs_terminal as $cfs_terminals)
                                             <option value="{{$cfs_terminals->id}}">{{$cfs_terminals->terminal_name}}</option>
@@ -39,7 +39,7 @@
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <select name="trucking_company{{$cnt}}" id="trucking_company{{$cnt}}" class="form-control validate[required]" onchange="show_trucking(this.value)">
-                                            <option value=" ">Trucking Company</option>
+                                            <option value="">Select Trucking Company</option>
                                             <option value="">Add New</option>
                                             @foreach($trucking_company as $trucking_compnays)
                                             <option value="{{$trucking_compnays->id}}">{{$trucking_compnays->company_name}}</option>

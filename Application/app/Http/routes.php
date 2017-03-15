@@ -138,6 +138,8 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/checkread', 'MemberController@checkread');
         Route::get('/switchuser','MemberController@switchuser');
         Route::post('/storeuser','MemberController@storeuser');
+        Route::get('/creditcard_detail', ['as' => 'creditcard_detail', 'uses' => 'MemberController@creditcarddetail']);
+        Route::put('/creditcard_detail', ['as' => 'creditcard_detail', 'uses' => 'MemberController@addcreditcarddetail']);
     });
 
     /**
@@ -224,8 +226,7 @@ Route::group(['middleware' => 'web'], function () {
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);
         Route::put('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@addamazoncredential']);
-        Route::get('/creditcard_detail', ['as' => 'creditcard_detail', 'uses' => 'MemberController@creditcarddetail']);
-        Route::put('/creditcard_detail', ['as' => 'creditcard_detail', 'uses' => 'MemberController@addcreditcarddetail']);
+
         Route::get('/sampleshipment',['as'=>'sampleshipment', 'uses'=>'CreateInboundShipmentPlanSample@createshipment']);
         Route::get('sitemap', function(){
         // create new sitemap object
