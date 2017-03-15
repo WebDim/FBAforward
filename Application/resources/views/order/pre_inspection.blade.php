@@ -9,7 +9,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            {!! Form::open(['url' =>  'preinspection/update', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
+            {!! Form::open(['url' =>  'order/preinspection', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
             <div class="table-responsive no-padding">
                 <table class="table" id="list">
                     <thead>

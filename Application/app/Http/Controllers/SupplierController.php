@@ -2,18 +2,72 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Http\Requests;
+use App\Additional_service;
+use App\Amazon_marketplace;
+use App\Amazon_destination;
+use App\Amazon_inventory;
+use App\Bill_of_lading;
+use App\CFS_terminal;
+use App\Charges;
+use App\Custom_clearance;
+use App\Customer_amazon_detail;
+use App\Customer_quickbook_detail;
+use App\Delivery_booking;
+use App\Dev_account;
+use App\Inspection_report;
+use App\Invoice_detail;
+use App\Listing_service;
+use App\Listing_service_detail;
+use App\Notifications\Usernotification;
+use App\Order_note;
+use App\Other_label_detail;
+use App\Outbound_method;
+use App\Payment_info;
+use App\Payment_type;
+use App\Photo_list_detail;
+use App\Prealert_detail;
+use App\Prep_detail;
+use App\Prep_service;
+use App\Product_labels;
+use App\Setting;
+use App\Shipping_charge;
+use App\Shipping_quote;
 use App\Supplier_detail;
+use App\Shipping_method;
 use App\Shipment_detail;
 use App\Supplier;
 use App\Supplier_inspection;
+use App\Product_labels_detail;
+use App\Shipments;
 use App\Order;
+use App\Role;
+use App\Trucking_company;
+use App\User;
+use App\User_credit_cardinfo;
+use App\Addresses;
 use App\Http\Middleware\Amazoncredential;
+use App\Outbound_shipping_detail;
+use App\Payment_detail;
+use App\User_info;
+use App\Warehouse_checkin;
+use App\Warehouse_checkin_image;
 use Illuminate\Http\Request;
+use Symfony\Component\Yaml\Tests\A;
+use Webpatser\Uuid\Uuid;
+use PayPal\Api\CreditCard;
+use PayPal\Api\Amount;
+use PayPal\Api\CreditCardToken;
+use PayPal\Api\FundingInstrument;
+use PayPal\Api\Payer;
+use PayPal\Api\Payment;
+use PayPal\Api\Transaction;
 use App\Libraries;
+use Illuminate\Support\Facades\DB;
 use PDF;
 use Yajra\Datatables\Datatables;
 use DNS1D;
+use ZipArchive;
 
 class SupplierController extends Controller
 {
@@ -128,7 +182,7 @@ class SupplierController extends Controller
         }
         $order_detail = array('steps' => '2');
         Order::where('order_id', $request->input('order_id'))->update($order_detail);
-        return redirect('preinspection')->with('Success', 'Supplier Information Added Successfully');
+        return redirect('order/preinspection')->with('Success', 'Supplier Information Added Successfully');
     }
 
     /**

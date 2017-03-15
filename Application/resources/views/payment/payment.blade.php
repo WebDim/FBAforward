@@ -162,7 +162,7 @@
                                             class="required">*</span></b></div>
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    {!! Form::select('credit_card_type', array_add($card_type, '','Select Payment Method'), old('credit_card_type'), ['class' => 'form-control select2 validate[required]','id'=>'credit_card_type']) !!}
+                                    {!! Form::select('credit_card_type', array_add($card_type, '','Select Payment Method'), old('credit_card_type'), ['class' => 'form-control select2 validate[required]']) !!}
                                 </div>
                             </div>
                         </div>
@@ -172,7 +172,7 @@
                                             class="required">*</span></b></div>
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    {!! Form::text('credit_card_number', old('credit_card_number'), ['class' => 'form-control validate[required,condRequired[creditCard]]', 'placeholder'=>'Credit Card Number','id'=>'credit_card_number']) !!}
+                                    {!! Form::text('credit_card_number', old('credit_card_number'), ['class' => 'form-control validate[required, custom[creditCard]]', 'placeholder'=>'Credit Card Number']) !!}
                                 </div>
                             </div>
                         </div>
@@ -182,7 +182,7 @@
                                             class="required">*</span></b></div>
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    {!! Form::text('expire_card', old('expire_card'), ['id' => 'expire_card', 'class' => 'datepicker form-control validate[required]', 'placeholder'=>'Expire Card','id'=>'expire_card']) !!}
+                                    {!! Form::text('expire_card', old('expire_card'), ['id' => 'expire_card', 'class' => 'datepicker form-control validate[required]', 'placeholder'=>'Expire Card']) !!}
                                 </div>
                             </div>
                         </div>
@@ -192,7 +192,7 @@
                             </div>
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    {!! Form::text('cvv', old('cvv'), ['class' => 'form-control validate[required, custom[number],condRequired[maxSize[3]]]', 'placeholder'=>'CVV','id'=>'cvv']) !!}
+                                    {!! Form::text('cvv', old('cvv'), ['class' => 'form-control validate[required, custom[maxSize[3]]]', 'placeholder'=>'CVV']) !!}
                                 </div>
                             </div>
                         </div>
@@ -202,7 +202,7 @@
                                             class="required">*</span></b></div>
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    {!! Form::text('first_name', old('first_name'), ['class' => 'form-control validate[required]', 'placeholder'=>'First Name','id'=>'first_name']) !!}
+                                    {!! Form::text('first_name', old('first_name'), ['class' => 'form-control validate[required]', 'placeholder'=>'First Name']) !!}
                                 </div>
                             </div>
                         </div>
@@ -212,7 +212,7 @@
                                             class="required">*</span></b></div>
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    {!! Form::text('last_name', old('last_name'), ['class' => 'form-control validate[required]', 'placeholder'=>'Last Name','last_name','id'=>'last_name']) !!}
+                                    {!! Form::text('last_name', old('last_name'), ['class' => 'form-control validate[required]', 'placeholder'=>'Last Name']) !!}
                                 </div>
                             </div>
                         </div>
@@ -248,7 +248,7 @@
                                             class="required">*</span></b></div>
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    {!! Form::text('address_line_1', old('address_line_1'), ['id'=>'address_line_1','class' => 'form-control validate[required]', 'placeholder'=>'Address Line 1']) !!}
+                                    {!! Form::text('address_line_1', old('address_line_1'), ['class' => 'form-control validate[required]', 'placeholder'=>'Address Line 1']) !!}
                                 </div>
                             </div>
                         </div>
@@ -258,7 +258,7 @@
                                             class="required">*</span></b></div>
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    {!! Form::text('address_line_2', old('address_line_2'), ['id'=>'address_line_2','class' => 'form-control', 'placeholder'=>'Line 2']) !!}
+                                    {!! Form::text('address_line_2', old('address_line_2'), ['class' => 'form-control', 'placeholder'=>'Line 2']) !!}
                                 </div>
                             </div>
                         </div>
@@ -278,7 +278,7 @@
                                             class="required">*</span></b></div>
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    {!! Form::text('state', old('state'), ['id'=>'state','class' => 'form-control validate[required]', 'placeholder'=>'State/Province']) !!}                                </div>
+                                    {!! Form::text('state', old('state'), ['class' => 'form-control validate[required]', 'placeholder'=>'State/Province']) !!}                                </div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -287,7 +287,7 @@
                             </div>
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    {!! Form::text('postal_code', old('postal_code'), ['id'=>'postal_code','class' => 'form-control validate[required]', 'placeholder'=>'Postal Code']) !!}
+                                    {!! Form::text('postal_code', old('postal_code'), ['class' => 'form-control validate[required]', 'placeholder'=>'Postal Code']) !!}
                                 </div>
                             </div>
                         </div>
@@ -297,7 +297,7 @@
                                             class="required">*</span></b></div>
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    {!! Form::text('country', old('country'), ['id'=>'country','class' => 'form-control validate[required]', 'placeholder'=>'Country']) !!}
+                                    {!! Form::text('country', old('country'), ['class' => 'form-control validate[required]', 'placeholder'=>'Country']) !!}
                                 </div>
                             </div>
                         </div>
@@ -367,14 +367,8 @@
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
                     console.log(response);
-                    if(response=='1') {
-                        swal(" Your credit card information successfully store on paypal vault Successfully");
-                        location.reload();
-                    }
-                    else
-                    {
-                        swal(" Some problem to store your credit card information on paypal vault");
-                    }
+                    swal(" Your credit card information successfully store on paypal vault Successfully");
+//                    location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
                     $('.preloader').css("display", "none");
@@ -409,7 +403,7 @@
                         'X-CSRF-Token': $('input[name="_token"]').val()
                     },
                     method: 'POST', // Type of response and matches what we said in the route
-                    url: '/payment/addaddress', // This is the url we gave in the route
+                    url: '/order/addaddress', // This is the url we gave in the route
                     data: {
                         'address_line_1': address_line_1,
                         'address_line_2': address_line_2,

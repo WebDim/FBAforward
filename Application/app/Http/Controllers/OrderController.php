@@ -113,7 +113,367 @@ class OrderController extends Controller
         }
     }
 
-   //For display review information of particular order
+    //remove particular product from shipment
+    public function removeproduct(Request $request)
+    {
+        if ($request->ajax()) {
+            $post = $request->all();
+            Listing_service_detail::where('shipment_detail_id', $post['shipment_detail_id'])->delete();
+            Prep_detail::where('shipment_detail_id', $post['shipment_detail_id'])->delete();
+            Product_labels_detail::where('shipment_detail_id', $post['shipment_detail_id'])->delete();
+            Supplier_detail::where('shipment_detail_id', $post['shipment_detail_id'])->delete();
+            Shipment_detail::where('shipment_detail_id', $post['shipment_detail_id'])->delete();
+        }
+    }
+
+    //For display pre inspection information of particular order
+    public function preinspection(Request $request)
+    {
+        $order_id = $request->session()->get('order_id');
+        $supplier = Supplier::selectRaw("supplier_inspections.is_inspection, supplier_inspections.inspection_decription, suppliers.supplier_id, suppliers.company_name")
+            ->join('supplier_details', 'supplier_details.supplier_id', '=', 'suppliers.supplier_id', 'left')
+            ->join('supplier_inspections', 'supplier_details.supplier_detail_id', '=', 'supplier_inspections.supplier_detail_id', 'left')
+            ->where('supplier_details.order_id', $order_id)
+            ->groupby('suppliers.supplier_id')
+            ->get();
+        $product = Supplier_detail::selectRaw("supplier_details.order_id, supplier_inspections.supplier_inspection_id, supplier_details.supplier_id, supplier_details.supplier_detail_id, supplier_details.product_id, supplier_details.total_unit, amazon_inventories.product_name, amazon_inventories.product_nick_name, amazon_inventories.product_nick_name")
+            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'supplier_details.product_id')
+            ->join('supplier_inspections', 'supplier_inspections.supplier_detail_id', '=', 'supplier_details.supplier_detail_id', 'left')
+            ->where('supplier_details.order_id', $order_id)
+            ->distinct('supplier_inspections.is_inspection')
+            ->get();
+        return view('order.pre_inspection')->with(compact('product', 'supplier'));
+    }
+
+    //add pre inspection information for particular order
+    public function addpreinspection(Request $request)
+    {
+        $user = \Auth::user();
+        $count = $request->input('count');
+        for ($cnt = 1; $cnt < $count; $cnt++) {
+            $product_count = $request->input('product_count' . $cnt);
+            for ($product_cnt = 1; $product_cnt < $product_count; $product_cnt++) {
+                if (empty($request->input('supplier_inspection_id' . $cnt . "_" . $product_cnt))) {
+                    $supplier = array('supplier_detail_id' => $request->input('supplier_detail_id' . $cnt . "_" . $product_cnt),
+                        'order_id' => $request->input('order_id'),
+                        'user_id' => $user->id,
+                        'is_inspection' => $request->input('inspection' . $cnt),
+                        'inspection_decription' => $request->input('inspection_desc' . $cnt),
+                        'supplier_id' => $request->input('supplier_id' . $cnt)
+                    );
+                    $supplier_inspection = new Supplier_inspection($supplier);
+                    $supplier_inspection->save();
+                } else {
+                    $supplier = array('supplier_detail_id' => $request->input('supplier_detail_id' . $cnt . "_" . $product_cnt),
+                        'user_id' => $user->id,
+                        'is_inspection' => $request->input('inspection' . $cnt),
+                        'inspection_decription' => $request->input('inspection_desc' . $cnt),
+                        'supplier_id' => $request->input('supplier_id' . $cnt)
+                    );
+                    Supplier_inspection::where('supplier_inspection_id', $request->input('supplier_inspection_id' . $cnt . "_" . $product_cnt))->update($supplier);
+                }
+            }
+        }
+        $order_detail = array('steps' => '3');
+        Order::where('order_id', $request->input('order_id'))->update($order_detail);
+        return redirect('order/productlabels')->with('Success', 'Pre inspection Information Added Successfully');
+    }
+
+    //For display Label of particular order
+    public function labels(Request $request)
+    {
+        $order_id = $request->session()->get('order_id');
+        $product_label = Product_labels::all();
+        $product = Shipment_detail::selectRaw(" shipments.order_id, product_labels_details.price, product_labels_details.product_label_detail_id, product_labels_details.product_label_id, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.product_nick_name, amazon_inventories.product_nick_name, amazon_inventories.sellerSKU")
+            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id', 'left')
+            ->join('shipments', 'shipment_details.shipment_id', '=', 'shipments.shipment_id', 'left')
+            ->join('product_labels_details', 'shipment_details.shipment_detail_id', '=', 'product_labels_details.shipment_detail_id', 'left')
+            ->where('shipments.order_id', $order_id)
+            ->groupby('shipment_details.shipment_detail_id')
+            ->get();
+        return view('order.product_labels')->with(compact('product', 'product_label'));
+    }
+
+    //add labels for particular order
+    public function addlabels(Request $request)
+    {
+        $count = $request->input('count');
+        for ($cnt = 1; $cnt < $count; $cnt++) {
+            if (empty($request->input('product_label_detail_id' . $cnt))) {
+                $product_label_id = explode(' ', $request->input('labels' . $cnt));
+                $product_label = array('order_id' => $request->input('order_id'),
+                    'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'product_label_id' => isset($product_label_id[0]) ? $product_label_id[0] : '',
+                    'fbsku' => $request->input('sku' . $cnt),
+                    'qty' => $request->input('total' . $cnt),
+                    'price' => $request->input('price' . $cnt)
+                );
+                $product_labels_detail = new Product_labels_detail($product_label);
+                $product_labels_detail->save();
+            } else {
+                $product_label_id = explode(' ', $request->input('labels' . $cnt));
+                $product_label = array(
+                    'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'product_label_id' => isset($product_label_id[0]) ? $product_label_id[0] : '',
+                    'fbsku' => $request->input('sku' . $cnt),
+                    'qty' => $request->input('total' . $cnt),
+                    'price' => $request->input('price' . $cnt)
+                );
+                Product_labels_detail::where('product_label_detail_id', $request->input('product_label_detail_id' . $cnt))->update($product_label);
+            }
+        }
+        $order_detail = array('steps' => '4');
+        Order::where('order_id', $request->input('order_id'))->update($order_detail);
+        return redirect('order/prepservice')->with('Success', 'Product Label Information Added Successfully');
+    }
+
+    //For display prep service information of particular order
+    public function prepservice(Request $request)
+    {
+        $order_id = $request->session()->get('order_id');
+        $prep_service = Prep_service::all();
+        $product = Shipment_detail::selectRaw("other_label_details.other_label_detail_id, other_label_details.label_id, shipments.order_id, prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.grand_total, prep_details.prep_service_ids, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.product_nick_name, amazon_inventories.product_nick_name, amazon_inventories.sellerSKU")
+            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id', 'left')
+            ->join('shipments', 'shipment_details.shipment_id', '=', 'shipments.shipment_id', 'left')
+            ->join('prep_details', 'prep_details.shipment_detail_id', '=', 'shipment_details.shipment_detail_id', 'left')
+            ->join('other_label_details', 'other_label_details.prep_detail_id', '=', 'prep_details.prep_detail_id', 'left')
+            ->where('shipments.order_id', $order_id)
+            ->get();
+        return view('order.prep_service')->with(compact('prep_service', 'product'));
+    }
+
+    //add prep service for particular order
+    public function addprepservice(Request $request)
+    {
+        $user = \Auth::user();
+        $count = $request->input('count');
+        for ($cnt = 1; $cnt < $count; $cnt++) {
+            $service = array();
+            $sub_count = $request->input('sub_count' . $cnt);
+            for ($sub_cnt = 1; $sub_cnt <= $sub_count; $sub_cnt++) {
+                if (!empty($request->input("service" . $cnt . "_" . $sub_cnt))) {
+                    $service[] = $request->input('service' . $cnt . "_" . $sub_cnt);
+                }
+            }
+            if (empty($request->input('prep_detail_id' . $cnt))) {
+                $prep_service = array('user_id' => $user->id,
+                    'order_id' => $request->input('order_id'),
+                    'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'total_qty' => $request->input('qty' . $cnt),
+                    'prep_service_ids' => implode(',', $service),
+                    'prep_service_total' => $request->input('total' . $cnt),
+                    'grand_total' => $request->input('grand_total')
+                );
+                $prep_service_detail = new Prep_detail($prep_service);
+                $prep_service_detail->save();
+                foreach ($service as $services) {
+                    if ($services == 2) {
+                        $other_label = array('label_id' => $request->input('other_label' . $cnt),
+                            'prep_detail_id' => $prep_service_detail->prep_detail_id
+                        );
+                        $other_label_detail = new Other_label_detail($other_label);
+                        $other_label_detail->save();
+                    }
+                }
+            } else {
+                $prep_service = array('user_id' => $user->id,
+                    'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'total_qty' => $request->input('qty' . $cnt),
+                    'prep_service_ids' => implode(',', $service),
+                    'prep_service_total' => $request->input('total' . $cnt),
+                    'grand_total' => $request->input('grand_total')
+                );
+                Prep_detail::where('prep_detail_id', $request->input('prep_detail_id' . $cnt))->update($prep_service);
+                if (empty($request->input('other_label_detail_id' . $cnt))) {
+                    foreach ($service as $services) {
+                        if ($services == 2) {
+                            $other_label = array('label_id' => $request->input('other_label' . $cnt),
+                                'prep_detail_id' => $request->input('prep_detail_id' . $cnt)
+                            );
+                            $other_label_detail = new Other_label_detail($other_label);
+                            $other_label_detail->save();
+                        }
+                    }
+                } else {
+                    foreach ($service as $services) {
+                        if ($services == 2) {
+                            $other_label = array('label_id' => $request->input('other_label' . $cnt),
+                                'prep_detail_id' => $request->input('prep_detail_id' . $cnt)
+                            );
+                            Other_label_detail::where('other_label_detail_id', $request->input('other_label_detail_id' . $cnt))->update($other_label);
+                        }
+                    }
+                }
+            }
+        }
+        $order_detail = array('steps' => '5');
+        Order::where('order_id', $request->input('order_id'))->update($order_detail);
+        return redirect('order/listservice')->with('Success', 'Prep Service Information Added Successfully');
+    }
+
+    //to remove particular other label detail from order
+    public function removeotherlabel(Request $request)
+    {
+        if ($request->ajax()) {
+            $post = $request->all();
+            Other_label_detail::where('other_label_detail_id', $post['label_detail_id'])->delete();
+        }
+    }
+
+    //For display list service information of particular order
+    public function listservice(Request $request)
+    {
+        $order_id = $request->session()->get('order_id');
+        $list_service = Listing_service::all();
+        $product = Shipment_detail::selectRaw("photo_list_details.photo_list_detail_id, photo_list_details.standard_photo, photo_list_details.prop_photo, shipments.order_id, listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.grand_total, listing_service_details.listing_service_ids,shipment_details.product_id, shipment_details.shipment_detail_id, shipment_details.total, amazon_inventories.product_name, amazon_inventories.product_nick_name, amazon_inventories.product_nick_name")
+            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id')
+            ->join('shipments', 'shipment_details.shipment_id', '=', 'shipments.shipment_id')
+            ->join('listing_service_details', 'listing_service_details.shipment_detail_id', '=', 'shipment_details.shipment_detail_id', 'left')
+            ->join('photo_list_details', 'photo_list_details.listing_service_detail_id', '=', 'listing_service_details.listing_service_detail_id', 'left')
+            ->where('shipments.order_id', $order_id)
+            ->get();
+        return view('order.list_service')->with(compact('list_service', 'product'));
+    }
+
+    //add list services for particular order
+    public function addlistservice(Request $request)
+    {
+        $count = $request->input('count');
+        for ($cnt = 1; $cnt < $count; $cnt++) {
+            $service = array();
+            $sub_count = $request->input('sub_count' . $cnt);
+            for ($sub_cnt = 1; $sub_cnt <= $sub_count; $sub_cnt++) {
+                if (!empty($request->input("service" . $cnt . "_" . $sub_cnt))) {
+                    $service[] = $request->input('service' . $cnt . "_" . $sub_cnt);
+                }
+            }
+            if (empty($request->input('listing_service_detail_id' . $cnt))) {
+                $list_service = array('order_id' => $request->input('order_id'),
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'listing_service_ids' => implode(',', $service),
+                    'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
+                    'listing_service_total' => $request->input('total' . $cnt),
+                    'grand_total' => $request->input('grand_total')
+                );
+                $list_service_detail = new Listing_service_detail($list_service);
+                $list_service_detail->save();
+                foreach ($service as $services) {
+                    if ($services == 1) {
+                        $photo_detail = array('listing_service_detail_id' => $list_service_detail->listing_service_detail_id,
+                            'standard_photo' => $request->input('standard' . $cnt),
+                            'prop_photo' => $request->input('prop' . $cnt)
+                        );
+                        $photo_list_detail = new Photo_list_detail($photo_detail);
+                        $photo_list_detail->save();
+                    }
+                }
+            } else {
+                $list_service = array(
+                    'product_id' => $request->input('product_id' . $cnt),
+                    'listing_service_ids' => implode(',', $service),
+                    'shipment_detail_id' => $request->input('shipment_detail_id' . $cnt),
+                    'listing_service_total' => $request->input('total' . $cnt),
+                    'grand_total' => $request->input('grand_total')
+                );
+                Listing_service_detail::where('listing_service_detail_id', $request->input('listing_service_detail_id' . $cnt))->update($list_service);
+                if (empty($request->input('photo_list_detail_id' . $cnt))) {
+                    foreach ($service as $services) {
+                        if ($services == 1) {
+                            $photo_detail = array('listing_service_detail_id' => $request->input('listing_service_detail_id' . $cnt),
+                                'standard_photo' => $request->input('standard' . $cnt),
+                                'prop_photo' => $request->input('prop' . $cnt)
+                            );
+                            $photo_list_detail = new Photo_list_detail($photo_detail);
+                            $photo_list_detail->save();
+                        }
+                    }
+                } else {
+                    foreach ($service as $services) {
+                        if ($services == 1) {
+                            $photo_detail = array('listing_service_detail_id' => $request->input('listing_service_detail_id' . $cnt),
+                                'standard_photo' => $request->input('standard' . $cnt),
+                                'prop_photo' => $request->input('prop' . $cnt)
+                            );
+                            Photo_list_detail::where('listing_service_detail_id', $request->input('listing_service_detail_id' . $cnt))->update($photo_detail);
+                        }
+                    }
+                }
+            }
+        }
+        $order_detail = array('steps' => '6');
+        Order::where('order_id', $request->input('order_id'))->update($order_detail);
+        return redirect('order/outbondshipping')->with('Success', 'Listing service Information Added Successfully');
+    }
+
+    //remove particular photo details of particular order
+    public function removephotolabel(Request $request)
+    {
+        if ($request->ajax()) {
+            $post = $request->all();
+            Photo_list_detail::where('photo_list_detail_id', $post['photo_list_detail_id'])->delete();
+        }
+    }
+
+    //For display outbound shipping information of particular order
+    public function outbondshipping(Request $request)
+    {
+        $user = \Auth::user();
+        $order_id = $request->session()->get('order_id');
+        $outbound_method = Outbound_method::all();
+        $shipment = Shipments::selectRaw("shipments.shipment_id, shipping_methods.shipping_name, shipments.order_id")
+            ->join('shipping_methods', 'shipments.shipping_method_id', '=', 'shipping_methods.shipping_method_id')
+            ->join('shipment_details', 'shipment_details.shipment_id', '=', 'shipments.shipment_id')
+            ->where('shipments.order_id', $order_id)
+            ->groupby('shipments.shipment_id')
+            ->get();
+        $product = Shipment_detail::selectRaw("shipment_details.shipment_id, outbound_shipping_details.outbound_shipping_detail_id,outbound_shipping_details.outbound_method_id, shipment_details.shipment_detail_id, shipments.order_id, shipment_details.shipment_detail_id, shipment_details.product_id, shipment_details.total,  amazon_inventories.product_name, amazon_inventories.product_nick_name  ")
+            ->join('shipments', 'shipments.shipment_id', '=', 'shipment_details.shipment_id', 'left')
+            ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id', 'left')
+            ->join('outbound_shipping_details', 'shipment_details.shipment_detail_id', '=', 'outbound_shipping_details.shipment_detail_id', 'left')
+            ->where('shipments.order_id', $order_id)
+            ->get();
+        return view('order.outbound_shipping')->with(compact('outbound_method', 'product', 'shipment'));
+    }
+
+    // add outbound shipping details of particular order
+    public function addoutbondshipping(Request $request)
+    {
+        $ship_count = $request->input('ship_count');
+        for ($ship_cnt = 1; $ship_cnt < $ship_count; $ship_cnt++) {
+            $count = $request->input('count' . $ship_cnt);
+            for ($cnt = 1; $cnt < $count; $cnt++) {
+                if (empty($request->input("outbound_shipping_detail_id" . $ship_cnt . "_" . $cnt))) {
+                    $outbound_shipping = array(
+                        "outbound_method_id" => $request->input('outbound_method' . $ship_cnt . "_" . $cnt),
+                        "shipment_detail_id" => $request->input('shipment_detail_id' . $ship_cnt . "_" . $cnt),
+                        "order_id" => $request->input('order_id'),
+                        "product_ids" => $request->input('product_id' . $ship_cnt . "_" . $cnt),
+                        "qty" => $request->input('total_unit' . $ship_cnt . "_" . $cnt)
+                    );
+                    $outbound_shipping_detail = new Outbound_shipping_detail($outbound_shipping);
+                    $outbound_shipping_detail->save();
+                } else {
+                    $outbound_shipping = array(
+                        "outbound_method_id" => $request->input('outbound_method' . $ship_cnt . "_" . $cnt),
+                        "shipment_detail_id" => $request->input('shipment_detail_id' . $ship_cnt . "_" . $cnt),
+                        "order_id" => $request->input('order_id'),
+                        "product_ids" => $request->input('product_id' . $ship_cnt . "_" . $cnt),
+                        "qty" => $request->input('total_unit' . $ship_cnt . "_" . $cnt)
+                    );
+                    Outbound_shipping_detail::where('outbound_shipping_detail_id', $request->input("outbound_shipping_detail_id" . $ship_cnt . "_" . $cnt))->update($outbound_shipping);
+                }
+            }
+        }
+        $order_detail = array('steps' => '7');
+        Order::where('order_id', $request->input('order_id'))->update($order_detail);
+        return redirect('order/reviewshipment')->with('Success', 'Outbound Shipping Information Added Successfully');
+    }
+
+    //For display review information of particular order
     public function reviewshipment(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -137,6 +497,25 @@ class OrderController extends Controller
         $prep_service = Prep_service::all();
         return view('order.review_shipment')->with(compact('shipment', 'outbound_detail', 'product_detail', 'prep_service'));
     }
+
+    //add billing address for particular user
+    public function addaddress(Request $request)
+    {
+        if ($request->ajax()) {
+            $user = \Auth::user();
+            $address_detail = array('user_id' => $user->id,
+                'type' => 'B',
+                'address_1' => $request->input('address_line_1'),
+                'address_2' => $request->input('address_line_2'),
+                'city' => $request->input('city'),
+                'state' => $request->input('state'),
+                'postal_code' => $request->input('postal_code'),
+                'country' => $request->input('country')
+            );
+            Addresses::create($address_detail);
+        }
+    }
+
     //to display whole information of particular order
     public function orderDetails(Request $request)
     {
@@ -201,6 +580,7 @@ class OrderController extends Controller
             return view('order.detail_list')->with(compact('shipment_detail', 'payment_detail', 'user_role', 'id', 'title'));
         }
     }
+
     //change order status of particular order
     public function orderstatus(Request $request)
     {
