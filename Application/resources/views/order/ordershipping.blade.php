@@ -91,7 +91,7 @@
                                         <a href="javascript:void(0)" onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
                                     @elseif($user_role==10)
                                         @if($order->is_activated==11)
-                                            <a href="{{ url('order/warehousecheckinform/'.$order->order_id)}}"
+                                            <a href="{{ url('warehouse/warehousecheckinform/'.$order->order_id)}}"
                                                class="btn btn-info">Warehouse Check In</a>
                                         @elseif($order->is_activated==13)
                                             <a href="javascript:void(0)" onclick="viewchecklist('{{$order->order_id}}','Check List')">View Check
@@ -114,7 +114,7 @@
                                             <a href="javascript:void(0)" onclick="opennote({{$order->order_id}})" class="btn btn-info">Add
                                                 Notes</a>
                                             @if($order->shipmentplan==0)
-                                                <a href="{{ url('order/createshipments/'.$order->order_id)}}"
+                                                <a href="{{ url('warehouse/createshipments/'.$order->order_id)}}"
                                                    class="btn btn-info">create shipment</a>
                                             @elseif($order->shipmentplan==1)
                                                 <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','13')"
@@ -406,7 +406,7 @@
                     'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/createshipments', // This is the url we gave in the route
+                url: '/warehouse/createshipments', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
                     'user_id': user_id
@@ -602,7 +602,7 @@
                     'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/warehousecheckinreview', // This is the url we gave in the route
+                url: '/warehouse/warehousecheckinreview', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
                 }, // a JSON object to send back
@@ -649,7 +649,7 @@
                     'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/viewchecklist', // This is the url we gave in the route
+                url: '/warehouse/viewchecklist', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
                 }, // a JSON object to send back
@@ -674,7 +674,7 @@
                     'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/reviewwork', // This is the url we gave in the route
+                url: '/warehouse/reviewwork', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
                 }, // a JSON object to send back
@@ -697,7 +697,7 @@
                     'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/verifylabel', // This is the url we gave in the route
+                url: '/warehouse/verifylabel', // This is the url we gave in the route
                 data: {
                     'shipment_id': shipment_id,
                     'status': status
@@ -727,7 +727,7 @@
                     'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/shipmentreview', // This is the url we gave in the route
+                url: '/warehouse/shipmentreview', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
                 }, // a JSON object to send back
@@ -750,7 +750,7 @@
                     'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/verifystatus', // This is the url we gave in the route
+                url: '/warehouse/verifystatus', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
                 }, // a JSON object to send back
@@ -773,7 +773,7 @@
                     'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/shippinglabel', // This is the url we gave in the route
+                url: '/warehouse/shippinglabel', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
                 }, // a JSON object to send back
@@ -796,7 +796,7 @@
                     'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/getlabel', // This is the url we gave in the route
+                url: '/warehouse/getlabel', // This is the url we gave in the route
                 data: {
                     'fnsku': fnsku,
                 }, // a JSON object to send back
@@ -826,7 +826,7 @@
                     'X-CSRF-Token': "{{ csrf_token() }}"
                 },
                 method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/getotherlabel', // This is the url we gave in the route
+                url: '/warehouse/getotherlabel', // This is the url we gave in the route
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
                     $('#barcode_div').html(response);

@@ -128,5 +128,26 @@ class OutboundshippingController extends Controller
         Order::where('order_id', $request->input('order_id'))->update($order_detail);
         return redirect('order/reviewshipment')->with('Success', 'Outbound Shipping Information Added Successfully');
     }
+    public function create()
+    {
+        //
+    }
+    public function store(Request $request)
+    {
+
+    }
+    public function show($id)
+    {
+        //
+    }
+
+    public function edit($id)
+    {
+        //
+    }
+    public function destroy($id)
+    {
+        //
+    }
 
 }

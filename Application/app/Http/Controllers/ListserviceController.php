@@ -168,4 +168,25 @@ class ListserviceController extends Controller
             Photo_list_detail::where('photo_list_detail_id', $post['photo_list_detail_id'])->delete();
         }
     }
+    public function create()
+    {
+        //
+    }
+    public function store(Request $request)
+    {
+
+    }
+    public function show($id)
+    {
+        //
+    }
+
+    public function edit($id)
+    {
+        //
+    }
+    public function destroy($id)
+    {
+        //
+    }
 }

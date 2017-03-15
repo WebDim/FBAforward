@@ -113,7 +113,7 @@
                 'X-CSRF-Token': "{{ csrf_token() }}"
             },
             method: 'POST', // Type of response and matches what we said in the route
-            url: '/order/prepcomplete', // This is the url we gave in the route
+            url: '/warehouse/prepcomplete', // This is the url we gave in the route
             data: {
                 'shipment_detail_id': shipment_detail_id,
             }, // a JSON object to send back

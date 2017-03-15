@@ -6,7 +6,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            {!! Form::open(['url' => 'order/warehousecheckinform', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
+            {!! Form::open(['url' => 'warehouse/warehousecheckinform', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
             {!! Form::hidden('order_id', old('order_id', isset($order_id)?$order_id:null), ['class' => 'form-control']) !!}
             <div class="col-md-12">
                 FBAforward order # : {{isset($user)? $user[0]->order_no :null}}

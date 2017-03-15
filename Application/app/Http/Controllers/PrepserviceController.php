@@ -168,5 +168,26 @@ class PrepserviceController extends Controller
             Other_label_detail::where('other_label_detail_id', $post['label_detail_id'])->delete();
         }
     }
+    public function create()
+    {
+        //
+    }
+    public function store(Request $request)
+    {
+
+    }
+    public function show($id)
+    {
+        //
+    }
+
+    public function edit($id)
+    {
+        //
+    }
+    public function destroy($id)
+    {
+        //
+    }
 
 }

@@ -55,7 +55,7 @@ class NotesController extends Controller
         );
         Order_note::create($notes);
         if ($user_role == 8)
-            return redirect('order/adminreview');
+            return redirect('warehouse/adminreview');
         else
             return redirect('order/orderlist');
     }

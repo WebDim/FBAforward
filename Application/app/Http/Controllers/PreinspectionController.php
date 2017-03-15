@@ -125,5 +125,26 @@ class PreinspectionController extends Controller
         Order::where('order_id', $request->input('order_id'))->update($order_detail);
         return redirect('productlabels')->with('Success', 'Pre inspection Information Added Successfully');
     }
+    public function create()
+    {
+        //
+    }
+    public function store(Request $request)
+    {
+
+    }
+    public function show($id)
+    {
+        //
+    }
+
+    public function edit($id)
+    {
+        //
+    }
+    public function destroy($id)
+    {
+        //
+    }
 
 }

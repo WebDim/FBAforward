@@ -127,6 +127,7 @@ Route::group(['middleware' => 'web'], function () {
     Route::post('listservice/removephotolabel', 'ListserviceController@removephotolabel');
     Route::resource('outboundshipping', 'OutboundshippingController');
 
+
     /**
      * Member routes
      */
@@ -148,6 +149,36 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/creditcard_detail', ['as' => 'creditcard_detail', 'uses' => 'MemberController@creditcarddetail']);
         Route::put('/creditcard_detail', ['as' => 'creditcard_detail', 'uses' => 'MemberController@addcreditcarddetail']);
     });
+
+    /** warehouse routes
+     *
+     */
+    Route::group(['prefix' => 'warehouse'], function(){
+        Route::get('/warehousecheckin', 'WarehouseController@warehousecheckin');
+        Route::get('/warehousecheckinform/{order_id}', 'WarehouseController@warehousecheckinform');
+        Route::put('/warehousecheckinform', 'WarehouseController@addwarehousecheckinform');
+        Route::get('/adminreview', 'WarehouseController@adminreview');
+        Route::get('/createshipments/{order_id}', 'WarehouseController@createshipments');
+        Route::post('/warehousecheckinreview','WarehouseController@warehousecheckinreview');
+        Route::get('/downloadwarehouseimages/{id}','WarehouseController@downloadwarehouseimages');
+        Route::get('/orderlabor','WarehouseController@orderlabor');
+        Route::post('/viewchecklist','WarehouseController@viewchecklist');
+        Route::post('/getlabel','WarehouseController@getlabel');
+        Route::post('/getotherlabel','WarehouseController@getotherlabel');
+        Route::post('/prepcomplete','WarehouseController@prepcomplete');
+        Route::get('/managerreview','WarehouseController@managerreview');
+        Route::post('/reviewwork','WarehouseController@reviewwork');
+        Route::get('/completeshipment','WarehouseController@completeshipment');
+        Route::post('/shippinglabel','WarehouseController@shippinglabel');
+        Route::post('/verifylabel','WarehouseController@verifylabel');
+        Route::get('/adminshipmentreview','WarehouseController@adminshipmentreview');
+        Route::post('/shipmentreview','WarehouseController@shipmentreview');
+        Route::post('/verifystatus','WarehouseController@verifystatus');
+        Route::get('/printshippinglabel/{shipment_id}','WarehouseController@printshippinglabel');
+    });
+
+
+
 
     /**
      * Orders routes
@@ -193,27 +224,6 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/customers','OrderController@customers');
         Route::get('/getinvoice_detail','OrderController@getinvoice_detail');
         Route::post('/getinvoice_ajax_detail','OrderController@get_ajax_invoice_detail');
-        Route::get('/warehousecheckin', 'OrderController@warehousecheckin');
-        Route::get('/warehousecheckinform/{order_id}', 'OrderController@warehousecheckinform');
-        Route::put('/warehousecheckinform', 'OrderController@addwarehousecheckinform');
-        Route::get('/adminreview', 'OrderController@adminreview');
-        Route::get('/createshipments/{order_id}', 'OrderController@createshipments');
-        Route::post('/warehousecheckinreview','OrderController@warehousecheckinreview');
-        Route::get('/downloadwarehouseimages/{id}','OrderController@downloadwarehouseimages');
-        Route::get('/orderlabor','OrderController@orderlabor');
-        Route::post('/viewchecklist','OrderController@viewchecklist');
-        Route::post('/getlabel','OrderController@getlabel');
-        Route::post('/getotherlabel','OrderController@getotherlabel');
-        Route::post('/prepcomplete','OrderController@prepcomplete');
-        Route::get('/managerreview','OrderController@managerreview');
-        Route::post('/reviewwork','OrderController@reviewwork');
-        Route::get('/completeshipment','OrderController@completeshipment');
-        Route::post('/shippinglabel','OrderController@shippinglabel');
-        Route::post('/verifylabel','OrderController@verifylabel');
-        Route::get('/adminshipmentreview','OrderController@adminshipmentreview');
-        Route::post('/shipmentreview','OrderController@shipmentreview');
-        Route::post('/verifystatus','OrderController@verifystatus');
-        Route::get('/printshippinglabel/{shipment_id}','OrderController@printshippinglabel');
 
     });
 

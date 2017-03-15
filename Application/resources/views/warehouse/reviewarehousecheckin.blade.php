@@ -53,7 +53,7 @@
                     <td>
                         @foreach($warehouse_images as $warehouse_image)
                             @if($warehouse_image->warehouse_checkin_id==$shipments->id)
-                                <a href="{{ url('order/downloadwarehouseimages/'.$warehouse_image->id) }}">{{  $warehouse_image->images}}</a><br>
+                                <a href="{{ url('warehouse/downloadwarehouseimages/'.$warehouse_image->id) }}">{{  $warehouse_image->images}}</a><br>
                             @endif
                         @endforeach
                     </td>

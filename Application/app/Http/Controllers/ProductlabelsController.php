@@ -74,6 +74,8 @@ class ProductlabelsController extends Controller
         $this->middleware(['auth', Amazoncredential::class]);
     }
     //For display Label of particular order
+
+
     public function index(Request $request)
     {
         $order_id = $request->session()->get('order_id');
@@ -121,6 +123,27 @@ class ProductlabelsController extends Controller
         $order_detail = array('steps' => '4');
         Order::where('order_id', $request->input('order_id'))->update($order_detail);
         return redirect('prepservice')->with('Success', 'Product Label Information Added Successfully');
+    }
+    public function create()
+    {
+        //
+    }
+    public function store(Request $request)
+    {
+
+    }
+    public function show($id)
+    {
+        //
+    }
+
+    public function edit($id)
+    {
+        //
+    }
+    public function destroy($id)
+    {
+        //
     }
 
 }

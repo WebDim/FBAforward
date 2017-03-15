@@ -122,20 +122,20 @@
                             @endif
                             @if('Warehouse Lead'===\Auth::user()->role->name)
                                 <li>
-                                    <a class="external" href="{{ url('order/warehousecheckin') }}"><i class="fa fa-btn fa-user"></i> Warehouse Check In Order</a>
-                                    <a class="external" href="{{url('order/orderlabor')}}"><i class="fa fa-btn fa-user"></i>Order Labor</a>
-                                    <a class="external" href="{{url('order/completeshipment')}}"><i class="fa fa-btn fa-user"></i>Complete Shipment</a>
+                                    <a class="external" href="{{ url('warehouse/warehousecheckin') }}"><i class="fa fa-btn fa-user"></i> Warehouse Check In Order</a>
+                                    <a class="external" href="{{url('warehouse/orderlabor')}}"><i class="fa fa-btn fa-user"></i>Order Labor</a>
+                                    <a class="external" href="{{url('warehouse/completeshipment')}}"><i class="fa fa-btn fa-user"></i>Complete Shipment</a>
                                 </li>
                             @endif
                             @if('Warehouse Admin'===\Auth::user()->role->name)
                                 <li>
-                                    <a class="external" href="{{ url('order/adminreview') }}"><i class="fa fa-btn fa-user"></i> Warehouse Check In Review</a>
-                                    <a class="external" href="{{ url('order/adminshipmentreview') }}"><i class="fa fa-btn fa-user"></i> Shipment Review</a>
+                                    <a class="external" href="{{ url('warehouse/adminreview') }}"><i class="fa fa-btn fa-user"></i> Warehouse Check In Review</a>
+                                    <a class="external" href="{{ url('warehouse/adminshipmentreview') }}"><i class="fa fa-btn fa-user"></i> Shipment Review</a>
                                 </li>
                             @endif
                             @if('Warehouse Manager'===\Auth::user()->role->name)
                                 <li>
-                                    <a class="external" href="{{ url('order/managerreview') }}"><i class="fa fa-btn fa-user"></i> Manager Review</a>
+                                    <a class="external" href="{{ url('warehouse/managerreview') }}"><i class="fa fa-btn fa-user"></i> Manager Review</a>
                                 </li>
                             @endif
                             @if('Logistics'===\Auth::user()->role->name)
