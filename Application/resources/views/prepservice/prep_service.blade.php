@@ -9,7 +9,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            {!! Form::open(['url' =>  'order/prepservice', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
+            {!! Form::open(['url' =>  'prepservice/update', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
             <div class="table-responsive no-padding">
                 <table class="table" id="list">
                     <thead>
@@ -82,7 +82,7 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <div class="col-md-9 col-md-offset-9">
-                        <a href="{{ URL::route('productlabels') }}" class="btn btn-primary">Previous</a>
+                        <a href="{{ '/productlabels' }}" class="btn btn-primary">Previous</a>
                         {!! Form::submit('  Next  ', ['class'=>'btn btn-primary']) !!}
                     </div>
                 </div>
@@ -135,7 +135,7 @@
                             'X-CSRF-Token': $('input[name="_token"]').val()
                         },
                         method: 'POST', // Type of response and matches what we said in the route
-                        url: '/order/removeotherlabel', // This is the url we gave in the route
+                        url: '/prepservice/removeotherlabel', // This is the url we gave in the route
                         data: {
                             'label_detail_id': label_detail_id,
 

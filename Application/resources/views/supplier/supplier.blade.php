@@ -21,7 +21,7 @@
                     </thead>
                     <tbody>
                     {{--*/ $cnt = 1 /*--}}
-
+                    {{--*/$order_id=0/*--}}
                     @foreach($product as $products)
                         <input type="hidden" id="order_id" , name="order_id" value="{{$products->order_id}}">
                         <tr>
@@ -96,7 +96,7 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <div class="col-md-9 col-md-offset-9">
-                        <a href="{{ '/shipment' }}" class="btn btn-primary">Previous</a>
+                        <a href="{{ url('/shipment/'.$order_id) .'/edit' }}" class="btn btn-primary">Previous</a>
                         {!! Form::submit('  Next  ', ['class'=>'btn btn-primary']) !!}
                     </div>
                 </div>

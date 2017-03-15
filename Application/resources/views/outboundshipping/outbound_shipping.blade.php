@@ -9,7 +9,7 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        {!! Form::open(['url' =>  'order/outbondshipping', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
+        {!! Form::open(['url' =>  'outboundshipping/update', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
        {{--*/$ship_count=1/*--}}
         @foreach($shipment as $shipments)
             <div>
@@ -57,7 +57,7 @@
         <div class="col-md-12">
             <div class="form-group">
                 <div class="col-md-9 col-md-offset-9">
-                    <a href="{{ URL::route('listservice') }}" class="btn btn-primary">Previous</a>
+                    <a href="{{ '/listservice' }}" class="btn btn-primary">Previous</a>
                     {!! Form::submit('  Next  ', ['class'=>'btn btn-primary']) !!}
                 </div>
             </div>

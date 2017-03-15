@@ -438,7 +438,7 @@
                     'X-CSRF-Token': $('input[name="_token"]').val()
                 },
                 method: 'POST', // Type of response and matches what we said in the route
-                url: '/order/removeproduct', // This is the url we gave in the route
+                url: '/shipment/removeproduct', // This is the url we gave in the route
                 data: {
                     'shipment_detail_id': id,
                     'fnsku':fnsku,

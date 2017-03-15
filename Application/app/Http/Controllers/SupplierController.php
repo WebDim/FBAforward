@@ -182,7 +182,7 @@ class SupplierController extends Controller
         }
         $order_detail = array('steps' => '2');
         Order::where('order_id', $request->input('order_id'))->update($order_detail);
-        return redirect('order/preinspection')->with('Success', 'Supplier Information Added Successfully');
+        return redirect('preinspection')->with('Success', 'Supplier Information Added Successfully');
     }
 
     /**
