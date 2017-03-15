@@ -186,19 +186,19 @@ class ShipmentController extends Controller
             $request->session()->put('order_id', $id);
             $steps = Order::where('order_id', $id)->get();
             if ($steps[0]->steps == 2)
-                return redirect('order/supplierdetail');
+                return redirect('supplierdetail');
             else if ($steps[0]->steps == 3)
-                return redirect('order/preinspection');
+                return redirect('preinspection');
             else if ($steps[0]->steps == 4)
-                return redirect('order/productlabels');
+                return redirect('productlabels');
             else if ($steps[0]->steps == 5)
-                return redirect('order/prepservice');
+                return redirect('prepservice');
             else if ($steps[0]->steps == 6)
-                return redirect('order/listservice');
+                return redirect('listservice');
             else if ($steps[0]->steps == 7)
-                return redirect('order/outbondshipping');
+                return redirect('outbondshipping');
             else if ($steps[0]->steps == 8)
-                return redirect('order/reviewshipment');
+                return redirect('reviewshipment');
             else if ($steps[0]->steps == 9)
                 return redirect('payment');
         }
@@ -337,5 +337,17 @@ class ShipmentController extends Controller
     public function destroy($id)
     {
         //
+    }
+    //remove particular product from shipment
+    public function removeproduct(Request $request)
+    {
+        if ($request->ajax()) {
+            $post = $request->all();
+            Listing_service_detail::where('shipment_detail_id', $post['shipment_detail_id'])->delete();
+            Prep_detail::where('shipment_detail_id', $post['shipment_detail_id'])->delete();
+            Product_labels_detail::where('shipment_detail_id', $post['shipment_detail_id'])->delete();
+            Supplier_detail::where('shipment_detail_id', $post['shipment_detail_id'])->delete();
+            Shipment_detail::where('shipment_detail_id', $post['shipment_detail_id'])->delete();
+        }
     }
 }

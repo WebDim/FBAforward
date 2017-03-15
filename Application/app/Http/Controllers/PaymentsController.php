@@ -110,6 +110,7 @@ class PaymentsController extends Controller
      */
     public function store(Request $request)
     {
+
         $user = \Auth::user();
         $apiContext = new \PayPal\Rest\ApiContext(
             new \PayPal\Auth\OAuthTokenCredential(
@@ -141,6 +142,8 @@ class PaymentsController extends Controller
             'credit_card_id' => $card->id
         );
         User_credit_cardinfo::create($card_detail);
+        return 1;
+
     }
 
     /**
@@ -272,5 +275,22 @@ class PaymentsController extends Controller
     public function destroy($id)
     {
         //
+    }
+    //add billing address for particular user
+    public function addaddress(Request $request)
+    {
+        if ($request->ajax()) {
+            $user = \Auth::user();
+            $address_detail = array('user_id' => $user->id,
+                'type' => 'B',
+                'address_1' => $request->input('address_line_1'),
+                'address_2' => $request->input('address_line_2'),
+                'city' => $request->input('city'),
+                'state' => $request->input('state'),
+                'postal_code' => $request->input('postal_code'),
+                'country' => $request->input('country')
+            );
+            Addresses::create($address_detail);
+        }
     }
 }

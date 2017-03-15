@@ -110,16 +110,20 @@ Route::group(['middleware' => 'web'], function () {
         Route::resource('charges', 'Admin\ChargesController');
 
     });
-
     Route::post('note/save','NotesController@update');
     Route::resource('note', 'NotesController');
-
     Route::resource('payment', 'PaymentsController');
-
+    Route::post('payment/addaddress','PaymentsController@addaddress');
     Route::resource('shipment', 'ShipmentController');
-
+    Route::post('shipment/removeproduct','ShipmentController@removeproduct');
     Route::resource('supplierdetail', 'SupplierController');
-
+    Route::resource('preinspection','PreinspectionController');
+    Route::resource('productlabels','ProductlabelController');
+    Route::resource('prepservice','PrepserviceController');
+    Route::post('prepservice/removeotherlabel','PrepserviceController@removeotherlabel');
+    Route::resource('listservice','ListserviceController');
+    Route::post('listservice/removephotolabel','ListserviceController@removephotolabel');
+    Route::resource('outboundshipping','OutboundshippingController');
     /**
      * Member routes
      */
@@ -149,19 +153,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/details/{order_id}/{id}', 'OrderController@orderDetails');
         Route::get('/details/{order_id}/{id}/{user_id}', 'OrderController@orderDetails');
         Route::post('/removeorder', 'OrderController@removeorder');
-        Route::post('/removeproduct','OrderController@removeproduct');
-        Route::get('/preinspection',['uses'=>'OrderController@preinspection','as'=>'preinspection']);
-        Route::put('/preinspection','OrderController@addpreinspection');
-        Route::get('/productlabels',['uses'=>'OrderController@labels','as'=>'productlabels']);
-        Route::put('/productlabels','OrderController@addlabels');
-        Route::get('/prepservice',['uses'=>'OrderController@prepservice','as'=>'prepservice']);
-        Route::put('/prepservice','OrderController@addprepservice');
-        Route::get('/listservice',['uses'=>'OrderController@listservice','as'=>'listservice']);
-        Route::put('/listservice','OrderController@addlistservice');
-        Route::get('/outbondshipping',['uses'=>'OrderController@outbondshipping','as'=>'outbondshipping']);
-        Route::put('/outbondshipping','OrderController@addoutbondshipping');
         Route::get('/reviewshipment',['uses'=>'OrderController@reviewshipment','as'=>'reviewshipment']);
-        Route::post('/addaddress','OrderController@addaddress');
         Route::post('/orderstatus', 'OrderController@orderstatus');
         Route::get('/ordershipping', 'OrderController@ordershipping');
         Route::post('/removeotherlabel', 'OrderController@removeotherlabel');
