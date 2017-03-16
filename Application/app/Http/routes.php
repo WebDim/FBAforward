@@ -34,6 +34,7 @@ use App\Prep_service;
 use App\Listing_service;
 use App\Addresses;
 use App\Charges;
+use App\Order;
 
 Route::model('users', User::class);
 Route::model('settings', Setting::class);
@@ -51,6 +52,8 @@ Route::model('listingservices',Listing_service::class);
 Route::model('addresses',Addresses::class);
 Route::model('charges',Charges::class);
 Route::model('customers', User::class);
+Route::model('orders', Order::class);
+
 
 Route::group(['middleware' => ['web']], function () {
     Route::get('/page/{slug}', 'FrontendController@staticPages');
@@ -110,6 +113,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::resource('addresses', 'Admin\AddressesController');
         Route::resource('charges', 'Admin\ChargesController');
         Route::resource('customers','Admin\CustomerController');
+        Route::resource('orders','Admin\OrderController');
 
     });
 

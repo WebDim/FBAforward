@@ -7,6 +7,7 @@ use App\Charges;
 use App\Feature;
 use App\Http\Controllers\Controller;
 use App\Menu;
+use App\Order;
 use App\Package;
 use App\Page;
 use App\Product_labels;
@@ -336,6 +337,27 @@ class DatatablesController extends Controller
                 return '<a href="' . url('admin/customers/' . $customer->id) . '"><img src="' . asset($customer->avatar) . '" style="height:50px;" class="img-circle" alt="User Avatar"></a>';
             })
            ->make(true);
+    }
+    public function getOrders()
+    {
+        $orders = Order::selectRaw('orders.*, user_infos.company_name')
+                  ->join('user_infos','user_infos.user_id','=','orders.user_id')
+                  ->get();
+        return Datatables::of($orders)
+            ->editColumn('order_id', function ($order) {
+                return '<a href="' . url('admin/orders/' . $order->order_id) . '"><b>ORD_'.$order->order_id.'</b></a>';
+            })
+            ->editColumn('is_activated', function ($order) {
+                $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+                return $orderStatus[$order->is_activated];
+            })
+            ->editColumn('created_at', function ($order) {
+                return $order->created_at;
+            })
+            ->editColumn('company_name',function($order){
+                return $order->company_name;
+            })
+            ->make(true);
     }
 }
 				

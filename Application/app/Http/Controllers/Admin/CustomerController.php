@@ -2,17 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-
-use App\Package;
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Requests\UserRequest;
 use App\Http\Controllers\Controller;
-use App\Role;
 use App\User;
 use App\User_info;
-use Illuminate\Support\Facades\DB;
-use CountryState;
 
 class CustomerController extends Controller
 {
