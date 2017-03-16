@@ -188,15 +188,15 @@ class ShipmentController extends Controller
             if ($steps[0]->steps == 2)
                 return redirect('supplierdetail');
             else if ($steps[0]->steps == 3)
-                return redirect('order/preinspection');
+                return redirect('preinspection');
             else if ($steps[0]->steps == 4)
-                return redirect('order/productlabels');
+                return redirect('productlabels');
             else if ($steps[0]->steps == 5)
-                return redirect('order/prepservice');
+                return redirect('prepservice');
             else if ($steps[0]->steps == 6)
-                return redirect('order/listservice');
+                return redirect('listservice');
             else if ($steps[0]->steps == 7)
-                return redirect('order/outbondshipping');
+                return redirect('outbondshipping');
             else if ($steps[0]->steps == 8)
                 return redirect('order/reviewshipment');
             else if ($steps[0]->steps == 9)
