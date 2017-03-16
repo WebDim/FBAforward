@@ -102,7 +102,7 @@
                                 <div class="icon">
                                     <i class="ion-social-usd-outline"></i>
                                 </div>
-                                <a href="javascript:void(0)" class="small-box-footer">More info <i
+                                <a href="{{ url('admin/payments') }}" class="small-box-footer">More info <i
                                             class="fa fa-arrow-circle-right"></i></a>
                             </div>
                         </div><!-- ./col -->

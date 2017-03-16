@@ -10,6 +10,7 @@ use App\Menu;
 use App\Order;
 use App\Package;
 use App\Page;
+use App\Payment_detail;
 use App\Product_labels;
 use App\Supplier;
 use Yajra\Datatables\Datatables;
@@ -356,6 +357,30 @@ class DatatablesController extends Controller
             })
             ->editColumn('company_name',function($order){
                 return $order->company_name;
+            })
+            ->make(true);
+    }
+    public function getPayments()
+    {
+        $payments = Payment_detail::selectRaw('payment_details.*, user_credit_cardinfos.*, user_infos.company_name')
+            ->join('user_credit_cardinfos','user_credit_cardinfos.id','=','payment_details.user_credit_cardinfo_id')
+            ->join('user_infos','user_infos.user_id','=','user_credit_cardinfos.user_id')
+            ->get();
+        return Datatables::of($payments)
+            ->editColumn('order_id', function ($payment) {
+                return 'ORD_'.$payment->order_id;
+            })
+            ->editColumn('company_name',function($payment){
+                return $payment->company_name;
+            })
+            ->editColumn('total_cost', function ($payment) {
+                return $payment->total_cost;
+            })
+            ->editColumn('credit_card_type', function ($payment) {
+                return $payment->credit_card_type;
+            })
+            ->editColumn('credit_card_number', function ($payment) {
+                return $payment->credit_card_number;
             })
             ->make(true);
     }

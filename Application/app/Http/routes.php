@@ -35,6 +35,7 @@ use App\Listing_service;
 use App\Addresses;
 use App\Charges;
 use App\Order;
+use App\Payment_detail;
 
 Route::model('users', User::class);
 Route::model('settings', Setting::class);
@@ -53,6 +54,7 @@ Route::model('addresses',Addresses::class);
 Route::model('charges',Charges::class);
 Route::model('customers', User::class);
 Route::model('orders', Order::class);
+Route::model('payments', Payment_detail::class);
 
 
 Route::group(['middleware' => ['web']], function () {
@@ -114,6 +116,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::resource('charges', 'Admin\ChargesController');
         Route::resource('customers','Admin\CustomerController');
         Route::resource('orders','Admin\OrderController');
+        Route::resource('payments','Admin\PaymentController');
 
     });
 

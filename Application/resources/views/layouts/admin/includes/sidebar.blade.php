@@ -21,11 +21,16 @@
                     <i class="fa fa-desktop"></i> <span>View Site</span>
                 </a>
             </li>
-            <li class="treeview {{ Request::is('admin/user*') ? 'active': '' || Request::is('admin/role*') ? 'active': '' }}">
+            <li class="treeview {{ Request::is('admin/user*') ? 'active': '' || Request::is('admin/role*') ? 'active': '' || Request::is('admin/customers*') ? 'active': '' }}">
                 <a href="#">
                     <i class="fa fa-users"></i> <span>Users</span> <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
+                    <li class="{{ Request::is('admin/customers')? 'active': '' }}">
+                        <a href="{{ url('admin/customers') }}">
+                            <i class="fa fa-user"></i> <span>Customers</span>
+                        </a>
+                    </li>
                     <li class="{{ Request::is('admin/users')? 'active': '' }}">
                         <a href="{{ url('admin/users') }}">
                             <i class="fa fa-list"></i> <span>Manage Users</span>
@@ -47,6 +52,16 @@
                         </ul>
                     </li>
                 </ul>
+            </li>
+            <li class="treeview {{ Request::is('admin/orders*') ? 'active': ''  }}">
+                <a href="{{ url('admin/orders') }}">
+                    <i class="fa fa-shopping-cart"></i> <span>Orders</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
+            </li>
+            <li class="treeview {{ Request::is('admin/payments*') ? 'active': ''  }}">
+                <a href="{{ url('admin/payments') }}">
+                    <i class="fa fa-usd "></i> <span>Payments</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
             </li>
             <li class="treeview {{ Request::is('admin/shippingmethod*')? 'active': '' }}">
                 <a href="#">

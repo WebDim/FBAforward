@@ -1,6 +1,6 @@
 @extends('layouts.admin.app')
 
-@section('title', 'Orders')
+@section('title', 'Payments')
 
 @section('css')
         <!-- DataTables -->
@@ -12,11 +12,11 @@
         <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        <i class="fa fa-shopping-cart"></i> Orders
+        <i class="fa fa-carts"></i> Payments
     </h1>
     <ol class="breadcrumb">
         <li><a href="{{ url('admin/dashboard') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li class="active"><i class="fa fa-shopping-cart"></i> Orders</li>
+        <li class="active"><i class="fa fa-users"></i> Payments</li>
     </ol>
 </section>
 
@@ -25,7 +25,7 @@
     <!-- Default box -->
     <div class="box">
         <div class="box-header with-border">
-            <h3 class="box-title">Orders List</h3>
+            <h3 class="box-title">Payments List</h3>
             <div class="box-tools pull-right">
                 <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i
                             class="fa fa-minus"></i></button>
@@ -36,9 +36,10 @@
                 <thead>
                 <tr>
                     <th>Order No</th>
-                    <th>Status</th>
-                    <th>Create At</th>
                     <th>Customer</th>
+                    <th>Payment</th>
+                    <th>Credit Card Type</th>
+                    <th>Credit Card Number</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -50,7 +51,7 @@
     </div><!-- /.box -->
 </section><!-- /.content -->
 
-@include('layouts.admin.includes.message_boxes', ['item' => 'Order', 'delete' => true])
+@include('layouts.admin.includes.message_boxes', ['item' => 'Payment', 'delete' => true])
 
 @endsection
 
@@ -70,15 +71,16 @@
         var table = $("#data_table").DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{!! url("admin/datatables/orders") !!}',
+            ajax: '{!! url("admin/datatables/payments") !!}',
             columns: [
                 {data: 'order_id', name: 'order_id', orderable: false, searchable: false},
-                {data: 'is_activated', name: 'is_activated'},
-                {data: 'created_at', name: 'created_at'},
                 {data: 'company_name', name: 'company_name'},
+                {data: 'total_cost', name: 'total_cost'},
+                {data: 'credit_card_type', name: 'credit_card_type'},
+                {data: 'credit_card_number', name: 'credit_card_number'},
             ]
         });
-        table.column('2:visible').order('desc').draw();
+        table.column('1:visible').order('desc').draw();
     });
 </script>
 @endsection

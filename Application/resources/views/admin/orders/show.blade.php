@@ -14,8 +14,8 @@
     </h1>
     <ol class="breadcrumb">
         <li><a href="{{ url('admin/dashboard') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li><a href="{{ url('admin/orders') }}"><i class="fa fa-carts"></i> Orders</a></li>
-        <li class="active"><i class="fa fa-carts"></i> Details</li>
+        <li><a href="{{ url('admin/orders') }}"><i class="fa fa-shopping-cart"></i> Orders</a></li>
+        <li class="active"><i class="fa fa-shopping-cart"></i> Details</li>
     </ol>
 </section>
 
