@@ -320,5 +320,22 @@ class DatatablesController extends Controller
                 return $buttons;
             })->make(true);
     }
+    public function getCustomers()
+    {
+        $customers = User::where('role_id','3')->get();
+        return Datatables::of($customers)
+            ->editColumn('name', '<a href="{{ url(\'admin/customers/\'.$id) }}"><b>{{ $name }}</b></a>')
+            ->editColumn('role_id', function ($customer) {
+                if (!is_null($customer->role)) {
+                    return $customer->role->name;
+                } else {
+                    return '-';
+                }
+            })
+            ->addColumn('avatar', function ($customer) {
+                return '<a href="' . url('admin/customers/' . $customer->id) . '"><img src="' . asset($customer->avatar) . '" style="height:50px;" class="img-circle" alt="User Avatar"></a>';
+            })
+           ->make(true);
+    }
 }
 				

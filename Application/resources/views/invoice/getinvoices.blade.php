@@ -118,7 +118,7 @@
                     headers: {
                         'X-CSRF-Token': '{{ csrf_token() }}',
                     },
-                    url:'/order/getinvoice_ajax_detail',
+                    url:'invoice',
                     type:'post',
                     data:{
                         'start_date': start_date,
@@ -164,7 +164,7 @@
                     headers: {
                         'X-CSRF-Token': '{{ csrf_token() }}',
                     },
-                    url:'/order/getinvoice_ajax_detail',
+                    url:'invoice',
                     type:'post',
                     data:{
                         'start_date': start_date,

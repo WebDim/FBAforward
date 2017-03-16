@@ -43,7 +43,8 @@ class DashboardController extends Controller
             ->get();
         $total_in_order= Order::where('is_activated','0')->count();
         $total_place_order= Order::where('is_activated','1')->count();
-        return view('admin.dashboard')->with(compact('users', 'total_order','total_payment','total_in_order','total_place_order'));
+        $customers=User::where('role_id','3')->count();
+        return view('admin.dashboard')->with(compact('users', 'total_order','total_payment','total_in_order','total_place_order','customers'));
     }
 
 }

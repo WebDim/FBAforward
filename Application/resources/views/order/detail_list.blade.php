@@ -8,15 +8,9 @@
             </div>
 
             <div class="col-md-2 ">
-                @if(isset($user_role))
-                    @if($id==0)
-                         <a href="{{ url('order/index') }}" class="btn btn-primary">Order Management</a>
-                    @else
-                        <a href="{{ url('order/orderhistory') }}" class="btn btn-primary">Order History</a>
-                    @endif
-                    @else
-                <a href="{{ url('order/ordershipping') }}" class="btn btn-primary">Order Shipping</a>
-                @endif
+
+                <a href="{{ url()->previous() }}" class="btn btn-primary">Back</a>
+
             </div>
 
         </div>

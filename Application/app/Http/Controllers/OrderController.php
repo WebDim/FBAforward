@@ -143,14 +143,6 @@ class OrderController extends Controller
     {
         $title = "Order Detail";
         if ($request->order_id) {
-            if ($request->user_id) {
-                $user_id = $request->user_id;
-            } else {
-                $user = \Auth::user();
-                $user_id = $user->id;
-                $user_role = $user->role_id;
-                $id = $request->id;
-            }
             DB::enableQueryLog();
             $shipment_detail = Shipments::selectRaw("shipments.shipment_id,shipments.shipping_method_id,shipping_methods.shipping_name,shipment_details.product_id, shipment_details.fnsku, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total,amazon_inventories.product_name, amazon_inventories.product_nick_name, supplier_details.supplier_detail_id,supplier_details.supplier_id,suppliers.company_name,supplier_inspections.inspection_decription,product_labels_details.product_label_id,product_labels.label_name,prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.prep_service_ids,listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.listing_service_ids,outbound_shipping_details.amazon_destination_id, outbound_shipping_details.outbound_method_id,outbound_methods.outbound_name,amazon_destinations.destination_name")
                 ->join('shipping_methods', 'shipping_methods.shipping_method_id', '=', 'shipments.shipping_method_id', 'left')
@@ -167,7 +159,6 @@ class OrderController extends Controller
                 ->join('outbound_methods', 'outbound_methods.outbound_method_id', '=', 'outbound_shipping_details.outbound_method_id', 'left')
                 ->join('amazon_destinations', 'amazon_destinations.amazon_destination_id', '=', 'outbound_shipping_details.amazon_destination_id', 'left')
                 ->where('shipments.order_id', $request->order_id)
-                ->where('shipments.user_id', $user_id)
                 ->orderBy('shipments.shipment_id', 'ASC')
                 ->get()->toArray();
             foreach ($shipment_detail as $key => $shipment_details) {
@@ -199,7 +190,7 @@ class OrderController extends Controller
                 ->where('order_id', $request->order_id)->first();
             if (count($payment_detail) > 0)
                 $payment_detail = $payment_detail->toArray();
-            return view('order.detail_list')->with(compact('shipment_detail', 'payment_detail', 'user_role', 'id', 'title'));
+            return view('order.detail_list')->with(compact('shipment_detail', 'payment_detail', 'title'));
         }
     }
 
@@ -250,9 +241,11 @@ class OrderController extends Controller
     public function ordershipping()
     {
         $title = 'Ship Order';
+        $user = \Auth::user();
+        $user_role = $user->role_id;
         $orders = Order::where('is_activated', '3')->orderBy('created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
-        return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'title'));
+        return view('order.ordershipping')->with(compact('orders', 'orderStatus','user_role', 'title'));
     }
 
     //list orders of All users which select inspections, uploading inspection report by inspector
@@ -1090,101 +1083,5 @@ class OrderController extends Controller
             ->where('role_id', '3')
             ->get();
         return view('order.customers_detail')->with(compact('user', 'title', 'user_role_id'));
-    }
-
-    public function getinvoice_detail()
-    {
-        $title = "Invoice Report";
-        return view('order.getinvoices')->with(compact('title'));
-    }
-
-    public function get_ajax_invoice_detail(Request $request)
-    {
-        $post = $request->all();
-        $start_date = $post['start_date'];
-        $end_date = $post['end_date'];
-        $doc_number = $post['doc_number'];
-        $customer_name = $post['customer_name'];
-        if ($start_date == '' && $end_date == '' && $doc_number == '' && $customer_name == '') {
-            $invoice_details = Invoice_detail::selectRaw('orders.order_id,invoice_details.*')
-                ->join('orders', 'orders.invoice_id', '=', 'invoice_details.invoice_id', 'left')
-                ->get();
-
-        } else if ($start_date != '' && $end_date != '' && $doc_number != '' && $customer_name != '') {
-            $end_date = $end_date . "T23:59:59";
-            $invoice_details = Invoice_detail::selectRaw('orders.order_id,invoice_details.*')
-                ->join('orders', 'orders.invoice_id', '=', 'invoice_details.invoice_id', 'left')
-                ->where('invoice_details.created_time', '>=', date('Y-m-d', strtotime($start_date)))
-                ->where('invoice_details.created_time', '<=', date('Y-m-dTh:i:s', strtotime($end_date)))
-                ->where('invoice_details.docnumber', '=', $doc_number)
-                ->Where('invoice_details.customer_ref_name', '=', $customer_name)
-                ->get();
-        } else {
-            $end_date = $end_date . "T23:59:59";
-            if ($start_date != '' && $end_date != '')
-                $invoice_details = Invoice_detail::selectRaw('orders.order_id,invoice_details.*')
-                    ->join('orders', 'orders.invoice_id', '=', 'invoice_details.invoice_id', 'left')
-                    ->where('invoice_details.created_time', '>=', date('Y-m-d', strtotime($start_date)))
-                    ->where('invoice_details.created_time', '<=', date('Y-m-dTh:i:s', strtotime($end_date)))
-                    ->get();
-            if ($doc_number != '')
-                $invoice_details = Invoice_detail::selectRaw('orders.order_id,invoice_details.*')
-                    ->join('orders', 'orders.invoice_id', '=', 'invoice_details.invoice_id', 'left')
-                    ->orWhere('invoice_details.docnumber', '=', $doc_number)
-                    ->get();
-            if ($customer_name != '')
-                $invoice_details = Invoice_detail::selectRaw('orders.order_id,invoice_details.*')
-                    ->join('orders', 'orders.invoice_id', '=', 'invoice_details.invoice_id', 'left')
-                    ->orWhere('invoice_details.customer_ref_name', '=', $customer_name)
-                    ->get();
-        }
-
-        return Datatables::of($invoice_details)
-            ->editColumn('invoice_id', function ($invoice_detail) {
-                return $invoice_detail->invoice_id;
-            })
-            ->editColumn('order_no', function ($invoice_detail) {
-                if ($invoice_detail->order_id != '')
-                    return "ORD_" . $invoice_detail->order_id;
-                else
-                    return "";
-            })
-            ->editColumn('synctoken', function ($invoice_detail) {
-                return $invoice_detail->synctoken;
-            })
-            ->editColumn('created_time', function ($invoice_detail) {
-                return $invoice_detail->created_time;
-            })
-            ->editColumn('updated_time', function ($invoice_detail) {
-                return $invoice_detail->updated_time;
-            })
-            ->editColumn('docnumber', function ($invoice_detail) {
-                return $invoice_detail->docnumber;
-            })
-            ->editColumn('txndate', function ($invoice_detail) {
-                return $invoice_detail->txndate;
-            })
-            ->editColumn('customer_ref_name', function ($invoice_detail) {
-                return $invoice_detail->customer_ref_name;
-            })
-            ->editColumn('line1', function ($invoice_detail) {
-                return $invoice_detail->line1;//." ".$invoice_detail->line2." ".$invoice_detail->city." ".$invoice_detail->country." ".$invoice_detail->postalcode;
-            })
-            ->editColumn('lat', function ($invoice_detail) {
-                return $invoice_detail->lat;
-            })
-            ->editColumn('due_date', function ($invoice_detail) {
-                return $invoice_detail->due_date;
-            })
-            ->editColumn('total_amt', function ($invoice_detail) {
-                return $invoice_detail->total_amt;
-            })
-            ->editColumn('currancy_ref_name', function ($invoice_detail) {
-                return $invoice_detail->currancy_ref_name;
-            })
-            ->editColumn('total_taxe', function ($invoice_detail) {
-                return $invoice_detail->total_taxe;
-            })
-            ->make(true);
     }
 }

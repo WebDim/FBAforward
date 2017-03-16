@@ -50,6 +50,7 @@ Route::model('prepservices',Prep_service::class);
 Route::model('listingservices',Listing_service::class);
 Route::model('addresses',Addresses::class);
 Route::model('charges',Charges::class);
+Route::model('customers', User::class);
 
 Route::group(['middleware' => ['web']], function () {
     Route::get('/page/{slug}', 'FrontendController@staticPages');
@@ -108,6 +109,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::resource('productlabel', 'Admin\ProductLabelController');
         Route::resource('addresses', 'Admin\AddressesController');
         Route::resource('charges', 'Admin\ChargesController');
+        Route::resource('customers','Admin\CustomerController');
 
     });
 
@@ -126,6 +128,10 @@ Route::group(['middleware' => 'web'], function () {
     Route::resource('listservice', 'ListserviceController');
     Route::post('listservice/removephotolabel', 'ListserviceController@removephotolabel');
     Route::resource('outboundshipping', 'OutboundshippingController');
+
+    Route::resource('invoice','InvoiceController');
+    Route::post('invoice', 'InvoiceController@get_ajax_invoice_detail');
+
 
 
     /**
@@ -186,8 +192,7 @@ Route::group(['middleware' => 'web'], function () {
     Route::group(['prefix' => 'order'], function () {
         Route::get('/index', 'OrderController@index');
         Route::get('/orderhistory', 'OrderController@orderhistory');
-        Route::get('/details/{order_id}/{id}', 'OrderController@orderDetails');
-        Route::get('/details/{order_id}/{id}/{user_id}', 'OrderController@orderDetails');
+        Route::get('/details/{order_id}', 'OrderController@orderDetails');
         Route::post('/removeorder', 'OrderController@removeorder');
         Route::get('/reviewshipment',['uses'=>'OrderController@reviewshipment','as'=>'reviewshipment']);
         Route::post('/orderstatus', 'OrderController@orderstatus');
@@ -222,8 +227,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/addterminal','OrderController@addterminal');
         Route::get('/orderlist','OrderController@orderlist');
         Route::get('/customers','OrderController@customers');
-        Route::get('/getinvoice_detail','OrderController@getinvoice_detail');
-        Route::post('/getinvoice_ajax_detail','OrderController@get_ajax_invoice_detail');
+
 
     });
 

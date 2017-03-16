@@ -51,7 +51,7 @@
                                 @if($order->is_activated==0)
                                 <tr id="tr_{{$order->order_id}}">
                                     <td>
-                                        <a href="{{ url('order/details/'.$order->order_id).'/0' }}">
+                                        <a href="{{ url('order/details/'.$order->order_id) }}">
                                             <b class="text-info">ORD_{{ $order->order_id }}</b>
                                         </a>
                                     </td>

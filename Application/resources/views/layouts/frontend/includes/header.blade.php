@@ -109,7 +109,7 @@
                             @endif
                             @if('Accounting'===\Auth::user()->role->name)
                                 <li>
-                                    <a class="external" href="{{ url('order/getinvoice_detail') }}"><i class="fa fa-btn fa-user"></i> Invoice Report</a>
+                                    <a class="external" href="{{ '/invoice' }}"><i class="fa fa-btn fa-user"></i> Invoice Report</a>
                                 </li>
                             @endif
                             @if('Shipper'===\Auth::user()->role->name)
