@@ -39,7 +39,7 @@ class MemberController extends Controller
         if (\Auth::user()->role->name == 'Admin') {
             return redirect('admin/dashboard');
         }
-
+        $total_customer = User::where('role_id','3')->count();
         if($user->role->name=='Customer') {
             $total_order = Order::where('user_id', $user->id)->count();
             $total_payment = Payment_detail::selectRaw('sum(total_cost) as payment_count')
@@ -56,7 +56,6 @@ class MemberController extends Controller
         elseif ($user->role->name=='customer service' || $user->role->name=='Sales')
         {
             $total_order = Order::count();
-            $total_customer = User::where('role_id','3')->count();
             $total_in_order= Order::where('is_activated','0')->count();
             $total_place_order= Order::where('is_activated','1')->count();
             $total_inspect_order= Order::where('is_activated','2')->count();
@@ -85,7 +84,43 @@ class MemberController extends Controller
             }
             return view('member.home')->with(compact('order_count','user'));
         }
-
+        elseif ($user->role->name=='Shipper')
+        {
+            $details = Order::selectRaw('orders.order_id, count(supplier_inspections.supplier_inspection_id) as count_id')
+                ->join('supplier_inspections', 'supplier_inspections.order_id', '=', 'orders.order_id')
+                ->where('orders.is_activated', '1')
+                ->where('supplier_inspections.is_inspection', '0')
+                ->orderBy('orders.created_at', 'desc')
+                ->groupby('supplier_inspections.order_id')
+                ->get();
+            $counts = Order::selectRaw('orders.order_id, count(supplier_inspections.supplier_inspection_id) as count_id')
+                ->join('supplier_inspections', 'supplier_inspections.order_id', '=', 'orders.order_id')
+                ->where('orders.is_activated', '1')
+                ->orderBy('orders.created_at', 'desc')
+                ->groupby('supplier_inspections.order_id')
+                ->get();
+            $order_ids = array();
+            foreach ($counts as $count) {
+                foreach ($details as $detail) {
+                    if( ($count->order_id==$detail->order_id) && ($count->count_id==$detail->count_id))
+                        $order_ids[] = $detail->order_id;
+                }
+            }
+            if (!empty($order_ids))
+                $shipping_quote_count = Order::where('orders.is_activated', '3')->orWhereIn('orders.order_id', $order_ids)->count();
+            else
+                $shipping_quote_count = Order::where('orders.is_activated', '3')->count();
+            $bill_lading_count = Order::where('orders.is_activated', '6')->count();
+            $pre_alert_count = Order::where('orders.is_activated', '8')->count();
+            return view('member.home')->with(compact('total_customer','shipping_quote_count','bill_lading_count','pre_alert_count','user'));
+        }
+        elseif ($user->role->name=='Logistics')
+        {
+            $bill_lading_count = Order::where('orders.is_activated', '7')->count();
+            $clearance_count = Order::where('orders.is_activated', '9')->count();
+            $booking_count = Order::where('orders.is_activated', '10')->count();
+            return view('member.home')->with(compact('bill_lading_count','clearance_count','booking_count','user'));
+        }
         return view('member.home')->with(compact('user'));
     }
     public function profile()

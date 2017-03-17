@@ -239,6 +239,101 @@
                     {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
                 </div>
             </div><!-- ./col -->
+        @elseif($user->role->name=='Shipper')
+            <div class="col-lg-6 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h3>{{ $total_customer }}</h3>
+                        <p>Total Customers</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-person"></i>
+                    </div>
+                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                </div>
+            </div><!-- ./col -->
+            <div class="col-lg-6 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-yellow">
+                    <div class="inner">
+                        <h3>{{ $shipping_quote_count }}</h3>
+                        <p>Pending Shipping Quote</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion-ios-paper"></i>
+                    </div>
+                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                </div>
+            </div><!-- ./col -->
+            <div class="col-lg-6 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-red">
+                    <div class="inner">
+                        <h3>{{ $bill_lading_count }}</h3>
+                        <p>Pending Bill Of Lading</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion-android-list"></i>
+                    </div>
+                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                </div>
+            </div><!-- ./col -->
+            <div class="col-lg-6 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-blue">
+                    <div class="inner">
+                        <h3>{{ $pre_alert_count }}</h3>
+                        <p>Pending Shipment Pre-Alert</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion-ios-list"></i>
+                    </div>
+                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                </div>
+            </div><!-- ./col -->
+        @elseif($user->role->name=='Logistics')
+
+            <div class="col-lg-4 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-red">
+                    <div class="inner">
+                        <h3>{{ $bill_lading_count }}</h3>
+                        <p>Pending Bill Of Lading</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion-android-list"></i>
+                    </div>
+                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                </div>
+            </div><!-- ./col -->
+            <div class="col-lg-4 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-yellow">
+                    <div class="inner">
+                        <h3>{{ $clearance_count }}</h3>
+                        <p>Pending Custome Clearance</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion-ios-paper"></i>
+                    </div>
+                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                </div>
+            </div><!-- ./col -->
+
+            <div class="col-lg-4 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-blue">
+                    <div class="inner">
+                        <h3>{{ $booking_count }}</h3>
+                        <p>Pending Delivery Booking</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion-ios-list"></i>
+                    </div>
+                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                </div>
+            </div><!-- ./col -->
     @endif
         </div>
 @endsection
