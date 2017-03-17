@@ -339,16 +339,26 @@ class OrderController extends Controller
         $title = "Shipping Quote";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        $details = Order::selectRaw('orders.order_id')
+
+        $details = Order::selectRaw('orders.order_id, count(supplier_inspections.supplier_inspection_id) as count_id')
             ->join('supplier_inspections', 'supplier_inspections.order_id', '=', 'orders.order_id')
             ->where('orders.is_activated', '1')
             ->where('supplier_inspections.is_inspection', '0')
             ->orderBy('orders.created_at', 'desc')
-            ->distinct('supplier_inspections.order_id')
+            ->groupby('supplier_inspections.order_id')
+            ->get();
+        $counts = Order::selectRaw('orders.order_id, count(supplier_inspections.supplier_inspection_id) as count_id')
+            ->join('supplier_inspections', 'supplier_inspections.order_id', '=', 'orders.order_id')
+            ->where('orders.is_activated', '1')
+            ->orderBy('orders.created_at', 'desc')
+            ->groupby('supplier_inspections.order_id')
             ->get();
         $order_ids = array();
-        foreach ($details as $detail) {
-            $order_ids[] = $detail->order_id;
+            foreach ($counts as $count) {
+                foreach ($details as $detail) {
+                if( ($count->order_id==$detail->order_id) && ($count->count_id==$detail->count_id))
+                $order_ids[] = $detail->order_id;
+            }
         }
         if (!empty($order_ids))
             $orders = Order::where('orders.is_activated', '3')->orWhereIn('orders.order_id', $order_ids)->orderBy('orders.created_at', 'desc')->get();

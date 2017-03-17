@@ -165,7 +165,15 @@ class ListserviceController extends Controller
     {
         if ($request->ajax()) {
             $post = $request->all();
-            Photo_list_detail::where('photo_list_detail_id', $post['photo_list_detail_id'])->delete();
+            if ($post['service_id'] == '1') {
+                $standard_data=array('standard_photo'=>'0');
+                Photo_list_detail::where('photo_list_detail_id', $post['photo_list_detail_id'])->update($standard_data);
+            }
+            else if($post['service_id'] == '2')
+            {
+                $prop_data=array('prop_photo'=>'0');
+                Photo_list_detail::where('photo_list_detail_id', $post['photo_list_detail_id'])->update($prop_data);
+            }
         }
     }
     public function create()

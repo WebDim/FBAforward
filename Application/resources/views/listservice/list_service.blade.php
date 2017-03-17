@@ -38,7 +38,7 @@
                                     {{--*/$listing_prop=env('LIST_PROP')/*--}}
                                     {{--*/$listing_prop_price=env('LIST_PROP_PRICE')/*--}}
                                     <input type="checkbox" name="service{{$cnt}}_1" id="service{{$cnt}}_1" value="1" onchange="get_total({{$listing_standard_price}},{{$cnt}},1)" @if(in_array(1,$list_service_ids)) {{ "checked" }} @endif>{{ $listing_standard }}<br>
-                                    @if(isset($products->photo_list_detail_id))
+                                    @if(isset($products->photo_list_detail_id) && $products->standard_photo>0)
                                         <div id="standard_div{{$cnt}}">
                                             STANDARD PHOTOS<input type="hidden" id="old_standard{{$cnt}}"  name="old_standard{{$cnt}}"  size="3"   value="{{$products->standard_photo}}"><input type="text" id="standard{{$cnt}}"  name="standard{{$cnt}}"  size="3" class="validate[required]" onchange="get_standard_subtotal(this.value,{{$cnt}},1,{{$listing_standard_price}})" value="{{$products->standard_photo}}"><br>
                                         </div>
@@ -48,7 +48,7 @@
                                         </div>
                                     @endif
                                     <input type="checkbox" name="service{{$cnt}}_2" id="service{{$cnt}}_2" value="2" onchange="get_total({{$listing_prop_price}},{{$cnt}},2)" @if(in_array(2,$list_service_ids)) {{ "checked" }} @endif>{{ $listing_prop }}<br>
-                                    @if(isset($products->photo_list_detail_id))
+                                    @if(isset($products->photo_list_detail_id) && $products->prop_photo>0)
                                         <div id="prop_div{{$cnt}}">
                                             PROP PHOTOS<input type="hidden" id="old_prop{{$cnt}}" name="old_prop{{$cnt}}" size="3"  value="{{$products->prop_photo}}"><input type="text" id="prop{{$cnt}}" name="prop{{$cnt}}" size="3" class="validate[required]" onchange="get_prop_subtotal(this.value,{{$cnt}},2,{{$listing_prop_price}})" value="{{$products->prop_photo}}"><br>
                                         </div>
@@ -228,6 +228,15 @@
                 {
                     photo_list_detail_id = $("#photo_list_detail_id" + no).val();
                     $("#standard_div" + no).hide();
+                    temp_total = parseFloat($("#old_standard" + no).val(), 2) * parseFloat(price, 2);
+                    total = parseFloat($("#total" + no).val(), 2) - parseFloat(temp_total, 2);
+                    $("#total" + no).val(total.toFixed(2));
+                    $("#total_span" + no).text(total.toFixed(2));
+                    grand_total = parseFloat($("#grand_total").val(), 2) - parseFloat(temp_total, 2);
+                    $("#grand_total").val(grand_total.toFixed(2));
+                    $("#grand_total_span").text(grand_total.toFixed(2));
+                    $("#old_standard" + no).val('');
+                    $("#standard" + no).val('');
                     $('.preloader').css("display", "block");
                     $.ajax({
                         headers: {
@@ -237,7 +246,7 @@
                         url: '/listservice/removephotolabel', // This is the url we gave in the route
                         data: {
                             'photo_list_detail_id': photo_list_detail_id,
-
+                            'service_id': sub_no,
                         }, // a JSON object to send back
                         success: function (response) { // What to do if we succeed
                             $('.preloader').css("display", "none");
@@ -256,6 +265,15 @@
                 {
                     photo_list_detail_id = $("#photo_list_detail_id" + no).val();
                     $("#prop_div" + no).hide();
+                    temp_total = parseFloat($("#old_prop" + no).val(), 2) * parseFloat(price, 2);
+                    total = parseFloat($("#total" + no).val(), 2) - parseFloat(temp_total, 2);
+                    $("#total" + no).val(total.toFixed(2));
+                    $("#total_span" + no).text(total.toFixed(2));
+                    grand_total = parseFloat($("#grand_total").val(), 2) - parseFloat(temp_total, 2);
+                    $("#grand_total").val(grand_total.toFixed(2));
+                    $("#grand_total_span").text(grand_total.toFixed(2));
+                    $("#old_prop" + no).val('');
+                    $("#prop" + no).val('');
                     $('.preloader').css("display", "block");
                     $.ajax({
                         headers: {
@@ -265,7 +283,7 @@
                         url: '/listservice/removephotolabel', // This is the url we gave in the route
                         data: {
                             'photo_list_detail_id': photo_list_detail_id,
-
+                            'service_id' : sub_no,
                         }, // a JSON object to send back
                         success: function (response) { // What to do if we succeed
                             $('.preloader').css("display", "none");

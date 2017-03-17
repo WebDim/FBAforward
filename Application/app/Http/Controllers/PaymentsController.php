@@ -238,20 +238,12 @@ class PaymentsController extends Controller
         $details = Order::selectRaw('orders.order_id')
             ->join('supplier_inspections', 'supplier_inspections.order_id', '=', 'orders.order_id')
             ->where('orders.is_activated', '1')
-            ->where('supplier_inspections.is_inspection', '0')
+            ->where('supplier_inspections.is_inspection', '1')
             ->orderBy('orders.created_at', 'desc')
             ->distinct('supplier_inspections.order_id')
             ->where('orders.order_id', $order_id)
             ->get();
         if (count($details) > 0) {
-            $role = Role::find(5);
-            $role->newNotification()
-                ->withType('shipping quote')
-                ->withSubject('You have shipping quote for upload')
-                ->withBody('You have shipping quote for upload')
-                ->regarding($payment_detail)
-                ->deliver();
-        } else {
             $role = Role::find(12);
             $role->newNotification()
                 ->withType('report')
@@ -259,7 +251,17 @@ class PaymentsController extends Controller
                 ->withBody('You have inspection report for upload')
                 ->regarding($payment_detail)
                 ->deliver();
+
+        } else {
+            $role = Role::find(5);
+            $role->newNotification()
+                ->withType('shipping quote')
+                ->withSubject('You have shipping quote for upload')
+                ->withBody('You have shipping quote for upload')
+                ->regarding($payment_detail)
+                ->deliver();
         }
+
         return redirect('order/index')->with('success', 'Your order Successfully Placed');
     }
 
