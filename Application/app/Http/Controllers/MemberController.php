@@ -121,6 +121,24 @@ class MemberController extends Controller
             $booking_count = Order::where('orders.is_activated', '10')->count();
             return view('member.home')->with(compact('bill_lading_count','clearance_count','booking_count','user'));
         }
+        elseif ($user->role->name=='Warehouse Manager')
+        {
+            $review_count = Order::where('orders.is_activated', '14')->count();
+            return view('member.home')->with(compact('review_count','user'));
+        }
+        elseif ($user->role->name=='Warehouse Admin')
+        {
+            $checkin_review_count = Order::where('orders.is_activated', '12')->count();
+            $shipment_review_count = Order::where('orders.is_activated', '16')->count();
+            return view('member.home')->with(compact('checkin_review_count','shipment_review_count','user'));
+        }
+        elseif ($user->role->name=='Warehouse Lead')
+        {
+            $checkin_count = Order::where('orders.is_activated', '11')->count();
+            $labor_count = Order::where('orders.is_activated', '13')->count();
+            $shipment_count = Order::where('orders.is_activated', '15')->count();
+            return view('member.home')->with(compact('checkin_count','labor_count','shipment_count','user'));
+        }
         return view('member.home')->with(compact('user'));
     }
     public function profile()

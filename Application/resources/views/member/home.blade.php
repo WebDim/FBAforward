@@ -32,7 +32,7 @@
             <div class="small-box bg-yellow">
                 <div class="inner">
                     <h3>{{ $total_in_order }}</h3>
-                    <p>Inprogress Orders</p>
+                    <p>Total Inprogress Orders</p>
                 </div>
                 <div class="icon">
                     <i class="ion-android-cart"></i>
@@ -46,7 +46,7 @@
             <div class="small-box bg-red">
                 <div class="inner">
                     <h3>  {{ $total_place_order }}</h3>
-                    <p>Placed Orders</p>
+                    <p>Total Placed Orders</p>
                 </div>
                 <div class="icon">
                     <i class="ion-android-cart"></i>
@@ -60,7 +60,7 @@
             <div class="small-box bg-gray">
                 <div class="inner">
                     <h3>  {{ $total_inspect_order  }} </h3>
-                    <p>Inspection Reports Approval</p>
+                    <p>Total Inspection Reports Approval</p>
                 </div>
                 <div class="icon">
                     <i class="ion-document-text"></i>
@@ -74,7 +74,7 @@
             <div class="small-box bg-blue">
                 <div class="inner">
                     <h3> {{ $total_shipping_order  }} </h3>
-                    <p>Shipping Quote Approval</p>
+                    <p>Total Shipping Quote Approval</p>
                 </div>
                 <div class="icon">
                     <i class="ion-ios-paper"></i>
@@ -145,7 +145,7 @@
                 <div class="small-box bg-yellow">
                     <div class="inner">
                         <h3>{{ $total_in_order }}</h3>
-                        <p>Inprogress Orders</p>
+                        <p>Total Inprogress Orders</p>
                     </div>
                     <div class="icon">
                         <i class="ion-android-cart"></i>
@@ -159,7 +159,7 @@
                 <div class="small-box bg-red">
                     <div class="inner">
                         <h3>  {{ $total_place_order }}</h3>
-                        <p>Placed Orders</p>
+                        <p>Total Placed Orders</p>
                     </div>
                     <div class="icon">
                         <i class="ion-android-cart"></i>
@@ -173,7 +173,7 @@
                 <div class="small-box bg-gray">
                     <div class="inner">
                         <h3>  {{ $total_inspect_order  }} </h3>
-                        <p>Inspection Reports Approval</p>
+                        <p>Total Inspection Reports Approval</p>
                     </div>
                     <div class="icon">
                         <i class="ion-document-text"></i>
@@ -187,7 +187,7 @@
                 <div class="small-box bg-blue">
                     <div class="inner">
                         <h3> {{ $total_shipping_order  }} </h3>
-                        <p>Shipping Quote Approval</p>
+                        <p>Total Shipping Quote Approval</p>
                     </div>
                     <div class="icon">
                         <i class="ion-ios-paper"></i>
@@ -231,7 +231,7 @@
                 <div class="small-box bg-yellow">
                     <div class="inner">
                         <h3> {{ $order_count }} </h3>
-                        <p>Pending Inpection Report</p>
+                        <p>Total Inpection Report</p>
                     </div>
                     <div class="icon">
                         <i class="ion-document-text"></i>
@@ -258,7 +258,7 @@
                 <div class="small-box bg-yellow">
                     <div class="inner">
                         <h3>{{ $shipping_quote_count }}</h3>
-                        <p>Pending Shipping Quote</p>
+                        <p>Total Shipping Quote</p>
                     </div>
                     <div class="icon">
                         <i class="ion-ios-paper"></i>
@@ -271,7 +271,7 @@
                 <div class="small-box bg-red">
                     <div class="inner">
                         <h3>{{ $bill_lading_count }}</h3>
-                        <p>Pending Bill Of Lading</p>
+                        <p>Total Bill Of Lading</p>
                     </div>
                     <div class="icon">
                         <i class="ion-android-list"></i>
@@ -284,7 +284,7 @@
                 <div class="small-box bg-blue">
                     <div class="inner">
                         <h3>{{ $pre_alert_count }}</h3>
-                        <p>Pending Shipment Pre-Alert</p>
+                        <p>Total Shipment Pre-Alert</p>
                     </div>
                     <div class="icon">
                         <i class="ion-ios-list"></i>
@@ -299,7 +299,7 @@
                 <div class="small-box bg-red">
                     <div class="inner">
                         <h3>{{ $bill_lading_count }}</h3>
-                        <p>Pending Bill Of Lading</p>
+                        <p>Total Bill Of Lading</p>
                     </div>
                     <div class="icon">
                         <i class="ion-android-list"></i>
@@ -312,7 +312,7 @@
                 <div class="small-box bg-yellow">
                     <div class="inner">
                         <h3>{{ $clearance_count }}</h3>
-                        <p>Pending Custome Clearance</p>
+                        <p>Total Custome Clearance</p>
                     </div>
                     <div class="icon">
                         <i class="ion-ios-paper"></i>
@@ -326,10 +326,93 @@
                 <div class="small-box bg-blue">
                     <div class="inner">
                         <h3>{{ $booking_count }}</h3>
-                        <p>Pending Delivery Booking</p>
+                        <p>Total Delivery Booking</p>
                     </div>
                     <div class="icon">
                         <i class="ion-ios-list"></i>
+                    </div>
+                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                </div>
+            </div><!-- ./col -->
+        @elseif($user->role->name=='Warehouse Manager')
+            <div class="col-lg-4 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-yellow">
+                    <div class="inner">
+                        <h3> {{ $review_count }} </h3>
+                        <p>Total Review Order</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion-document-text"></i>
+                    </div>
+                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                </div>
+            </div><!-- ./col -->
+        @elseif($user->role->name=='Warehouse Admin')
+            <div class="col-lg-6 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h3>{{ $checkin_review_count }}</h3>
+                        <p>Total Warehouse Check In Review</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion-android-checkbox-outline"></i>
+                    </div>
+                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                </div>
+            </div><!-- ./col -->
+            <div class="col-lg-6 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-yellow">
+                    <div class="inner">
+                        <h3>{{ $shipment_review_count }}</h3>
+                        <p>Total Shipment Review</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion-android-boat"></i>
+                    </div>
+                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                </div>
+            </div><!-- ./col -->
+        @elseif($user->role->name=='Warehouse Lead')
+
+            <div class="col-lg-4 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-red">
+                    <div class="inner">
+                        <h3>{{ $checkin_count }}</h3>
+                        <p>Total Warehouse Check In</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion-android-checkbox-outline"></i>
+                    </div>
+                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                </div>
+            </div><!-- ./col -->
+            <div class="col-lg-4 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-yellow">
+                    <div class="inner">
+                        <h3>{{ $labor_count }}</h3>
+                        <p>Total Order Labor</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion-android-clipboard"></i>
+                    </div>
+                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                </div>
+            </div><!-- ./col -->
+
+            <div class="col-lg-4 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-blue">
+                    <div class="inner">
+                        <h3>{{ $shipment_count }}</h3>
+                        <p>Total complete Shipment</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion-android-boat"></i>
                     </div>
                     {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
                 </div>
