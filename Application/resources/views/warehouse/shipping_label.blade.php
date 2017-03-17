@@ -55,7 +55,7 @@
                 @endforeach
                 <tr id="label_tr">
                     <td></td>
-                    <td id="print{{$shipments->shipment_id}}">@if($shipments->shipping_label==0)<a href="{{url('warehouse/printshippinglabel/'.$shipments->shipment_id)}}">Print Shipping Label</a>@endif</td>
+                    <td id="print{{$shipments->shipment_id}}"><a href="{{url('warehouse/printshippinglabel/'.$shipments->shipment_id)}}">Print Shipping Label</a></td>
                     <td id="label{{$shipments->shipment_id}}">@if($shipments->shipping_label==1)<a href="javascript:void(0)" onclick="verifyshipment('{{$shipments->shipment_id}}','2')">verify Label</a>@endif</td>
                     <td colspan="2">@if($shipments->shipping_label==2)<a href="javascript:void(0)" onclick="verifyshipment('{{$shipments->shipment_id}}','3')">Verify Shipment Load On Truck</a>@endif</td>
                     <td id="ship_load{{$shipments->shipment_id}}" colspan="2" hidden><a href="javascript:void(0)" onclick="verifyshipment('{{$shipments->shipment_id}}','3')">Verify Shipment Load On Truck</a></td>

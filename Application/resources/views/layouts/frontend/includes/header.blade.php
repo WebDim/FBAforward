@@ -125,6 +125,7 @@
                                     <a class="external" href="{{ url('warehouse/warehousecheckin') }}"><i class="fa fa-btn fa-user"></i> Warehouse Check In Order</a>
                                     <a class="external" href="{{url('warehouse/orderlabor')}}"><i class="fa fa-btn fa-user"></i>Order Labor</a>
                                     <a class="external" href="{{url('warehouse/completeshipment')}}"><i class="fa fa-btn fa-user"></i>Complete Shipment</a>
+                                    <a class="external" href="{{url('warehouse/orderhistory')}}"><i class="fa fa-btn fa-user"></i>Order History</a>
                                 </li>
                             @endif
                             @if('Warehouse Admin'===\Auth::user()->role->name)

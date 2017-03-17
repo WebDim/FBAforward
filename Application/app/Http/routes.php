@@ -188,6 +188,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/shipmentreview','WarehouseController@shipmentreview');
         Route::post('/verifystatus','WarehouseController@verifystatus');
         Route::get('/printshippinglabel/{shipment_id}','WarehouseController@printshippinglabel');
+        Route::get('/orderhistory','WarehouseController@orderhistory');
     });
 
 

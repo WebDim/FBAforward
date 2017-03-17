@@ -99,11 +99,13 @@
                                             <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','14')" class="btn btn-info">Submit</a>
                                         @elseif($order->is_activated==15)
                                             <a href="javascript:void(0)" onclick="shippinglabel('{{$order->order_id}}')">Print Shipping Labels</a>
+                                            @if(isset($label_count))
                                             @foreach($label_count as $label_counts)
                                                 @if(($order->order_id==$label_counts->order_id) && ($order->shipment_count==$label_counts->shipment_count))
                                                 <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Submit</a>
                                                 @endif
                                             @endforeach
+                                            @endif
                                                 {{-- <a onclick="verifylabel({{$order->order_id}})" class="btn btn-info">Verify Label Complete</a>
                                              <a onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Verify Shipment Load On Truck</a>
                                              --}}
@@ -831,7 +833,13 @@
                     $('.preloader').css("display", "none");
                     $('#barcode_div').html(response);
                     $("#barcode").modal('show');
-                    $("#barcode").modal.print();
+                    var prtContent = document.getElementById("barcode_div");
+                    var WinPrint = window.open('', '', 'left=0,top=0,width=500,height=200,toolbar=0,scrollbars=0,status=0');
+                    WinPrint.document.write(prtContent.innerHTML);
+                    WinPrint.document.close();
+                    WinPrint.focus();
+                    WinPrint.print();
+                    WinPrint.close();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
                     $('.preloader').css("display", "none");

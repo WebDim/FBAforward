@@ -873,8 +873,17 @@ class WarehouseController extends Controller
             $data = array('verify_status' => '1');
             Order::where('order_id', $order_id)->update($data);
         }
-
     }
 
+    public function orderhistory()
+    {
+        $title = "Order LaborHistory";
+        $user = \Auth::user();
+        $user_role = $user->role_id;
+        $arr=array('13','14','15','16','17');
+        $orders = Order::whereIn('orders.is_activated', $arr)->orderBy('orders.created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        return view('warehouse.orderhistory')->with(compact('orders', 'orderStatus', 'user_role', 'title'));
+    }
 
 }

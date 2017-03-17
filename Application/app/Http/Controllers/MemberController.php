@@ -32,10 +32,11 @@ class MemberController extends Controller
      */
     public function index()
     {
+        $user=\Auth::user();
         if (\Auth::user()->role->name == 'Admin') {
             return redirect('admin/dashboard');
         }
-        $user=\Auth::user();
+
         if($user->role->name=='Customer') {
             $total_order = Order::where('user_id', $user->id)->count();
             $total_payment = Payment_detail::selectRaw('sum(total_cost) as payment_count')
@@ -230,7 +231,7 @@ class MemberController extends Controller
                 $request->session()->forget('old_user');
                 $request->session()->forget('new_user');
             }
-            return view('member.home');
+            return redirect('member/home');
     }
     public function storeuser(Request $request)
     {
