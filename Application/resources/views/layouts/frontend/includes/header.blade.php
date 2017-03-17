@@ -8,12 +8,12 @@
         border-radius: 5px;
         background-color: #363;
     }
-    #notification_modal {
+    /*#notification_modal {
         left: 25%;
         right: auto;
         width: 624px;
         height: 700px;
-    }
+    }*/
 </style>
 <nav class="navbar navbar-default navbar-fixed-top laraship-nav" role="navigation">
     <div class="container">

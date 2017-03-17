@@ -9,6 +9,8 @@ use App\Notification;
 use App\Order;
 use App\Payment_detail;
 use App\Role;
+use App\User;
+use App\Invoice_detail;
 use Illuminate\Support\Facades\DB;
 use App\User_info;
 use PayPal\Api\CreditCard;
@@ -50,6 +52,35 @@ class MemberController extends Controller
             $total_inventory=Amazon_inventory::where('user_id',$user->id)->count();
             return view('member.home')->with(compact('total_order','total_payment','total_in_order','total_place_order','total_inspect_order','total_shipping_order','total_inventory','user'));
         }
+        elseif ($user->role->name=='customer service' || $user->role->name=='Sales')
+        {
+            $total_order = Order::count();
+            $total_customer = User::where('role_id','3')->count();
+            $total_in_order= Order::where('is_activated','0')->count();
+            $total_place_order= Order::where('is_activated','1')->count();
+            $total_inspect_order= Order::where('is_activated','2')->count();
+            $total_shipping_order= Order::where('is_activated','4')->count();
+            return view('member.home')->with(compact('total_order','total_customer','total_in_order','total_place_order','total_inspect_order','total_shipping_order','user'));
+        }
+        elseif ($user->role->name=='Accounting')
+        {
+            $total_invoice = Invoice_detail::count();
+            $total_amount = Invoice_detail::selectRaw('sum(total_amt) as amount_count')
+                            ->get();
+            return view('member.home')->with(compact('total_invoice','total_amount','user'));
+        }
+        elseif ($user->role->name=='Inspector')
+        {
+            $order_count = Order::selectRaw('count(orders.order_id) as order_count')
+                ->join('supplier_inspections', 'supplier_inspections.order_id', '=', 'orders.order_id')
+                ->where('orders.is_activated', '1')
+                ->where('supplier_inspections.is_inspection', '1')
+                ->orderBy('orders.created_at', 'desc')
+                ->distinct('supplier_inspections.order_id')
+                ->get();
+            return view('member.home')->with(compact('order_count','user'));
+        }
+
         return view('member.home')->with(compact('user'));
     }
     public function profile()
