@@ -230,9 +230,7 @@
                 <!-- small box -->
                 <div class="small-box bg-yellow">
                     <div class="inner">
-                        <h3>  @if(isset($order_count))
-                                {{ $order_count[0]->order_count  }}
-                            @endif </h3>
+                        <h3> {{ $order_count }} </h3>
                         <p>Pending Inpection Report</p>
                     </div>
                     <div class="icon">

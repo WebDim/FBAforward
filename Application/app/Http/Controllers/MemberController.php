@@ -9,6 +9,7 @@ use App\Notification;
 use App\Order;
 use App\Payment_detail;
 use App\Role;
+use App\Supplier_inspection;
 use App\User;
 use App\Invoice_detail;
 use Illuminate\Support\Facades\DB;
@@ -71,13 +72,17 @@ class MemberController extends Controller
         }
         elseif ($user->role->name=='Inspector')
         {
-            $order_count = Order::selectRaw('count(orders.order_id) as order_count')
-                ->join('supplier_inspections', 'supplier_inspections.order_id', '=', 'orders.order_id')
-                ->where('orders.is_activated', '1')
-                ->where('supplier_inspections.is_inspection', '1')
-                ->orderBy('orders.created_at', 'desc')
-                ->distinct('supplier_inspections.order_id')
-                ->get();
+            $orders = Supplier_inspection::selectRaw('supplier_inspections.order_id')
+                      ->join('orders','orders.order_id','=','supplier_inspections.order_id')
+                      ->where('orders.is_activated','1')
+                      ->where('supplier_inspections.is_inspection','1')
+                      ->groupby('orders.order_id')
+                      ->get();
+            $order_count=0;
+            foreach ($orders as $order)
+            {
+                $order_count++;
+            }
             return view('member.home')->with(compact('order_count','user'));
         }
 
