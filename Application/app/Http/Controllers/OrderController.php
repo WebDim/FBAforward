@@ -405,7 +405,7 @@ class OrderController extends Controller
                 'status' => '0'
             );
             $shipping_quote_detail = Shipping_quote::create($shipping_quote);
-            $sub_count = $request->input('sub_count' . $cnt);
+            /*$sub_count = $request->input('sub_count' . $cnt);
             for ($sub_cnt = 1; $sub_cnt <= $sub_count; $sub_cnt++) {
                 if (!empty($request->input('charges' . $cnt . "_" . $sub_cnt))) {
                     $shipping_charges = array('shipping_id' => $shipping_quote_detail->id,
@@ -413,9 +413,17 @@ class OrderController extends Controller
                     );
                     Shipping_charge::create($shipping_charges);
                 }
+            }*/
+            $charges=$request->input('charges'.$cnt);
+            foreach ($charges as $charge)
+            {
+                $shipping_charges = array('shipping_id' => $shipping_quote_detail->id,
+                    'charges_id' => $charge
+                );
+                Shipping_charge::create($shipping_charges);
             }
         }
-        $order = array('is_activated' => '4');
+         $order = array('is_activated' => '4');
         Order::where('order_id', $request->input('order_id'))->update($order);
         $user_detail = User::selectRaw('users.*')
             ->join('orders', 'orders.user_id', '=', 'users.id')
@@ -969,13 +977,21 @@ class OrderController extends Controller
                 'status' => '0'
             );
             $detail = Custom_clearance::create($custom_clearance_detail);
-            for ($sub_cnt = 1; $sub_cnt <= 3; $sub_cnt++) {
+           /* for ($sub_cnt = 1; $sub_cnt <= 3; $sub_cnt++) {
                 if (!empty($request->input('addition_service' . $cnt . "_" . $sub_cnt))) {
                     $additional_service = array('custom_clearance_id' => $detail->id,
                         'service_id' => $request->input('addition_service' . $cnt . "_" . $sub_cnt)
                     );
                     Additional_service::create($additional_service);
                 }
+            }*/
+            $services=$request->input('addition_service'.$cnt);
+            foreach ($services as $service)
+            {
+                $additional_service = array('custom_clearance_id' => $detail->id,
+                    'service_id' => $service
+                );
+                Additional_service::create($additional_service);
             }
         }
         $order = array('is_activated' => '10');
@@ -1072,17 +1088,18 @@ class OrderController extends Controller
     }
 
 
-    //list orders for sales person
+    //list orders for sales person and customer service
     public function orderlist()
     {
         $title = "Orders";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        $orders = Order::where('orders.is_activated', '<>', '0')->orderBy('orders.created_at', 'desc')->get();
+        $orders = Order::orderBy('orders.created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role', 'title'));
     }
 
+    //list customer for sales person and customer service
     public function customers()
     {
         $user_role = \Auth::user();

@@ -97,7 +97,7 @@
                             <div class="col-md-2">
                                 <div class="input-group">
                                     @foreach($charges as $charge)
-                                    <input type="checkbox" name="charges{{$cnt}}_{{$charge->id}}" id="charges{{$cnt}}_{{$charge->id}}"value="{{$charge->id}}" onchange="get_total({{$cnt}},{{$charge->id}},{{$charge->price}})">{{$charge->name}}<br>
+                                    <input type="checkbox" class="validate[groupRequired[charge], minCheckbox[1]]" name="charges{{$cnt}}[]" id="charges{{$cnt}}_{{$charge->id}}" value="{{$charge->id}}" onchange="get_total({{$cnt}},{{$charge->id}},{{$charge->price}})">{{$charge->name}}<br>
                                     @endforeach
                                         <input type="hidden" name="sub_count{{$cnt}}" id="sub_count{{$cnt}}" value="{{ $charge->id }}">
                                 </div>

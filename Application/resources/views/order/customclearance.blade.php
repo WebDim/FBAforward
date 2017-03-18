@@ -52,9 +52,9 @@
                                 {!! htmlspecialchars_decode(Form::label('addition_service', 'Addition Services<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
-                                        <input type="checkbox" name="addition_service{{$cnt}}_1" id="addition_service{{$cnt}}_1" value="1">FDA Clearance<br>
-                                        <input type="checkbox" name="addition_service{{$cnt}}_2" id="addition_service{{$cnt}}_2" value="2">Lacey Act<br>
-                                        <input type="checkbox" name="addition_service{{$cnt}}_3" id="addition_service{{$cnt}}_3" value="3">OGA/PGA
+                                        <input type="checkbox" class="validate[groupRequired[charge], minCheckbox[1]]" name="addition_service{{$cnt}}[]" id="addition_service{{$cnt}}_1" value="1">FDA Clearance<br>
+                                        <input type="checkbox" class="validate[groupRequired[charge], minCheckbox[1]]" name="addition_service{{$cnt}}[]" id="addition_service{{$cnt}}_2" value="2">Lacey Act<br>
+                                        <input type="checkbox"  class="validate[groupRequired[charge], minCheckbox[1]]"name="addition_service{{$cnt}}[]" id="addition_service{{$cnt}}_3" value="3">OGA/PGA
                                     </div>
                                 </div>
                                 {!! htmlspecialchars_decode(Form::label('terminal_fee', 'Terminal Fees<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
