@@ -52,7 +52,7 @@
                                 {!! htmlspecialchars_decode(Form::label('bill', 'Bill of Lading <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                                 <div class="col-md-3">
                                     <div class="input-group">
-                                        <input type="file" name="bill{{$cnt}}" id="bill{{$cnt}}"  placeholder="Bill of Lading" class="validate[required]">
+                                        <input type="file" name="bill{{$cnt}}" id="bill{{$cnt}}"  placeholder="Bill of Lading" class="validate[required, custom[checkFileType]]">
                                     </div>
                                 </div>
                             </div>

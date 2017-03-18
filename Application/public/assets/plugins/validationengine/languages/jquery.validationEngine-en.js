@@ -181,7 +181,16 @@
                     "alertText2": "Expected Format: ",
                     "alertText3": "mm/dd/yyyy hh:mm:ss AM|PM or ", 
                     "alertText4": "yyyy-mm-dd hh:mm:ss AM|PM"
-	            }
+	            },
+                "checkFileType": {
+                    "regex": "pdf|doc|docx",
+                    "alertText": "* Wrong file Type."
+                },
+            "checkImageType": {
+                "regex": "jpg|jpeg|gif|JPG|png|PNG",
+                    "alertText": "* Wrong image Type."
+            },
+
             };
             
         }
