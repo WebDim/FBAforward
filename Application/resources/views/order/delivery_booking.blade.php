@@ -47,7 +47,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                {!! htmlspecialchars_decode(Form::label('warehouse_fee', 'Warehouse Fees<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
+                                {!! htmlspecialchars_decode(Form::label('warehouse_fee', 'Warehouse Fees <span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="text" name="warehouse_fee{{$cnt}}" id="warehouse_fee{{$cnt}}" class="form-control validate[required]" placeholder="Warehouse Fees">
@@ -55,7 +55,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                {!! htmlspecialchars_decode(Form::label('fee_paid', 'Fees Paid<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
+                                {!! htmlspecialchars_decode(Form::label('fee_paid', 'Fees Paid <span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <select name="fee_paid{{$cnt}}" id="fee_paid{{$cnt}}" class="form-control validate[required]">
@@ -66,13 +66,39 @@
                                         </select>
                                     </div>
                                 </div>
-                                {!! htmlspecialchars_decode(Form::label('ETA_warehouse', 'ETA Warehouse<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
+                                {!! htmlspecialchars_decode(Form::label('ETA_warehouse', 'ETA Warehouse <span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="text" name="ETA_warehouse{{$cnt}}" id="ETA_warehouse{{$cnt}}" class="form-control datepicker validate[required]" placeholder="ETA Warehouse ">
                                     </div>
                                 </div>
+                                {!! htmlspecialchars_decode(Form::label('delivery_destination', 'Delivery Destination <span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
+                                <div class="col-md-2">
+                                    <div class="input-group">
+                                        <select name="delivery_destination{{$cnt}}" id="delivery_destination{{$cnt}}" class="form-control validate[required]" onchange="show_destination(this.value)">
+                                            <option value="">Select Delivery Destination</option>
+                                            <option value="">Add New</option>
+                                            @foreach($delivery_destination as $delivery_destinations)
+                                                <option value="{{$delivery_destinations->id}}">{{$delivery_destinations->destination_name}}</option>
+                                            @endforeach
 
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                {!! htmlspecialchars_decode(Form::label('last_free_day', 'Last Free Day <span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
+                                <div class="col-md-2">
+                                    <div class="input-group">
+                                        <input type="text" name="last_free_day{{$cnt}}" id="last_free_day{{$cnt}}" class="form-control datepicker validate[required]" placeholder="Last Free Day ">
+                                    </div>
+                                </div>
+                                {!! htmlspecialchars_decode(Form::label('pallet_exchange', 'Pallet Exchange <span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
+                                <div class="col-md-2">
+                                    <div class="input-group">
+                                        <input type="text" name="pallet_exchange{{$cnt}}" id="pallet_exchange{{$cnt}}" class="form-control validate[required]" placeholder="Pallet Exchange ">
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -114,6 +140,24 @@
                     </div>
                     <div class="form-group">
                         {!! Form::button( 'Add Trucking Company', ['class'=>'btn btn-primary', 'id'=>'add', 'onclick'=>'addtrucking()']) !!}
+                    </div>
+                </div>
+            </div>
+            <div id="destination" hidden>
+                <hr>
+                <h4>Add New Delivery Destination</h4>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        {!! htmlspecialchars_decode(Form::label('destination_name', 'Delivery Destination Name<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                        <div class="col-md-4">
+                            <div class="">
+                                <span class=""></span>
+                                {!! Form::text('destination_name', old('destination_name'), ['class' => 'form-control validate[required]', 'placeholder'=>'Delivery Destination Name']) !!}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::button( 'Add Delivery Destination', ['class'=>'btn btn-primary', 'id'=>'add', 'onclick'=>'adddestination()']) !!}
                     </div>
                 </div>
             </div>
@@ -166,6 +210,16 @@
             else
             {
                 $('#terminal').hide();
+            }
+        }
+        function show_destination(value) {
+            if(value == "")
+            {
+                $('#destination').show();
+            }
+            else
+            {
+                $('#destination').hide();
             }
         }
         function addtrucking() {
@@ -238,6 +292,46 @@
                         $('.preloader').css("display", "none");
                         console.log(response);
                         swal("CFS Terminal added Successfully");
+                        location.reload();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                        $('.preloader').css("display", "none");
+                        console.log(JSON.stringify(jqXHR));
+                        console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                    }
+                });
+            }
+        }
+        function adddestination() {
+            destination_name=$('#destination_name').val();
+            $("#validate").validate({
+                rules: {
+                    "destination_name": {
+                        required: true,
+
+                    },
+                },
+                messages:{
+                    "destination_name": {
+                        required:"<span class='required'>Destination name is required</span>",
+                    },
+                }
+            });
+            if($('#validate').valid()) {
+                $('.preloader').css("display", "block");
+                $.ajax({
+                    headers: {
+                        'X-CSRF-Token': $('input[name="_token"]').val()
+                    },
+                    method: 'POST', // Type of response and matches what we said in the route
+                    url: '/order/adddestination', // This is the url we gave in the route
+                    data: {
+                        'destination_name': destination_name,
+                    }, // a JSON object to send back
+                    success: function (response) { // What to do if we succeed
+                        $('.preloader').css("display", "none");
+                        console.log(response);
+                        swal("Delivery Destination added Successfully");
                         location.reload();
                     },
                     error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail

@@ -245,7 +245,7 @@
                 <div class="small-box bg-green">
                     <div class="inner">
                         <h3>{{ $total_customer }}</h3>
-                        <p>Total Customers</p>
+                        <p>Customer Lookup</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-person"></i>
@@ -263,7 +263,7 @@
                     <div class="icon">
                         <i class="ion-ios-paper"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/shippingquote') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
             <div class="col-lg-6 col-xs-6">
@@ -276,7 +276,7 @@
                     <div class="icon">
                         <i class="ion-android-list"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/billoflading') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
             <div class="col-lg-6 col-xs-6">
@@ -289,7 +289,7 @@
                     <div class="icon">
                         <i class="ion-ios-list"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/prealert') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
         @elseif($user->role->name=='Logistics')
@@ -304,7 +304,7 @@
                     <div class="icon">
                         <i class="ion-android-list"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/billofladingapprove') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
             <div class="col-lg-4 col-xs-6">
@@ -317,7 +317,7 @@
                     <div class="icon">
                         <i class="ion-ios-paper"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/customclearance') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
 
@@ -331,7 +331,7 @@
                     <div class="icon">
                         <i class="ion-ios-list"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/deliverybooking') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
         @elseif($user->role->name=='Warehouse Manager')

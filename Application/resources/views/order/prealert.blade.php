@@ -23,11 +23,13 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
+                                @if($shipments->shipping_name=='sea' || $shipments->shipping_name=='Sea' || $shipments->shipping_name=='SEA')
                                 {!! Form::label('ISF', 'ISF ', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="file" name="ISF{{$cnt}}" id="ISF{{$cnt}}"  placeholder="ISF ">
                                     </div>
+                                @endif
                                 </div>
                                 {!! Form::label('HBL', 'HBL/HAWB ', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">

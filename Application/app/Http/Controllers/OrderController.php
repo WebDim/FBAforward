@@ -11,7 +11,9 @@ use App\Charges;
 use App\Custom_clearance;
 use App\Customer_amazon_detail;
 use App\Customer_quickbook_detail;
+use App\Debitnote_invoice;
 use App\Delivery_booking;
+use App\Delivery_destination;
 use App\Dev_account;
 use App\Inspection_report;
 use App\Invoice_detail;
@@ -373,20 +375,23 @@ class OrderController extends Controller
     {
         $title = "Shipping Quote Form";
         $order_id = $request->order_id;
-        $user = User_info::selectRaw('user_infos.company_name, user_infos.contact_email, orders.order_no')
+        $user = User_info::selectRaw('user_infos.company_name, user_infos.contact_email, user_infos.user_id, orders.order_no')
             ->join('orders', 'orders.user_id', '=', 'user_infos.user_id')
             ->where('orders.order_id', $order_id)
             ->get();
+        $user_id= !empty($user) ? $user[0]->user_id : '';
         $shipment = Shipments::where('order_id', $order_id)->get();
         $charges = Charges::all();
-        $shipment_detail = Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
+        $shipment_detail = Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total, supplier_details.supplier_id')
             ->join('shipments', 'shipments.shipment_id', '=', 'shipment_details.shipment_id', 'left')
             ->join('orders', 'orders.order_id', '=', 'shipments.order_id', 'left')
             ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id', 'left')
             ->join('shipping_methods', 'shipping_methods.shipping_method_id', '=', 'shipments.shipping_method_id')
+            ->join('supplier_details','supplier_details.shipment_detail_id','=','shipment_details.shipment_detail_id')
             ->where('orders.order_id', $order_id)
             ->get();
-        return view('order.shippingquote')->with(compact('order_id', 'shipping_method', 'shipment', 'charges', 'shipment_detail', 'user', 'title'));
+        $supplier = Supplier::where('user_id',$user_id)->get();
+        return view('order.shippingquote')->with(compact('order_id', 'shipping_method', 'shipment', 'charges', 'shipment_detail', 'user', 'supplier', 'title'));
     }
 
     // to add shipping quote form details
@@ -401,6 +406,7 @@ class OrderController extends Controller
                 'shipment_weights' => $request->input('weight' . $cnt),
                 'chargable_weights' => $request->input('chargable_weight' . $cnt),
                 'cubic_meters' => $request->input('cubic_meter' . $cnt),
+                'no_of_pallets' => $request->input('pallet' . $cnt),
                 'total_shipping_cost' => $request->input('total_shipping_cost' . $cnt),
                 'status' => '0'
             );
@@ -845,7 +851,7 @@ class OrderController extends Controller
         $title = "Shipment Pre Alert";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        $orders = Order::where('orders.is_activated', '8')->orderBy('orders.created_at', 'desc')->get();
+        $orders = Order::where('is_activated', '8')->Orwhere('is_activated', '9')->where('debitnote_status','0')->orderBy('created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role', 'title'));
     }
@@ -906,14 +912,32 @@ class OrderController extends Controller
         }
         $order = array('is_activated' => '9');
         Order::where('order_id', $request->input('order_id'))->update($order);
-        $role = Role::find(6);
-        $role->newNotification()
-            ->withType('custom clearance')
-            ->withSubject('You have custom clearance for upload')
-            ->withBody('You have custom clearance for upload')
-            ->regarding($prealert_detail)
-            ->deliver();
         return redirect('order/prealert')->with('success', 'Shipment Pre Alert Submitted Successfully');
+    }
+    public function adddebitnote(Request $request)
+    {
+        $order_id = $request->input('id');
+
+        if ($request->hasFile('debitnote')) {
+            $destinationPath = public_path() . '/uploads/debitnote_invoice';
+            $image = $order_id . '_' . 'debitnote_invoice' . '.' . $request->file('debitnote')->getClientOriginalExtension();
+            $request->file('debitnote')->move($destinationPath, $image);
+            $debitnote_data = array('order_id' => $order_id,
+                'uploaded_file' => $image,
+                'status' => '0'
+            );
+            $report = Debitnote_invoice::create($debitnote_data);
+            $data = array('debitnote_status' => '1');
+            Order::where('order_id', $order_id)->update($data);
+            $role = Role::find(6);
+            $role->newNotification()
+                ->withType('custom clearance')
+                ->withSubject('You have custom clearance for upload')
+                ->withBody('You have custom clearance for upload')
+                ->regarding($debitnote_data)
+                ->deliver();
+            return redirect('order/prealert')->with('success', 'Debitnote/Invoice successfully uploaded');
+        }
     }
 
     //display list of orders which need custom clearnce by logistics
@@ -922,7 +946,7 @@ class OrderController extends Controller
         $title = "Custom Clearance";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        $orders = Order::where('orders.is_activated', '9')->orderBy('orders.created_at', 'desc')->get();
+        $orders = Order::where('is_activated', '9')->where('debitnote_status', '1')->orderBy('created_at', 'desc')->get();
         $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role', 'title'));
     }
@@ -967,11 +991,17 @@ class OrderController extends Controller
                 $delivery_orderimage = $request->input('order_id') . '_' . $request->input('shipment_id' . $cnt) . '_' . 'delivery_order' . '.' . $request->file('delivery_order' . $cnt)->getClientOriginalExtension();
                 $request->file('delivery_order' . $cnt)->move($destinationPath, $delivery_orderimage);
             }
+            if ($request->hasFile('abi_note' . $cnt)) {
+                $destinationPath = public_path() . '/uploads/customclearance';
+                $abi_noteimage = $request->input('order_id') . '_' . $request->input('shipment_id' . $cnt) . '_' . 'abi_note' . '.' . $request->file('abi_note' . $cnt)->getClientOriginalExtension();
+                $request->file('abi_note' . $cnt)->move($destinationPath, $abi_noteimage);
+            }
             $custom_clearance_detail = array('order_id' => $request->input('order_id'),
                 'shipment_id' => $request->input('shipment_id' . $cnt),
                 'form_3461' => $form_3461image,
                 'form_7501' => $form_7501image,
                 'delivery_order' => $delivery_orderimage,
+                'abi_note' => $abi_noteimage,
                 'custom_duty' => $request->input('custom_duty' . $cnt),
                 'terminal_fee' => $request->input('terminal_fee' . $cnt),
                 'status' => '0'
@@ -1034,7 +1064,8 @@ class OrderController extends Controller
         $payment_type = Payment_type::all();
         $trucking_company = Trucking_company::all();
         $cfs_terminal = CFS_terminal::all();
-        return view('order.delivery_booking')->with(compact('order_id', 'shipment', 'user', 'payment_type', 'trucking_company', 'cfs_terminal', 'title'));
+        $delivery_destination = Delivery_destination::all();
+        return view('order.delivery_booking')->with(compact('order_id', 'shipment', 'user', 'payment_type', 'trucking_company', 'cfs_terminal','delivery_destination', 'title'));
     }
 
     // to add delivery booking form details
@@ -1049,6 +1080,9 @@ class OrderController extends Controller
                 'warehouse_fee' => $request->input('warehouse_fee' . $cnt),
                 'fee_paid' => $request->input('fee_paid' . $cnt),
                 'ETA_warehouse' => date('Y-m-d H:i:s', strtotime($request->input('ETA_warehouse' . $cnt))),
+                'delivery_destination'=>$request->input('delivery_destination' . $cnt),
+                'last_free_day'=>date('Y-m-d H:i:s', strtotime($request->input('last_free_day' . $cnt))),
+                'pallet_exchange'=>$request->input('pallet_exchange' . $cnt),
                 'status' => '0'
             );
             Delivery_booking::create($delivery_booking_detail);
@@ -1086,7 +1120,16 @@ class OrderController extends Controller
             $terminal->save();
         }
     }
-
+    // add delivery destination
+    public function adddestination(Request $request)
+    {
+        if ($request->ajax()) {
+            $post = $request->all();
+            $destination = new Delivery_destination();
+            $destination->destination_name = $post['destination_name'];
+            $destination->save();
+        }
+    }
 
     //list orders for sales person and customer service
     public function orderlist()
@@ -1110,5 +1153,23 @@ class OrderController extends Controller
             ->where('role_id', '3')
             ->get();
         return view('order.customers_detail')->with(compact('user', 'title', 'user_role_id'));
+    }
+    public function openshipment()
+    {
+        $title = "Open Shipment";
+        $user = \Auth::user();
+        $user_role = $user->role_id;
+        $orders = Order:: where('is_activated','>','5')->where('is_activated','<','12')->orderBy('created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        return view('shipment.shipment_detail')->with(compact('orders', 'orderStatus', 'user_role', 'title'));
+    }
+    public function closeshipment()
+    {
+        $title = "Close Shipment";
+        $user = \Auth::user();
+        $user_role = $user->role_id;
+        $orders = Order:: where('is_activated','>','12')->orderBy('created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        return view('shipment.shipment_detail')->with(compact('orders', 'orderStatus', 'user_role', 'title'));
     }
 }

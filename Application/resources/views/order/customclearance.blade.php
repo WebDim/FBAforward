@@ -43,24 +43,33 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                {!! htmlspecialchars_decode(Form::label('abi_note', 'ABI notes <span class="required"></span> ', ['class' => 'control-label col-md-2'])) !!}
+                                <div class="col-md-2">
+                                    <div class="input-group">
+                                        <input type="file" name="abi_note{{$cnt}}" id="abi_note{{$cnt}}"  placeholder="ABI notes" class="">
+                                    </div>
+                                </div>
                                 {!! htmlspecialchars_decode(Form::label('custom_duty', 'Custom Duties<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="text" name="custom_duty{{$cnt}}" id="custom_duty{{$cnt}}"  class="form-control validate[required]" placeholder="Custom Duties ">
                                     </div>
                                 </div>
+                                {!! htmlspecialchars_decode(Form::label('terminal_fee', 'Terminal Fees<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
+                                <div class="col-md-2">
+                                    <div class="input-group">
+                                        <input type="text" name="terminal_fee{{$cnt}}" id="terminal_fee{{$cnt}}"  class="form-control validate[required]" placeholder="Terminal Fees " >
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
                                 {!! htmlspecialchars_decode(Form::label('addition_service', 'Addition Services<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="checkbox" class="validate[groupRequired[charge], minCheckbox[1]]" name="addition_service{{$cnt}}[]" id="addition_service{{$cnt}}_1" value="1">FDA Clearance<br>
                                         <input type="checkbox" class="validate[groupRequired[charge], minCheckbox[1]]" name="addition_service{{$cnt}}[]" id="addition_service{{$cnt}}_2" value="2">Lacey Act<br>
                                         <input type="checkbox"  class="validate[groupRequired[charge], minCheckbox[1]]"name="addition_service{{$cnt}}[]" id="addition_service{{$cnt}}_3" value="3">OGA/PGA
-                                    </div>
-                                </div>
-                                {!! htmlspecialchars_decode(Form::label('terminal_fee', 'Terminal Fees<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
-                                <div class="col-md-2">
-                                    <div class="input-group">
-                                        <input type="text" name="terminal_fee{{$cnt}}" id="terminal_fee{{$cnt}}"  class="form-control validate[required]" placeholder="Terminal Fees " >
                                     </div>
                                 </div>
                             </div>

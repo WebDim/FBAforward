@@ -42,7 +42,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                {!! htmlspecialchars_decode(Form::label('ref_number', 'Shipment Reference Number (SB Number) <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
+                                {!! htmlspecialchars_decode(Form::label('ref_number', 'Shipment Reference Number <span class="required">*</span>', ['class' => 'control-label col-md-3'])) !!}
                                 <div class="col-md-3">
                                     <div class="input-group">
                                         <span class="input-group-addon"></span>

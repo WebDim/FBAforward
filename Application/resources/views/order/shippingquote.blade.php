@@ -31,6 +31,7 @@
                             <th class="col-md-2"><span># Of Case</span></th>
                             <th><span>Total</span></th>
                             <th><span>Shipment Type</span></th>
+                            <th><span>Supplier Details</span></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -43,6 +44,17 @@
                                     <td>{{ $shipment_details->no_boxs}}</td>
                                     <td>{{ $shipment_details->total}}</td>
                                     <td>{{ $shipment_details->shipping_name }}</td>
+                                    <td>
+                                        @foreach($supplier as $suppliers)
+                                            @if($suppliers->supplier_id==$shipment_details->supplier_id)
+                                                {{ $suppliers->company_name}}
+                                                <br>
+                                                {{$suppliers->email}}
+                                                <br>
+                                                {{$suppliers->phone_number }}
+                                            @endif
+                                        @endforeach
+                                    </td>
                                 </tr>
 
                             @endif
@@ -79,11 +91,11 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! htmlspecialchars_decode(Form::label('chargable_weight', 'chargable Weight (Kgs)<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                            {!! htmlspecialchars_decode(Form::label('chargable_weight', 'chargable Weight (Kgs)<span class="required"></span>', ['class' => 'control-label col-md-2'])) !!}
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>
-                                    <input type="text" name="chargable_weight{{$cnt}}" id="chargable_weight{{$cnt}}" class="form-control validate[required]" placeholder="chargable Weight">
+                                    <input type="text" name="chargable_weight{{$cnt}}" id="chargable_weight{{$cnt}}" class="form-control " placeholder="chargable Weight">
                                 </div>
                             </div>
                             {!! htmlspecialchars_decode(Form::label('cubic_meter', 'Cubic Meter<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
@@ -93,6 +105,15 @@
                                     <input type="text" name="cubic_meter{{$cnt}}" id="cubic_meter{{$cnt}}" class="form-control validate[required]" placeholder="Cubic Meter">
                                 </div>
                             </div>
+                            {!! htmlspecialchars_decode(Form::label('pallet', 'No Of Pallets<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
+                            <div class="col-md-2">
+                                <div class="input-group">
+                                    <span class="input-group-addon"></span>
+                                    <input type="text" name="pallet{{$cnt}}" id="pallet{{$cnt}}" class="form-control validate[required]" placeholder="# Of Pallets">
+                                </div>
+                            </div>
+                        </div>
+                            <div class="form-group">
                             {!! htmlspecialchars_decode(Form::label('charges', 'Charges<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                             <div class="col-md-2">
                                 <div class="input-group">
@@ -102,8 +123,7 @@
                                         <input type="hidden" name="sub_count{{$cnt}}" id="sub_count{{$cnt}}" value="{{ $charge->id }}">
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group">
+
                             {!! htmlspecialchars_decode(Form::label('total_shipping_cost', 'Total Shipping Cost<span class="required">*</span>', ['class' => 'control-label col-md-2'])) !!}
                             <div class="col-md-2">
                                 <div class="input-group">

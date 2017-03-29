@@ -10,7 +10,7 @@ class Delivery_booking extends Model
     protected $primaryKey = 'id';
 
     protected $table ='delivery_bookings';
-    protected $fillable = ['order_id','shipment_id','CFS_terminal', 'trucking_company','warehouse_fee','fee_paid','ETA_warehouse','status'];
+    protected $fillable = ['order_id','shipment_id','CFS_terminal', 'trucking_company','warehouse_fee','fee_paid','ETA_warehouse','delivery_destination','last_free_day','pallet_exchange','status'];
 
     public function order()
     {

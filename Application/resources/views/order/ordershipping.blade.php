@@ -74,6 +74,8 @@
                                         @if($order->is_activated==8)
                                             <a href="{{ url('order/prealertform/'.$order->order_id)}}"
                                                class="btn btn-info">Shipment Pre-Alert</a>
+                                        @elseif($order->is_activated==9 && $order->debitnote_status==0)
+                                            <a href="javascript:void(0)" onclick="opendebitnote({{$order->order_id}})" class="btn btn-info">Upload debit note/invoice</a>
                                         @endif
                                     @elseif($user_role==6)
                                         @if($order->is_activated==7)
@@ -382,6 +384,48 @@
                     <div class="row">
                         <div class="col-md-12" id="barcode_div">
 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="opendebitnote" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Upload Debit Note/Invoice</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            {!! Form::open(['url' =>  'order/debitnote', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {!! Form::hidden('id',old('id'), ['id'=>'id']) !!}
+                                        {!! htmlspecialchars_decode(Form::label('debitnote', 'Upload Debit Note/Invoice<span class="required">*</span> ',['class' => 'control-label col-md-5'])) !!}
+                                        <div class="col-md-7">
+                                            <div class="input-group">
+                                                {!! Form::file('debitnote', old('debitnote'), ['class' => 'validate[required]']) !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        {!! Form::label('', '',['class' => 'control-label col-md-5']) !!}
+                                        <div class="col-md-7">
+                                            <div class="input-group">
+                                                {!! Form::submit('  Next  ', ['class'=>'btn btn-primary',  'id'=>'add']) !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            {!! Form::close() !!}
                         </div>
                     </div>
                 </div>
@@ -856,6 +900,10 @@
                 swal("Any one note compulsary");
                 return false;
             }
+        }
+        function opendebitnote(order_id) {
+            $("#id").val(order_id);
+            $("#opendebitnote").modal('show');
         }
     </script>
 @endsection

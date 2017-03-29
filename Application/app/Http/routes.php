@@ -233,10 +233,12 @@ Route::group(['middleware' => 'web'], function () {
         Route::put('/deliverybookingform', 'OrderController@adddeliverybookingform');
         Route::post('/addtrucking','OrderController@addtrucking');
         Route::post('/addterminal','OrderController@addterminal');
+        Route::post('/adddestination','OrderController@adddestination');
         Route::get('/orderlist','OrderController@orderlist');
         Route::get('/customers','OrderController@customers');
-
-
+        Route::get('/openshipment','OrderController@openshipment');
+        Route::get('/closeshipment','OrderController@closeshipment');
+        Route::put('/debitnote','OrderController@adddebitnote');
     });
 
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);

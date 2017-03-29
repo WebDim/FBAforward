@@ -10,7 +10,7 @@ class Custom_clearance extends Model
     protected $primaryKey = 'id';
 
     protected $table ='custom_clearances';
-    protected $fillable = ['order_id','shipment_id','form_3461', 'form_7501','delivery_order','custom_duty','terminal_fee','status'];
+    protected $fillable = ['order_id','shipment_id','form_3461', 'form_7501','delivery_order','abi_note','custom_duty','terminal_fee','status'];
 
     public function order()
     {
