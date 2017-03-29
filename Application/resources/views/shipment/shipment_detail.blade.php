@@ -82,7 +82,6 @@
         $(document).ready(function () {
             $('#data_table').DataTable({
                 "order": [[ 1, "asc" ]],
-
             });
         });
 
