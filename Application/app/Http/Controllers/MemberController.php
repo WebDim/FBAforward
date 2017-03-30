@@ -18,6 +18,7 @@ use PayPal\Api\CreditCard;
 use App\User_credit_cardinfo;
 use App\Http\Middleware\Amazoncredential;
 use Illuminate\Http\Request;
+use App\Shipping_quote;
 class MemberController extends Controller
 {
     /**
@@ -106,10 +107,21 @@ class MemberController extends Controller
                         $order_ids[] = $detail->order_id;
                 }
             }
+            $shipping_id = Shipping_quote::selectRaw('shipping_quotes.*')
+                ->join('orders','shipping_quotes.order_id','=','orders.order_id')
+                ->where('orders.is_activated','4')
+                ->where('shipping_quotes.status','0')
+                ->Orwhere('shipping_quotes.status','2')
+                ->groupby('shipping_quotes.order_id')
+                ->get();
+            foreach ($shipping_id as $shipping_ids)
+            {
+                $order_ids[]=$shipping_ids->order_id;
+            }
             if (!empty($order_ids))
                 $shipping_quote_count = Order::where('orders.is_activated', '3')->orWhereIn('orders.order_id', $order_ids)->count();
-            else
-                $shipping_quote_count = Order::where('orders.is_activated', '3')->count();
+            /*else
+                $shipping_quote_count = Order::where('orders.is_activated', '3')->count();*/
             $bill_lading_count = Order::where('orders.is_activated', '6')->count();
             $pre_alert_count = Order::where('orders.is_activated', '8')->count();
             return view('member.home')->with(compact('total_customer','shipping_quote_count','bill_lading_count','pre_alert_count','user'));

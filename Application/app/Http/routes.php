@@ -212,9 +212,10 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/shippingquote', 'OrderController@shippingquote');
         Route::get('/shippingquoteform/{order_id}', 'OrderController@shippingquoteform');
         Route::put('/shippingquoteform', 'OrderController@addshippingquoteform');
-        Route::get('/downloadquote/{order_id}','OrderController@viewshippingquote');
+        Route::get('/downloadquote/{order_id}/{user_id}','OrderController@viewshippingquote');
         //Route::post('/viewshippingquote', 'OrderController@viewshippingquote');
         Route::post('/approveshippingquote', 'OrderController@approveshippingquote');
+        Route::put('/rejectshippingquote', 'OrderController@rejectshippingquote');
         Route::get('/billoflading', 'OrderController@billoflading');
         Route::get('/billofladingform/{order_id}', 'OrderController@billofladingform');
         Route::put('/billofladingform/', 'OrderController@addbillofladingform');
@@ -236,11 +237,14 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/adddestination','OrderController@adddestination');
         Route::get('/orderlist','OrderController@orderlist');
         Route::get('/customers','OrderController@customers');
-        Route::get('/openshipment','OrderController@openshipment');
-        Route::get('/closeshipment','OrderController@closeshipment');
         Route::put('/debitnote','OrderController@adddebitnote');
     });
-
+    Route::group(['prefix' => 'shipper'], function () {
+        Route::get('/openshipment', 'ShipperController@openshipment');
+        Route::get('/closeshipment', 'ShipperController@closeshipment');
+        Route::get('/viewrejectquote', 'ShipperController@viewrejectquote');
+        Route::post('/viewquote', 'ShipperController@viewquote');
+    });
         Route::get('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@amazoncredential']);
         Route::put('/amazon_credential', ['as' => 'amazon_credential', 'uses' => 'AmazonController@addamazoncredential']);
 

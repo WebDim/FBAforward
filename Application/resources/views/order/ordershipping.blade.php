@@ -66,6 +66,25 @@
                                         @if($order->is_activated==3 || $order->is_activated == 1)
                                             <a href="{{ url('order/shippingquoteform/'.$order->order_id)}}"
                                                class="btn btn-info">Shipping Quote</a>
+                                        @elseif($order->is_activated==4 )
+                                            {{--*/ $tmp=0 /*--}}
+                                            @foreach($shipping_id as $shipping_ids)
+                                                @if($shipping_ids->order_id == $order->order_id )
+                                                    @if($shipping_ids->user_id==$user_id)
+                                                         @if($shipping_ids->status==0 )
+                                                                You Upload your Quotes<br>
+                                                         @elseif($shipping_ids->status==2)
+                                                            Your Quote rejected<br>
+                                                        @endif
+                                                    @endif
+                                                @else
+                                                    {{--*/ $tmp++ /*--}}
+                                                @endif
+                                            @endforeach
+                                            @if($tmp >= 1)
+                                                <a href="{{ url('order/shippingquoteform/'.$order->order_id)}}"
+                                                   class="btn btn-info">Shipping Quote</a>
+                                             @endif
                                         @endif
                                         @if($order->is_activated==6)
                                             <a href="{{ url('order/billofladingform/'.$order->order_id)}}"

@@ -118,8 +118,9 @@
                                    {{-- <a class="external" href="{{ url('order/shippingquote') }}"><i class="fa fa-btn fa-user"></i> Shipping Quote</a>
                                     <a class="external" href="{{ url('order/billoflading') }}"><i class="fa fa-btn fa-user"></i> Bill Of Lading</a>
                                     <a class="external" href="{{ url('order/prealert') }}"><i class="fa fa-btn fa-user"></i> Shipment Pre Alert</a> --}}
-                                    <a class="external" href="{{ url('order/openshipment') }}"><i class="fa fa-btn fa-user"></i>Open Shipment</a>
-                                    <a class="external" href="{{ url('order/closeshipment') }}"><i class="fa fa-btn fa-user"></i>Shipment History</a>
+                                    <a class="external" href="{{ url('shipper/openshipment') }}"><i class="fa fa-btn fa-user"></i>Open Shipment</a>
+                                    <a class="external" href="{{ url('shipper/closeshipment') }}"><i class="fa fa-btn fa-user"></i>Shipment History</a>
+                                    <a class="external" href="{{ url('shipper/viewrejectquote') }}"><i class="fa fa-btn fa-user"></i>Rejected Shipping Quote</a>
                                 </li>
                             @endif
                             @if('Warehouse Lead'===\Auth::user()->role->name)

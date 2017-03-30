@@ -175,8 +175,15 @@
                                     </td>
                                     <td>
                                            {{--<a onclick="openquote({{$order->order_id}})">View Shipping Quote</a>--}}
-                                            <a href="{{ url('order/downloadquote/'.$order->order_id) }}">Download Quote</a>
-                                            <a href="javascript:void(0)" onclick="approveshippingquote({{$order->order_id}})" class="btn btn-info">Approve Shipping Quote</a>
+                                        @foreach($shipping_quote as $shipping_quotes)
+                                            @if($shipping_quotes->order_id==$order->order_id)
+                                                <a href="{{ url('order/downloadquote/'.$order->order_id.'/'.$shipping_quotes->user_id) }}">Download Quote</a>
+                                                <a href="javascript:void(0)" onclick="approveshippingquote('{{$order->order_id}}','{{$shipping_quotes->user_id}}')" class="btn btn-info">Approve</a>
+                                                <a href="javascript:void(0)" onclick="rejectshippingquote('{{$order->order_id}}','{{$shipping_quotes->user_id}}')" class="btn btn-danger">Reject</a>
+                                                <br><br>
+                                            @endif
+                                        @endforeach
+
                                     </td>
                                 </tr>
                             @endif
@@ -199,6 +206,47 @@
                 <div class="row">
                     <div class="col-md-12" id="main">
 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="quote" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="myModalLabel">Reject Shipping Quote</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" id="main">
+                        {!! Form::open(['url' =>  'order/rejectshippingquote', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {!! Form::hidden('order_id',old('order_id'), ['id'=>'order_id']) !!}
+                                    {!! Form::hidden('user_id',old('user_id'), ['id'=>'user_id']) !!}
+                                    {!! htmlspecialchars_decode(Form::label('reason', 'Reason<span class="required">*</span> ',['class' => 'control-label col-md-5'])) !!}
+                                    <div class="col-md-7">
+                                        <div class="input-group">
+                                            {!! Form::textarea('reason', old('reason'), ['class' => 'validate[required]']) !!}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    {!! Form::label('', '',['class' => 'control-label col-md-5']) !!}
+                                    <div class="col-md-7">
+                                        <div class="input-group">
+                                            {!! Form::submit('  Submit  ', ['class'=>'btn btn-primary',  'id'=>'add']) !!}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        {!! Form::close() !!}
                     </div>
                 </div>
             </div>
@@ -337,7 +385,7 @@
             }
         });
     }
-    function approveshippingquote(order_id)
+    function approveshippingquote(order_id,user)
     {
         $('.preloader').css("display", "block");
         $.ajax({
@@ -348,6 +396,7 @@
             url: '/order/approveshippingquote', // This is the url we gave in the route
             data: {
                 'order_id': order_id,
+                'user_id' : user,
             }, // a JSON object to send back
             success: function (response) { // What to do if we succeed
                 $('.preloader').css("display", "none");
@@ -364,6 +413,38 @@
                 console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
             }
         });
+    }
+    function rejectshippingquote(order_id,user)
+    {
+        /*$('.preloader').css("display", "block");
+        $.ajax({
+            headers: {
+                'X-CSRF-Token':  "{{ csrf_token() }}"
+            },
+            method: 'POST', // Type of response and matches what we said in the route
+            url: '/order/rejectshippingquote', // This is the url we gave in the route
+            data: {
+                'order_id': order_id,
+                'user_id' : user,
+            }, // a JSON object to send back
+            success: function (response) { // What to do if we succeed
+                $('.preloader').css("display", "none");
+                console.log(response);
+                //swal("Report Approved");
+                if(response==1) {
+                    location.reload();
+                }
+                //location.reload();
+            },
+            error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
+                $('.preloader').css("display", "none");
+                console.log(JSON.stringify(jqXHR));
+                console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+            }
+        });*/
+        $("#order_id").val(order_id);
+        $("#user_id").val(user);
+        $("#quote").modal('show');
     }
 </script>
 @endsection
