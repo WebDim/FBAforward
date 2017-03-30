@@ -66,7 +66,7 @@
                                         @if($order->is_activated==3 || $order->is_activated == 1)
                                             <a href="{{ url('order/shippingquoteform/'.$order->order_id)}}"
                                                class="btn btn-info">Shipping Quote</a>
-                                        @elseif($order->is_activated==4 )
+                                        @elseif($order->is_activated==4)
                                             {{--*/ $tmp=0 /*--}}
                                             @foreach($shipping_id as $shipping_ids)
                                                 @if($shipping_ids->order_id == $order->order_id )
@@ -74,6 +74,19 @@
                                                          @if($shipping_ids->status==0 )
                                                                 You Upload your Quotes<br>
                                                          @elseif($shipping_ids->status==2)
+                                                            Your Quote rejected<br>
+                                                        @endif
+                                                    @endif
+                                                @else
+                                                    {{--*/ $tmp++ /*--}}
+                                                @endif
+                                            @endforeach
+                                            @foreach($shipping_id1 as $shipping_ids1)
+                                                @if($shipping_ids1->order_id == $order->order_id )
+                                                    @if($shipping_ids1->user_id==$user_id)
+                                                        @if($shipping_ids1->status==0 )
+                                                            You Upload your Quotes<br>
+                                                        @elseif($shipping_ids1->status==2)
                                                             Your Quote rejected<br>
                                                         @endif
                                                     @endif
