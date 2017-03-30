@@ -111,12 +111,22 @@ class MemberController extends Controller
                 ->join('orders','shipping_quotes.order_id','=','orders.order_id')
                 ->where('orders.is_activated','4')
                 ->where('shipping_quotes.status','0')
-                ->Orwhere('shipping_quotes.status','2')
+                ->groupby('shipping_quotes.order_id')
+                ->get();
+            $shipping_id1 = Shipping_quote::selectRaw('shipping_quotes.*')
+                ->join('orders','shipping_quotes.order_id','=','orders.order_id')
+                ->where('orders.is_activated','4')
+                ->where('shipping_quotes.status','2')
+                ->where('shipping_quotes.status','<>','1')
                 ->groupby('shipping_quotes.order_id')
                 ->get();
             foreach ($shipping_id as $shipping_ids)
             {
                 $order_ids[]=$shipping_ids->order_id;
+            }
+            foreach ($shipping_id1 as $shipping_ids1)
+            {
+                $order_ids[]=$shipping_ids1->order_id;
             }
             if (!empty($order_ids))
                 $shipping_quote_count = Order::where('orders.is_activated', '3')->orWhereIn('orders.order_id', $order_ids)->count();
