@@ -554,7 +554,7 @@ class OrderController extends Controller
             $order_id = $post['order_id'];
             $user_id = $post['user_id'];
             $shipping_quotes_data = array('status' => '1');
-            Shipping_quote::where('order_id', $order_id)->where('user_id',$user_id)->update($shipping_quotes_data);
+            Shipping_quote::where('order_id', $order_id)->where('user_id',$user_id)->where('status','0')->update($shipping_quotes_data);
             $shipping_quotes_data1 = array('status' => '2');
             Shipping_quote::where('order_id', $order_id)->where('user_id','!=',$user_id)->update($shipping_quotes_data1);
             /*$data = array('is_activated' => '5');
