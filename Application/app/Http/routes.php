@@ -36,6 +36,7 @@ use App\Addresses;
 use App\Charges;
 use App\Order;
 use App\Payment_detail;
+use App\Partner_company;
 
 Route::model('users', User::class);
 Route::model('settings', Setting::class);
@@ -55,6 +56,7 @@ Route::model('charges',Charges::class);
 Route::model('customers', User::class);
 Route::model('orders', Order::class);
 Route::model('payments', Payment_detail::class);
+Route::model('partnercompany', Partner_company::class);
 
 
 Route::group(['middleware' => ['web']], function () {
@@ -119,6 +121,8 @@ Route::group(['middleware' => 'web'], function () {
         Route::resource('payments','Admin\PaymentController');
 
     });
+    Route::resource('partnercompany','PartnerCompanyController');
+    Route::post('partnercompany/delete', 'PartnerCompanyController@destroy');
 
     Route::post('note/save','NotesController@update');
     Route::resource('note', 'NotesController');
