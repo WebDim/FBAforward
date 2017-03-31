@@ -1038,6 +1038,7 @@ class OrderController extends Controller
             $form_3461image = '';
             $form_7501image = '';
             $delivery_orderimage = '';
+            $abi_noteimage='';
             if ($request->hasFile('form_3461' . $cnt)) {
                 $destinationPath = public_path() . '/uploads/customclearance';
                 $form_3461image = $request->input('order_id') . '_' . $request->input('shipment_id' . $cnt) . '_' . 'form_3461' . '.' . $request->file('form_3461' . $cnt)->getClientOriginalExtension();
