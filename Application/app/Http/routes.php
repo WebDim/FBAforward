@@ -242,6 +242,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/orderlist','OrderController@orderlist');
         Route::get('/customers','OrderController@customers');
         Route::put('/debitnote','OrderController@adddebitnote');
+        Route::get('/fbainventory','OrderController@fbainventory');
     });
     Route::group(['prefix' => 'shipper'], function () {
         Route::get('/openshipment', 'ShipperController@openshipment');

@@ -100,6 +100,8 @@
                                 </li>
                                 <li><a class="external" href="{{ url('member/amazoninventorylist') }}"><i class="fa fa-list"></i>&nbsp;Amazon Inventory List</a>
                                 </li>
+                                <li><a class="external" href="{{ url('order/fbainventory') }}"><i class="fa fa-list"></i>&nbsp;FBA Inventory List</a>
+                                </li>
                                 @endif
                             @endif
                             @if('Inspector'===\Auth::user()->role->name)

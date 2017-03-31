@@ -88,7 +88,7 @@
             <div class="small-box bg-fuchsia">
                 <div class="inner">
                     <h3> {{ $total_inventory  }} </h3>
-                    <p>Total Inventory</p>
+                    <p>Total Amazon Inventory</p>
                 </div>
                 <div class="icon">
                     <i class="ion-ios-list"></i>

@@ -1218,5 +1218,23 @@ class OrderController extends Controller
         return view('order.customers_detail')->with(compact('user', 'title', 'user_role_id'));
     }
 
+    public function fbainventory()
+    {
+        $title = "FBA Inventory";
+        $user = \Auth::user();
+        $user_role = $user->role_id;
+        $orders = Order::selectRaw('orders.order_id, sum(shipment_details.total) as total, orders.created_at, orders.shipmentplan')
+                         ->join('shipments','shipments.order_id','=','orders.order_id')
+                         ->join('shipment_details','shipment_details.shipment_id','=','shipments.shipment_id')
+                         ->where('orders.is_activated','>','12')
+                         ->where('orders.is_activated','<','17')
+                         ->where('orders.user_id',$user->id)
+                         ->orderBy('orders.created_at', 'desc')
+                         ->groupby('orders.order_id')
+                         ->get();
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        return view('member.fba_inventory')->with(compact('orders', 'orderStatus', 'user_role', 'title'));
+    }
+
 
 }
