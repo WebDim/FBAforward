@@ -81,6 +81,7 @@
                                                     {{--*/ $tmp++ /*--}}
                                                 @endif
                                             @endforeach
+
                                             @foreach($shipping_id1 as $shipping_ids1)
                                                 @if($shipping_ids1->order_id == $order->order_id )
                                                     @if($shipping_ids1->user_id==$user_id)
@@ -94,7 +95,11 @@
                                                     {{--*/ $tmp++ /*--}}
                                                 @endif
                                             @endforeach
-                                            @if($tmp >= 1)
+
+                                            @if(count($shipping_id) == 1 || count($shipping_id1) == 1)
+                                                <a href="{{ url('order/shippingquoteform/'.$order->order_id)}}"
+                                                   class="btn btn-info">Shipping Quote</a>
+                                            @elseif($tmp >= 1)
                                                 <a href="{{ url('order/shippingquoteform/'.$order->order_id)}}"
                                                    class="btn btn-info">Shipping Quote</a>
                                              @endif
