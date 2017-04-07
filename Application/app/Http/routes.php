@@ -59,6 +59,7 @@ Route::model('payments', Payment_detail::class);
 Route::model('partnercompany', Partner_company::class);
 
 
+
 Route::group(['middleware' => ['web']], function () {
     Route::get('/page/{slug}', 'FrontendController@staticPages');
     Route::get('/', 'FrontendController@index');
@@ -127,6 +128,9 @@ Route::group(['middleware' => 'web'], function () {
     Route::post('note/save','NotesController@update');
     Route::resource('note', 'NotesController');
 
+    Route::resource('customer','CustomerController');
+    Route::post('customer/shipquantity','CustomerController@shipquantity');
+
     Route::resource('payment', 'PaymentsController');
     Route::post('payment/addaddress','PaymentsController@addaddress');
     Route::resource('shipment', 'ShipmentController');
@@ -172,10 +176,10 @@ Route::group(['middleware' => 'web'], function () {
      */
     Route::group(['prefix' => 'warehouse'], function(){
         Route::get('/warehousecheckin', 'WarehouseController@warehousecheckin');
-        Route::get('/warehousecheckinform/{order_id}', 'WarehouseController@warehousecheckinform');
+        Route::get('/warehousecheckinform/{order_id}/{shipment_id}', 'WarehouseController@warehousecheckinform');
         Route::put('/warehousecheckinform', 'WarehouseController@addwarehousecheckinform');
         Route::get('/adminreview', 'WarehouseController@adminreview');
-        Route::get('/createshipments/{order_id}', 'WarehouseController@createshipments');
+        Route::get('/createshipments/{order_id}/{shipment_id}', 'WarehouseController@createshipments');
         Route::post('/warehousecheckinreview','WarehouseController@warehousecheckinreview');
         Route::get('/downloadwarehouseimages/{id}','WarehouseController@downloadwarehouseimages');
         Route::get('/orderlabor','WarehouseController@orderlabor');
@@ -191,7 +195,8 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/adminshipmentreview','WarehouseController@adminshipmentreview');
         Route::post('/shipmentreview','WarehouseController@shipmentreview');
         Route::post('/verifystatus','WarehouseController@verifystatus');
-        Route::get('/printshippinglabel/{shipment_id}','WarehouseController@printshippinglabel');
+        //Route::get('/printshippinglabel/{shipment_id}','WarehouseController@printshippinglabel');
+        Route::get('/printshippinglabel/{amazon_destination_id}','WarehouseController@printshippinglabel');
         Route::get('/orderhistory','WarehouseController@orderhistory');
     });
 
@@ -221,20 +226,20 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/approveshippingquote', 'OrderController@approveshippingquote');
         Route::put('/rejectshippingquote', 'OrderController@rejectshippingquote');
         Route::get('/billoflading', 'OrderController@billoflading');
-        Route::get('/billofladingform/{order_id}', 'OrderController@billofladingform');
+        Route::get('/billofladingform/{order_id}/{shipment_id}', 'OrderController@billofladingform');
         Route::put('/billofladingform/', 'OrderController@addbillofladingform');
         Route::get('/billofladingapprove/', 'OrderController@billofladingapprove');
         Route::post('/viewbilloflading', 'OrderController@viewbilloflading');
         Route::post('/approvebilloflading', 'OrderController@approvebilloflading');
         Route::get('/downloadladingbill/{order_id}/{shipment_id}', 'OrderController@downloadladingbill');
         Route::get('/prealert', 'OrderController@prealert');
-        Route::get('/prealertform/{order_id}', 'OrderController@prealertform');
+        Route::get('/prealertform/{order_id}/{shipment_id}', 'OrderController@prealertform');
         Route::put('/prealertform', 'OrderController@addprealertform');
         Route::get('/customclearance', 'OrderController@customclearance');
-        Route::get('/customclearanceform/{order_id}', 'OrderController@customclearanceform');
+        Route::get('/customclearanceform/{order_id}/{shipment_id}', 'OrderController@customclearanceform');
         Route::put('/customclearanceform', 'OrderController@addcustomclearanceform');
         Route::get('/deliverybooking', 'OrderController@deliverybooking');
-        Route::get('/deliverybookingform/{order_id}', 'OrderController@deliverybookingform');
+        Route::get('/deliverybookingform/{order_id}/{shipment_id}', 'OrderController@deliverybookingform');
         Route::put('/deliverybookingform', 'OrderController@adddeliverybookingform');
         Route::post('/addtrucking','OrderController@addtrucking');
         Route::post('/addterminal','OrderController@addterminal');
@@ -242,7 +247,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/orderlist','OrderController@orderlist');
         Route::get('/customers','OrderController@customers');
         Route::put('/debitnote','OrderController@adddebitnote');
-        Route::get('/fbainventory','OrderController@fbainventory');
+
     });
     Route::group(['prefix' => 'shipper'], function () {
         Route::get('/openshipment', 'ShipperController@openshipment');

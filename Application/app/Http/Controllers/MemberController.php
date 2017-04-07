@@ -130,35 +130,111 @@ class MemberController extends Controller
             }
             if (!empty($order_ids))
                 $shipping_quote_count = Order::where('orders.is_activated', '3')->orWhereIn('orders.order_id', $order_ids)->count();
-            /*else
-                $shipping_quote_count = Order::where('orders.is_activated', '3')->count();*/
-            $bill_lading_count = Order::where('orders.is_activated', '6')->count();
-            $pre_alert_count = Order::where('orders.is_activated', '8')->count();
+            else
+                $shipping_quote_count = Order::where('orders.is_activated', '3')->count();
+            $bill_lading_count = $orders = Order::selectRaw('orders.order_id')
+                ->join('shipments','shipments.order_id','=','orders.order_id')
+                ->where('orders.is_activated','>=', '6')
+                ->where('shipments.is_activated','0')
+                ->groupby('orders.order_id')
+                ->orderBy('orders.created_at', 'desc')
+                ->get();
+
+            $pre_alert_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+                ->join('shipments','shipments.order_id','=','orders.order_id')
+                ->where('orders.is_activated','>=', '8')
+                ->where('shipments.is_activated','2')
+                ->Orwhere('shipments.is_activated','3')
+                ->where('shipments.debitnote_status','0')
+                ->groupby('orders.order_id')
+                ->orderBy('orders.created_at', 'desc')
+                ->get();
             return view('member.home')->with(compact('total_customer','shipping_quote_count','bill_lading_count','pre_alert_count','user'));
         }
         elseif ($user->role->name=='Logistics')
         {
-            $bill_lading_count = Order::where('orders.is_activated', '7')->count();
-            $clearance_count = Order::where('orders.is_activated', '9')->count();
-            $booking_count = Order::where('orders.is_activated', '10')->count();
+            $bill_lading_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+                ->join('shipments','shipments.order_id','=','orders.order_id')
+                ->where('orders.is_activated','>=', '7')
+                ->where('shipments.is_activated','1')
+                ->groupby('orders.order_id')
+                ->orderBy('orders.created_at', 'desc')
+                ->get();
+            $clearance_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+                ->join('shipments','shipments.order_id','=','orders.order_id')
+                ->where('orders.is_activated','>=', '9')
+                ->where('shipments.is_activated','3')
+                ->where('shipments.debitnote_status','1')
+                ->groupby('orders.order_id')
+                ->orderBy('orders.created_at', 'desc')
+                ->get();
+            $booking_count =  $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+                ->join('shipments','shipments.order_id','=','orders.order_id')
+                ->where('orders.is_activated','>=', '10')
+                ->where('shipments.is_activated','4')
+                ->where('shipments.debitnote_status','1')
+                ->groupby('orders.order_id')
+                ->orderBy('orders.created_at', 'desc')
+                ->get();
             return view('member.home')->with(compact('bill_lading_count','clearance_count','booking_count','user'));
         }
         elseif ($user->role->name=='Warehouse Manager')
         {
-            $review_count = Order::where('orders.is_activated', '14')->count();
+            $review_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+                ->join('shipments','shipments.order_id','=','orders.order_id')
+                ->where('orders.is_activated','>=', '14')
+                ->where('shipments.is_activated','8')
+                ->orwhere('shipments.status','0')
+                ->distinct('orders.order_id')
+                ->orderBy('orders.created_at', 'desc')
+                ->get();
             return view('member.home')->with(compact('review_count','user'));
         }
         elseif ($user->role->name=='Warehouse Admin')
         {
-            $checkin_review_count = Order::where('orders.is_activated', '12')->count();
-            $shipment_review_count = Order::where('orders.is_activated', '16')->count();
+            $checkin_review_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+                ->join('shipments','shipments.order_id','=','orders.order_id')
+                ->where('orders.is_activated','>=', '12')
+                ->where('shipments.is_activated','6')
+                ->orwhere('shipments.status','0')
+                ->distinct('orders.order_id')
+                ->orderBy('orders.created_at', 'desc')
+                ->get();
+            $shipment_review_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, shipments.status')
+                ->join('shipments','shipments.order_id','=','orders.order_id')
+                ->where('orders.is_activated','>=', '16')
+                ->where('shipments.is_activated','10')
+                ->Orwhere('shipments.status','0')
+                ->distinct('orders.order_id')
+                ->orderBy('orders.created_at', 'desc')
+                ->get();
             return view('member.home')->with(compact('checkin_review_count','shipment_review_count','user'));
         }
         elseif ($user->role->name=='Warehouse Lead')
         {
-            $checkin_count = Order::where('orders.is_activated', '11')->count();
-            $labor_count = Order::where('orders.is_activated', '13')->count();
-            $shipment_count = Order::where('orders.is_activated', '15')->count();
+            $checkin_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+                ->join('shipments','shipments.order_id','=','orders.order_id')
+                ->where('orders.is_activated','>=', '11')
+                ->where('shipments.is_activated','5')
+                ->groupby('orders.order_id')
+                ->orderBy('orders.created_at', 'desc')
+                ->get();
+            $labor_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+                ->join('shipments','shipments.order_id','=','orders.order_id','left')
+                ->where('orders.is_activated','>=', '13')
+                ->where('shipments.is_activated','7')
+                ->orwhere('shipments.status','0')
+                ->distinct('orders.order_id')
+                ->orderBy('orders.created_at', 'desc')
+                ->get();
+            $shipment_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+                ->join('shipments','shipments.order_id','=','orders.order_id')
+                ->where('orders.is_activated','>=', '15')
+                ->where('shipments.is_activated','9')
+                ->Orwhere('shipments.status','0')
+                ->distinct('orders.order_id')
+                ->orderBy('orders.created_at', 'desc')
+                ->get();
             return view('member.home')->with(compact('checkin_count','labor_count','shipment_count','user'));
         }
         return view('member.home')->with(compact('user'));

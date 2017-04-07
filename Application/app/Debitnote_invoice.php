@@ -12,7 +12,7 @@ class Debitnote_invoice extends Model
     protected $primaryKey = 'id';
 
     protected $table ='debitnote_invoices';
-    protected $fillable = ['order_id','uploaded_file','status'];
+    protected $fillable = ['order_id','shipment_id','uploaded_file','status'];
 
     public function order()
     {

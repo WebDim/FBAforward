@@ -21,7 +21,7 @@
 </div>
 @foreach($shipment as $key=>$shipments)
     <div>
-        <h4>Shipment # {{$key+1}} </h4>
+
         <div class="table-responsive no-padding">
             <table class="table" id="list">
                 <thead>
@@ -30,6 +30,7 @@
                     <th><span></span></th>
                     <th><span>Shipping Method Name</span></th>
                     <th><span>Other Label</span></th>
+                    <th><span>Quantity</span></th>
                     <th><span>Amazon Destination</span></th>
                     <th><span>Prep Label</span></th>
                     <th><span></span></th>
@@ -62,22 +63,35 @@
                             <td>
                                 @foreach($amazon_destination as $amazon_destinations)
                                     @if($amazon_destinations->shipment_id==$shipments->shipment_id && $amazon_destinations->fulfillment_network_SKU==$shipment_details->fnsku)
-                                        {{ $amazon_destinations->destination_name }}
+                                        {{ $amazon_destinations->qty }}<br>
                                     @endif
                                 @endforeach
                             </td>
                             <td>
                                 @foreach($amazon_destination as $amazon_destinations)
                                     @if($amazon_destinations->shipment_id==$shipments->shipment_id && $amazon_destinations->fulfillment_network_SKU==$shipment_details->fnsku)
-                                        {{ $amazon_destinations->label_prep_type }}
+                                        {{ $amazon_destinations->destination_name }}<br>
+                                    @endif
+                                @endforeach
+                            </td>
+                            <td>
+                                @foreach($amazon_destination as $amazon_destinations)
+                                    @if($amazon_destinations->shipment_id==$shipments->shipment_id && $amazon_destinations->fulfillment_network_SKU==$shipment_details->fnsku)
+                                        {{ $amazon_destinations->label_prep_type }}<br>
                                     @endif
                                 @endforeach
                             </td>
                             <td id="prep{{$shipment_details->shipment_detail_id}}">
-                                @if($shipment_details->prep_complete=='0')
+                                @foreach($amazon_destination as $amazon_destinations)
+                                    @if($amazon_destinations->shipment_id==$shipments->shipment_id && $amazon_destinations->fulfillment_network_SKU==$shipment_details->fnsku && $amazon_destinations->prep_complete==0)
+                                        <span id="prep{{$amazon_destinations->amazon_destination_id}}"><a href="javascript:void(0)" onclick="prepcomplete('{{$shipment_details->shipment_detail_id}}','{{$amazon_destinations->amazon_destination_id}}')">Prep
+                                            Complete</a></span><br>
+                                    @endif
+                                @endforeach
+                               {{-- @if($shipment_details->prep_complete=='0')
                                     <a href="javascript:void(0)" onclick="prepcomplete({{$shipment_details->shipment_detail_id}})">Prep
                                         Complete</a>
-                                @endif
+                                @endif --}}
                             </td>
                         </tr>
 
@@ -105,7 +119,7 @@
     </div>
 @endforeach
 <script>
-    function prepcomplete(shipment_detail_id) {
+    function prepcomplete(shipment_detail_id, amazon_destination_id) {
         $('.preloader').css("display", "block");
 
         $.ajax({
@@ -116,10 +130,11 @@
             url: '/warehouse/prepcomplete', // This is the url we gave in the route
             data: {
                 'shipment_detail_id': shipment_detail_id,
+                'amazon_destination_id' : amazon_destination_id,
             }, // a JSON object to send back
             success: function (response) { // What to do if we succeed
                 $('.preloader').css("display", "none");
-                $("#prep" + shipment_detail_id).hide();
+                $("#prep" + amazon_destination_id).hide();
             },
             error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
                 $('.preloader').css("display", "none");

@@ -2,8 +2,18 @@
 @section('title', $title)
 @section('content')
     <div class="row">
-        <div class="col-md-12">&nbsp;</div>
+        <div class="col-md-12">&nbsp;
+            <div class="col-md-10">
+                <h2 class="page-head-line">{{$title}}</h2>
+            </div>
+            <div class="col-md-2 ">
+
+                <a href="{{ url()->previous() }}" class="btn btn-primary">Back</a>
+
+            </div>
+        </div>
     </div>
+    <br>
     <div class="row">
         <div class="col-md-12">
             {!! Form::open(['url' => 'order/prealertform', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}
@@ -17,7 +27,7 @@
             {{--*/$cnt=1/*--}}
             @foreach($shipment as $key=>$shipments)
                 <div>
-                    <div class="col-md-6"><h4>Shipment # {{$key+1}} </h4></div>
+                    <div class="col-md-6"><h4>Shipment  </h4></div>
                     <div class="col-md-6"><h4>{{$shipments->shipping_name}}</h4></div>
                     <input type="hidden" name="shipment_id{{$cnt}}" id="shipment_id{{$cnt}}" value="{{$shipments->shipment_id}}">
                     <div class="row">

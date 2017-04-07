@@ -2,8 +2,16 @@
 @section('title', $title)
 @section('content')
     <div class="row">
-        <div class="col-md-12">&nbsp;</div>
+        <div class="col-md-12">
+            <div class="col-md-10">
+                <h2 class="page-head-line">{{$title}}</h2>
+            </div>
+            <div class="col-md-2 ">
+                <a href="{{ url()->previous() }}" class="btn btn-primary">Back</a>
+            </div>
+        </div>
     </div>
+    <br>
     <div class="row">
         <div class="col-md-12">
             {!! Form::open(['url' => 'order/shippingquoteform', 'method' => 'put', 'files' => true, 'class' => 'form-horizontal', 'id'=>'validate']) !!}

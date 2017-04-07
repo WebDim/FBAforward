@@ -1,6 +1,6 @@
 @foreach($shipment as $key=>$shipments)
 <div>
-    <h4>Shipment # {{$key+1}} </h4>
+
     <div class="table-responsive no-padding">
         <table class="table" id="list">
             <thead>
@@ -52,9 +52,16 @@
                     @endforeach
                 </td>
                 <td>
-                    @if($shipment_details->prep_complete=='0')
+                    @foreach($amazon_destination as $amazon_destinations)
+                        @if($amazon_destinations->shipment_id==$shipments->shipment_id && $amazon_destinations->fulfillment_network_SKU==$shipment_details->fnsku)
+                            @if($amazon_destinations->prep_complete==0)
+                                <a href="javascript:void(0)" onclick="prepcomplete('{{$shipment_details->shipment_detail_id}}','{{$amazon_destinations->amazon_destination_id}}')">Prep Complete</a>
+                            @endif
+                        @endif
+                    @endforeach
+                   {{-- @if($shipment_details->prep_complete=='0')
                     <a href="javascript:void(0)" onclick="prepcomplete({{$shipment_details->shipment_detail_id}})">Prep Complete</a>
-                    @endif
+                    @endif --}}
                 </td>
             </tr>
             @endif

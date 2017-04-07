@@ -1,6 +1,6 @@
 @foreach($shipment as $key=>$shipments)
     <div>
-        <h4>Shipment # {{$key+1}} </h4>
+
         <div class="table-responsive no-padding">
             <table class="table" id="list">
                 <thead>
@@ -29,7 +29,7 @@
             <table class="table" id="">
                 <thead>
                 <tr>
-                    <th ><span>Shipment Refrence Number(SB Number)</span></th>
+                    <th ><span>Shipment Refrence Number</span></th>
                     <th><span>Download Lading Bill</span></th>
 
                 </tr>

@@ -270,7 +270,7 @@
                 <!-- small box -->
                 <div class="small-box bg-red">
                     <div class="inner">
-                        <h3>{{ $bill_lading_count }}</h3>
+                        <h3>{{ count($bill_lading_count) }}</h3>
                         <p>Total Bill Of Lading</p>
                     </div>
                     <div class="icon">
@@ -283,7 +283,7 @@
                 <!-- small box -->
                 <div class="small-box bg-blue">
                     <div class="inner">
-                        <h3>{{ $pre_alert_count }}</h3>
+                        <h3>{{ count($pre_alert_count) }}</h3>
                         <p>Total Shipment Pre-Alert</p>
                     </div>
                     <div class="icon">
@@ -298,7 +298,7 @@
                 <!-- small box -->
                 <div class="small-box bg-red">
                     <div class="inner">
-                        <h3>{{ $bill_lading_count }}</h3>
+                        <h3>{{ count($bill_lading_count) }}</h3>
                         <p>Total Bill Of Lading</p>
                     </div>
                     <div class="icon">
@@ -311,7 +311,7 @@
                 <!-- small box -->
                 <div class="small-box bg-yellow">
                     <div class="inner">
-                        <h3>{{ $clearance_count }}</h3>
+                        <h3>{{ count($clearance_count) }}</h3>
                         <p>Total Custome Clearance</p>
                     </div>
                     <div class="icon">
@@ -325,7 +325,7 @@
                 <!-- small box -->
                 <div class="small-box bg-blue">
                     <div class="inner">
-                        <h3>{{ $booking_count }}</h3>
+                        <h3>{{ count($booking_count) }}</h3>
                         <p>Total Delivery Booking</p>
                     </div>
                     <div class="icon">
@@ -339,7 +339,7 @@
                 <!-- small box -->
                 <div class="small-box bg-yellow">
                     <div class="inner">
-                        <h3> {{ $review_count }} </h3>
+                        <h3> {{ count($review_count) }} </h3>
                         <p>Total Review Order</p>
                     </div>
                     <div class="icon">
@@ -353,7 +353,7 @@
                 <!-- small box -->
                 <div class="small-box bg-green">
                     <div class="inner">
-                        <h3>{{ $checkin_review_count }}</h3>
+                        <h3>{{ count($checkin_review_count) }}</h3>
                         <p>Total Warehouse Check In Review</p>
                     </div>
                     <div class="icon">
@@ -366,7 +366,7 @@
                 <!-- small box -->
                 <div class="small-box bg-yellow">
                     <div class="inner">
-                        <h3>{{ $shipment_review_count }}</h3>
+                        <h3>{{ count($shipment_review_count) }}</h3>
                         <p>Total Shipment Review</p>
                     </div>
                     <div class="icon">
@@ -381,7 +381,7 @@
                 <!-- small box -->
                 <div class="small-box bg-red">
                     <div class="inner">
-                        <h3>{{ $checkin_count }}</h3>
+                        <h3>{{ count($checkin_count) }}</h3>
                         <p>Total Warehouse Check In</p>
                     </div>
                     <div class="icon">
@@ -394,7 +394,7 @@
                 <!-- small box -->
                 <div class="small-box bg-yellow">
                     <div class="inner">
-                        <h3>{{ $labor_count }}</h3>
+                        <h3>{{ count($labor_count) }}</h3>
                         <p>Total Order Labor</p>
                     </div>
                     <div class="icon">
@@ -408,7 +408,7 @@
                 <!-- small box -->
                 <div class="small-box bg-blue">
                     <div class="inner">
-                        <h3>{{ $shipment_count }}</h3>
+                        <h3>{{ count($shipment_count) }}</h3>
                         <p>Total complete Shipment</p>
                     </div>
                     <div class="icon">

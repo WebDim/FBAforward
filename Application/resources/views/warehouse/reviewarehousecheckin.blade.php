@@ -1,12 +1,15 @@
 @foreach($shipment as $key=>$shipments)
     <div>
-        <h4>Shipment # {{$key+1}} </h4>
+
         <div class="table-responsive no-padding">
             <table class="table" id="list">
                 <thead>
                 <tr>
-                    <th class="col-md-6"><span>Product</span></th>
+                    <th class="col-md-5"><span>Product</span></th>
                     <th><span>Shipping Method Name</span></th>
+                    <th><span>Total Quantity</span></th>
+                    <th><span>Amazon Shipment Quantity</span></th>
+                    <th><span>Shipped Quantity</span></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -16,6 +19,22 @@
                         <tr>
                             <td>@if($shipment_details->product_nick_name==''){{ $shipment_details->product_name}} @else {{$shipment_details->product_nick_name}} @endif</td>
                             <td>{{ $shipment_details->shipping_name }}</td>
+                            <td>{{ $shipment_details->total}}</td>
+                            <td>
+                            @foreach($order_shipment as $order_shipments)
+                                @if($order_shipments->shipment_detail_id==$shipment_details->shipment_detail_id && $order_shipments->status==0)
+                                    {{ $order_shipments->quantity }}
+                                @endif
+                            @endforeach
+                            </td>
+                            <td>
+                                @foreach($order_shipped as $order_shipments)
+
+                                    @if($order_shipments->shipment_detail_id==$shipment_details->shipment_detail_id && $order_shipments->status==1)
+                                        {{ $order_shipments->quantity }}
+                                    @endif
+                                @endforeach
+                            </td>
                         </tr>
 
                     @endif

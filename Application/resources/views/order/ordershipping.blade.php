@@ -38,7 +38,7 @@
                         <thead>
                         <tr>
                             <th>Order No</th>
-                            <th>Status</th>
+                           {{-- <th>Status</th> --}}
                             <th>Created At</th>
                             <th>Actions</th>
                         </tr>
@@ -51,9 +51,9 @@
                                         <b class="text-info">ORD_{{ $order->order_id }}</b>
                                     </a>
                                 </td>
-                                <td>
+                                {{--<td>
                                     <b class="text-info">{{ $orderStatus[$order->is_activated] }}</b>
-                                </td>
+                                </td>--}}
                                 <td>
                                     <b class="text-info">{{ $order->created_at }}</b>
                                 </td>
@@ -104,82 +104,129 @@
                                                    class="btn btn-info">Shipping Quote</a>
                                              @endif
                                         @endif
-                                        @if($order->is_activated==6)
-                                            <a href="{{ url('order/billofladingform/'.$order->order_id)}}"
-                                               class="btn btn-info">Bill Of Lading</a>
-                                        @endif
-                                        @if($order->is_activated==8)
-                                            <a href="{{ url('order/prealertform/'.$order->order_id)}}"
-                                               class="btn btn-info">Shipment Pre-Alert</a>
-                                        @elseif($order->is_activated==9 && $order->debitnote_status==0)
-                                            <a href="javascript:void(0)" onclick="opendebitnote({{$order->order_id}})" class="btn btn-info">Upload debit note/invoice</a>
+                                        @if(isset($shipments))
+                                        @foreach($shipments as $shipment)
+
+                                            @if($order->is_activated>=9 && $title=='Shipment Pre Alert')
+                                                 @if($shipment->order_id==$order->order_id && $shipment->activated==3 && $shipment->debitnote_status==0)
+                                                     <a href="javascript:void(0)" onclick="opendebitnote('{{$order->order_id}}','{{$shipment->shipment_id}}','{{ $shipment->shipping_name }}')" class="btn btn-info">Upload debit note/invoice</a>
+                                                 @endif
+                                            @endif
+                                            @if($order->is_activated >=8 && $title=='Shipment Pre Alert')
+                                                 @if($shipment->order_id==$order->order_id && $shipment->activated==2)
+                                                     <a href="{{ url('order/prealertform/'.$order->order_id."/".$shipment->shipment_id)}}" class="btn btn-info">Shipment Pre-Alert For {{ $shipment->shipping_name }}</a>
+                                                 @endif
+                                            @endif
+                                            @if($order->is_activated >=6 && $title=='Bill of Lading')
+                                                 @if($shipment->order_id==$order->order_id && $shipment->activated==0)
+                                                    <a href="{{ url('order/billofladingform/'.$order->order_id."/".$shipment->shipment_id)}}" class="btn btn-info">Lading Bill For {{ $shipment->shipping_name }}</a>
+                                                 @endif
+                                            @endif
+                                        @endforeach
                                         @endif
                                     @elseif($user_role==6)
-                                        @if($order->is_activated==7)
-                                            <a href="javascript:void(0)" onclick="openbill({{$order->order_id}})">View Lading Bill</a>
-                                            <a href="javascript:void(0)" onclick="approvebilloflading({{$order->order_id}})" class="btn btn-info">Approve
-                                                Lading Bill</a>
-                                        @elseif($order->is_activated==9)
-                                            <a href="{{ url('order/customclearanceform/'.$order->order_id)}}"
-                                               class="btn btn-info">Customs Clearance</a>
-                                        @elseif($order->is_activated==10)
-                                            <a href="{{ url('order/deliverybookingform/'.$order->order_id)}}"
-                                               class="btn btn-info">Delivery Booking</a>
+                                        @if(isset($shipments))
+                                        @foreach($shipments as $shipment)
+                                            @if($order->is_activated>=7)
+                                                 @if($shipment->order_id==$order->order_id && $shipment->activated==1)
+                                                    <a href="javascript:void(0)" onclick="openbill('{{$order->order_id}}','{{$shipment->shipment_id}}')">View Lading Bill For {{ $shipment->shipping_name }}</a>
+                                                    <a href="javascript:void(0)" onclick="approvebilloflading('{{$order->order_id}}','{{$shipment->shipment_id}}')" class="btn btn-info">Approve</a><br><br>
+                                                @endif
+                                            @endif
+                                            @if($order->is_activated >=9)
+                                                @if($shipment->order_id==$order->order_id && $shipment->activated==3)
+                                                    <a href="{{ url('order/customclearanceform/'.$order->order_id.'/'.$shipment->shipment_id)}}" class="btn btn-info">Customs Clearance For {{ $shipment->shipping_name }}</a>
+                                                @endif
+                                            @endif
+                                            @if($order->is_activated==10)
+                                                @if($shipment->order_id==$order->order_id && $shipment->activated==4)
+                                                     <a href="{{ url('order/deliverybookingform/'.$order->order_id.'/'.$shipment->shipment_id)}}" class="btn btn-info">Delivery Booking For {{ $shipment->shipping_name }}</a>
+                                                @endif
+                                            @endif
+                                        @endforeach
                                         @endif
                                     @elseif($user_role==9)
                                         <a href="javascript:void(0)" onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
                                     @elseif($user_role==10)
-                                        @if($order->is_activated==11)
-                                            <a href="{{ url('warehouse/warehousecheckinform/'.$order->order_id)}}"
-                                               class="btn btn-info">Warehouse Check In</a>
-                                        @elseif($order->is_activated==13)
-                                            <a href="javascript:void(0)" onclick="viewchecklist('{{$order->order_id}}','Check List')">View Check
-                                                List</a>
-                                            <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','14')" class="btn btn-info">Submit</a>
-                                        @elseif($order->is_activated==15)
-                                            <a href="javascript:void(0)" onclick="shippinglabel('{{$order->order_id}}')">Print Shipping Labels</a>
-                                            @if(isset($label_count))
-                                            @foreach($label_count as $label_counts)
-                                                @if(($order->order_id==$label_counts->order_id) && ($order->shipment_count==$label_counts->shipment_count))
-                                                <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Submit</a>
+                                        @if(isset($shipments))
+                                        @foreach($shipments as $shipment)
+                                            @if($order->is_activated>=11)
+                                                @if($shipment->order_id==$order->order_id && $shipment->activated==5 && $title=="Warehouse Check In")
+                                                     <a href="{{ url('warehouse/warehousecheckinform/'.$order->order_id.'/'.$shipment->shipment_id)}}" class="btn btn-info">Warehouse Check In For {{ $shipment->shipping_name }}</a>
                                                 @endif
-                                            @endforeach
                                             @endif
-                                                {{-- <a onclick="verifylabel({{$order->order_id}})" class="btn btn-info">Verify Label Complete</a>
-                                             <a onclick="order_status('{{$order->order_id}}','16')" class="btn btn-info">Verify Shipment Load On Truck</a>
-                                             --}}
+                                            @if($order->is_activated>=13)
+                                                 @if($shipment->order_id==$order->order_id && $shipment->activated>=7 && $shipment->status==0 && $title=="Order Labor")
+
+                                                    <a href="javascript:void(0)" onclick="viewchecklist('{{$order->order_id}}','{{ $shipment->shipment_id }}','Check List')">View Check List For {{ $shipment->shipping_name }}</a>
+                                                    <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','14','{{ $shipment->shipment_id }}','8')" class="btn btn-info">Submit For {{ $shipment->shipping_name }}</a>
+                                                 @endif
+                                            @endif
+                                            @if($order->is_activated>=15)
+                                                @if($shipment->order_id==$order->order_id && $shipment->activated>=9 && $shipment->status==0 && $title=="Complete Review")
+                                                    <a href="javascript:void(0)" onclick="shippinglabel('{{$order->order_id}}','{{$shipment->shipment_id}}')">Print Shipping Labels For {{ $shipment->shipping_name }}</a>
+                                                    <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','16','{{$shipment->shipment_id}}','10')" class="btn btn-info">Submit</a>
+                                                    {{-- @if(isset($label_count))
+                                                         @foreach($label_count as $label_counts)
+                                                            @if(($order->order_id==$label_counts->order_id) && ($order->shipment_count==$label_counts->shipment_count))
+                                                                <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','16','{{$shipment->shipment_id}}','10')" class="btn btn-info">Submit</a>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif --}}
+                                                @endif
+                                            @endif
+                                        @endforeach
                                         @endif
                                     @elseif($user_role==8)
-                                        @if($order->is_activated==12)
-                                            <a href="javascript:void(0)" onclick="openreview({{$order->order_id}})">Review Warehouse Check In</a>
-                                            <a href="javascript:void(0)" onclick="opennote({{$order->order_id}})" class="btn btn-info">Add
-                                                Notes</a>
-                                            @if($order->shipmentplan==0)
-                                                <a href="{{ url('warehouse/createshipments/'.$order->order_id)}}"
-                                                   class="btn btn-info">create shipment</a>
-                                            @elseif($order->shipmentplan==1)
-                                                <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','13')"
-                                                   class="btn btn-info">Review Complete</a>
+                                        @if(isset($shipments))
+                                        @foreach($shipments as $shipment)
+                                            @if($order->is_activated >= 12 )
+                                                @if($shipment->order_id==$order->order_id && $shipment->activated==6)
+                                                    <a href="javascript:void(0)" onclick="openreview('{{$order->order_id}}','{{ $shipment->shipment_id }}')">Review Warehouse Check In For {{ $shipment->shipping_name }}</a><br>
+                                                    <a href="javascript:void(0)" onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
+                                                    @if($shipment->qty > 0)
+                                                       <a href="{{ url('warehouse/createshipments/'.$order->order_id.'/'.$shipment->shipment_id)}}" class="btn btn-info">create shipment For {{ $shipment->shipping_name }}</a>
+                                                    @endif
+                                                    @if($shipment->shipmentplan==1)
+                                                       <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','13','{{$shipment->shipment_id}}','7')" class="btn btn-info">Review Complete For {{ $shipment->shipping_name }}</a>
+                                                    @endif
+                                                @elseif($shipment->order_id==$order->order_id && $shipment->status==0 && $shipment->activated>=6 && $title=="Warehouse Check In Review")
+                                                     <a href="javascript:void(0)" onclick="openreview('{{$order->order_id}}','{{ $shipment->shipment_id }}')">Review Warehouse Check In For {{ $shipment->shipping_name }}</a><br>
+                                                     <a href="javascript:void(0)" onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
+                                                     @if($shipment->qty > 0)
+                                                          <a href="{{ url('warehouse/createshipments/'.$order->order_id.'/'.$shipment->shipment_id)}}" class="btn btn-info">create shipment For {{ $shipment->shipping_name }}</a>
+                                                     @endif
+                                                     @if($shipment->shipmentplan==1)
+                                                          <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','13','{{$shipment->shipment_id}}','7')" class="btn btn-info">Review Complete For {{ $shipment->shipping_name }}</a>
+                                                     @endif
+                                                   <br>
+                                                @endif
                                             @endif
-                                        @elseif($order->is_activated==16)
-                                            <a href="javascript:void(0)" onclick="shipmentreview('{{$order->order_id}}')">Review Shipment</a>
-                                            @if($order->verify_status==0)
-                                                <a href="javascript:void(0)" onclick="verifystatus('{{$order->order_id}}')" class="btn btn-info">Verify
-                                                    Changes</a>
+                                            @if($order->is_activated>=16)
+                                                @if($shipment->order_id==$order->order_id && $shipment->activated>=10 && $shipment->status==0 && $title=="Shipment Review")
+                                                    <a href="javascript:void(0)" onclick="shipmentreview('{{$order->order_id}}','{{$shipment->shipment_id}}')">Review Shipment For {{ $shipment->shipping_name }}</a>
+                                                    {{--@if($shipment->verify_status==0)
+                                                        <a href="javascript:void(0)" onclick="verifystatus('{{$order->order_id}}','{{$shipment->shipment_id}}')" class="btn btn-info">Verify Changes {{ $shipment->shipping_name }}</a>
+                                                    @endif --}}
+                                                        <a href="javascript:void(0)" onclick="verifystatus('{{$order->order_id}}','{{$shipment->shipment_id}}')" class="btn btn-info">Verify Changes {{ $shipment->shipping_name }}</a>
+                                                    <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','17','{{ $shipment->shipment_id }}','11')" class="btn btn-info">Complete For {{ $shipment->shipping_name }}</a>
+                                                @endif
                                             @endif
-                                            <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','17')" class="btn btn-info">Complete</a>
+                                        @endforeach
                                         @endif
-
                                     @elseif($user_role==11)
-                                        @if($order->is_activated==14)
-                                            <a href="javascript:void(0)" onclick="viewchecklist('{{$order->order_id}}','Review Order')">Review
-                                                Order Requirement</a><br>
-                                            <a href="javascript:void(0)" onclick="reviewwork('{{$order->order_id}}')">Review Work Completed
-                                                List</a><br>
-                                            <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','15')" class="btn btn-info">Approve
-                                                Work Completed</a>
+                                        @if(isset($shipments))
+                                        @foreach($shipments as $shipment)
+                                            @if($order->is_activated>=14 )
+                                                @if($shipment->order_id==$order->order_id && $shipment->activated>=8 && $shipment->status==0)
+                                                    <a href="javascript:void(0)" onclick="viewchecklist('{{$order->order_id}}','{{ $shipment->shipment_id }}','Review Order')">Review Order Requirement</a><br>
+                                                    <a href="javascript:void(0)" onclick="reviewwork('{{$order->order_id}}','{{ $shipment->shipment_id }}')">Review Work Completed List</a><br>
+                                                    <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','15','{{ $shipment->shipment_id }}','9')" class="btn btn-info">Approve
+                                                        Work Completed</a>
+                                                @endif
+                                            @endif
+                                        @endforeach
                                         @endif
-
                                     @endif
                                     {{--@if($order->is_activated == 3 && $order->shipmentplan==0)
                                         <a href="#" onclick="order_shipping({{$order->order_id}},{{$order->user_id}})" class="btn btn-info">Create Shipment</a>
@@ -434,7 +481,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                 aria-hidden="true">×</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Upload Debit Note/Invoice</h4>
+                    <h4 class="modal-title" id="head">Upload Debit Note/Invoice</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -444,6 +491,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         {!! Form::hidden('id',old('id'), ['id'=>'id']) !!}
+                                        {!! Form::hidden('shipment_id',old('shipment_id'), ['id'=>'shipment_id']) !!}
                                         {!! htmlspecialchars_decode(Form::label('debitnote', 'Upload Debit Note/Invoice<span class="required">*</span> ',['class' => 'control-label col-md-5'])) !!}
                                         <div class="col-md-7">
                                             <div class="input-group">
@@ -546,7 +594,7 @@
             $("#opennote").modal('show');
 
         }
-        function openbill(order_id) {
+        function openbill(order_id, shipment_id) {
 
             $('.preloader').css("display", "block");
             $.ajax({
@@ -557,6 +605,7 @@
                 url: '/order/viewbilloflading', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
+                    'shipment_id' : shipment_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
@@ -570,7 +619,7 @@
                 }
             });
         }
-        function approvebilloflading(order_id) {
+        function approvebilloflading(order_id, shipment_id) {
             $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
@@ -580,6 +629,7 @@
                 url: '/order/approvebilloflading', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
+                    'shipment_id' : shipment_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
@@ -677,7 +727,7 @@
                 });
             }
         }
-        function openreview(order_id) {
+        function openreview(order_id, shipment_id) {
 
             $('.preloader').css("display", "block");
             $.ajax({
@@ -688,6 +738,7 @@
                 url: '/warehouse/warehousecheckinreview', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
+                    'shipment_id' : shipment_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
@@ -701,7 +752,7 @@
                 }
             });
         }
-        function order_status(order_id, status) {
+        function order_status(order_id, status, shipment_id, ship_status) {
             $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
@@ -711,10 +762,13 @@
                 url: '/order/orderstatus', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
-                    'status': status
+                    'status': status,
+                    'shipment_id' : shipment_id,
+                    'ship_status' : ship_status,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
+                    swal('Done');
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
@@ -724,7 +778,7 @@
                 }
             });
         }
-        function viewchecklist(order_id, title) {
+        function viewchecklist(order_id, shipment_id, title) {
 
             $('.preloader').css("display", "block");
             $.ajax({
@@ -735,6 +789,7 @@
                 url: '/warehouse/viewchecklist', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
+                    'shipment_id' : shipment_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
@@ -749,7 +804,7 @@
                 }
             });
         }
-        function reviewwork(order_id) {
+        function reviewwork(order_id, shipment_id) {
 
             $('.preloader').css("display", "block");
             $.ajax({
@@ -760,6 +815,7 @@
                 url: '/warehouse/reviewwork', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
+                    'shipment_id' : shipment_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
@@ -773,7 +829,7 @@
                 }
             });
         }
-        function verifyshipment(shipment_id, status) {
+        function verifyshipment(/*shipment_id*/amazon_destination_id, status) {
             $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
@@ -782,17 +838,22 @@
                 method: 'POST', // Type of response and matches what we said in the route
                 url: '/warehouse/verifylabel', // This is the url we gave in the route
                 data: {
-                    'shipment_id': shipment_id,
+                    //'shipment_id': shipment_id,
+                    'amazon_destination_id': amazon_destination_id,
                     'status': status
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
                     if (response == '2') {
-                        $("#label" + shipment_id).hide();
-                        $("#ship_load" + shipment_id).show();
+                        //$("#label" + shipment_id).hide();
+                        //$("#ship_load" + shipment_id).show();
+                        $("#label" + amazon_destination_id).hide();
+                        $("#ship_load" + amazon_destination_id).show();
+
                     }
                     else if (response == '3') {
-                        $("#label_tr").hide();
+                        //$("#label_tr").hide();
+                        $("#label_tr" + amazon_destination_id).hide();
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
@@ -802,7 +863,7 @@
                 }
             });
         }
-        function shipmentreview(order_id) {
+        function shipmentreview(order_id, shipment_id) {
 
             $('.preloader').css("display", "block");
             $.ajax({
@@ -813,6 +874,7 @@
                 url: '/warehouse/shipmentreview', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
+                    'shipment_id' : shipment_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
@@ -826,7 +888,7 @@
                 }
             });
         }
-        function verifystatus(order_id) {
+        function verifystatus(order_id, shipment_id) {
             $('.preloader').css("display", "block");
             $.ajax({
                 headers: {
@@ -836,9 +898,12 @@
                 url: '/warehouse/verifystatus', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
+                    'shipment_id' : shipment_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
+                   //console.log(response);
+                    swal('Verified');
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) { // What to do if we fail
@@ -848,7 +913,7 @@
                 }
             });
         }
-        function shippinglabel(order_id) {
+        function shippinglabel(order_id, shipment_id) {
 
             $('.preloader').css("display", "block");
             $.ajax({
@@ -859,6 +924,7 @@
                 url: '/warehouse/shippinglabel', // This is the url we gave in the route
                 data: {
                     'order_id': order_id,
+                    'shipment_id' : shipment_id,
                 }, // a JSON object to send back
                 success: function (response) { // What to do if we succeed
                     $('.preloader').css("display", "none");
@@ -938,8 +1004,11 @@
                 return false;
             }
         }
-        function opendebitnote(order_id) {
+        function opendebitnote(order_id, shipment_id,shipping_name) {
             $("#id").val(order_id);
+            $("#shipment_id").val(shipment_id);
+            head= "Upload Debit Note/Invoice For "+shipping_name;
+            $("#head").text(head);
             $("#opendebitnote").modal('show');
         }
     </script>
