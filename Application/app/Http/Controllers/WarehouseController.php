@@ -234,7 +234,7 @@ class WarehouseController extends Controller
             ->where('orders.is_activated','>=', '12')
             ->where('shipments.is_activated','6')
             ->orwhere('shipments.status','0')
-            ->distinct('orders.order_id')
+            ->groupby('orders.order_id')
             ->orderBy('orders.created_at', 'desc')
             ->get();
         //sum(order_shipment_quantities.quantity) as qty,
@@ -746,7 +746,7 @@ class WarehouseController extends Controller
             ->where('orders.is_activated','>=', '13')
             ->where('shipments.is_activated','7')
             ->orwhere('shipments.status','0')
-            ->distinct('orders.order_id')
+            ->groupby('orders.order_id')
             ->orderBy('orders.created_at', 'desc')
             ->get();
         $shipments= Shipments::selectRaw('orders.order_id , shipments.shipment_id, shipments.is_activated as activated, shipments.status, shipping_methods.shipping_name')
@@ -813,7 +813,7 @@ class WarehouseController extends Controller
             ->where('orders.is_activated','>=', '14')
             ->where('shipments.is_activated','8')
             ->orwhere('shipments.status','0')
-            ->distinct('orders.order_id')
+            ->groupby('orders.order_id')
             ->orderBy('orders.created_at', 'desc')
             ->get();
         $shipments= Shipments::selectRaw('orders.order_id , shipments.shipment_id, shipments.is_activated as activated, shipments.status, shipping_methods.shipping_name')
@@ -881,7 +881,7 @@ class WarehouseController extends Controller
             ->where('orders.is_activated','>=', '15')
             ->where('shipments.is_activated','9')
             ->Orwhere('shipments.status','0')
-            ->distinct('orders.order_id')
+            ->groupby('orders.order_id')
             ->orderBy('orders.created_at', 'desc')
             ->get();
         $shipments= Shipments::selectRaw('orders.order_id , shipments.shipment_id, shipments.is_activated as activated, shipments.status, shipping_methods.shipping_name')
@@ -1032,7 +1032,7 @@ class WarehouseController extends Controller
             ->where('orders.is_activated','>=', '16')
             ->where('shipments.is_activated','10')
             ->Orwhere('shipments.status','0')
-            ->distinct('orders.order_id')
+            ->groupby('orders.order_id')
             ->orderBy('orders.created_at', 'desc')
             ->get();
         $shipments= Shipments::selectRaw('orders.order_id ,shipments.verify_status, shipments.shipment_id, shipments.is_activated as activated, shipping_methods.shipping_name, shipments.status')
