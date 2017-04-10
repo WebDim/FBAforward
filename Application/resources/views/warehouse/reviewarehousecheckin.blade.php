@@ -30,7 +30,7 @@
                             <td>
                                 @foreach($order_shipped as $order_shipments)
 
-                                    @if($order_shipments->shipment_detail_id==$shipment_details->shipment_detail_id && $order_shipments->status==1)
+                                    @if($order_shipments->shipment_detail_id==$shipment_details->shipment_detail_id && $order_shipments->status >= 1)
                                         {{ $order_shipments->quantity }}
                                     @endif
                                 @endforeach

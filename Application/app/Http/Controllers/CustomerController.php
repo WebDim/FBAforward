@@ -29,10 +29,11 @@ class CustomerController extends Controller
             ->join('shipments', 'shipments.order_id', '=', 'orders.order_id', 'left')
             ->join('shipment_details', 'shipment_details.shipment_id', '=', 'shipments.shipment_id', 'left')
             ->where('orders.is_activated', '>=', '12')
-            ->where('orders.is_activated', '<', '17')
+            //->where('orders.is_activated', '<', '17')
             ->where('shipments.is_activated','>=','6')
-            ->where('shipments.is_activated','<','11')
-            ->Orwhere('shipments.status','0')
+            ->where('shipments.status','!=','1')
+            //->where('shipments.is_activated','<','11')
+           // ->Orwhere('shipments.status','0')
             ->where('orders.user_id', $user->id)
             ->orderBy('orders.created_at', 'desc')
             ->groupby('orders.order_id')
@@ -41,13 +42,13 @@ class CustomerController extends Controller
             ->join('orders','orders.order_id','=','shipments.order_id')
             ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
             ->where('orders.is_activated', '>=', '12')
-            ->where('orders.is_activated', '<', '17')
+            //->where('orders.is_activated', '<', '17')
             ->where('shipments.is_activated','>=','6')
-            ->where('shipments.is_activated','<','11')
-            ->Orwhere('shipments.status','0')
+            ->where('shipments.status','!=','1')
+            //->where('shipments.is_activated','<','11')
+            //->Orwhere('shipments.status','0')
             ->where('orders.user_id', $user->id)
-
-            ->get();
+           ->get();
 
          //dd(\DB::getQueryLog());
 

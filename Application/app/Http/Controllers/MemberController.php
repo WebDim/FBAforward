@@ -19,6 +19,7 @@ use App\User_credit_cardinfo;
 use App\Http\Middleware\Amazoncredential;
 use Illuminate\Http\Request;
 use App\Shipping_quote;
+use App\Order_shipment_quantity;
 class MemberController extends Controller
 {
     /**
@@ -180,34 +181,58 @@ class MemberController extends Controller
         }
         elseif ($user->role->name=='Warehouse Manager')
         {
-            $review_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+            $review_count =  /*Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
                 ->join('shipments','shipments.order_id','=','orders.order_id')
                 ->where('orders.is_activated','>=', '14')
                 ->where('shipments.is_activated','8')
                 ->orwhere('shipments.status','0')
                 ->distinct('orders.order_id')
                 ->orderBy('orders.created_at', 'desc')
-                ->get();
+                ->get();*/
+                Order_shipment_quantity::selectRaw('order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated')
+                    ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
+                    ->join('shipments','shipments.order_id','=','orders.order_id')
+                    ->where('orders.is_activated','>=', '14')
+                    ->where('shipments.is_activated','8')
+                    ->Orwhere('order_shipment_quantities.status','2')
+                    ->groupby('order_shipment_quantities.order_id')
+                    ->get();
             return view('member.home')->with(compact('review_count','user'));
         }
         elseif ($user->role->name=='Warehouse Admin')
         {
-            $checkin_review_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+            $checkin_review_count =  /*Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
                 ->join('shipments','shipments.order_id','=','orders.order_id')
                 ->where('orders.is_activated','>=', '12')
                 ->where('shipments.is_activated','6')
                 ->orwhere('shipments.status','0')
                 ->distinct('orders.order_id')
                 ->orderBy('orders.created_at', 'desc')
-                ->get();
-            $shipment_review_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, shipments.status')
+                ->get();*/
+                Order_shipment_quantity::selectRaw('order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated')
+                    ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
+                    ->join('shipments','shipments.order_id','=','orders.order_id')
+                    ->where('orders.is_activated','>=', '12')
+                    ->where('shipments.is_activated','6')
+                    ->Orwhere('order_shipment_quantities.status','0')
+                    ->groupby('order_shipment_quantities.order_id')
+                    ->get();
+            $shipment_review_count =  /*Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, shipments.status')
                 ->join('shipments','shipments.order_id','=','orders.order_id')
                 ->where('orders.is_activated','>=', '16')
                 ->where('shipments.is_activated','10')
                 ->Orwhere('shipments.status','0')
                 ->distinct('orders.order_id')
                 ->orderBy('orders.created_at', 'desc')
-                ->get();
+                ->get();*/
+                Order_shipment_quantity::selectRaw('order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated')
+                    ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
+                    ->join('shipments','shipments.order_id','=','orders.order_id')
+                    ->where('orders.is_activated','>=', '16')
+                    ->where('shipments.is_activated','10')
+                    ->Orwhere('order_shipment_quantities.status','4')
+                    ->groupby('order_shipment_quantities.order_id')
+                    ->get();
             return view('member.home')->with(compact('checkin_review_count','shipment_review_count','user'));
         }
         elseif ($user->role->name=='Warehouse Lead')
@@ -219,22 +244,38 @@ class MemberController extends Controller
                 ->groupby('orders.order_id')
                 ->orderBy('orders.created_at', 'desc')
                 ->get();
-            $labor_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+            $labor_count =  /*Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
                 ->join('shipments','shipments.order_id','=','orders.order_id','left')
                 ->where('orders.is_activated','>=', '13')
                 ->where('shipments.is_activated','7')
                 ->orwhere('shipments.status','0')
                 ->distinct('orders.order_id')
                 ->orderBy('orders.created_at', 'desc')
-                ->get();
-            $shipment_count =  Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+                ->get();*/
+                Order_shipment_quantity::selectRaw('order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated')
+                    ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
+                    ->join('shipments','shipments.order_id','=','orders.order_id')
+                    ->where('orders.is_activated','>=', '13')
+                    ->where('shipments.is_activated','7')
+                    ->Orwhere('order_shipment_quantities.status','1')
+                    ->groupby('order_shipment_quantities.order_id')
+                    ->get();
+            $shipment_count =  /*Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
                 ->join('shipments','shipments.order_id','=','orders.order_id')
                 ->where('orders.is_activated','>=', '15')
                 ->where('shipments.is_activated','9')
                 ->Orwhere('shipments.status','0')
                 ->distinct('orders.order_id')
                 ->orderBy('orders.created_at', 'desc')
-                ->get();
+                ->get();*/
+                Order_shipment_quantity::selectRaw('order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated')
+                    ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
+                    ->join('shipments','shipments.order_id','=','orders.order_id')
+                    ->where('orders.is_activated','>=', '15')
+                    ->where('shipments.is_activated','9')
+                    ->Orwhere('order_shipment_quantities.status','3')
+                    ->groupby('order_shipment_quantities.order_id')
+                    ->get();
             return view('member.home')->with(compact('checkin_count','labor_count','shipment_count','user'));
         }
         return view('member.home')->with(compact('user'));

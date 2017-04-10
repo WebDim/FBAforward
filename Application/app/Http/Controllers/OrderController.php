@@ -21,6 +21,7 @@ use App\Listing_service;
 use App\Listing_service_detail;
 use App\Notifications\Usernotification;
 use App\Order_note;
+use App\Order_shipment_quantity;
 use App\Other_label_detail;
 use App\Outbound_method;
 use App\Payment_info;
@@ -229,6 +230,8 @@ class OrderController extends Controller
                     ->regarding($status)
                     ->deliver();
             } else if ($post['status'] == '14') {
+                $order_qty = array('status'=>'2');
+                Order_shipment_quantity::where('status','1')->where('shipment_id',$post['shipment_id'])->update($order_qty);
                 $role = Role::find(11);
                 $role->newNotification()
                     ->withType('manager review')
@@ -237,6 +240,8 @@ class OrderController extends Controller
                     ->regarding($status)
                     ->deliver();
             } else if ($post['status'] == '15') {
+                $order_qty = array('status'=>'3');
+                Order_shipment_quantity::where('status','2')->where('shipment_id',$post['shipment_id'])->update($order_qty);
                 $role = Role::find(10);
                 $role->newNotification()
                     ->withType('complete shipment')
@@ -245,6 +250,8 @@ class OrderController extends Controller
                     ->regarding($status)
                     ->deliver();
             } else if ($post['status'] == '16') {
+                $order_qty = array('status'=>'4');
+                Order_shipment_quantity::where('status','3')->where('shipment_id',$post['shipment_id'])->update($order_qty);
                 $role = Role::find(8);
                 $role->newNotification()
                     ->withType('order complete')
@@ -252,6 +259,30 @@ class OrderController extends Controller
                     ->withBody('You have order  for complete')
                     ->regarding($status)
                     ->deliver();
+            }
+            else if ($post['status'] == '17') {
+                $order_qty = array('status' => '5');
+                Order_shipment_quantity::where('status', '4')->where('shipment_id', $post['shipment_id'])->update($order_qty);
+                $ship_qty = Shipment_detail::selectraw('shipments.shipment_id, sum(shipment_details.total) as total')
+                    ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id')
+                    ->where('shipment_details.shipment_id',$post['shipment_id'])
+                    ->groupby('shipment_details.shipment_id')
+                    ->get();
+                $order_qty = Order_shipment_quantity::selectraw('shipments.shipment_id, sum(order_shipment_quantities.quantity) as qty')
+                    ->join('shipments','shipments.shipment_id','=','order_shipment_quantities.shipment_id')
+                    ->where('order_shipment_quantities.shipment_id',$post['shipment_id'])
+                    ->where('order_shipment_quantities.status','5')
+                    ->groupby('order_shipment_quantities.shipment_id')
+                    ->get();
+                if(count($ship_qty)> 0 &&  count($order_qty) > 0)
+                {
+                    if($ship_qty[0]->total == $order_qty[0]->qty)
+                    {
+                        $data = array('status'=>'1');
+                        Shipments::where('shipment_id',$post['shipment_id'])->update($data);
+                    }
+                }
+
             }
         }
     }

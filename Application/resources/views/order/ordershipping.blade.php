@@ -138,7 +138,7 @@
                                                     <a href="{{ url('order/customclearanceform/'.$order->order_id.'/'.$shipment->shipment_id)}}" class="btn btn-info">Customs Clearance For {{ $shipment->shipping_name }}</a>
                                                 @endif
                                             @endif
-                                            @if($order->is_activated==10)
+                                            @if($order->is_activated>=10)
                                                 @if($shipment->order_id==$order->order_id && $shipment->activated==4)
                                                      <a href="{{ url('order/deliverybookingform/'.$order->order_id.'/'.$shipment->shipment_id)}}" class="btn btn-info">Delivery Booking For {{ $shipment->shipping_name }}</a>
                                                 @endif
@@ -151,19 +151,18 @@
                                         @if(isset($shipments))
                                         @foreach($shipments as $shipment)
                                             @if($order->is_activated>=11)
-                                                @if($shipment->order_id==$order->order_id && $shipment->activated==5 && $title=="Warehouse Check In")
+                                                @if($shipment->order_id==$order->order_id && $shipment->activated==5 && $shipment->status!=1 && $title=="Warehouse Check In")
                                                      <a href="{{ url('warehouse/warehousecheckinform/'.$order->order_id.'/'.$shipment->shipment_id)}}" class="btn btn-info">Warehouse Check In For {{ $shipment->shipping_name }}</a>
                                                 @endif
                                             @endif
                                             @if($order->is_activated>=13)
-                                                 @if($shipment->order_id==$order->order_id && $shipment->activated>=7 && $shipment->status==0 && $title=="Order Labor")
-
+                                                 @if($shipment->order_id==$order->order_id && $shipment->activated>=7  && $shipment->status!=1 && $title=="Order Labor")
                                                     <a href="javascript:void(0)" onclick="viewchecklist('{{$order->order_id}}','{{ $shipment->shipment_id }}','Check List')">View Check List For {{ $shipment->shipping_name }}</a>
                                                     <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','14','{{ $shipment->shipment_id }}','8')" class="btn btn-info">Submit For {{ $shipment->shipping_name }}</a>
                                                  @endif
                                             @endif
                                             @if($order->is_activated>=15)
-                                                @if($shipment->order_id==$order->order_id && $shipment->activated>=9 && $shipment->status==0 && $title=="Complete Review")
+                                                @if($shipment->order_id==$order->order_id && $shipment->activated>=9  && $shipment->status!=1 && $title=="Complete Review")
                                                     <a href="javascript:void(0)" onclick="shippinglabel('{{$order->order_id}}','{{$shipment->shipment_id}}')">Print Shipping Labels For {{ $shipment->shipping_name }}</a>
                                                     <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','16','{{$shipment->shipment_id}}','10')" class="btn btn-info">Submit</a>
                                                     {{-- @if(isset($label_count))
@@ -178,7 +177,9 @@
                                         @endforeach
                                         @endif
                                     @elseif($user_role==8)
+
                                         @if(isset($shipments))
+
                                         @foreach($shipments as $shipment)
                                             @if($order->is_activated >= 12 )
                                                 @if($shipment->order_id==$order->order_id && $shipment->activated==6)
@@ -190,7 +191,8 @@
                                                     @if($shipment->shipmentplan==1)
                                                        <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','13','{{$shipment->shipment_id}}','7')" class="btn btn-info">Review Complete For {{ $shipment->shipping_name }}</a>
                                                     @endif
-                                                @elseif($shipment->order_id==$order->order_id && $shipment->status==0 && $shipment->activated>=6 && $title=="Warehouse Check In Review")
+                                                    <br>
+                                                @elseif($shipment->order_id==$order->order_id  && $shipment->activated>=6 && $shipment->status!=1 && $title=="Warehouse Check In Review")
                                                      <a href="javascript:void(0)" onclick="openreview('{{$order->order_id}}','{{ $shipment->shipment_id }}')">Review Warehouse Check In For {{ $shipment->shipping_name }}</a><br>
                                                      <a href="javascript:void(0)" onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
                                                      @if($shipment->qty > 0)
@@ -203,13 +205,13 @@
                                                 @endif
                                             @endif
                                             @if($order->is_activated>=16)
-                                                @if($shipment->order_id==$order->order_id && $shipment->activated>=10 && $shipment->status==0 && $title=="Shipment Review")
+                                                @if($shipment->order_id==$order->order_id && $shipment->activated>=10  && $shipment->status!=1 && $title=="Shipment Review")
                                                     <a href="javascript:void(0)" onclick="shipmentreview('{{$order->order_id}}','{{$shipment->shipment_id}}')">Review Shipment For {{ $shipment->shipping_name }}</a>
                                                     {{--@if($shipment->verify_status==0)
                                                         <a href="javascript:void(0)" onclick="verifystatus('{{$order->order_id}}','{{$shipment->shipment_id}}')" class="btn btn-info">Verify Changes {{ $shipment->shipping_name }}</a>
                                                     @endif --}}
                                                         <a href="javascript:void(0)" onclick="verifystatus('{{$order->order_id}}','{{$shipment->shipment_id}}')" class="btn btn-info">Verify Changes {{ $shipment->shipping_name }}</a>
-                                                    <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','17','{{ $shipment->shipment_id }}','11')" class="btn btn-info">Complete For {{ $shipment->shipping_name }}</a>
+                                                    <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','17','{{ $shipment->shipment_id }}','11')" class="btn btn-info">Complete For {{ $shipment->shipping_name }}</a><br><br>
                                                 @endif
                                             @endif
                                         @endforeach
@@ -218,11 +220,10 @@
                                         @if(isset($shipments))
                                         @foreach($shipments as $shipment)
                                             @if($order->is_activated>=14 )
-                                                @if($shipment->order_id==$order->order_id && $shipment->activated>=8 && $shipment->status==0)
-                                                    <a href="javascript:void(0)" onclick="viewchecklist('{{$order->order_id}}','{{ $shipment->shipment_id }}','Review Order')">Review Order Requirement</a><br>
-                                                    <a href="javascript:void(0)" onclick="reviewwork('{{$order->order_id}}','{{ $shipment->shipment_id }}')">Review Work Completed List</a><br>
-                                                    <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','15','{{ $shipment->shipment_id }}','9')" class="btn btn-info">Approve
-                                                        Work Completed</a>
+                                                @if($shipment->order_id==$order->order_id && $shipment->status!=1 && $shipment->activated>=8)
+                                                    <a href="javascript:void(0)" onclick="viewchecklist('{{$order->order_id}}','{{ $shipment->shipment_id }}','Review Order')">Review Requirement For {{ $shipment->shipping_name }}</a><br>
+                                                    <a href="javascript:void(0)" onclick="reviewwork('{{$order->order_id}}','{{ $shipment->shipment_id }}')">Review Completed Work For {{ $shipment->shipping_name }}</a><br>
+                                                    <a href="javascript:void(0)" onclick="order_status('{{$order->order_id}}','15','{{ $shipment->shipment_id }}','9')" class="btn btn-info">Approve Work Completed For {{ $shipment->shipping_name }}</a><br>
                                                 @endif
                                             @endif
                                         @endforeach

@@ -8,6 +8,7 @@
                 <th class="col-md-6"><span>Product</span></th>
                 <th><span>Shipping Method Name</span></th>
                 <th><span>Other Label</span></th>
+                <th><span>Quantity</span></th>
                 <th><span>Amazon Destination</span></th>
                 <th><span>Prep Label</span></th>
                 <th><span></span></th>
@@ -39,15 +40,22 @@
                 </td>
                 <td>
                     @foreach($amazon_destination as $amazon_destinations)
+                        @if($amazon_destinations->shipment_id==$shipments->shipment_id && $amazon_destinations->fulfillment_network_SKU==$shipment_details->fnsku)
+                            {{ $amazon_destinations->qty }}<br>
+                        @endif
+                    @endforeach
+                </td>
+                <td>
+                    @foreach($amazon_destination as $amazon_destinations)
                     @if($amazon_destinations->shipment_id==$shipments->shipment_id && $amazon_destinations->fulfillment_network_SKU==$shipment_details->fnsku)
-                    {{ $amazon_destinations->destination_name }}
+                    {{ $amazon_destinations->destination_name }}<br>
                     @endif
                     @endforeach
                 </td>
                 <td>
                     @foreach($amazon_destination as $amazon_destinations)
                     @if($amazon_destinations->shipment_id==$shipments->shipment_id && $amazon_destinations->fulfillment_network_SKU==$shipment_details->fnsku)
-                    {{ $amazon_destinations->label_prep_type }}
+                    {{ $amazon_destinations->label_prep_type }}<br>
                     @endif
                     @endforeach
                 </td>
@@ -55,7 +63,7 @@
                     @foreach($amazon_destination as $amazon_destinations)
                         @if($amazon_destinations->shipment_id==$shipments->shipment_id && $amazon_destinations->fulfillment_network_SKU==$shipment_details->fnsku)
                             @if($amazon_destinations->prep_complete==0)
-                                <a href="javascript:void(0)" onclick="prepcomplete('{{$shipment_details->shipment_detail_id}}','{{$amazon_destinations->amazon_destination_id}}')">Prep Complete</a>
+                                <a href="javascript:void(0)" onclick="prepcomplete('{{$shipment_details->shipment_detail_id}}','{{$amazon_destinations->amazon_destination_id}}')">Prep Complete</a><br>
                             @endif
                         @endif
                     @endforeach
