@@ -1405,8 +1405,7 @@ class OrderController extends Controller
     }
     public function customers_detail()
     {
-        $user_role = \Auth::user();
-        $user_role_id = $user_role->role_id;
+
         $user = User::selectRaw('users.*, user_infos.*')
             ->join('user_infos', 'users.id', '=', 'user_infos.user_id')
             ->where('role_id', '3')
@@ -1461,7 +1460,12 @@ class OrderController extends Controller
                 return $user->reference_from;
             })
             ->editColumn('Action', function ($user) {
-                return $editBtn = '<a onclick="storeuser('.$user->user_id.')"  title="Switch User">Switch User</a>';
+                $user_role = \Auth::user();
+                $user_role_id = $user_role->role_id;
+                if($user_role_id==4 || $user_role_id==9) {
+                    return $editBtn = '<a onclick="storeuser(' . $user->user_id . ')"  title="Switch User">Switch User</a>';
+                }
+
             })
             ->make(true);
     }

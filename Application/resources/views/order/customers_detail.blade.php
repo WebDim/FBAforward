@@ -39,9 +39,10 @@
                         <th><span>Amazon Revenue<br>(Estimate Annual)</span></th>
                         <th><span>FBA Order<br>(Estimate Annual)</span></th>
                         <th><span>Referred By</span></th>
-                        @if($user_role_id==4 || $user_role_id==9)
                         <th><span>Action</span></th>
-                        @endif
+                       {{-- @if($user_role_id==4 || $user_role_id==9)
+                        <th><span>Action</span></th>
+                        @endif --}}
                     </tr>
                     </thead>
                     <tbody>

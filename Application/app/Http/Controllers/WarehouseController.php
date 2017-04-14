@@ -340,11 +340,11 @@ class WarehouseController extends Controller
             ->join('customer_amazon_details', 'customer_amazon_details.mws_market_place_id', '=', 'amazon_marketplaces.id')
             ->where('customer_amazon_details.user_id', $shipment[0]->user_id)
             ->get();
-        //$UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
-        //$UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+        $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
+        $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
         $UserCredentials['marketplace'] = $results[0]->market_place_id ? $results[0]->market_place_id : '';
-        $UserCredentials['mws_authtoken']='test';
-        $UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
+        //$UserCredentials['mws_authtoken']='test';
+        //$UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
         $fromaddress = new \FBAInboundServiceMWS_Model_Address();
         $fromaddress->setName($user_details[0]->company_name);
         $fromaddress->setAddressLine1($user_details[0]->company_address);
@@ -484,9 +484,9 @@ class WarehouseController extends Controller
             ->distinct('amazon_destinations.api_shipment_id')
             ->get();
         $cartoon_id = 1;
-        //$devAccount = Dev_account::first();
-        //$access_key = $devAccount->access_key;
-        $access_key='AKIAJSMUMYFXUPBXYQLA';
+        $devAccount = Dev_account::first();
+        $access_key = $devAccount->access_key;
+        //$access_key='AKIAJSMUMYFXUPBXYQLA';
         foreach ($shipment_ids as $new_shipment_ids) {
             $feed = '<?xml version="1.0" encoding="UTF-8"?>' .
                 '<AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd">' .
@@ -586,14 +586,14 @@ class WarehouseController extends Controller
     private function getKeys()
     {
         add_to_path('Libraries');
-        //$devAccount = Dev_account::first();
-        $accesskey='AKIAJSMUMYFXUPBXYQLA';
-        $secret_key='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';
+        $devAccount = Dev_account::first();
+        //$accesskey='AKIAJSMUMYFXUPBXYQLA';
+        //$secret_key='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';
         return [
-          //  $devAccount->access_key,
-          //  $devAccount->secret_key,
-             $accesskey,
-             $secret_key,
+            $devAccount->access_key,
+            $devAccount->secret_key,
+            // $accesskey,
+            // $secret_key,
             self::getMWSConfig()
         ];
     }
@@ -723,8 +723,8 @@ class WarehouseController extends Controller
     public function sendQuery($strUrl, $amazon_feed, $param)
     {
         $devAccount = Dev_account::first();
-        //$secret_key = $devAccount->secret_key;
-        $secret_key='Uo3EMqenqoLCyCnhVV7jvOeipJ2qECACcyWJWYzF';
+        $secret_key = $devAccount->secret_key;
+        //$secret_key='Uo3EMqenqoLCyCnhVV7jvOeipJ2qECACcyWJWYzF';
         $strServieURL = preg_replace('#^https?://#', '', 'https://mws.amazonservices.com');
         $strServieURL = str_ireplace("/", "", $strServieURL);
         $sign = 'POST' . "\n";
@@ -1033,10 +1033,10 @@ class WarehouseController extends Controller
             ->join('customer_amazon_details', 'customer_amazon_details.mws_market_place_id', '=', 'amazon_marketplaces.id')
             ->where('customer_amazon_details.user_id', $user_id)
             ->get();
-        //$UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
-        //$UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
-        $UserCredentials['mws_authtoken']='test';
-        $UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
+        $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
+        $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
+        //$UserCredentials['mws_authtoken']='test';
+        //$UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
         $service = $this->getReportsClient();
         $shipping_request = new \FBAInboundServiceMWS_Model_GetUniquePackageLabelsRequest();
         $shipping_request->setSellerId($UserCredentials['mws_seller_id']);
