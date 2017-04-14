@@ -99,7 +99,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! htmlspecialchars_decode(Form::label('chargable_weight', 'chargable Weight (Kgs)<span class="required"></span>', ['class' => 'control-label col-md-2'])) !!}
+                            {!! htmlspecialchars_decode(Form::label('chargable_weight', 'chargeable Weight (Kgs)<span class="required"></span>', ['class' => 'control-label col-md-2'])) !!}
                             <div class="col-md-2">
                                 <div class="input-group">
                                     <span class="input-group-addon"></span>

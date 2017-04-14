@@ -29,8 +29,8 @@
             <table class="table" id="">
                 <thead>
                 <tr>
-                    <th ><span>Shipment Refrence Number</span></th>
-                    <th><span>Download Lading Bill</span></th>
+                    <th ><span>Shipment Reference Number</span></th>
+                    <th><span>Download B/L</span></th>
 
                 </tr>
                 </thead>

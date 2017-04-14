@@ -112,8 +112,9 @@ class WarehouseController extends Controller
         $user = \Auth::user();
         $user_role = $user->role_id;
         //$orders = Order::where('orders.is_activated', '11')->orderBy('orders.created_at', 'desc')->get();
-        $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+        $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, user_infos.company_name, user_infos.contact_email')
             ->join('shipments','shipments.order_id','=','orders.order_id')
+            ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
             ->where('orders.is_activated','>=', '11')
             ->where('shipments.is_activated','5')
             ->groupby('orders.order_id')
@@ -241,9 +242,10 @@ class WarehouseController extends Controller
             ->get();*/
         //sum(order_shipment_quantities.quantity) as qty,
 
-        $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated, orders.created_at')
+        $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated, orders.created_at, user_infos.company_name, user_infos.contact_email')
                   ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
                   ->join('shipments','shipments.order_id','=','orders.order_id')
+                  ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
                   ->where('orders.is_activated','>=', '12')
                   ->where('shipments.is_activated','6')
                   ->Orwhere('order_shipment_quantities.status','0')
@@ -773,9 +775,10 @@ class WarehouseController extends Controller
             ->where('shipments.is_activated','7')
             ->orwhere('shipments.status','0')
             ->get();*/
-        $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.id, order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated, orders.created_at')
+        $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.id, order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated, orders.created_at, user_infos.company_name, user_infos.contact_email')
             ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
             ->join('shipments','shipments.order_id','=','orders.order_id')
+            ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
             ->where('orders.is_activated','>=', '13')
             ->where('shipments.is_activated','7')
             ->Orwhere('order_shipment_quantities.status','1')
@@ -864,9 +867,10 @@ class WarehouseController extends Controller
             ->orwhere('shipments.status','0')
             ->get();*/
         //dd(DB::getQueryLog());
-        $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.id, order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated, orders.created_at')
+        $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.id, order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated, orders.created_at, user_infos.company_name, user_infos.contact_email')
             ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
             ->join('shipments','shipments.order_id','=','orders.order_id')
+            ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
             ->where('orders.is_activated','>=', '14')
             ->where('shipments.is_activated','8')
             ->Orwhere('order_shipment_quantities.status','2')
@@ -953,9 +957,10 @@ class WarehouseController extends Controller
             ->where('shipments.is_activated','9')
             ->Orwhere('shipments.status','0')
             ->get();*/
-        $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.id, order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated')
+        $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.id, order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated, user_infos.company_name, user_infos.contact_email')
             ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
             ->join('shipments','shipments.order_id','=','orders.order_id')
+            ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
             ->where('orders.is_activated','>=', '15')
             ->where('shipments.is_activated','9')
             ->Orwhere('order_shipment_quantities.status','3')
@@ -1127,9 +1132,10 @@ class WarehouseController extends Controller
             ->where('shipments.is_activated','10')
             ->Orwhere('shipments.status','0')
             ->get();*/
-        $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.id, order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated')
+        $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.id, order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated, user_infos.company_name, user_infos.contact_email')
             ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
             ->join('shipments','shipments.order_id','=','orders.order_id')
+            ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
             ->where('orders.is_activated','>=', '16')
             ->where('shipments.is_activated','10')
             ->Orwhere('order_shipment_quantities.status','4')

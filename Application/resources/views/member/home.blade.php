@@ -23,7 +23,7 @@
                 <div class="icon">
                     <i class="ion-android-cart"></i>
                 </div>
-                {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                <a href="{{ url('order/index') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div><!-- ./col -->
 
@@ -32,12 +32,12 @@
             <div class="small-box bg-yellow">
                 <div class="inner">
                     <h3>{{ $total_in_order }}</h3>
-                    <p>Total Inprogress Orders</p>
+                    <p>Total In progress Orders</p>
                 </div>
                 <div class="icon">
                     <i class="ion-android-cart"></i>
                 </div>
-                {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                <a href="{{ url('order/index') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div><!-- ./col -->
 
@@ -51,7 +51,7 @@
                 <div class="icon">
                     <i class="ion-android-cart"></i>
                 </div>
-                {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                <a href="{{ url('order/index') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div><!-- ./col -->
 
@@ -65,7 +65,7 @@
                 <div class="icon">
                     <i class="ion-document-text"></i>
                 </div>
-                {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                <a href="{{ url('order/index') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div><!-- ./col -->
 
@@ -79,7 +79,7 @@
                 <div class="icon">
                     <i class="ion-ios-paper"></i>
                 </div>
-                {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                <a href="{{ url('order/index') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div><!-- ./col -->
 
@@ -93,6 +93,7 @@
                 <div class="icon">
                     <i class="ion-ios-list"></i>
                 </div>
+                <a href="{{ url('member/amazoninventorylist') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
             </div>
         </div><!-- ./col -->
@@ -124,7 +125,7 @@
                     <div class="icon">
                         <i class="ion ion-person"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/customers') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
             <div class="col-lg-4 col-xs-6">
@@ -137,7 +138,7 @@
                     <div class="icon">
                         <i class="ion-android-cart"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/orderlist') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
             <div class="col-lg-4 col-xs-6">
@@ -145,12 +146,12 @@
                 <div class="small-box bg-yellow">
                     <div class="inner">
                         <h3>{{ $total_in_order }}</h3>
-                        <p>Total Inprogress Orders</p>
+                        <p>Total In progress Orders</p>
                     </div>
                     <div class="icon">
                         <i class="ion-android-cart"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/orderlist') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
 
@@ -164,7 +165,7 @@
                     <div class="icon">
                         <i class="ion-android-cart"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/orderlist') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
 
@@ -178,7 +179,7 @@
                     <div class="icon">
                         <i class="ion-document-text"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/orderlist') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
 
@@ -192,7 +193,7 @@
                     <div class="icon">
                         <i class="ion-ios-paper"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/orderlist') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
     @elseif($user->role->name=='Accounting')
@@ -206,7 +207,7 @@
                     <div class="icon">
                         <i class="ion-android-cart"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('invoice') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
             <div class="col-lg-6 col-xs-6">
@@ -221,7 +222,7 @@
                     <div class="icon">
                         <i class="ion-social-usd-outline"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('invoice') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
         @elseif($user->role->name=='Inspector')
@@ -236,7 +237,7 @@
                     <div class="icon">
                         <i class="ion-document-text"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/inspectionreport') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
         @elseif($user->role->name=='Shipper')
@@ -250,7 +251,7 @@
                     <div class="icon">
                         <i class="ion ion-person"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('order/customers') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
             <div class="col-lg-6 col-xs-6">
@@ -312,7 +313,7 @@
                 <div class="small-box bg-yellow">
                     <div class="inner">
                         <h3>{{ count($clearance_count) }}</h3>
-                        <p>Total Custome Clearance</p>
+                        <p>Total Customs Clearance</p>
                     </div>
                     <div class="icon">
                         <i class="ion-ios-paper"></i>
@@ -345,7 +346,7 @@
                     <div class="icon">
                         <i class="ion-document-text"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('warehouse/managerreview') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
         @elseif($user->role->name=='Warehouse Admin')
@@ -359,7 +360,7 @@
                     <div class="icon">
                         <i class="ion-android-checkbox-outline"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('warehouse/adminreview') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
             <div class="col-lg-6 col-xs-6">
@@ -372,7 +373,7 @@
                     <div class="icon">
                         <i class="ion-android-boat"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('warehouse/adminshipmentreview') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
         @elseif($user->role->name=='Warehouse Lead')
@@ -387,7 +388,7 @@
                     <div class="icon">
                         <i class="ion-android-checkbox-outline"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('warehouse/warehousecheckin') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
             <div class="col-lg-4 col-xs-6">
@@ -400,7 +401,7 @@
                     <div class="icon">
                         <i class="ion-android-clipboard"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('warehouse/orderlabor') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
 
@@ -414,7 +415,7 @@
                     <div class="icon">
                         <i class="ion-android-boat"></i>
                     </div>
-                    {{--<a href="http://localhost:8000/admin/users" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>--}}
+                    <a href="{{ url('warehouse/completeshipment') }}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- ./col -->
     @endif

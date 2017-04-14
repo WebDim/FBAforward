@@ -38,6 +38,8 @@
                         <thead>
                         <tr>
                             <th>Order No</th>
+                            <th>Company Name</th>
+                            <th>Email Address</th>
                            {{-- <th>Status</th> --}}
                             <th>Created At</th>
                             <th>Actions</th>
@@ -51,6 +53,8 @@
                                         <b class="text-info">ORD_{{ $order->order_id }}</b>
                                     </a>
                                 </td>
+                                <td><b class="text-info">{{ $order->company_name }}</b></td>
+                                <td><b class="text-info">{{ $order->contact_email }}</b></td>
                                 {{--<td>
                                     <b class="text-info">{{ $orderStatus[$order->is_activated] }}</b>
                                 </td>--}}
@@ -119,7 +123,7 @@
                                             @endif
                                             @if($order->is_activated >=6 && $title=='Bill of Lading')
                                                  @if($shipment->order_id==$order->order_id && $shipment->activated==0)
-                                                    <a href="{{ url('order/billofladingform/'.$order->order_id."/".$shipment->shipment_id)}}" class="btn btn-info">Lading Bill For {{ $shipment->shipping_name }}</a>
+                                                    <a href="{{ url('order/billofladingform/'.$order->order_id."/".$shipment->shipment_id)}}" class="btn btn-info">B/L For {{ $shipment->shipping_name }}</a>
                                                  @endif
                                             @endif
                                         @endforeach
@@ -129,7 +133,7 @@
                                         @foreach($shipments as $shipment)
                                             @if($order->is_activated>=7)
                                                  @if($shipment->order_id==$order->order_id && $shipment->activated==1)
-                                                    <a href="javascript:void(0)" onclick="openbill('{{$order->order_id}}','{{$shipment->shipment_id}}')">View Lading Bill For {{ $shipment->shipping_name }}</a>
+                                                    <a href="javascript:void(0)" onclick="openbill('{{$order->order_id}}','{{$shipment->shipment_id}}')">View B/L For {{ $shipment->shipping_name }}</a>
                                                     <a href="javascript:void(0)" onclick="approvebilloflading('{{$order->order_id}}','{{$shipment->shipment_id}}')" class="btn btn-info">Approve</a><br><br>
                                                 @endif
                                             @endif
@@ -146,6 +150,27 @@
                                         @endforeach
                                         @endif
                                     @elseif($user_role==9)
+                                        @if(!empty($pending_quote))
+                                            @foreach($pending_quote as $pending_quotes)
+                                                @if($pending_quotes->order_id==$order->order_id)
+                                                    <a href="{{url('order/downloadquote/'.$pending_quotes->order_id.'/'.$pending_quotes->user_id.'/'.$pending_quotes->status)}}">Pending Shipping Quote</a><br>
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                        @if(!empty($approve_quote))
+                                            @foreach($approve_quote as $approve_quotes)
+                                                @if($approve_quotes->order_id==$order->order_id)
+                                                        <a href="{{url('order/downloadquote/'.$approve_quotes->order_id.'/'.$approve_quotes->user_id.'/'.$approve_quotes->status)}}">Approved Shipping Quote</a><br>
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                            @if(!empty($reject_quote))
+                                                @foreach($reject_quote as $reject_quotes)
+                                                    @if($reject_quotes->order_id==$order->order_id)
+                                                        <a href="{{url('order/downloadquote/'.$reject_quotes->order_id.'/'.$reject_quotes->user_id.'/'.$reject_quotes->status)}}">Rejected Shipping Quote</a><br>
+                                                    @endif
+                                                @endforeach
+                                            @endif
                                         <a href="javascript:void(0)" onclick="opennote({{$order->order_id}})" class="btn btn-info">Add Notes</a>
                                     @elseif($user_role==10)
                                         @if(isset($shipments))
@@ -294,7 +319,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                 aria-hidden="true">×</span></button>
-                    <h4 class="modal-title" id="myModalLabel">View Lading Bill</h4>
+                    <h4 class="modal-title" id="myModalLabel">View Bill Of Lading</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">

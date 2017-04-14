@@ -213,7 +213,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/removeorder', 'OrderController@removeorder');
         Route::get('/reviewshipment',['uses'=>'OrderController@reviewshipment','as'=>'reviewshipment']);
         Route::post('/orderstatus', 'OrderController@orderstatus');
-        Route::get('/ordershipping', 'OrderController@ordershipping');
+        //Route::get('/ordershipping', 'OrderController@ordershipping');
         Route::get('/inspectionreport', 'OrderController@inspectionreport');
         Route::put('/inspectionreport', 'OrderController@uploadinspectionreport');
         Route::get('/downloadreport/{order_id}', 'OrderController@downloadreport');
@@ -221,7 +221,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('/shippingquote', 'OrderController@shippingquote');
         Route::get('/shippingquoteform/{order_id}', 'OrderController@shippingquoteform');
         Route::put('/shippingquoteform', 'OrderController@addshippingquoteform');
-        Route::get('/downloadquote/{order_id}/{user_id}','OrderController@viewshippingquote');
+        Route::get('/downloadquote/{order_id}/{user_id}/{status?}','OrderController@viewshippingquote');
         //Route::post('/viewshippingquote', 'OrderController@viewshippingquote');
         Route::post('/approveshippingquote', 'OrderController@approveshippingquote');
         Route::put('/rejectshippingquote', 'OrderController@rejectshippingquote');
@@ -246,6 +246,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('/adddestination','OrderController@adddestination');
         Route::get('/orderlist','OrderController@orderlist');
         Route::get('/customers','OrderController@customers');
+        Route::post('/customers','OrderController@customers_detail');
         Route::put('/debitnote','OrderController@adddebitnote');
 
     });

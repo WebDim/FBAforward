@@ -95,7 +95,7 @@ class OrderController extends Controller
         ->distinct('shipping_quotes.user_id')
         ->get();
         $orders = Order::where('user_id', $user->id)->whereIn('is_activated', array('0', '1', '2', '4'))->orderBy('created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customs Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.index')->with(compact('orders', 'orderStatus', 'shipping_quote','title'));
     }
 
@@ -105,7 +105,7 @@ class OrderController extends Controller
         $title = "Order History";
         $user = \Auth::user();
         $orders = Order::where('user_id', $user->id)->whereIn('is_activated', array('17'))->orderBy('created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customs Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.order_history')->with(compact('orders', 'orderStatus', 'title'));
     }
 
@@ -288,15 +288,20 @@ class OrderController extends Controller
     }
 
     //list Approved orders of All users for warhouse manager
-    public function ordershipping()
+   /* public function ordershipping()
     {
         $title = 'Ship Order';
         $user = \Auth::user();
         $user_role = $user->role_id;
-        $orders = Order::where('is_activated', '3')->orderBy('created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        $orders = Order::selectRaw('orders.*, user_infos.company_name, user_infos.contact_email')
+            ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
+            ->where('is_activated', '3')
+            ->orderBy('orders.created_at', 'desc')
+            ->get();
+        //$orders = Order::where('is_activated', '3')->orderBy('created_at', 'desc')->get();
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customs Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders', 'orderStatus','user_role', 'title'));
-    }
+    }*/
 
     //list orders of All users which select inspections, uploading inspection report by inspector
     public function inspectionreport()
@@ -304,14 +309,15 @@ class OrderController extends Controller
         $title = "Inspection Report";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        $orders = Order::selectRaw('orders.*')
+        $orders = Order::selectRaw('orders.*, user_infos.company_name, user_infos.contact_email')
             ->join('supplier_inspections', 'supplier_inspections.order_id', '=', 'orders.order_id')
+            ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
             ->where('orders.is_activated', '1')
             ->where('supplier_inspections.is_inspection', '1')
             ->orderBy('orders.created_at', 'desc')
             ->distinct('supplier_inspections.order_id')
             ->get();
-        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customs Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role', 'title'));
     }
 
@@ -436,18 +442,19 @@ class OrderController extends Controller
             }
 
         if (!empty($order_ids))
-            $orders = Order::selectRaw('orders.*')
+            $orders = Order::selectRaw('orders.*, user_infos.company_name, user_infos.contact_email')
+                             ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
                              ->where('orders.is_activated', '3')
                              ->orWhereIn('orders.order_id', $order_ids)
                              ->orderBy('orders.created_at', 'desc')
                              ->get();
         else
-            $orders = Order::selectRaw('orders.*')
+            $orders = Order::selectRaw('orders.*, user_infos.company_name, user_infos.contact_email')
                              ->where('orders.is_activated', '3')
                              ->orderBy('orders.created_at', 'desc')
                              ->get();
 
-        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customs Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
 
         return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role','user_id','shipping_id','shipping_id1', 'title'));
     }
@@ -537,11 +544,15 @@ class OrderController extends Controller
     {
         $order_id = $request->order_id;
         $user_id = $request->user_id;
+        if(empty($request->status))
+            $status =0;
+        else
+            $status = $request->status;
         $shipment = Shipments::selectRaw('shipping_quotes.*')
             ->join('shipping_quotes', 'shipping_quotes.shipment_id', '=', 'shipments.shipment_id')
             ->where('shipments.order_id', $order_id)
             ->where('shipping_quotes.user_id',$user_id)
-            ->where('shipping_quotes.status','0')
+            ->where('shipping_quotes.status',$status)
             ->get();
         $shipment_detail = Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
             ->join('shipments', 'shipments.shipment_id', '=', 'shipment_details.shipment_id', 'left')
@@ -555,7 +566,7 @@ class OrderController extends Controller
             ->join('shipping_quotes', 'shipping_quotes.id', '=', 'shipping_charges.shipping_id')
             ->where('shipping_quotes.order_id', $order_id)
             ->where('shipping_quotes.user_id',$user_id)
-            ->where('shipping_quotes.status','0')
+            ->where('shipping_quotes.status',$status)
             ->get();
         view()->share('shipment', $shipment);
         view()->share('shipment_detail', $shipment_detail);
@@ -827,8 +838,9 @@ class OrderController extends Controller
         $title = "Bill of Lading";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+        $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, user_infos.company_name, user_infos.contact_email')
                   ->join('shipments','shipments.order_id','=','orders.order_id')
+                  ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
                   ->where('orders.is_activated','>=', '6')
                   ->where('shipments.is_activated','0')
                   ->groupby('orders.order_id')
@@ -840,7 +852,7 @@ class OrderController extends Controller
                     ->where('orders.is_activated','>=', '6')
                     ->where('shipments.is_activated','0')
                     ->get();
-        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customs Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role','shipments', 'title'));
     }
 
@@ -908,8 +920,9 @@ class OrderController extends Controller
         $user = \Auth::user();
         $user_role = $user->role_id;
         //$orders = Order::where('orders.is_activated', '7')->orderBy('orders.created_at', 'desc')->get();
-        $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+        $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, user_infos.company_name, user_infos.contact_email')
             ->join('shipments','shipments.order_id','=','orders.order_id')
+            ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
             ->where('orders.is_activated','>=', '7')
             ->where('shipments.is_activated','1')
             ->groupby('orders.order_id')
@@ -921,7 +934,7 @@ class OrderController extends Controller
             ->where('orders.is_activated','>=', '7')
             ->where('shipments.is_activated','1')
             ->get();
-        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customs Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role', 'shipments', 'title'));
     }
 
@@ -996,8 +1009,9 @@ class OrderController extends Controller
         $user = \Auth::user();
         $user_role = $user->role_id;
         //$orders = Order::where('is_activated', '8')->Orwhere('is_activated', '9')->where('debitnote_status','0')->orderBy('created_at', 'desc')->get();
-        $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+        $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, user_infos.company_name, user_infos.contact_email')
             ->join('shipments','shipments.order_id','=','orders.order_id')
+            ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
             ->where('orders.is_activated','>=', '8')
             ->where('shipments.is_activated','2')
             ->Orwhere('shipments.is_activated','3')
@@ -1014,7 +1028,7 @@ class OrderController extends Controller
             ->Orwhere('shipments.is_activated','3')
             ->where('shipments.debitnote_status','0')
             ->get();
-        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customs Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role', 'shipments', 'title'));
     }
 
@@ -1065,8 +1079,8 @@ class OrderController extends Controller
                 'ISF' => $isfimage,
                 'HBL' => $hblimage,
                 'MBL' => $mblimage,
-                'ETD_china' => $request->input('ETD_china' . $cnt),
-                'ETA_US' => $request->input('ETA_US' . $cnt),
+                'ETD_china' => date('Y-m-d', strtotime($request->input('ETD_china' . $cnt))),
+                'ETA_US' => date('Y-m-d', strtotime($request->input('ETA_US' . $cnt))),
                 'delivery_port' => $request->input('delivery_port' . $cnt),
                 'vessel' => $request->input('vessel' . $cnt),
                 'container' => $request->input('container' . $cnt),
@@ -1115,12 +1129,13 @@ class OrderController extends Controller
     //display list of orders which need custom clearnce by logistics
     public function customclearance()
     {
-        $title = "Custom Clearance";
+        $title = "Customs Clearance";
         $user = \Auth::user();
         $user_role = $user->role_id;
        // $orders = Order::where('is_activated', '9')->where('debitnote_status', '1')->orderBy('created_at', 'desc')->get();
-        $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+        $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, user_infos.company_name, user_infos.contact_email')
             ->join('shipments','shipments.order_id','=','orders.order_id')
+            ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
             ->where('orders.is_activated','>=', '9')
             ->where('shipments.is_activated','3')
             ->where('shipments.debitnote_status','1')
@@ -1135,14 +1150,14 @@ class OrderController extends Controller
             ->where('shipments.debitnote_status','1')
             ->get();
 
-        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customs Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role','shipments', 'title'));
     }
 
     //to display custom clearance form
     public function customclearanceform(Request $request)
     {
-        $title = "Custom Clearance Form";
+        $title = "Customs Clearance Form";
         $order_id = $request->order_id;
         $shipment_id = $request->shipment_id;
         $user = User_info::selectRaw('user_infos.company_name, user_infos.contact_email, orders.order_no')
@@ -1240,8 +1255,9 @@ class OrderController extends Controller
         $user = \Auth::user();
         $user_role = $user->role_id;
         //$orders = Order::where('orders.is_activated', '10')->orderBy('orders.created_at', 'desc')->get();
-        $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
+        $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, user_infos.company_name, user_infos.contact_email')
             ->join('shipments','shipments.order_id','=','orders.order_id')
+            ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
             ->where('orders.is_activated','>=', '10')
             ->where('shipments.is_activated','4')
             ->where('shipments.debitnote_status','1')
@@ -1255,7 +1271,7 @@ class OrderController extends Controller
             ->where('shipments.is_activated','4')
             ->where('shipments.debitnote_status','1')
             ->get();
-        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customs Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role','shipments', 'title'));
     }
 
@@ -1356,9 +1372,27 @@ class OrderController extends Controller
         $title = "Orders";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        $orders = Order::orderBy('orders.created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
-        return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role', 'title'));
+        $orders = Order::selectRaw('orders.*, user_infos.company_name, user_infos.contact_email')
+                  ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
+                  ->orderBy('orders.created_at', 'desc')
+                  ->get();
+        $pending_quote = Shipping_quote::selectRaw('shipping_quotes.order_id, shipping_quotes.user_id, shipping_quotes.status')
+            ->join('orders','shipping_quotes.order_id','=','orders.order_id')
+            ->where('shipping_quotes.status','0')
+            ->groupby('shipping_quotes.order_id')
+            ->get();
+        $approve_quote = Shipping_quote::selectRaw('shipping_quotes.order_id, shipping_quotes.user_id, shipping_quotes.status')
+            ->join('orders','shipping_quotes.order_id','=','orders.order_id')
+            ->where('shipping_quotes.status','1')
+            ->groupby('shipping_quotes.order_id')
+            ->get();
+        $reject_quote = Shipping_quote::selectRaw('shipping_quotes.order_id, shipping_quotes.user_id, shipping_quotes.status')
+            ->join('orders','shipping_quotes.order_id','=','orders.order_id')
+            ->where('shipping_quotes.status','2')
+            ->groupby('shipping_quotes.order_id')
+            ->get();
+        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customs Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
+        return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role', 'title','pending_quote','approve_quote','reject_quote'));
     }
 
     //list customer for sales person and customer service
@@ -1367,11 +1401,70 @@ class OrderController extends Controller
         $user_role = \Auth::user();
         $user_role_id = $user_role->role_id;
         $title = "Customer List";
+        return view('order.customers_detail')->with(compact('title', 'user_role_id'));
+    }
+    public function customers_detail()
+    {
+        $user_role = \Auth::user();
+        $user_role_id = $user_role->role_id;
         $user = User::selectRaw('users.*, user_infos.*')
             ->join('user_infos', 'users.id', '=', 'user_infos.user_id')
             ->where('role_id', '3')
             ->get();
-        return view('order.customers_detail')->with(compact('user', 'title', 'user_role_id'));
+        return Datatables::of($user)
+            ->editColumn('company_name', function ($user) {
+                return $user->company_name;
+            })
+            ->editColumn('company_phone', function ($user) {
+                return $user->company_phone;
+            })
+            ->editColumn('company_address', function ($user) {
+                return $user->company_address." ".$user->company_address2." ".$user->city;
+            })
+            ->editColumn('primary_bussiness_type', function ($user) {
+                return $user->primary_bussiness_type;
+            })
+            ->editColumn('contact_fname', function ($user) {
+                return $user->contact_fname." ".$user->contact_lname;
+            })
+            ->editColumn('contact_email', function ($user) {
+                return $user->contact_email;
+            })
+            ->editColumn('contact_phone', function ($user) {
+                return $user->contact_phone;
+            })
+            ->editColumn('secondary_contact_email', function ($user) {
+                return $user->secondary_contact_email;
+            })
+            ->editColumn('account_payable', function ($user) {
+                return $user->account_payable;
+            })
+            ->editColumn('account_email', function ($user) {
+                return $user->account_email;
+            })
+            ->editColumn('account_phone', function ($user) {
+                return $user->account_phone;
+            })
+            ->editColumn('email', function ($user) {
+                return $user->email;
+            })
+            ->editColumn('tax_id_number', function ($user) {
+                return $user->tax_id_number;
+            })
+            ->editColumn('estimate_annual_amazon_revenue', function ($user) {
+                return $user->estimate_annual_amazon_revenue;
+            })
+            ->editColumn('estimate_annual_fba_order', function ($user) {
+                return $user->estimate_annual_fba_order;
+            })
+            ->editColumn('reference_from', function ($user) {
+                return $user->reference_from;
+            })
+            ->editColumn('Action', function ($user) {
+                return $editBtn = '<a onclick="storeuser('.$user->user_id.')"  title="Switch User">Switch User</a>';
+            })
+            ->make(true);
     }
+
 
 }

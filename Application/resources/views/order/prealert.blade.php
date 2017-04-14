@@ -58,13 +58,13 @@
                                 {!! Form::label('ETD_china', 'ETD China ', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
-                                        <input type="text" name="ETD_china{{$cnt}}" id="ETD_china{{$cnt}}"  class="form-control" placeholder="ETD China ">
+                                        <input type="text" name="ETD_china{{$cnt}}" id="ETD_china{{$cnt}}"  class="form-control datepicker" placeholder="ETD China ">
                                     </div>
                                 </div>
                                 {!! Form::label('ETA_US', 'ETA U.S. ', ['class' => 'control-label col-md-2']) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
-                                        <input type="text" name="ETA_US{{$cnt}}" id="ETA_US{{$cnt}}"  class="form-control" placeholder="ETA U.S. ">
+                                        <input type="text" name="ETA_US{{$cnt}}" id="ETA_US{{$cnt}}"  class="form-control datepicker" placeholder="ETA U.S. ">
                                     </div>
                                 </div>
                                 {!! Form::label('delivery_port', 'Delivery Port ', ['class' => 'control-label col-md-2']) !!}
@@ -115,7 +115,7 @@
     {!! Html::script('assets/plugins/validationengine/jquery.validationEngine.js') !!}
     <script type="text/javascript">
         $(document).ready(function () {
-// Validation Engine init
+        // Validation Engine init
             var prefix = 's2id_';
             $("form[id^='validate']").validationEngine('attach',
                 {
@@ -124,6 +124,10 @@
                     usePrefix: prefix
                 });
 
+            $(document).ready(function () {
+                $('.datepicker').datepicker( {
+                });
+            });
         });
     </script>
 @endsection

@@ -72,7 +72,7 @@
 
                             </div>
                             <div class="form-group">
-                                {!! htmlspecialchars_decode(Form::label('addition_service', 'Addition Services<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
+                                {!! htmlspecialchars_decode(Form::label('addition_service', 'Additional Services<span class="required">*</span> ', ['class' => 'control-label col-md-2'])) !!}
                                 <div class="col-md-2">
                                     <div class="input-group">
                                         <input type="checkbox" class="validate[groupRequired[charge], minCheckbox[1]]" name="addition_service{{$cnt}}[]" id="addition_service{{$cnt}}_1" value="1">FDA Clearance<br>

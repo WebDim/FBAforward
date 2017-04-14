@@ -146,10 +146,7 @@
             });
 
         });
-        $(document).ready(function () {
-            $('.datepicker').datepicker( {
-            });
-        });
+
         function get_list()
         {
             start_date=$("#start_date").val();
