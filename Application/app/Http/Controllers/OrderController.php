@@ -2,73 +2,44 @@
 namespace App\Http\Controllers;
 
 use App\Additional_service;
-use App\Amazon_marketplace;
-use App\Amazon_destination;
 use App\Amazon_inventory;
 use App\Bill_of_lading;
 use App\CFS_terminal;
 use App\Charges;
 use App\Custom_clearance;
-use App\Customer_amazon_detail;
 use App\Customer_quickbook_detail;
 use App\Debitnote_invoice;
 use App\Delivery_booking;
 use App\Delivery_destination;
-use App\Dev_account;
 use App\Inspection_report;
-use App\Invoice_detail;
 use App\Listing_service;
 use App\Listing_service_detail;
-use App\Notifications\Usernotification;
-use App\Order_note;
 use App\Order_shipment_quantity;
-use App\Other_label_detail;
-use App\Outbound_method;
-use App\Payment_info;
 use App\Payment_type;
-use App\Photo_list_detail;
 use App\Prealert_detail;
 use App\Prep_detail;
 use App\Prep_service;
-use App\Product_labels;
-use App\Setting;
 use App\Shipping_charge;
 use App\Shipping_quote;
 use App\Supplier_detail;
-use App\Shipping_method;
 use App\Shipment_detail;
 use App\Supplier;
-use App\Supplier_inspection;
 use App\Product_labels_detail;
 use App\Shipments;
 use App\Order;
 use App\Role;
 use App\Trucking_company;
 use App\User;
-use App\User_credit_cardinfo;
-use App\Addresses;
 use App\Http\Middleware\Amazoncredential;
 use App\Outbound_shipping_detail;
 use App\Payment_detail;
 use App\User_info;
-use App\Warehouse_checkin;
-use App\Warehouse_checkin_image;
 use Illuminate\Http\Request;
-use Symfony\Component\Yaml\Tests\A;
-use Webpatser\Uuid\Uuid;
-use PayPal\Api\CreditCard;
-use PayPal\Api\Amount;
-use PayPal\Api\CreditCardToken;
-use PayPal\Api\FundingInstrument;
-use PayPal\Api\Payer;
-use PayPal\Api\Payment;
-use PayPal\Api\Transaction;
 use App\Libraries;
 use Illuminate\Support\Facades\DB;
 use PDF;
 use Yajra\Datatables\Datatables;
 use DNS1D;
-use ZipArchive;
 
 class OrderController extends Controller
 {
@@ -155,7 +126,7 @@ class OrderController extends Controller
         $title = "Order Detail";
         if ($request->order_id) {
             DB::enableQueryLog();
-            $shipment_detail = Shipments::selectRaw("shipments.shipment_id,shipments.shipping_method_id,shipping_methods.shipping_name,shipment_details.product_id, shipment_details.fnsku, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total,amazon_inventories.product_name, amazon_inventories.product_nick_name, supplier_details.supplier_detail_id,supplier_details.supplier_id,suppliers.company_name,supplier_inspections.inspection_decription,product_labels_details.product_label_id,product_labels.label_name,prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.prep_service_ids,listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.listing_service_ids,outbound_shipping_details.amazon_destination_id, outbound_shipping_details.outbound_method_id,outbound_methods.outbound_name,amazon_destinations.destination_name")
+            $shipment_detail = Shipments::selectRaw("shipments.shipment_id,shipments.shipping_method_id,shipping_methods.shipping_name,shipment_details.product_id, shipment_details.fnsku, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total,amazon_inventories.product_name, amazon_inventories.product_nick_name, supplier_details.supplier_detail_id,supplier_details.supplier_id,suppliers.company_name, suppliers.email, suppliers.phone_number, supplier_inspections.inspection_decription,product_labels_details.product_label_id,product_labels.label_name,prep_details.prep_detail_id, prep_details.prep_service_total, prep_details.prep_service_ids,listing_service_details.listing_service_detail_id, listing_service_details.listing_service_total, listing_service_details.listing_service_ids,outbound_shipping_details.amazon_destination_id, outbound_shipping_details.outbound_method_id,outbound_methods.outbound_name,amazon_destinations.destination_name")
                 ->join('shipping_methods', 'shipping_methods.shipping_method_id', '=', 'shipments.shipping_method_id', 'left')
                 ->join('shipment_details', 'shipment_details.shipment_id', '=', 'shipments.shipment_id', 'left')
                 ->join('amazon_inventories', 'amazon_inventories.id', '=', 'shipment_details.product_id', 'left')
@@ -201,6 +172,8 @@ class OrderController extends Controller
                 ->where('order_id', $request->order_id)->first();
             if (count($payment_detail) > 0)
                 $payment_detail = $payment_detail->toArray();
+            /*$order_detail = Order::
+                            ->where('order_id',$request->order_id)->get();*/
             return view('order.detail_list')->with(compact('shipment_detail', 'payment_detail', 'title'));
         }
     }
@@ -252,6 +225,24 @@ class OrderController extends Controller
             } else if ($post['status'] == '16') {
                 $order_qty = array('status'=>'4');
                 Order_shipment_quantity::where('status','3')->where('shipment_id',$post['shipment_id'])->update($order_qty);
+                $order_quantities = Order_shipment_quantity::selectRaw('sum(order_shipment_quantities.quantity) as qty')
+                    ->where('order_shipment_quantities.shipment_id',$post['shipment_id'])
+                    ->where('order_shipment_quantities.status','4')
+                    ->groupby('order_shipment_quantities.shipment_id')
+                    ->get();
+                $shipment_quantities = Shipment_detail::selectRaw('sum(shipment_details.total) as total')
+                    ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id')
+                    ->where('shipment_details.shipment_id',$post['shipment_id'])
+                    ->groupby('shipment_details.shipment_id')
+                    ->get();
+                if(isset($order_quantities) && isset($shipment_quantities))
+                {
+                    if($order_quantities[0]->qty == $shipment_quantities[0]->total)
+                    {
+                        $shipment_data = array('status'=>'1');
+                        Shipments::where('shipment_id',$post['shipment_id'])->update($shipment_data);
+                    }
+                }
                 $role = Role::find(8);
                 $role->newNotification()
                     ->withType('order complete')
@@ -286,23 +277,6 @@ class OrderController extends Controller
             }
         }
     }
-
-    //list Approved orders of All users for warhouse manager
-   /* public function ordershipping()
-    {
-        $title = 'Ship Order';
-        $user = \Auth::user();
-        $user_role = $user->role_id;
-        $orders = Order::selectRaw('orders.*, user_infos.company_name, user_infos.contact_email')
-            ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
-            ->where('is_activated', '3')
-            ->orderBy('orders.created_at', 'desc')
-            ->get();
-        //$orders = Order::where('is_activated', '3')->orderBy('created_at', 'desc')->get();
-        $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customs Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
-        return view('order.ordershipping')->with(compact('orders', 'orderStatus','user_role', 'title'));
-    }*/
-
     //list orders of All users which select inspections, uploading inspection report by inspector
     public function inspectionreport()
     {
@@ -502,15 +476,6 @@ class OrderController extends Controller
                 'user_id'=>$user->id,
             );
             $shipping_quote_detail = Shipping_quote::create($shipping_quote);
-            /*$sub_count = $request->input('sub_count' . $cnt);
-            for ($sub_cnt = 1; $sub_cnt <= $sub_count; $sub_cnt++) {
-                if (!empty($request->input('charges' . $cnt . "_" . $sub_cnt))) {
-                    $shipping_charges = array('shipping_id' => $shipping_quote_detail->id,
-                        'charges_id' => $request->input('charges' . $cnt . "_" . $sub_cnt)
-                    );
-                    Shipping_charge::create($shipping_charges);
-                }
-            }*/
             $charges=$request->input('charges'.$cnt);
             foreach ($charges as $charge)
             {
@@ -573,28 +538,7 @@ class OrderController extends Controller
         view()->share('charges', $charges);
         $pdf = PDF::loadView('order/viewshippingquote');
         return $pdf->download('viewshippingquote.pdf');
-        /*if($request->ajax())
-        {
-            $post=$request->all();
-            $order_id=$post['order_id'];
-            $shipment=Shipments::selectRaw('shipping_quotes.*')
-                ->join('shipping_quotes','shipping_quotes.shipment_id','=','shipments.shipment_id')
-                ->where('shipments.order_id',$order_id)->get();
-            $shipment_detail=Shipment_detail::selectRaw('orders.order_no, shipments.shipment_id, shipping_methods.shipping_name, amazon_inventories.product_name, amazon_inventories.product_nick_name, shipment_details.qty_per_box, shipment_details.no_boxs, shipment_details.total')
-                ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id','left')
-                ->join('orders','orders.order_id','=','shipments.order_id','left')
-                ->join('amazon_inventories','amazon_inventories.id','=','shipment_details.product_id','left')
-                ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
-                ->where('orders.order_id',$order_id)
-                ->distinct('shipment_quotes.shipment_id')
-                ->get();
-            $charges = Charges::selectRaw('charges.name, charges.price, shipping_quotes.shipment_id')
-                ->join('shipping_charges','shipping_charges.charges_id','=','charges.id')
-                ->join('shipping_quotes','shipping_quotes.id','=','shipping_charges.shipping_id')
-                ->where('shipping_quotes.order_id',$order_id)
-                ->get();
-            return view('order/viewshippingquote')->with(compact('shipment','shipment_detail','charges'));
-        }*/
+
     }
 
     // to reject shipping quote by customer
@@ -618,8 +562,6 @@ class OrderController extends Controller
             Shipping_quote::where('order_id', $order_id)->where('user_id',$user_id)->where('status','0')->update($shipping_quotes_data);
             $shipping_quotes_data1 = array('status' => '2');
             Shipping_quote::where('order_id', $order_id)->where('user_id','!=',$user_id)->update($shipping_quotes_data1);
-            /*$data = array('is_activated' => '5');
-            Order::where('order_id', $order_id)->update($data);*/
             $this->createCustomer($order_id);
             return 1;
         }
@@ -670,8 +612,6 @@ class OrderController extends Controller
         $Customer = new \QuickBooks_IPP_Object_Customer();
         if (count($exist_user_detail) == 0) {
             $Customer->setDisplayName($user__detail[0]->company_name . mt_rand(0, 1000));
-            // Terms (e.g. Net 30, etc.)
-            //$Customer->setSalesTermRef(4);
             // Phone #
             $PrimaryPhone = new \QuickBooks_IPP_Object_PrimaryPhone();
             $PrimaryPhone->setFreeFormNumber($user__detail[0]->company_phone);
@@ -704,7 +644,6 @@ class OrderController extends Controller
                 Customer_quickbook_detail::create($user_data);
                 $this->addInvoice($resp, $order_id);
             } else {
-                //echo 'Not Added qbo';
                 print($CustomerService->lastError($this->context));
             }
         } else {
@@ -735,7 +674,6 @@ class OrderController extends Controller
             $Item->setIncomeAccountRef('53');
             if ($resp = $ItemService->add($this->context, $this->realm, $Item)) {
                 $resp[] = $this->getId($resp);
-                //return $this->getId($resp);
             } else {
                 print($ItemService->lastError($this->context));
             }
@@ -773,7 +711,6 @@ class OrderController extends Controller
                     $Item->setIncomeAccountRef('10');
                     if ($resp = $ItemService->add($this->context, $this->realm, $Item)) {
                         $resp = $this->getId($resp);
-                        //return $this->getId($resp);
                     } else {
                         print($ItemService->lastError($this->context));
                     }
@@ -786,7 +723,6 @@ class OrderController extends Controller
                 $Invoice->addLine($Line);
             }
             $Invoice->setCustomerRef($cust_resp);
-//            $this->addInvoice($resp, $cust_resp, $order_id);
         } else {
             exit;
         }
@@ -802,7 +738,6 @@ class OrderController extends Controller
 
     public function invoice_pdf($order_id)
     {
-        //$this->qboConnect();
         $Context = $this->context;
         $realm = $this->realm;
         $InvoiceService = new \QuickBooks_IPP_Service_Invoice();
@@ -919,7 +854,6 @@ class OrderController extends Controller
         $title = "Bill Of Lading";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        //$orders = Order::where('orders.is_activated', '7')->orderBy('orders.created_at', 'desc')->get();
         $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, user_infos.company_name, user_infos.contact_email')
             ->join('shipments','shipments.order_id','=','orders.order_id')
             ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
@@ -998,7 +932,6 @@ class OrderController extends Controller
                 ->withBody('You have shipment pre alert for upload')
                 ->regarding($ladingbill)
                 ->deliver();
-            //$this->createCustomer($order_id);
         }
     }
 
@@ -1008,7 +941,6 @@ class OrderController extends Controller
         $title = "Shipment Pre Alert";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        //$orders = Order::where('is_activated', '8')->Orwhere('is_activated', '9')->where('debitnote_status','0')->orderBy('created_at', 'desc')->get();
         $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, user_infos.company_name, user_infos.contact_email')
             ->join('shipments','shipments.order_id','=','orders.order_id')
             ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
@@ -1132,7 +1064,6 @@ class OrderController extends Controller
         $title = "Customs Clearance";
         $user = \Auth::user();
         $user_role = $user->role_id;
-       // $orders = Order::where('is_activated', '9')->where('debitnote_status', '1')->orderBy('created_at', 'desc')->get();
         $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, user_infos.company_name, user_infos.contact_email')
             ->join('shipments','shipments.order_id','=','orders.order_id')
             ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
@@ -1216,14 +1147,6 @@ class OrderController extends Controller
 
             $shipment = array('is_activated'=>'4');
                 Shipments::where('shipment_id',$request->input('shipment_id'.$cnt))->update($shipment);
-           /* for ($sub_cnt = 1; $sub_cnt <= 3; $sub_cnt++) {
-                if (!empty($request->input('addition_service' . $cnt . "_" . $sub_cnt))) {
-                    $additional_service = array('custom_clearance_id' => $detail->id,
-                        'service_id' => $request->input('addition_service' . $cnt . "_" . $sub_cnt)
-                    );
-                    Additional_service::create($additional_service);
-                }
-            }*/
             $services=$request->input('addition_service'.$cnt);
             foreach ($services as $service)
             {
@@ -1254,7 +1177,6 @@ class OrderController extends Controller
         $title = "Delivery Booking";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        //$orders = Order::where('orders.is_activated', '10')->orderBy('orders.created_at', 'desc')->get();
         $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, user_infos.company_name, user_infos.contact_email')
             ->join('shipments','shipments.order_id','=','orders.order_id')
             ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
@@ -1469,6 +1391,4 @@ class OrderController extends Controller
             })
             ->make(true);
     }
-
-
 }

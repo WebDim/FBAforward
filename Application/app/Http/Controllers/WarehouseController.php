@@ -2,73 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Additional_service;
 use App\Amazon_marketplace;
 use App\Amazon_destination;
-use App\Amazon_inventory;
-use App\Bill_of_lading;
-use App\CFS_terminal;
 use App\Charges;
-use App\Custom_clearance;
-use App\Customer_amazon_detail;
-use App\Customer_quickbook_detail;
-use App\Delivery_booking;
 use App\Dev_account;
-use App\Inspection_report;
-use App\Invoice_detail;
-use App\Listing_service;
-use App\Listing_service_detail;
-use App\Notifications\Usernotification;
 use App\Order_note;
 use App\Order_shipment_quantity;
 use App\Other_label_detail;
-use App\Outbound_method;
-use App\Payment_info;
-use App\Payment_type;
-use App\Photo_list_detail;
-use App\Prealert_detail;
-use App\Prep_detail;
-use App\Prep_service;
-use App\Product_labels;
-use App\Setting;
-use App\Shipping_charge;
-use App\Shipping_quote;
-use App\Supplier_detail;
-use App\Shipping_method;
 use App\Shipment_detail;
-use App\Supplier;
-use App\Supplier_inspection;
-use App\Product_labels_detail;
 use App\Shipments;
 use App\Order;
 use App\Role;
-use App\Trucking_company;
 use App\User;
-use App\User_credit_cardinfo;
-use App\Addresses;
 use App\Http\Middleware\Amazoncredential;
-use App\Outbound_shipping_detail;
-use App\Payment_detail;
 use App\User_info;
 use App\Warehouse_checkin;
 use App\Warehouse_checkin_image;
 use Illuminate\Http\Request;
-use Symfony\Component\Yaml\Tests\A;
-use Webpatser\Uuid\Uuid;
-use PayPal\Api\CreditCard;
-use PayPal\Api\Amount;
-use PayPal\Api\CreditCardToken;
-use PayPal\Api\FundingInstrument;
-use PayPal\Api\Payer;
-use PayPal\Api\Payment;
-use PayPal\Api\Transaction;
 use App\Libraries;
-use Illuminate\Support\Facades\DB;
 use PDF;
-use Yajra\Datatables\Datatables;
 use DNS1D;
-use ZipArchive;
-
 
 class WarehouseController extends Controller
 {
@@ -111,7 +64,6 @@ class WarehouseController extends Controller
         $title = "Warehouse Check In";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        //$orders = Order::where('orders.is_activated', '11')->orderBy('orders.created_at', 'desc')->get();
         $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, user_infos.company_name, user_infos.contact_email')
             ->join('shipments','shipments.order_id','=','orders.order_id')
             ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
@@ -187,13 +139,7 @@ class WarehouseController extends Controller
             $order = array('is_activated' => '12');
             Order::where('order_id', $request->input('order_id'))->update($order);
         }
-        $role = Role::find(8);
-        $role->newNotification()
-            ->withType('Warehouse check in')
-            ->withSubject('You have warehouse check in for review')
-            ->withBody('You have warehouse check in for review')
-            ->regarding($warehouse_checkin_detail)
-            ->deliver();
+
         $user_detail = User::selectRaw('users.*')
             ->join('orders', 'orders.user_id', '=', 'users.id')
             ->where('orders.order_id', $request->input('order_id'))
@@ -217,31 +163,6 @@ class WarehouseController extends Controller
         $title = "Warehouse Check In Review";
         $user = \Auth::user();
         $user_role = $user->role_id;
-       /* $orders = Order::selectRaw('orders.*, sum(order_shipment_quantities.quantity) as qty')
-            ->join('order_shipment_quantities','order_shipment_quantities.order_id','=','orders.order_id','left')
-            ->where('orders.is_activated', '12')
-            ->Orwhere('orders.is_activated', '13')
-            ->orderBy('orders.created_at', 'desc')
-            ->groupby('orders.order_id')
-            ->get();*/
-       /*$order_id= Order::selectRaw('orders.order_id, ')
-                  ->join('shipments','shipments.order_id','=','orders.order_id')
-                  ->join('shipment_details','shipment_details.shipment_id','=','shipments.shipment_id')
-                  ->join('order_shipment_quantities','order_shipment_quantities.shipment_id','=','shipments.shipment_id')
-                  ->groupby('shipments.order_id')
-                  ->get();*/
-
-
-       /* $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
-            ->join('shipments','shipments.order_id','=','orders.order_id')
-            ->where('orders.is_activated','>=', '12')
-            ->where('shipments.is_activated','6')
-            //->orwhere('shipments.status','0')
-            ->groupby('orders.order_id')
-            ->orderBy('orders.created_at', 'desc')
-            ->get();*/
-        //sum(order_shipment_quantities.quantity) as qty,
-
         $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated, orders.created_at, user_infos.company_name, user_infos.contact_email')
                   ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
                   ->join('shipments','shipments.order_id','=','orders.order_id')
@@ -251,11 +172,19 @@ class WarehouseController extends Controller
                   ->Orwhere('order_shipment_quantities.status','0')
                   ->groupby('order_shipment_quantities.order_id')
                   ->get();
-
-        $order_ids = array();
-        foreach ($orders as $order)
+        $shipment_id = Order_shipment_quantity::selectRaw('shipments.shipment_id')
+            ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
+            ->join('shipments','shipments.shipment_id','=','order_shipment_quantities.shipment_id')
+            ->where('orders.is_activated','>=', '12')
+            ->where('shipments.is_activated','6')
+            ->Orwhere('order_shipment_quantities.status','0')
+            ->distinct('shipments.shipment_id')
+            //->groupby('order_shipment_quantities.order_id')
+            ->get();
+        $shipment_ids = array();
+        foreach ($shipment_id as $new_shipment_id)
         {
-            $order_ids[]= $order->order_id;
+            $shipment_ids[]= $new_shipment_id->shipment_id;
         }
         $shipments= Shipments::selectRaw('orders.order_id , shipments.shipment_id, shipments.is_activated as activated, shipping_methods.shipping_name, shipments.shipmentplan, sum(order_shipment_quantities.quantity) as qty, order_shipment_quantities.status, shipments.status')
             ->join('orders','orders.order_id','=','shipments.order_id')
@@ -263,10 +192,10 @@ class WarehouseController extends Controller
             ->join('order_shipment_quantities','order_shipment_quantities.order_id','=','orders.order_id','left')
             ->where('orders.is_activated','>=', '12')
             ->where('shipments.is_activated','6')
-            ->OrwhereIn('orders.order_id',$order_ids)
+            ->OrwhereIn('shipments.shipment_id',$shipment_ids)
+            //->OrwhereIn('orders.order_id',$order_ids)
             ->groupby('shipments.shipment_id')
             ->get();
-
         $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role','shipments', 'title'));
     }
@@ -343,8 +272,8 @@ class WarehouseController extends Controller
         $UserCredentials['mws_authtoken'] = !empty($results[0]->mws_authtoken) ? decrypt($results[0]->mws_authtoken) : '';
         $UserCredentials['mws_seller_id'] = !empty($results[0]->mws_seller_id) ? decrypt($results[0]->mws_seller_id) : '';
         $UserCredentials['marketplace'] = $results[0]->market_place_id ? $results[0]->market_place_id : '';
-        //$UserCredentials['mws_authtoken']='test';
-        //$UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
+       // $UserCredentials['mws_authtoken']='test';
+       // $UserCredentials['mws_seller_id']='A2YCP5D68N9M7J';
         $fromaddress = new \FBAInboundServiceMWS_Model_Address();
         $fromaddress->setName($user_details[0]->company_name);
         $fromaddress->setAddressLine1($user_details[0]->company_address);
@@ -363,6 +292,7 @@ class WarehouseController extends Controller
                 ->join('order_shipment_quantities', 'order_shipment_quantities.shipment_detail_id', '=', 'shipment_details.shipment_detail_id','left')
                 ->where('shipment_details.shipment_id', $shipments->shipment_id)
                 ->where('order_shipment_quantities.status','0')
+                ->distinct('shipment_details.shipment_id')
                 ->get();
             $item = array();
             $shipment_detail_id=array();
@@ -454,21 +384,6 @@ class WarehouseController extends Controller
             Order_shipment_quantity::whereIn('shipment_detail_id',$shipment_detail_id)->update($status);
             $shipment_data = array('shipmentplan'=>'1');
             Shipments::where('shipment_id',$shipments->shipment_id)->update($shipment_data);
-            /*$quantity_detail = Order_shipment_quantity::selectRaw('sum(order_shipment_quantities.quantity) as qty, shipment_details.total')
-                               ->join('shipment_details','shipment_details.shipment_detail_id','=','order_shipment_quantities.shipment_detail_id')
-                               ->where('order_shipment_quantities.shipment_id',$shipments->shipment_id)
-                               ->where('order_shipment_quantities.status','1')
-                               ->groupby('order_shipment_quantities.shipment_id')
-                               ->get();
-
-            foreach ($quantity_detail as $quantity_details)
-            {
-                if($quantity_details->qty == $quantity_details->total)
-                {
-                    $shipment_data1 = array('status'=>'1');
-                    Shipments::where('shipment_id',$shipments->shipment_id)->update($shipment_data1);
-                }
-            }*/
         }
 
         $shipment_ids = Amazon_destination::selectRaw('amazon_destinations.api_shipment_id, warehouse_checkins.no_of_cartoon')
@@ -593,7 +508,7 @@ class WarehouseController extends Controller
             $devAccount->access_key,
             $devAccount->secret_key,
             // $accesskey,
-            // $secret_key,
+             //$secret_key,
             self::getMWSConfig()
         ];
     }
@@ -613,6 +528,7 @@ class WarehouseController extends Controller
     function invokeCreateInboundShipmentPlan(\FBAInboundServiceMWS_Interface $service, $request)
     {
         try {
+
             $response = $service->CreateInboundShipmentPlan($request);
             // echo ("Service Response\n");
             // echo ("=============================================================================\n");
@@ -759,22 +675,6 @@ class WarehouseController extends Controller
         $title = "Order Labor";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        //$orders = Order::where('orders.is_activated', '13')->orderBy('orders.created_at', 'desc')->get();
-        /*$orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
-            ->join('shipments','shipments.order_id','=','orders.order_id','left')
-            ->where('orders.is_activated','>=', '13')
-            ->where('shipments.is_activated','7')
-            ->orwhere('shipments.status','0')
-            ->groupby('orders.order_id')
-            ->orderBy('orders.created_at', 'desc')
-            ->get();
-        $shipments= Shipments::selectRaw('orders.order_id , shipments.shipment_id, shipments.is_activated as activated, shipments.status, shipping_methods.shipping_name')
-            ->join('orders','orders.order_id','=','shipments.order_id')
-            ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
-            ->where('orders.is_activated','>=', '13')
-            ->where('shipments.is_activated','7')
-            ->orwhere('shipments.status','0')
-            ->get();*/
         $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.id, order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated, orders.created_at, user_infos.company_name, user_infos.contact_email')
             ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
             ->join('shipments','shipments.order_id','=','orders.order_id')
@@ -784,11 +684,19 @@ class WarehouseController extends Controller
             ->Orwhere('order_shipment_quantities.status','1')
             ->groupby('order_shipment_quantities.order_id')
             ->get();
-
-        $order_ids = array();
-        foreach ($orders as $order)
+        $shipment_id = Order_shipment_quantity::selectRaw('shipments.shipment_id')
+            ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
+            ->join('shipments','shipments.shipment_id','=','order_shipment_quantities.shipment_id')
+            ->where('orders.is_activated','>=', '13')
+            ->where('shipments.is_activated','7')
+            ->Orwhere('order_shipment_quantities.status','1')
+            ->distinct('shipments.shipment_id')
+            //->groupby('order_shipment_quantities.order_id')
+            ->get();
+        $shipment_ids = array();
+        foreach ($shipment_id as $new_shipment_id)
         {
-            $order_ids[]= $order->order_id;
+            $shipment_ids[]= $new_shipment_id->shipment_id;
         }
         $shipments= Shipments::selectRaw('orders.order_id , shipments.shipment_id, shipments.is_activated as activated, shipping_methods.shipping_name, shipments.shipmentplan, sum(order_shipment_quantities.quantity) as qty, order_shipment_quantities.status, shipments.status')
             ->join('orders','orders.order_id','=','shipments.order_id')
@@ -796,7 +704,7 @@ class WarehouseController extends Controller
             ->join('order_shipment_quantities','order_shipment_quantities.order_id','=','orders.order_id','left')
             ->where('orders.is_activated','>=', '13')
             ->where('shipments.is_activated','7')
-            ->OrwhereIn('orders.order_id',$order_ids)
+            ->OrwhereIn('shipments.shipment_id',$shipment_ids)
             ->groupby('shipments.shipment_id')
             ->get();
         $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
@@ -849,24 +757,6 @@ class WarehouseController extends Controller
         $title = "Manager Review";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        //$orders = Order::where('orders.is_activated', '14')->orderBy('orders.created_at', 'desc')->get();
-        //DB::enableQueryLog();
-        /*$orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
-            ->join('shipments','shipments.order_id','=','orders.order_id')
-            ->where('orders.is_activated','>=', '14')
-            ->where('shipments.is_activated','8')
-            ->orwhere('shipments.status','0')
-            ->groupby('orders.order_id')
-            ->orderBy('orders.created_at', 'desc')
-            ->get();
-        $shipments= Shipments::selectRaw('orders.order_id , shipments.shipment_id, shipments.is_activated as activated, shipments.status, shipping_methods.shipping_name')
-            ->join('orders','orders.order_id','=','shipments.order_id')
-            ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
-            ->where('orders.is_activated','>=', '14')
-            ->where('shipments.is_activated','8')
-            ->orwhere('shipments.status','0')
-            ->get();*/
-        //dd(DB::getQueryLog());
         $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.id, order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated, orders.created_at, user_infos.company_name, user_infos.contact_email')
             ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
             ->join('shipments','shipments.order_id','=','orders.order_id')
@@ -876,19 +766,28 @@ class WarehouseController extends Controller
             ->Orwhere('order_shipment_quantities.status','2')
             ->groupby('order_shipment_quantities.order_id')
             ->get();
-
-        $order_ids = array();
-        foreach ($orders as $order)
+        $shipment_id = Order_shipment_quantity::selectRaw('shipments.shipment_id')
+            ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
+            ->join('shipments','shipments.shipment_id','=','order_shipment_quantities.shipment_id')
+            ->where('orders.is_activated','>=', '14')
+            ->where('shipments.is_activated','8')
+            ->Orwhere('order_shipment_quantities.status','2')
+            ->distinct('shipments.shipment_id')
+            //->groupby('order_shipment_quantities.order_id')
+            ->get();
+        $shipment_ids = array();
+        foreach ($shipment_id as $new_shipment_id)
         {
-            $order_ids[]= $order->order_id;
+            $shipment_ids[]= $new_shipment_id->shipment_id;
         }
+
         $shipments= Shipments::selectRaw('orders.order_id , shipments.shipment_id, shipments.is_activated as activated, shipping_methods.shipping_name, shipments.shipmentplan, sum(order_shipment_quantities.quantity) as qty, order_shipment_quantities.status, shipments.status')
             ->join('orders','orders.order_id','=','shipments.order_id')
             ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
             ->join('order_shipment_quantities','order_shipment_quantities.order_id','=','orders.order_id','left')
             ->where('orders.is_activated','>=', '14')
             ->where('shipments.is_activated','8')
-            ->OrwhereIn('orders.order_id',$order_ids)
+            ->OrwhereIn('shipments.shipment_id',$shipment_ids)
             ->groupby('shipments.shipment_id')
             ->get();
         $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
@@ -899,10 +798,8 @@ class WarehouseController extends Controller
     {
         if ($request->ajax()) {
             $post = $request->all();
-           // $shipment_detail_id = $post['shipment_detail_id'];
            $amazon_destination_id = $post['amazon_destination_id'];
            $data = array('prep_complete' => '1');
-            //Shipment_detail::where('shipment_detail_id', $shipment_detail_id)->update($data);
             Amazon_destination::where('amazon_destination_id',$amazon_destination_id)->update($data);
             return 1;
         }
@@ -936,27 +833,6 @@ class WarehouseController extends Controller
         $title = "Complete Review";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        /*$orders = Order::selectRaw('orders.*, count(shipments.shipment_id) as shipment_count')
-            ->join('shipments', 'shipments.order_id', '=', 'orders.order_id')
-            ->where('orders.is_activated', '15')
-            ->orderBy('orders.created_at', 'desc')
-            ->groupby('orders.order_id')
-            ->get();*/
-        /*$orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated')
-            ->join('shipments','shipments.order_id','=','orders.order_id')
-            ->where('orders.is_activated','>=', '15')
-            ->where('shipments.is_activated','9')
-            ->Orwhere('shipments.status','0')
-            ->groupby('orders.order_id')
-            ->orderBy('orders.created_at', 'desc')
-            ->get();
-        $shipments= Shipments::selectRaw('orders.order_id , shipments.shipment_id, shipments.is_activated as activated, shipments.status, shipping_methods.shipping_name')
-            ->join('orders','orders.order_id','=','shipments.order_id')
-            ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
-            ->where('orders.is_activated','>=', '15')
-            ->where('shipments.is_activated','9')
-            ->Orwhere('shipments.status','0')
-            ->get();*/
         $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.id, order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated, user_infos.company_name, user_infos.contact_email')
             ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
             ->join('shipments','shipments.order_id','=','orders.order_id')
@@ -966,11 +842,19 @@ class WarehouseController extends Controller
             ->Orwhere('order_shipment_quantities.status','3')
             ->groupby('order_shipment_quantities.order_id')
             ->get();
-
-        $order_ids = array();
-        foreach ($orders as $order)
+        $shipment_id = Order_shipment_quantity::selectRaw('shipments.shipment_id')
+            ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
+            ->join('shipments','shipments.shipment_id','=','order_shipment_quantities.shipment_id')
+            ->where('orders.is_activated','>=', '15')
+            ->where('shipments.is_activated','9')
+            ->Orwhere('order_shipment_quantities.status','3')
+            ->distinct('shipments.shipment_id')
+            //->groupby('order_shipment_quantities.order_id')
+            ->get();
+        $shipment_ids = array();
+        foreach ($shipment_id as $new_shipment_id)
         {
-            $order_ids[]= $order->order_id;
+            $shipment_ids[]= $new_shipment_id->shipment_id;
         }
         $shipments= Shipments::selectRaw('orders.order_id , shipments.shipment_id, shipments.is_activated as activated, shipping_methods.shipping_name, shipments.shipmentplan, sum(order_shipment_quantities.quantity) as qty, order_shipment_quantities.status, shipments.status')
             ->join('orders','orders.order_id','=','shipments.order_id')
@@ -978,7 +862,7 @@ class WarehouseController extends Controller
             ->join('order_shipment_quantities','order_shipment_quantities.order_id','=','orders.order_id','left')
             ->where('orders.is_activated','>=', '15')
             ->where('shipments.is_activated','9')
-            ->OrwhereIn('orders.order_id',$order_ids)
+            ->OrwhereIn('shipments.shipment_id',$shipment_ids)
             ->groupby('shipments.shipment_id')
             ->get();
         $label_count = Shipments::selectRaw('count(shipment_id) as shipment_count, orders.order_id')
@@ -1041,12 +925,6 @@ class WarehouseController extends Controller
         $shipping_request = new \FBAInboundServiceMWS_Model_GetUniquePackageLabelsRequest();
         $shipping_request->setSellerId($UserCredentials['mws_seller_id']);
         $shipping_request->setMWSAuthToken($UserCredentials['mws_authtoken']);
-        /*$shipment_ids = Amazon_destination::selectRaw('amazon_destinations.api_shipment_id, amazon_destinations.feed_submition_id, amazon_destinations.cartoon_id, warehouse_checkins.no_of_cartoon')
-            ->join('shipments', 'shipments.shipment_id', '=', 'amazon_destinations.shipment_id')
-            ->join('warehouse_checkins', 'warehouse_checkins.shipment_id', '=', 'shipments.shipment_id')
-            ->where('shipments.shipment_id', $shipment_id)
-            ->groupby('amazon_destinations.api_shipment_id')
-            ->get();*/
         foreach ($shipment_ids as $new_shipment_ids) {
             $shipping_request->setShipmentId($new_shipment_ids->api_shipment_id);
             $shipping_request->setPageType('PackageLabel_Letter_2');
@@ -1060,7 +938,6 @@ class WarehouseController extends Controller
                 }
             }
             $data = array("shipping_label" => "1");
-            //Shipments::where('shipment_id', $shipment_id)->update($data);
             Amazon_destination::where('amazon_destination_id', $amazon_destination_id)->update($data);
             $zipStr = $pdf_file;
             header('Content-Type: application/zip');
@@ -1105,7 +982,6 @@ class WarehouseController extends Controller
             $amazon_destination_id = $post['amazon_destination_id'];
             $status = $post['status'];
             $data = array('shipping_label' => $status);
-            //Shipments::where('shipment_id', $shipment_id)->update($data);
             Amazon_destination::where('amazon_destination_id', $amazon_destination_id)->update($data);
             return $status;
         }
@@ -1116,22 +992,6 @@ class WarehouseController extends Controller
         $title = "Shipment Review";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        //$orders = Order::where('orders.is_activated', '16')->orderBy('orders.created_at', 'desc')->get();
-       /* $orders = Order::selectRaw('orders.order_id, orders.is_activated, orders.created_at, count(shipments.shipment_id) as shipment_count, shipments.is_activated as activated, shipments.status')
-            ->join('shipments','shipments.order_id','=','orders.order_id')
-            ->where('orders.is_activated','>=', '16')
-            ->where('shipments.is_activated','10')
-            ->Orwhere('shipments.status','0')
-            ->groupby('orders.order_id')
-            ->orderBy('orders.created_at', 'desc')
-            ->get();
-        $shipments= Shipments::selectRaw('orders.order_id ,shipments.verify_status, shipments.shipment_id, shipments.is_activated as activated, shipping_methods.shipping_name, shipments.status')
-            ->join('orders','orders.order_id','=','shipments.order_id')
-            ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
-            ->where('orders.is_activated','>=', '16')
-            ->where('shipments.is_activated','10')
-            ->Orwhere('shipments.status','0')
-            ->get();*/
         $orders = Order_shipment_quantity::selectRaw('order_shipment_quantities.id, order_shipment_quantities.order_id, order_shipment_quantities.shipment_id, order_shipment_quantities.shipment_detail_id, order_shipment_quantities.quantity, orders.is_activated, user_infos.company_name, user_infos.contact_email')
             ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
             ->join('shipments','shipments.order_id','=','orders.order_id')
@@ -1141,11 +1001,19 @@ class WarehouseController extends Controller
             ->Orwhere('order_shipment_quantities.status','4')
             ->groupby('order_shipment_quantities.order_id')
             ->get();
-
-        $order_ids = array();
-        foreach ($orders as $order)
+        $shipment_id = Order_shipment_quantity::selectRaw('shipments.shipment_id')
+            ->join('orders','orders.order_id','=','order_shipment_quantities.order_id')
+            ->join('shipments','shipments.shipment_id','=','order_shipment_quantities.shipment_id')
+            ->where('orders.is_activated','>=', '16')
+            ->where('shipments.is_activated','10')
+            ->Orwhere('order_shipment_quantities.status','4')
+            ->distinct('shipments.shipment_id')
+            //->groupby('order_shipment_quantities.order_id')
+            ->get();
+        $shipment_ids = array();
+        foreach ($shipment_id as $new_shipment_id)
         {
-            $order_ids[]= $order->order_id;
+            $shipment_ids[]= $new_shipment_id->shipment_id;
         }
         $shipments= Shipments::selectRaw('orders.order_id , shipments.shipment_id, shipments.is_activated as activated, shipping_methods.shipping_name, shipments.shipmentplan, sum(order_shipment_quantities.quantity) as qty, order_shipment_quantities.status, shipments.status')
             ->join('orders','orders.order_id','=','shipments.order_id')
@@ -1153,10 +1021,9 @@ class WarehouseController extends Controller
             ->join('order_shipment_quantities','order_shipment_quantities.order_id','=','orders.order_id','left')
             ->where('orders.is_activated','>=', '16')
             ->where('shipments.is_activated','8')
-            ->OrwhereIn('orders.order_id',$order_ids)
+            ->OrwhereIn('shipments.shipment_id',$shipment_ids)
             ->groupby('shipments.shipment_id')
             ->get();
-
         $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('order.ordershipping')->with(compact('orders', 'orderStatus', 'user_role','shipments', 'title'));
     }
@@ -1191,26 +1058,8 @@ class WarehouseController extends Controller
             $order_id = $post['order_id'];
             $shipment_id = $post['shipment_id'];
             $data = array('verify_status' => '1');
-            //Order::where('order_id', $order_id)->update($data);
             Shipments::where('shipment_id',$shipment_id)->update($data);
-            $order_quantities = Order_shipment_quantity::selectRaw('sum(order_shipment_quantities.quantity) as qty')
-                ->where('order_shipment_quantities.shipment_id','60')
-                ->where('order_shipment_quantities.status','1')
-                ->groupby('order_shipment_quantities.shipment_id')
-                ->get();
-            $shipment_quantities = Shipment_detail::selectRaw('sum(shipment_details.total) as total')
-                ->join('shipments','shipments.shipment_id','=','shipment_details.shipment_id')
-                ->where('shipment_details.shipment_id','60')
-                ->groupby('shipment_details.shipment_id')
-                ->get();
-            if(isset($order_quantities) && isset($shipment_quantities))
-            {
-                if($order_quantities[0]->qty == $shipment_quantities[0]->total)
-                {
-                    $shipment_data = array('status'=>'1');
-                    Shipments::where('shipment_id',$shipment_id)->update($shipment_data);
-                }
-            }
+
         }
     }
 

@@ -42,7 +42,7 @@
                             {!! Form::label('suppliers', 'Suppliers', ['class' => 'control-label col-md-2']) !!}
                             {!! Form::label('inspection', 'Inspections', ['class' => 'control-label col-md-2']) !!}
                             {!! Form::label('upc_fnsku1_1', 'UPC/FNSKU', ['class' => 'control-label col-md-2']) !!}
-                            {!! Form::label('qty_per_case1_1', 'Qty Per Case', ['class' => 'control-label col-md-1']) !!}
+                            {!! Form::label('qty_per_case1_1', 'How Many Units', ['class' => 'control-label col-md-1']) !!}
                             {!! Form::label('no_of_case1_1', '# Of Case', ['class' => 'control-label col-md-1']) !!}
                             {!! Form::label('total1_1', 'Total', ['class' => 'control-label col-md-1']) !!}
                         </div>
@@ -62,7 +62,9 @@
                 <div class="form-group">
                     <div class="col-md-2">
                         <div class="input-group">
-                            {{$shipment_details['company_name']}}
+                            {{$shipment_details['company_name']}}<br>
+                            {{$shipment_details['email']}}<br>
+                            {{$shipment_details['phone_number']}}
                         </div>
                     </div>
                 </div>

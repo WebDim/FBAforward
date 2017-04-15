@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Order;
 use App\Shipments;
 use App\Shipment_detail;
-use App\Charges;
+use App\Role;
 
 class CustomerController extends Controller
 {
@@ -23,17 +23,12 @@ class CustomerController extends Controller
         $title = "FBA Inventory";
         $user = \Auth::user();
         $user_role = $user->role_id;
-        // \DB::enableQueryLog();
-
         $orders = Order::selectRaw('orders.order_id, sum(shipment_details.total) as total, orders.created_at')
             ->join('shipments', 'shipments.order_id', '=', 'orders.order_id', 'left')
             ->join('shipment_details', 'shipment_details.shipment_id', '=', 'shipments.shipment_id', 'left')
             ->where('orders.is_activated', '>=', '12')
-            //->where('orders.is_activated', '<', '17')
             ->where('shipments.is_activated','>=','6')
             ->where('shipments.status','!=','1')
-            //->where('shipments.is_activated','<','11')
-           // ->Orwhere('shipments.status','0')
             ->where('orders.user_id', $user->id)
             ->orderBy('orders.created_at', 'desc')
             ->groupby('orders.order_id')
@@ -42,16 +37,10 @@ class CustomerController extends Controller
             ->join('orders','orders.order_id','=','shipments.order_id')
             ->join('shipping_methods','shipping_methods.shipping_method_id','=','shipments.shipping_method_id')
             ->where('orders.is_activated', '>=', '12')
-            //->where('orders.is_activated', '<', '17')
             ->where('shipments.is_activated','>=','6')
             ->where('shipments.status','!=','1')
-            //->where('shipments.is_activated','<','11')
-            //->Orwhere('shipments.status','0')
             ->where('orders.user_id', $user->id)
            ->get();
-
-         //dd(\DB::getQueryLog());
-
         $orderStatus = array('In Progress', 'Order Placed', 'Pending For Approval', 'Approve Inspection Report', 'Shipping Quote', 'Approve shipping Quote', 'Shipping Invoice', 'Upload Shipper Bill', 'Approve Bill By Logistic', 'Shipper Pre Alert', 'Customer Clearance', 'Delivery Booking', 'Warehouse Check In', 'Review Warehouse', 'Work Order Labor Complete', 'Approve Completed Work', 'Shipment Complete', 'Order Complete', 'Warehouse Complete');
         return view('customer.fba_inventory')->with(compact('orders', 'orderStatus', 'user_role','shipments', 'title'));
     }
@@ -90,8 +79,13 @@ class CustomerController extends Controller
                 Order_shipment_quantity::create($data);
             }
         }
-
-
+        $role = Role::find(8);
+        $role->newNotification()
+            ->withType('Warehouse check in')
+            ->withSubject('You have warehouse check in for review')
+            ->withBody('You have warehouse check in for review')
+            ->regarding($data)
+            ->deliver();
         return redirect('customer')->with('success', 'Shipment Quantity Added Successfully');
     }
 
