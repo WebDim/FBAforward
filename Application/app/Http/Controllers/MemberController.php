@@ -452,14 +452,16 @@ class MemberController extends Controller
             if($request->session()->get('new_user')) {
                 $request->session()->put('old_user', $user->id);
                 \Auth::loginUsingId($request->session()->get('new_user'));
+                return redirect('order/index');
             }
             else
             {
                 \Auth::loginUsingId($request->session()->get('old_user'));
                 $request->session()->forget('old_user');
                 $request->session()->forget('new_user');
+                return redirect('member/home');
             }
-            return redirect('member/home');
+
     }
     public function storeuser(Request $request)
     {

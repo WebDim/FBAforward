@@ -103,6 +103,7 @@ class InvoiceController extends Controller
         if ($start_date == '' && $end_date == '' && $doc_number == '' && $customer_name == '') {
             $invoice_details = Invoice_detail::selectRaw('orders.order_id,invoice_details.*')
                 ->join('orders', 'orders.invoice_id', '=', 'invoice_details.invoice_id', 'left')
+                ->orderby('invoice_details.created_time','desc')
                 ->get();
 
         } else if ($start_date != '' && $end_date != '' && $doc_number != '' && $customer_name != '') {
@@ -113,6 +114,7 @@ class InvoiceController extends Controller
                 ->where('invoice_details.created_time', '<=', date('Y-m-dTh:i:s', strtotime($end_date)))
                 ->where('invoice_details.docnumber', '=', $doc_number)
                 ->Where('invoice_details.customer_ref_name', '=', $customer_name)
+                ->orderby('invoice_details.created_time','desc')
                 ->get();
         } else {
             $end_date = $end_date . "T23:59:59";
@@ -121,16 +123,19 @@ class InvoiceController extends Controller
                     ->join('orders', 'orders.invoice_id', '=', 'invoice_details.invoice_id', 'left')
                     ->where('invoice_details.created_time', '>=', date('Y-m-d', strtotime($start_date)))
                     ->where('invoice_details.created_time', '<=', date('Y-m-dTh:i:s', strtotime($end_date)))
+                    ->orderby('invoice_details.created_time','desc')
                     ->get();
             if ($doc_number != '')
                 $invoice_details = Invoice_detail::selectRaw('orders.order_id,invoice_details.*')
                     ->join('orders', 'orders.invoice_id', '=', 'invoice_details.invoice_id', 'left')
                     ->orWhere('invoice_details.docnumber', '=', $doc_number)
+                    ->orderby('invoice_details.created_time','desc')
                     ->get();
             if ($customer_name != '')
                 $invoice_details = Invoice_detail::selectRaw('orders.order_id,invoice_details.*')
                     ->join('orders', 'orders.invoice_id', '=', 'invoice_details.invoice_id', 'left')
                     ->orWhere('invoice_details.customer_ref_name', '=', $customer_name)
+                    ->orderby('invoice_details.created_time','desc')
                     ->get();
         }
 
