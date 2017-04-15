@@ -187,6 +187,7 @@
                     { data: "total_taxe"}
                 ],
             });
+            table.column('3:visible').order('desc').draw();
         }
     </script>
 @endsection

@@ -1327,10 +1327,9 @@ class OrderController extends Controller
     }
     public function customers_detail()
     {
-
         $user = User::selectRaw('users.*, user_infos.*')
             ->join('user_infos', 'users.id', '=', 'user_infos.user_id')
-            ->where('role_id', '3')
+            ->where('users.role_id', '3')
             ->get();
         return Datatables::of($user)
             ->editColumn('company_name', function ($user) {
@@ -1385,9 +1384,10 @@ class OrderController extends Controller
                 $user_role = \Auth::user();
                 $user_role_id = $user_role->role_id;
                 if($user_role_id==4 || $user_role_id==9) {
-                    return $editBtn = '<a onclick="storeuser(' . $user->user_id . ')"  title="Switch User">Switch User</a>';
+                    if ($user->status == '1') {
+                        return $editBtn = '<a onclick="storeuser(' . $user->user_id . ')"  title="Switch User">Switch User</a>';
+                    }
                 }
-
             })
             ->make(true);
     }
