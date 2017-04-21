@@ -100,7 +100,7 @@
                                                 @endif
                                             @endforeach
 
-                                            @if(count($shipping_id) == 1 || count($shipping_id1) == 1)
+                                            @if(count($shipping_id) >= 1 || count($shipping_id1) >= 1)
                                                 <a href="{{ url('order/shippingquoteform/'.$order->order_id)}}"
                                                    class="btn btn-info">Shipping Quote</a>
                                             @elseif($tmp >= 1)
