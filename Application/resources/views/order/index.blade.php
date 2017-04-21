@@ -89,7 +89,7 @@
                             @if($order->is_activated==1)
                                 <tr id="tr_{{$order->order_id}}">
                                     <td>
-                                        <a href="{{ url('order/details/'.$order->order_id).'/0' }}">
+                                        <a href="{{ url('order/details/'.$order->order_id) }}">
                                             <b class="text-info">ORD_{{ $order->order_id }}</b>
                                         </a>
                                     </td>
@@ -125,7 +125,7 @@
                             @if($order->is_activated==2)
                                 <tr id="tr_{{$order->order_id}}">
                                     <td>
-                                        <a href="{{ url('order/details/'.$order->order_id).'/0' }}">
+                                        <a href="{{ url('order/details/'.$order->order_id) }}">
                                             <b class="text-info">ORD_{{ $order->order_id }}</b>
                                         </a>
                                     </td>
@@ -163,7 +163,7 @@
                             @if($order->is_activated==4)
                                 <tr id="tr_{{$order->order_id}}">
                                     <td>
-                                        <a href="{{ url('order/details/'.$order->order_id).'/0' }}">
+                                        <a href="{{ url('order/details/'.$order->order_id) }}">
                                             <b class="text-info">ORD_{{ $order->order_id }}</b>
                                         </a>
                                     </td>

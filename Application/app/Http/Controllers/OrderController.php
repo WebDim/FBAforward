@@ -424,6 +424,7 @@ class OrderController extends Controller
                              ->get();
         else
             $orders = Order::selectRaw('orders.*, user_infos.company_name, user_infos.contact_email')
+                             ->join('user_infos','user_infos.user_id','=','orders.user_id','left')
                              ->where('orders.is_activated', '3')
                              ->orderBy('orders.created_at', 'desc')
                              ->get();
